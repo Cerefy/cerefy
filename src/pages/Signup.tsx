@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,7 +20,11 @@ const signupSchema = z
   .object({
     fullName: z.string().min(1, "Full name is required"),
     email: z.string().email("Enter a valid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -32,6 +36,7 @@ type SignupForm = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
   const { signUp } = useAuth();
+  const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -42,15 +47,23 @@ export default function SignupPage() {
 
   const onSubmit = async (values: SignupForm) => {
     setSubmitting(true);
-    const { error } = await signUp(values.email, values.password, values.fullName);
+    const result = await signUp(values.email, values.password, values.fullName);
     setSubmitting(false);
 
-    if (error) {
-      toast.error(error);
+    if (result.error) {
+      toast.error(result.error);
       return;
     }
 
-    setSubmitted(true);
+    if (result.success) {
+      if (result.needsEmailVerification) {
+        setSubmitted(true);
+      } else {
+        toast.success("Account created successfully");
+        // Auto-navigate to dashboard if no email verification needed
+        navigate({ to: "/dashboard" });
+      }
+    }
   };
 
   if (submitted) {

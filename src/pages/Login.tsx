@@ -35,16 +35,18 @@ export default function LoginPage() {
 
   const onSubmit = async (values: LoginForm) => {
     setSubmitting(true);
-    const { error } = await signIn(values.email, values.password);
+    const result = await signIn(values.email, values.password);
     setSubmitting(false);
 
-    if (error) {
-      toast.error(error);
+    if (result.error) {
+      toast.error(result.error);
       return;
     }
 
-    toast.success("Signed in successfully");
-    navigate({ to: "/dashboard" });
+    if (result.success) {
+      toast.success("Signed in successfully");
+      navigate({ to: "/dashboard" });
+    }
   };
 
   const handleGoogleSignIn = async () => {

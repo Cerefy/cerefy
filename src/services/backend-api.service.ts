@@ -233,9 +233,22 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const BackendApi = {
   async chat(body: ChatRequest): Promise<ChatResponse> {
+    // Add RAG context retrieval
+    let ragContext = "";
+    try {
+      const memorySummary = await this.getMemorySummary(body.session_id || "default");
+      if (memorySummary.long_term && Object.keys(memorySummary.long_term).length > 0) {
+        ragContext = "\n\n[Relevant Context]\n" + JSON.stringify(memorySummary.long_term, null, 2);
+      }
+    } catch (error) {
+      console.error("Failed to retrieve RAG context:", error);
+    }
+
+    const enhancedMessage = ragContext ? `${body.message}${ragContext}` : body.message;
+    
     return apiFetch("/chat", {
       method: "POST",
-      body: JSON.stringify(body),
+      body: JSON.stringify({ ...body, message: enhancedMessage }),
     });
   },
 
@@ -267,8 +280,21 @@ export const BackendApi = {
     return apiFetch("/admin/health/detailed");
   },
 
-  async getMemorySummary(sessionId: string) {
+  async getMemorySummary(sessionId: string): Promise<MemorySummary> {
     return apiFetch(`/memory/${sessionId}`);
+  },
+
+  async storeLongTermMemory(sessionId: string, key: string, value: string) {
+    return apiFetch(`/memory/${sessionId}/long-term`, {
+      method: "POST",
+      body: JSON.stringify({ key, value }),
+    });
+  },
+
+  async getVectorMemory(query: string, orgId?: string) {
+    const params = new URLSearchParams({ query });
+    if (orgId) params.append("org_id", orgId);
+    return apiFetch(`/memory/vector/search?${params.toString()}`);
   },
 
   async getHealth() {

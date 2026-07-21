@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AgentService } from "@/services/agent-unified.service";
+import { BackendApi } from "@/services/backend-api.service";
 import {
   Send,
   Plus,
@@ -25,11 +26,42 @@ interface ChatMessage {
   source?: "python-backend" | "node-orchestrator";
 }
 
+interface ChatThread {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+}
+
 export function AiChatPage() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
+  const [threadTitle, setThreadTitle] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Fetch chat threads
+  const { data: threads = [], isLoading: threadsLoading } = useQuery({
+    queryKey: ["chat_threads"],
+    queryFn: async () => {
+      try {
+        const conversations = await BackendApi.getConversation(currentThreadId || "default");
+        // Convert to thread format
+        return [{
+          id: currentThreadId || "default",
+          title: threadTitle || "New Analysis",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          message_count: messages.length,
+        }];
+      } catch (error) {
+        console.error("Failed to fetch threads:", error);
+        return [];
+      }
+    },
+  });
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -39,10 +71,35 @@ export function AiChatPage() {
     mutationFn: async ({
       message,
       history,
+      threadId,
     }: {
       message: string;
       history: { role: string; text: string }[];
+      threadId?: string;
     }) => {
+      // Generate thread ID if this is a new conversation
+      const effectiveThreadId = threadId || `thread_${Date.now()}`;
+      if (!currentThreadId) {
+        setCurrentThreadId(effectiveThreadId);
+        // Generate a title from the first message
+        setThreadTitle(message.substring(0, 50) + (message.length > 50 ? "..." : ""));
+      }
+
+      // Store important information in long-term memory
+      try {
+        // Extract key entities and facts from the conversation
+        const entities = extractEntities(message);
+        if (entities.length > 0) {
+          await BackendApi.storeLongTermMemory(
+            effectiveThreadId,
+            "entities",
+            JSON.stringify(entities)
+          );
+        }
+      } catch (error) {
+        console.error("Failed to store in long-term memory:", error);
+      }
+
       return AgentService.chat(message, history);
     },
     onSuccess: (result) => {
@@ -71,6 +128,75 @@ export function AiChatPage() {
     },
   });
 
+  const extractEntities = (text: string): string[] => {
+    // Simple entity extraction - in production, use NLP
+    const entities: string[] = [];
+    const patterns = [
+      /[A-Z][a-z]+ [A-Z][a-z]+/g, // Proper names
+      /\b[A-Z]{2,}\b/g, // Acronyms
+      /\$\d+[\d,]*/g, // Money
+      /\d+%/g, // Percentages
+    ];
+    
+    patterns.forEach(pattern => {
+      const matches = text.match(pattern);
+      if (matches) {
+        entities.push(...matches);
+      }
+    });
+    
+    return [...new Set(entities)];
+  };
+
+  const startNewThread = () => {
+    setMessages([]);
+    setMessage("");
+    setCurrentThreadId(null);
+    setThreadTitle("");
+  };
+
+  const loadThread = async (threadId: string) => {
+    try {
+      const conversation = await BackendApi.getConversation(threadId);
+      const loadedMessages: ChatMessage[] = conversation.messages.map((msg: any) => ({
+        role: msg.role as "user" | "assistant",
+        text: msg.content,
+        timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        source: "python-backend",
+      }));
+      
+      setMessages(loadedMessages);
+      setCurrentThreadId(threadId);
+      setThreadTitle(loadedMessages[0]?.text.substring(0, 50) + "..." || "Thread");
+
+      // Load RAG context for this thread
+      try {
+        const memorySummary = await BackendApi.getMemorySummary(threadId);
+        if (memorySummary.long_term && Object.keys(memorySummary.long_term).length > 0) {
+          console.log("Loaded RAG context:", Object.keys(memorySummary.long_term));
+        }
+      } catch (memoryError) {
+        console.error("Failed to load RAG context:", memoryError);
+      }
+    } catch (error) {
+      toast.error("Failed to load thread");
+      console.error(error);
+    }
+  };
+
+  const deleteThread = async (threadId: string) => {
+    try {
+      await BackendApi.deleteConversation(threadId);
+      toast.success("Thread deleted");
+      if (currentThreadId === threadId) {
+        startNewThread();
+      }
+    } catch (error) {
+      toast.error("Failed to delete thread");
+      console.error(error);
+    }
+  };
+
   const handleSend = () => {
     const trimmed = message.trim();
     if (!trimmed || chatMutation.isPending) return;
@@ -83,6 +209,7 @@ export function AiChatPage() {
     chatMutation.mutate({
       message: trimmed,
       history: messages.map((m) => ({ role: m.role, text: m.text })),
+      threadId: currentThreadId || undefined,
     });
 
     setMessage("");
@@ -126,10 +253,7 @@ export function AiChatPage() {
         </div>
         <div className="px-4 mb-6">
           <button
-            onClick={() => {
-              setMessages([]);
-              setMessage("");
-            }}
+            onClick={startNewThread}
             className="w-full py-3 px-4 bg-white hover:shadow-[0_0_20px_rgba(56,189,248,0.3)] transition-all duration-300 rounded flex items-center justify-center gap-2 text-background font-bold text-sm"
           >
             <Plus className="text-lg w-5 h-5" />
@@ -152,41 +276,43 @@ export function AiChatPage() {
               Recent Threads
             </span>
           </div>
-          {/* Thread Item Active */}
-          <a
-            className="flex flex-col p-3 rounded bg-surface-container-high border-l-2 border-primary-brand group transition-all"
-            href="#"
-          >
-            <span className="text-sm font-medium text-white truncate">
-              Infrastructure Optimization Engine
-            </span>
-            <span className="text-[10px] text-primary-brand mt-1 font-mono">
-              12:44 PM &bull; SECURE
-            </span>
-          </a>
-          {/* Thread Items */}
-          <a
-            className="flex flex-col p-3 rounded hover:bg-eye-border-hover border-l-2 border-transparent group transition-all"
-            href="#"
-          >
-            <span className="text-sm font-medium text-eye-text group-hover:text-white truncate">
-              Neural Link Latency Analysis
-            </span>
-            <span className="text-[10px] text-eye-text/40 mt-1 font-mono">
-              10:15 AM &bull; ARCHIVED
-            </span>
-          </a>
-          <a
-            className="flex flex-col p-3 rounded hover:bg-eye-border-hover border-l-2 border-transparent group transition-all"
-            href="#"
-          >
-            <span className="text-sm font-medium text-eye-text group-hover:text-white truncate">
-              Market Volatility Predictor
-            </span>
-            <span className="text-[10px] text-eye-text/40 mt-1 font-mono">
-              Yesterday &bull; ENCRYPTED
-            </span>
-          </a>
+          
+          {threadsLoading ? (
+            <div className="px-4 py-3 text-xs text-muted-foreground">Loading threads...</div>
+          ) : threads.length === 0 ? (
+            <div className="px-4 py-3 text-xs text-muted-foreground">No conversations yet</div>
+          ) : (
+            threads.map((thread) => (
+              <div
+                key={thread.id}
+                className={`flex flex-col p-3 rounded border-l-2 group transition-all cursor-pointer ${
+                  currentThreadId === thread.id
+                    ? "bg-surface-container-high border-primary-brand"
+                    : "hover:bg-eye-border-hover border-transparent"
+                }`}
+                onClick={() => loadThread(thread.id)}
+              >
+                <div className="flex items-start justify-between">
+                  <span className="text-sm font-medium text-white truncate flex-1">
+                    {thread.title}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteThread(thread.id);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition-opacity"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+                <span className="text-[10px] text-primary-brand mt-1 font-mono">
+                  {new Date(thread.updated_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  &bull; {thread.message_count} messages
+                </span>
+              </div>
+            ))
+          )}
         </nav>
         <div className="p-4 border-t border-eye-border flex items-center justify-between">
           <div className="flex items-center gap-2">

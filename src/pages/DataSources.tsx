@@ -1,30 +1,37 @@
 import { useState, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card, DataTable, Badge } from "@/components/common/primitives";
 import { UploadService } from "@/services/upload.service";
 import { DynamicDashboard, DashboardConfig } from "@/components/dashboard/DynamicDashboard";
-import { RefreshCw, Upload, Database, Globe, Package, Loader2 } from "lucide-react";
+import { RefreshCw, Upload, Database, Globe, Package, Loader2, AlertCircle, CheckCircle, X } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 interface DataSource {
+  id: string;
   name: string;
-  type: string;
-  enabled: boolean;
-  last_synced_at: string | null;
+  original_filename: string;
+  status: string;
+  file_size: number;
+  file_type: string;
+  created_at: string;
+  processing_progress?: number;
 }
 
 export function DataSourcesPage() {
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [generatedDashboard, setGeneratedDashboard] = useState<DashboardConfig | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
 
   const { data: sources = [], isLoading: sourcesLoading } = useQuery({
     queryKey: ["data_sources"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("data_sources")
+        .from("imported_datasets")
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -32,60 +39,155 @@ export function DataSourcesPage() {
     },
   });
 
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      setUploadProgress(10);
+      const result = await UploadService.processUpload(file, file.name, {
+        enableSchemaDetection: true,
+      });
+      setUploadProgress(80);
+      return result;
+    },
+    onSuccess: (result) => {
+      setUploadProgress(100);
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+      } else {
+        toast.success("File uploaded successfully");
+        queryClient.invalidateQueries({ queryKey: ["data_sources"] });
+        
+        // If processing results exist, show them
+        if (result.processing) {
+          // Convert processing results to dashboard config
+          const dashboardConfig = convertProcessingToDashboard(result.processing);
+          setGeneratedDashboard(dashboardConfig);
+        }
+      }
+      setUploading(false);
+      setUploadProgress(0);
+    },
+    onError: (error: Error) => {
+      setError(error.message);
+      toast.error(error.message);
+      setUploading(false);
+      setUploadProgress(0);
+    },
+  });
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Validate file before upload
+    const validation = UploadService.validateFile(file);
+    if (!validation.valid) {
+      setError(validation.error);
+      toast.error(validation.error);
+      return;
+    }
 
     setUploading(true);
     setError(null);
     setGeneratedDashboard(null);
 
-    interface UploadResult {
-      dashboard?: { config?: DashboardConfig; layout?: DashboardConfig };
-    }
+    uploadMutation.mutate(file);
 
-    try {
-      const result = await UploadService.processUpload(file, file.name);
-      const typed = result as unknown as UploadResult;
-      setGeneratedDashboard(typed.dashboard?.config ?? typed.dashboard?.layout ?? null);
-    } catch (err: unknown) {
-      console.error(err);
-      setError(err instanceof Error ? err.message : "Failed to process upload");
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
+  };
+
+  const handleDelete = async (datasetId: string) => {
+    try {
+      await UploadService.deleteDataset(datasetId);
+      toast.success("Dataset deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["data_sources"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete dataset");
+    }
+  };
+
+  const convertProcessingToDashboard = (processing: any): DashboardConfig => {
+    // Convert cognitive data pipeline results to dashboard config
+    return {
+      title: "Data Analysis Dashboard",
+      layout: "grid",
+      widgets: [
+        {
+          type: "kpi",
+          title: "Total Rows",
+          value: processing.sheets?.[0]?.tables?.[0]?.row_count || 0,
+          format: "number",
+        },
+        {
+          type: "kpi",
+          title: "Columns Detected",
+          value: processing.sheets?.[0]?.tables?.[0]?.columns?.length || 0,
+          format: "number",
+        },
+        {
+          type: "table",
+          title: "Schema Analysis",
+          data: processing.sheets?.[0]?.tables?.[0]?.columns || [],
+        },
+      ],
+    };
   };
 
   return (
     <AppShell title="Data Sources" subtitle="Connected inputs · pipelines">
       <input
         type="file"
-        accept=".csv, .xlsx, .xls"
+        accept=".csv, .xlsx, .xls, .json, .txt"
         className="hidden"
         ref={fileInputRef}
         onChange={handleFileChange}
       />
 
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded">
-          {error}
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-medium">Upload Error</p>
+            <p className="text-sm opacity-80">{error}</p>
+          </div>
+          <button 
+            onClick={() => setError(null)}
+            className="text-red-400 hover:text-red-300"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
       )}
 
       {uploading && (
-        <div className="mb-6 p-4 border border-eye-border bg-surface rounded flex items-center gap-3">
-          <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-          <span className="text-sm text-eye-white">Processing and analyzing data...</span>
+        <div className="mb-6 p-4 border border-eye-border bg-surface rounded">
+          <div className="flex items-center gap-3 mb-3">
+            <RefreshCw className="h-5 w-5 animate-spin text-primary" />
+            <span className="text-sm text-eye-white">
+              {uploadProgress < 80 ? "Uploading file..." : "Processing and analyzing data..."}
+            </span>
+            <span className="text-xs font-mono text-muted-foreground ml-auto">
+              {uploadProgress}%
+            </span>
+          </div>
+          <div className="w-full bg-secondary rounded-full h-2">
+            <div 
+              className="bg-primary-brand h-2 rounded-full transition-all duration-300"
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
         </div>
       )}
 
       {generatedDashboard ? (
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-display text-white">Generated Dashboard</h2>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-500" />
+              <h2 className="text-lg font-display text-white">Analysis Complete</h2>
+            </div>
             <button
               onClick={() => setGeneratedDashboard(null)}
               className="text-xs text-muted-foreground hover:text-white"
@@ -99,12 +201,13 @@ export function DataSourcesPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="bento-card rounded-lg p-5 flex flex-col gap-3 items-start hover:bg-secondary/20 transition"
+            disabled={uploading}
+            className="bento-card rounded-lg p-5 flex flex-col gap-3 items-start hover:bg-secondary/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Upload className="h-[22px] w-[22px] text-white" />
             <span className="text-sm text-white font-medium">Upload File</span>
             <span className="text-[10px] font-mono text-muted-foreground uppercase">
-              CSV / Excel
+              CSV / Excel / JSON
             </span>
           </button>
           {[
@@ -116,7 +219,8 @@ export function DataSourcesPage() {
             return (
               <button
                 key={a.label}
-                className="bento-card rounded-lg p-5 flex flex-col gap-3 items-start hover:bg-secondary/20 transition"
+                disabled={uploading}
+                className="bento-card rounded-lg p-5 flex flex-col gap-3 items-start hover:bg-secondary/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Icon className="h-[22px] w-[22px] text-white" />
                 <span className="text-sm text-white font-medium">{a.label}</span>
@@ -134,11 +238,18 @@ export function DataSourcesPage() {
         icon="hub"
         action={
           <div className="flex gap-2">
-            <button className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-white">
+            <button 
+              onClick={() => queryClient.invalidateQueries({ queryKey: ["data_sources"] })}
+              className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-white"
+            >
               Refresh
             </button>
-            <button className="bg-white text-black text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded">
-              Connect
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="bg-white text-black text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded disabled:opacity-50"
+            >
+              Upload
             </button>
           </div>
         }
@@ -158,25 +269,48 @@ export function DataSourcesPage() {
           <DataTable
             columns={
               [
-                { key: "name", label: "Source" },
-                { key: "type", label: "Type" },
+                { key: "name", label: "Dataset Name" },
+                { key: "original_filename", label: "File Name" },
                 {
-                  key: "enabled",
+                  key: "status",
                   label: "Status",
                   render: (r: DataSource) => (
-                    <Badge tone={r.enabled ? "success" : "danger"}>
-                      {r.enabled ? "Active" : "Disabled"}
+                    <Badge tone={r.status === "processed" ? "success" : r.status === "processing" ? "warning" : "danger"}>
+                      {r.status}
                     </Badge>
                   ),
                 },
                 {
-                  key: "last_synced_at",
-                  label: "Last Sync",
+                  key: "file_size",
+                  label: "Size",
                   align: "right",
                   render: (r: DataSource) => (
                     <span className="font-mono text-muted-foreground">
-                      {r.last_synced_at ? new Date(r.last_synced_at).toLocaleDateString() : "Never"}
+                      {(r.file_size / 1024).toFixed(1)} KB
                     </span>
+                  ),
+                },
+                {
+                  key: "created_at",
+                  label: "Uploaded",
+                  align: "right",
+                  render: (r: DataSource) => (
+                    <span className="font-mono text-muted-foreground">
+                      {new Date(r.created_at).toLocaleDateString()}
+                    </span>
+                  ),
+                },
+                {
+                  key: "actions",
+                  label: "",
+                  align: "right",
+                  render: (r: DataSource) => (
+                    <button
+                      onClick={() => handleDelete(r.id)}
+                      className="text-muted-foreground hover:text-red-400 transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   ),
                 },
               ] as const
