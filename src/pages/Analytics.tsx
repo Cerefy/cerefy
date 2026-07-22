@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { AppShell } from "@/components/layout/AppShell";
 import {
   TrendingUp,
   TrendingDown,
@@ -90,9 +91,6 @@ export function AnalyticsPage() {
   });
 
   const isLoading = finance.isLoading || crm.isLoading || sales.isLoading || hr.isLoading;
-
-  return (
-import { AppShell } from "@/components/layout/AppShell";
 
   return (
     <AppShell title="Analytics" subtitle="Enterprise BI">

@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { AppShell } from "@/components/layout/AppShell";
 import {
   Key,
   Plus,
@@ -129,10 +130,6 @@ export function ApiPage() {
     });
   }, []);
 
-  return (
-import { AppShell } from "@/components/layout/AppShell";
-
-// Insert AppShell into ApiPage return
   return (
     <AppShell
       title="API Management"

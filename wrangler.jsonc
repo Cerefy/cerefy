@@ -1,17 +1,7 @@
 {
-  "name": "eyex-technologies",
-  "main": ".output/server/index.mjs",
-  "compatibility_date": "2025-07-18",
-  "compatibility_flags": ["nodejs_compat"],
+  "name": "eyex-ui",
+  "compatibility_date": "2024-03-20",
   "assets": {
-    "binding": "ASSETS",
-    "directory": ".output/public",
-  },
-  "no_bundle": true,
-  "rules": [
-    {
-      "type": "ESModule",
-      "globs": ["**/*.mjs", "**/*.js"],
-    },
-  ],
+    "directory": "dist"
+  }
 }
