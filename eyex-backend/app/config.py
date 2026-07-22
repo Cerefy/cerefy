@@ -49,6 +49,7 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-4o-mini"
     openai_temperature: float = 0.3
     openai_max_tokens: int = 4096
+    openai_base_url: str | None = None
 
     # LangGraph
     langgraph_store_type: str = "memory"

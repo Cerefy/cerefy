@@ -130,93 +130,29 @@ export function ApiPage() {
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden relative">
-      {/* Ambient Background Effects */}
-      <div className="fixed top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary-brand opacity-[0.08] blur-[80px] rounded-full pointer-events-none z-[-1]" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary-brand opacity-[0.08] blur-[80px] rounded-full pointer-events-none z-[-1]" />
+import { AppShell } from "@/components/layout/AppShell";
 
-      {/* Side Navigation */}
-      <aside className="hidden md:flex flex-col h-full w-[280px] bg-eye-surface border-r border-eye-border py-8 px-6 z-50">
-        <div className="flex items-center gap-3 mb-12">
-          <div className="w-8 h-8 bg-primary-brand rounded-sm flex items-center justify-center">
-            <Database className="text-eye-bg font-bold w-5 h-5" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight text-white uppercase">QORX</span>
-            <span className="text-[10px] text-eye-text font-mono">Analytic Core</span>
-          </div>
-        </div>
-        <nav className="flex-1 space-y-2">
-          <a
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all group"
-            href="#"
-          >
-            <LayoutDashboard className="group-hover:text-primary-brand w-5 h-5" />
-            <span className="text-sm">Dashboard</span>
-          </a>
-          <a
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-primary-brand border-l-2 border-primary-brand bg-surface-container-low transition-all"
-            href="#"
-          >
-            <Key className="w-5 h-5" />
-            <span className="text-sm font-bold">API Management</span>
-          </a>
-          <a
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all group"
-            href="#"
-          >
-            <FileText className="group-hover:text-primary-brand w-5 h-5" />
-            <span className="text-sm">Documentation</span>
-          </a>
-          <a
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all group"
-            href="#"
-          >
-            <Activity className="group-hover:text-primary-brand w-5 h-5" />
-            <span className="text-sm">System Health</span>
-          </a>
-        </nav>
-        <div className="pt-8 mt-8 border-t border-eye-border">
-          <button className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-on-surface-variant hover:bg-surface-container transition-all group">
-            <Settings className="group-hover:text-primary-brand w-5 h-5" />
-            <span className="text-sm">Settings</span>
-          </button>
-          <div className="mt-6 p-4 rounded-xl glass-panel flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center overflow-hidden">
-              <img
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCADlX9fn0WkHCWmyDGh8WzHmcD4apoXdAtufXqEkhWuXG3yx9tYqxBPHKklvJNhNeLad44KiUD-3AUZBPCeXybO1-u7-oazruKGqa2uB0Ft0RQ84p3Ce1ZYEtz-NwPTOmcoy5_rDiJlzGd20mJ2m-Gg_14Nv6bBheXqGC6IpbO_6Z7SNmg4KGvDHgBqbQTDVAXs1SYbffGt-jyNe_v5YegEjsu4ocgyGfUxWnkPWbVBdR0ifzM-Zxws7dIfvp-Lfunjk897pd8Plc"
-                alt="Admin avatar"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-white">Admin Core</span>
-              <span className="text-[10px] text-eye-text">v2.4.1-stable</span>
-            </div>
-          </div>
-        </div>
-      </aside>
+// Insert AppShell into ApiPage return
+  return (
+    <AppShell
+      title="API Management"
+      subtitle="Provision and audit secure access keys"
+      actions={
+        <button
+          onClick={() => setShowNewKeyModal(true)}
+          className="bg-white text-eye-bg px-6 py-2.5 rounded-sm font-bold text-sm hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all flex items-center gap-2"
+        >
+          <Plus className="text-sm w-4 h-4" />
+          Generate New Key
+        </button>
+      }
+    >
+      <div className="relative">
+        {/* Ambient Background Effects */}
+        <div className="fixed top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary-brand opacity-[0.08] blur-[80px] rounded-full pointer-events-none z-[-1]" />
+        <div className="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary-brand opacity-[0.08] blur-[80px] rounded-full pointer-events-none z-[-1]" />
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden relative">
-        {/* Top App Bar */}
-        <header className="h-20 flex items-center justify-between px-8 bg-eye-bg/60 backdrop-blur-md sticky top-0 z-40 border-b border-eye-border">
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">API Management</h1>
-            <p className="text-sm text-eye-text">Provision and audit secure access keys</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setShowNewKeyModal(true)}
-              className="bg-white text-eye-bg px-6 py-2.5 rounded-sm font-bold text-sm hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all flex items-center gap-2"
-            >
-              <Plus className="text-sm w-4 h-4" />
-              Generate New Key
-            </button>
-          </div>
-        </header>
-
-        <div className="p-8 max-w-[1200px] mx-auto w-full space-y-8">
+        <div className="max-w-[1200px] mx-auto w-full space-y-8">
           {/* Stats Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-fade-up>
             <div className="glass-panel p-6 rounded-sm">
@@ -482,7 +418,7 @@ export function ApiPage() {
         </div>
 
         {/* Footer Meta */}
-        <footer className="p-8 mt-auto border-t border-eye-border bg-eye-surface/40">
+        <footer className="p-8 mt-12 border-t border-eye-border bg-eye-surface/40">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex gap-8">
               <div className="flex flex-col">
@@ -503,7 +439,7 @@ export function ApiPage() {
             </div>
           </div>
         </footer>
-      </main>
+      </div>
 
       {/* New Key Modal */}
       {showNewKeyModal && (
@@ -595,6 +531,6 @@ export function ApiPage() {
           </div>
         </div>
       )}
-    </div>
+    </AppShell>
   );
 }

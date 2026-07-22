@@ -224,8 +224,14 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${BASE_URL}${path}`, { ...options, headers });
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`API ${response.status}: ${error}`);
+    let errorMessage = `API error (${response.status})`;
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.detail || errorData.message || JSON.stringify(errorData);
+    } catch {
+      errorMessage = await response.text() || errorMessage;
+    }
+    throw new Error(errorMessage);
   }
   if (response.status === 204) return undefined as T;
   return response.json();

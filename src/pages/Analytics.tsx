@@ -92,121 +92,13 @@ export function AnalyticsPage() {
   const isLoading = finance.isLoading || crm.isLoading || sales.isLoading || hr.isLoading;
 
   return (
-    <>
-      {/* SIDE NAVIGATION */}
-      <aside className="h-screen w-64 fixed left-0 top-0 border-r border-eye-border bg-eye-bg flex flex-col py-6 z-[60]">
-        <div className="px-6 mb-10">
-          <h1
-            className="text-2xl tracking-tighter leading-none font-medium"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            EyeX Pro
-          </h1>
-          <p
-            className="font-mono text-xs text-eye-text mt-1"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            Enterprise BI
-          </p>
-        </div>
-        <nav className="flex-1 space-y-1">
-          <a
-            className="flex items-center px-6 py-3 text-primary font-bold border-r-2 border-primary bg-primary/5 transition-all duration-300"
-            href="#"
-          >
-            <LayoutDashboard className="w-5 h-5 mr-3" />
-            <span className="font-mono text-xs" style={{ fontFamily: "var(--font-mono)" }}>
-              Dashboard
-            </span>
-          </a>
-          <a
-            className="flex items-center px-6 py-3 text-eye-text hover:text-white hover:bg-eye-surface transition-colors duration-200"
-            href="#"
-          >
-            <Activity className="w-5 h-5 mr-3" />
-            <span className="font-mono text-xs" style={{ fontFamily: "var(--font-mono)" }}>
-              Analytics
-            </span>
-          </a>
-          <a
-            className="flex items-center px-6 py-3 text-eye-text hover:text-white hover:bg-eye-surface transition-colors duration-200"
-            href="#"
-          >
-            <MessageSquare className="w-5 h-5 mr-3" />
-            <span className="font-mono text-xs" style={{ fontFamily: "var(--font-mono)" }}>
-              AI Chat
-            </span>
-          </a>
-          <a
-            className="flex items-center px-6 py-3 text-eye-text hover:text-white hover:bg-eye-surface transition-colors duration-200"
-            href="#"
-          >
-            <FileText className="w-5 h-5 mr-3" />
-            <span className="font-mono text-xs" style={{ fontFamily: "var(--font-mono)" }}>
-              Documents
-            </span>
-          </a>
-          <a
-            className="flex items-center px-6 py-3 text-eye-text hover:text-white hover:bg-eye-surface transition-colors duration-200"
-            href="#"
-          >
-            <Settings className="w-5 h-5 mr-3" />
-            <span className="font-mono text-xs" style={{ fontFamily: "var(--font-mono)" }}>
-              Settings
-            </span>
-          </a>
-        </nav>
-        <div className="px-6 mt-auto">
-          <button
-            className="w-full bg-[#FAFAFA] text-[#050505] py-3 rounded font-mono text-xs hover:shadow-[0_0_20px_rgba(56,189,248,0.3)] transition-all"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            Upgrade Power
-          </button>
-        </div>
-      </aside>
+import { AppShell } from "@/components/layout/AppShell";
 
-      {/* TOP NAVIGATION */}
-      <header className="fixed top-0 right-0 h-16 border-b border-eye-border backdrop-blur-md flex justify-between items-center px-6 w-[calc(100%-16rem)] ml-64 z-50 bg-eye-bg/60">
-        <div className="flex items-center gap-4">
-          <span className="text-lg text-white" style={{ fontFamily: "var(--font-display)" }}>
-            EyeX Analytics
-          </span>
-          <div className="h-4 w-[1px] bg-eye-border mx-2" />
-          <div className="flex items-center bg-eye-surface border border-eye-border rounded px-3 py-1.5 focus-within:ring-1 focus-within:ring-primary transition-all">
-            <Search className="w-4 h-4 text-eye-text mr-2" />
-            <input
-              className="bg-transparent border-none focus:ring-0 text-sm text-white w-48 placeholder:text-eye-text"
-              style={{ fontFamily: "var(--font-body)" }}
-              placeholder="Search Systems"
-              type="text"
-            />
-          </div>
-        </div>
-        <div className="flex items-center gap-6">
-          <button
-            aria-label="Notifications"
-            className="text-eye-text hover:text-primary transition-colors"
-          >
-            <Bell className="w-5 h-5" />
-          </button>
-          <button aria-label="Help" className="text-eye-text hover:text-primary transition-colors">
-            <HelpCircle className="w-5 h-5" />
-          </button>
-          <div className="w-8 h-8 rounded-full bg-[#78d1ff] overflow-hidden border border-eye-border">
-            <img
-              className="w-full h-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDitNiwCP6Zy0ae-XXZ6CuzvnT7TjqAJ_cfSsKnanxxWVIY9EMNRx0b4NgMTeeeDH_VKoRUZmzmii38J8Wnz20qxbxagVFYiysMnM0flG9tscqVd1vYMAJPDAlKyGKkV3iYiV_hlECExrC0Im0rAxOfzfMUFyoAT9ezZQ92s81pii4Q_S2r_zYY-icRub07TQQ9N6uGKZW-2GgryBJoqI_qdwOzhWo2bcSJ1f3o0ym67l7DnuPB7eGfAXQSv3a_QdIKHYNTPkbje1E"
-              alt="User avatar"
-            />
-          </div>
-        </div>
-      </header>
-
-      {/* MAIN CONTENT */}
-      <main className="ml-64 pt-16 min-h-screen">
+  return (
+    <AppShell title="Analytics" subtitle="Enterprise BI">
+      <div className="relative min-h-[calc(100vh-80px)]">
         {/* FILTER BAR */}
-        <div className="sticky top-16 z-40 px-6 py-4 border-b border-eye-border bg-eye-bg/80 backdrop-blur-md flex items-center justify-between">
+        <div className="sticky top-0 -mx-6 md:-mx-8 px-6 md:px-8 py-4 border-b border-eye-border bg-eye-bg/80 backdrop-blur-md flex items-center justify-between mb-6 z-40">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-3 py-2 bg-eye-surface border border-eye-border hover:border-eye-border-hover rounded cursor-pointer transition-all">
               <Calendar className="w-4 h-4 text-primary" />
@@ -674,66 +566,25 @@ export function AnalyticsPage() {
           </div>
         </div>
 
-        {/* FOOTER */}
-        <footer className="w-full border-t border-eye-border mt-12 py-6 px-6 flex justify-between items-center bg-eye-bg">
-          <span
-            className="font-mono text-xs text-eye-text"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            © 2024 EyeX Technologies. All rights reserved.
-          </span>
-          <div className="flex gap-6">
-            <a
-              className="font-mono text-xs text-eye-text hover:text-white hover:underline transition-all"
+        <div className="fixed bottom-8 right-8 z-[100]">
+          <div className="bg-eye-surface border border-eye-border px-4 py-3 rounded-full flex items-center shadow-2xl backdrop-blur-xl">
+            <div className="w-2 h-2 rounded-full bg-primary pulse-dot mr-3" />
+            <span
+              className="font-mono text-[12px] text-white"
               style={{ fontFamily: "var(--font-mono)" }}
-              href="#"
             >
-              System Status
-            </a>
-            <a
-              className="font-mono text-xs text-eye-text hover:text-white hover:underline transition-all"
+              {crm.data?.activeCustomers ?? 0} Active Customers
+            </span>
+            <div className="h-4 w-[1px] bg-eye-border mx-3" />
+            <span
+              className="font-mono text-[10px] text-eye-text uppercase"
               style={{ fontFamily: "var(--font-mono)" }}
-              href="#"
             >
-              Privacy Policy
-            </a>
-            <a
-              className="font-mono text-xs text-eye-text hover:text-white hover:underline transition-all"
-              style={{ fontFamily: "var(--font-mono)" }}
-              href="#"
-            >
-              Legal
-            </a>
-            <a
-              className="font-mono text-xs text-eye-text hover:text-white hover:underline transition-all"
-              style={{ fontFamily: "var(--font-mono)" }}
-              href="#"
-            >
-              Terms of Service
-            </a>
+              Real-Time Sync
+            </span>
           </div>
-        </footer>
-      </main>
-
-      {/* REAL-TIME TELEMETRY FLOATER */}
-      <div className="fixed bottom-8 right-8 z-[100]">
-        <div className="bg-eye-surface border border-eye-border px-4 py-3 rounded-full flex items-center shadow-2xl backdrop-blur-xl">
-          <div className="w-2 h-2 rounded-full bg-primary pulse-dot mr-3" />
-          <span
-            className="font-mono text-[12px] text-white"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            {crm.data?.activeCustomers ?? 0} Active Customers
-          </span>
-          <div className="h-4 w-[1px] bg-eye-border mx-3" />
-          <span
-            className="font-mono text-[10px] text-eye-text uppercase"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            Real-Time Sync
-          </span>
         </div>
       </div>
-    </>
+    </AppShell>
   );
 }

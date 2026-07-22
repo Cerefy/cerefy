@@ -13,6 +13,7 @@ import {
   Loader2,
   Send,
 } from "lucide-react";
+import { AppShell } from "@/components/layout/AppShell";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -73,42 +74,14 @@ export function AiCopilotPage() {
   };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center p-6 overflow-hidden relative">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary-brand opacity-[0.03] blur-[120px] rounded-full" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary-brand opacity-[0.05] blur-[150px] rounded-full" />
-      </div>
-
-      <main className="fixed inset-0 backdrop-blur-[20px] bg-eye-bg/60 -z-5 flex flex-col">
-        <header className="flex justify-between items-center px-8 w-full h-16 border-b border-eye-border bg-eye-bg/40">
-          <div className="text-2xl font-bold text-on-background tracking-tighter">QORX</div>
-          <div className="flex gap-8">
-            <span className="text-on-surface-variant text-base">Analytic Engine</span>
-            <span className="text-on-surface-variant text-base">Revenue Cluster</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-primary-brand text-xl">👤</span>
-          </div>
-        </header>
-        <div className="flex flex-1">
-          <aside className="w-[280px] border-r border-eye-border flex flex-col py-6 px-4 gap-2">
-            <div className="h-10 w-full bg-surface-container rounded-lg opacity-20" />
-            <div className="h-10 w-full bg-surface-container rounded-lg opacity-20" />
-            <div className="h-10 w-full bg-surface-container rounded-lg opacity-20" />
-          </aside>
-          <section className="flex-1 p-12">
-            <div className="grid grid-cols-3 gap-6">
-              <div className="col-span-2 h-64 bg-eye-surface border border-eye-border rounded-lg opacity-10" />
-              <div className="h-64 bg-eye-surface border border-eye-border rounded-lg opacity-10" />
-              <div className="h-48 bg-eye-surface border border-eye-border rounded-lg opacity-10" />
-              <div className="h-48 bg-eye-surface border border-eye-border rounded-lg opacity-10" />
-              <div className="h-48 bg-eye-surface border border-eye-border rounded-lg opacity-10" />
-            </div>
-          </section>
+    <AppShell title="AI Copilot" subtitle="Analytic Engine">
+      <div className="min-h-[calc(100vh-80px)] w-full flex flex-col items-center justify-center p-6 relative">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+          <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary-brand opacity-[0.03] blur-[120px] rounded-full" />
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary-brand opacity-[0.05] blur-[150px] rounded-full" />
         </div>
-      </main>
 
-      <div className="w-full max-w-[600px] bg-eye-bg border border-eye-border rounded-xl flex flex-col overflow-hidden relative z-50 shadow-[0_0_0_1px_rgba(26,26,28,1),0_24px_48px_-12px_rgba(0,0,0,0.8),0_0_120px_rgba(56,189,248,0.05)]">
+        <div className="w-full max-w-[600px] bg-eye-bg border border-eye-border rounded-xl flex flex-col overflow-hidden relative z-50 shadow-[0_0_0_1px_rgba(26,26,28,1),0_24px_48px_-12px_rgba(0,0,0,0.8),0_0_120px_rgba(56,189,248,0.05)] mt-12 mb-24">
         <div className="flex items-center px-5 h-16 border-b border-eye-border group focus-within:border-primary-brand/50 transition-colors">
           <Search className="text-eye-text mr-4 w-5 h-5" />
           <input
@@ -321,6 +294,7 @@ export function AiCopilotPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </AppShell>
   );
 }

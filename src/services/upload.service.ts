@@ -151,6 +151,38 @@ export const UploadService = {
     return response.json();
   },
 
+  async importData(
+    datasetId: string,
+    file: File,
+    mappings: Record<string, string>,
+  ): Promise<any> {
+    const backendUrl = import.meta.env.VITE_PYTHON_BACKEND_URL || "/api/v1";
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // Convert datasetId to uuid format? Assuming it's already a string UUID.
+    
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    
+    const response = await fetch(`${backendUrl}/cognitive-data/import?dataset_id=${datasetId}&mappings=${encodeURIComponent(JSON.stringify(mappings))}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session?.access_token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Import failed: ${response.status} - ${errorText}`);
+    }
+
+    return response.json();
+  },
+
   async getUploadProgress(datasetId: string): Promise<{ status: string; progress: number }> {
     const { data, error } = await supabase
       .from("imported_datasets")

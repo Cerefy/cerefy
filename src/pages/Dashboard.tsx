@@ -23,12 +23,12 @@ export function DashboardPage() {
     refetchInterval: 15000,
   });
 
-  const { data: workspaces } = useQuery({
+  const { data: workspaces, isLoading: workspacesLoading } = useQuery({
     queryKey: ["workspaces"],
     queryFn: () => BackendApi.listWorkspaces(),
   });
 
-  const { data: usage } = useQuery({
+  const { data: usage, isLoading: usageLoading } = useQuery({
     queryKey: ["usage-summary"],
     queryFn: () => BackendApi.getUsageSummary(),
     refetchInterval: 30000,
@@ -52,64 +52,49 @@ export function DashboardPage() {
   return (
     <AppShell title={`Welcome, ${name}`} subtitle="Agent platform overview">
       {/* KPI Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bento-card rounded-lg p-5 flex flex-col justify-between h-[120px]">
-          <div className="flex justify-between items-start">
-            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">
-              Agent Tasks
-            </span>
-            <Activity size={18} className="text-muted-foreground" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div className="glass-panel p-5 relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-4">
+            <p className="text-muted-foreground font-mono text-[10px] uppercase tracking-wider">Agent Tasks</p>
+            <span className="text-primary text-[14px] font-mono font-bold">+{taskToday} today</span>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold tracking-tight text-white">
-              {statsLoading ? "—" : taskTotal.toLocaleString()}
-            </span>
-            <span className="text-[10px] font-mono text-emerald-400">+{taskToday} today</span>
+          <h3 className="text-3xl font-bold text-white">{statsLoading ? "—" : taskTotal.toLocaleString()}</h3>
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-primary/20">
+            <div className="h-full bg-primary shadow-[0_0_10px_#38BDF8]" style={{ width: '70%' }}></div>
           </div>
         </div>
-        <div className="bento-card rounded-lg p-5 flex flex-col justify-between h-[120px]">
-          <div className="flex justify-between items-start">
-            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">
-              Success Rate
-            </span>
-            <CheckCircle size={18} className="text-emerald-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold tracking-tight text-white">
-              {statsLoading ? "—" : `${successRate}%`}
-            </span>
+        <div className="glass-panel p-5 relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-4">
+            <p className="text-muted-foreground font-mono text-[10px] uppercase tracking-wider">Success Rate</p>
             {statsLoading ? null : successRate >= 80 ? (
-              <span className="text-[10px] font-mono text-emerald-400">Healthy</span>
+              <span className="text-emerald-400 text-[14px] font-mono font-bold">STABLE</span>
             ) : (
-              <span className="text-[10px] font-mono text-amber-400">Needs attention</span>
+              <span className="text-amber-400 text-[14px] font-mono font-bold">ATTENTION</span>
             )}
           </div>
-        </div>
-        <div className="bento-card rounded-lg p-5 flex flex-col justify-between h-[120px]">
-          <div className="flex justify-between items-start">
-            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">
-              Active Agents
-            </span>
-            <Cpu size={18} className="text-sky-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold tracking-tight text-white">
-              {statsLoading ? "—" : agentCount}
-            </span>
-            <span className="text-[10px] font-mono text-muted-foreground">online</span>
+          <h3 className="text-3xl font-bold text-white">{statsLoading ? "—" : `${successRate}%`}</h3>
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-emerald-400/20">
+            <div className="h-full bg-emerald-400 shadow-[0_0_10px_#34d399]" style={{ width: `${successRate}%` }}></div>
           </div>
         </div>
-        <div className="bento-card rounded-lg p-5 flex flex-col justify-between h-[120px]">
-          <div className="flex justify-between items-start">
-            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">
-              Tokens Used
-            </span>
-            <Clock size={18} className="text-muted-foreground" />
+        <div className="glass-panel p-5 relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-4">
+            <p className="text-muted-foreground font-mono text-[10px] uppercase tracking-wider">Active Agents</p>
+            <span className="text-sky-400 text-[14px] font-mono font-bold">ONLINE</span>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold tracking-tight text-white">
-              {statsLoading ? "—" : tokensUsed.toLocaleString()}
-            </span>
+          <h3 className="text-3xl font-bold text-white">{statsLoading ? "—" : agentCount}</h3>
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-sky-400/20">
+            <div className="h-full bg-sky-400 shadow-[0_0_10px_#38bdf8]" style={{ width: '100%' }}></div>
+          </div>
+        </div>
+        <div className="glass-panel p-5 relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-4">
+            <p className="text-muted-foreground font-mono text-[10px] uppercase tracking-wider">Tokens Used</p>
+            <span className="text-primary text-[14px] font-mono font-bold">TOTAL</span>
+          </div>
+          <h3 className="text-3xl font-bold text-white">{statsLoading ? "—" : tokensUsed.toLocaleString()}</h3>
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-primary/20">
+            <div className="h-full bg-primary shadow-[0_0_10px_#38BDF8]" style={{ width: '45%' }}></div>
           </div>
         </div>
       </div>
@@ -250,52 +235,74 @@ export function DashboardPage() {
         {/* Workspaces Summary */}
         <Card title="Workspaces" icon="folder">
           <div className="p-5 space-y-3">
-            <div className="flex justify-between items-center border-b border-border pb-3">
-              <span className="text-xs text-muted-foreground">Total Workspaces</span>
-              <span className="text-sm font-semibold text-white">{workspaceCount}</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-border pb-3">
-              <span className="text-xs text-muted-foreground">Team Members</span>
-              <span className="text-sm font-semibold text-white">{membersCount}</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-border pb-3">
-              <span className="text-xs text-muted-foreground">Active Agents</span>
-              <span className="text-sm font-semibold text-white">{agentCount}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Monthly Tasks</span>
-              <span className="text-sm font-semibold text-white">
-                {usage?.tasks_this_month.toLocaleString() ?? "—"}
-              </span>
-            </div>
+            {workspacesLoading || usageLoading || statsLoading ? (
+              <div className="space-y-3">
+                <SkeletonLine />
+                <SkeletonLine />
+                <SkeletonLine />
+                <SkeletonLine />
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-between items-center border-b border-border pb-3">
+                  <span className="text-xs text-muted-foreground">Total Workspaces</span>
+                  <span className="text-sm font-semibold text-white">{workspaceCount}</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-border pb-3">
+                  <span className="text-xs text-muted-foreground">Team Members</span>
+                  <span className="text-sm font-semibold text-white">{membersCount}</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-border pb-3">
+                  <span className="text-xs text-muted-foreground">Active Agents</span>
+                  <span className="text-sm font-semibold text-white">{agentCount}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Monthly Tasks</span>
+                  <span className="text-sm font-semibold text-white">
+                    {usage?.tasks_this_month.toLocaleString() ?? "—"}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </Card>
 
         {/* Usage Summary */}
         <Card title="Usage Summary" icon="bar_chart">
           <div className="p-5 space-y-3">
-            <div className="flex justify-between items-center border-b border-border pb-3">
-              <span className="text-xs text-muted-foreground">Total Tasks</span>
-              <span className="text-sm font-semibold text-white">
-                {usage?.total_tasks.toLocaleString() ?? "—"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center border-b border-border pb-3">
-              <span className="text-xs text-muted-foreground">Total Tokens</span>
-              <span className="text-sm font-semibold text-white">
-                {usage?.total_tokens.toLocaleString() ?? "—"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center border-b border-border pb-3">
-              <span className="text-xs text-muted-foreground">Total Cost</span>
-              <span className="text-sm font-semibold text-white">
-                ${usage?.total_cost.toFixed(2) ?? "0.00"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Active Members</span>
-              <span className="text-sm font-semibold text-white">{usage?.active_members ?? 0}</span>
-            </div>
+            {usageLoading ? (
+              <div className="space-y-3">
+                <SkeletonLine />
+                <SkeletonLine />
+                <SkeletonLine />
+                <SkeletonLine />
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-between items-center border-b border-border pb-3">
+                  <span className="text-xs text-muted-foreground">Total Tasks</span>
+                  <span className="text-sm font-semibold text-white">
+                    {usage?.total_tasks.toLocaleString() ?? "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center border-b border-border pb-3">
+                  <span className="text-xs text-muted-foreground">Total Tokens</span>
+                  <span className="text-sm font-semibold text-white">
+                    {usage?.total_tokens.toLocaleString() ?? "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center border-b border-border pb-3">
+                  <span className="text-xs text-muted-foreground">Total Cost</span>
+                  <span className="text-sm font-semibold text-white">
+                    ${usage?.total_cost.toFixed(2) ?? "0.00"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Active Members</span>
+                  <span className="text-sm font-semibold text-white">{usage?.active_members ?? 0}</span>
+                </div>
+              </>
+            )}
           </div>
         </Card>
 

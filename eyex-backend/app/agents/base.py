@@ -36,12 +36,34 @@ class AgentRole(StrEnum):
 
 def default_llm() -> ChatOpenAI:
     settings = get_settings()
-    return ChatOpenAI(
-        model=settings.openai_model,
-        temperature=settings.openai_temperature,
-        max_tokens=settings.openai_max_tokens,
-        api_key=settings.openai_api_key,
-    )
+    kwargs = {
+        "model": settings.openai_model,
+        "temperature": settings.openai_temperature,
+        "max_tokens": settings.openai_max_tokens,
+        "api_key": settings.openai_api_key,
+    }
+    if settings.openai_base_url:
+        kwargs["base_url"] = settings.openai_base_url
+
+    # Add reasoning support for DeepSeek v4 flash
+    if "deepseek-v4" in settings.openai_model.lower():
+        kwargs["model_kwargs"] = {
+            "extra_body": {
+                "chat_template_kwargs": {
+                    "thinking": True, 
+                    "reasoning_effort": "high"
+                }
+            }
+        }
+        
+    # Add reasoning support for DiffusionGemma
+    if "diffusiongemma" in settings.openai_model.lower():
+        kwargs.setdefault("model_kwargs", {})
+        kwargs["model_kwargs"]["chat_template_kwargs"] = {
+            "enable_thinking": True
+        }
+        
+    return ChatOpenAI(**kwargs)
 
 
 class AgentMemory:

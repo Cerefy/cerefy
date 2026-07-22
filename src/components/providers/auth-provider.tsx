@@ -127,7 +127,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         options: { 
           data: { 
             full_name: fullName?.trim() || email.split('@')[0]
-          } 
+          },
+          emailRedirectTo: `${window.location.origin}/dashboard`
         },
       });
 

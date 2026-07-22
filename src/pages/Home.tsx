@@ -1,6 +1,18 @@
 import { Users, ShieldCheck, BarChart3, Globe, Code, Terminal, ArrowRight } from "lucide-react";
+import { useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export function HomePage() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate({ to: "/dashboard", replace: true });
+    }
+  }, [user, loading, navigate]);
+
   return (
     <>
       <main className="relative pt-16">

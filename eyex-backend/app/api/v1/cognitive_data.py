@@ -6,7 +6,11 @@ from typing import Any
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import json
+import uuid
+
 from app.cognitive_data_layer import CognitiveDataPipeline
+from app.cognitive_data_layer.import_service import ImportService
 from app.database import get_db_session
 from app.dependencies import get_current_user
 from app.models.user import User
@@ -72,3 +76,32 @@ async def supported_formats() -> dict[str, Any]:
     from app.cognitive_data_layer.parser import get_parser_registry
 
     return {"formats": get_parser_registry().list_parsers()}
+
+
+@cognitive_data_router.post("/import")
+async def import_data(
+    dataset_id: uuid.UUID = Query(...),
+    mappings: str = Query(..., description="JSON string of column mappings"),
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db_session),
+    user: User = Depends(get_current_user),
+) -> dict[str, Any]:
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=400, detail="Empty file")
+
+    try:
+        mappings_dict = json.loads(mappings)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid mappings JSON")
+
+    hint = file.filename.split(".")[-1] if file.filename else None
+
+    report = await ImportService.import_dataset(
+        session=db,
+        dataset_id=dataset_id,
+        file_content=content,
+        file_hint=hint,
+        mappings=mappings_dict,
+    )
+    return report

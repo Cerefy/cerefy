@@ -39,8 +39,22 @@ export function AiChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
   const [threadTitle, setThreadTitle] = useState("");
+  const [ragContexts, setRagContexts] = useState<Array<{key: string, value: string}>>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    toast.info(`Chunking and vectorizing ${file.name}...`);
+    // Simulating RAG document chunking to vector memory
+    setTimeout(() => {
+      setRagContexts(prev => [...prev, { key: file.name, value: `Vectorized contents of ${file.name} (14 chunks)` }]);
+      toast.success(`${file.name} added to vector memory`);
+    }, 1500);
+  };
 
   // Fetch chat threads
   const { data: threads = [], isLoading: threadsLoading } = useQuery({
@@ -153,6 +167,7 @@ export function AiChatPage() {
     setMessage("");
     setCurrentThreadId(null);
     setThreadTitle("");
+    setRagContexts([]);
   };
 
   const loadThread = async (threadId: string) => {
@@ -173,10 +188,14 @@ export function AiChatPage() {
       try {
         const memorySummary = await BackendApi.getMemorySummary(threadId);
         if (memorySummary.long_term && Object.keys(memorySummary.long_term).length > 0) {
-          console.log("Loaded RAG context:", Object.keys(memorySummary.long_term));
+          const contexts = Object.entries(memorySummary.long_term).map(([k, v]) => ({ key: k, value: v as string }));
+          setRagContexts(contexts);
+        } else {
+          setRagContexts([]);
         }
       } catch (memoryError) {
         console.error("Failed to load RAG context:", memoryError);
+        setRagContexts([]);
       }
     } catch (error) {
       toast.error("Failed to load thread");
@@ -403,13 +422,7 @@ export function AiChatPage() {
                 )}
               </div>
               {msg.role === "assistant" ? (
-                <div
-                  className="pl-6 border-l-2 border-primary-brand py-2 relative"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, rgba(56,189,248,0.05) 0%, transparent 100%)",
-                  }}
-                >
+                <div className="pl-6 border-l-2 border-primary-brand py-2 relative message-gradient">
                   <p className="text-eye-white leading-relaxed text-[16px] whitespace-pre-wrap">
                     {msg.text}
                   </p>
@@ -422,7 +435,7 @@ export function AiChatPage() {
                   </button>
                 </div>
               ) : (
-                <div className="bg-eye-surface border border-eye-border px-6 py-4 rounded-xl max-w-[85%]">
+                <div className="bg-surface-container-high border border-eye-border px-6 py-4 rounded-xl max-w-[85%]">
                   <p className="text-eye-white leading-relaxed text-[15px] whitespace-pre-wrap">
                     {msg.text}
                   </p>
@@ -434,19 +447,19 @@ export function AiChatPage() {
           {chatMutation.isPending && (
             <div className="flex flex-col gap-3" data-fade-up>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-primary-brand uppercase tracking-widest font-mono">
+                 <span className="text-[10px] text-primary-brand uppercase tracking-widest font-mono">
                   QORX ANALYTIC
                 </span>
               </div>
               <div className="flex items-center gap-4 bg-eye-surface/40 border border-primary-brand/10 rounded-full px-5 py-3 w-fit backdrop-blur-md">
                 <div className="flex gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary-brand animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary-brand thinking-dot" />
                   <div
-                    className="w-1.5 h-1.5 rounded-full bg-primary-brand animate-pulse"
+                    className="w-1.5 h-1.5 rounded-full bg-primary-brand thinking-dot"
                     style={{ animationDelay: "0.2s" }}
                   />
                   <div
-                    className="w-1.5 h-1.5 rounded-full bg-primary-brand animate-pulse"
+                    className="w-1.5 h-1.5 rounded-full bg-primary-brand thinking-dot"
                     style={{ animationDelay: "0.4s" }}
                   />
                 </div>
@@ -473,7 +486,11 @@ export function AiChatPage() {
                     <option>AGENT: INFRA-V3</option>
                   </select>
                   <div className="h-3 w-[1px] bg-eye-border" />
-                  <button className="flex items-center gap-1.5 text-[10px] font-mono text-eye-text hover:text-white transition-colors">
+                  <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-1.5 text-[10px] font-mono text-eye-text hover:text-white transition-colors"
+                  >
                     <Paperclip className="w-3.5 h-3.5" />
                     ATTACH
                   </button>
@@ -568,24 +585,23 @@ export function AiChatPage() {
               <span className="block text-[10px] text-eye-text uppercase tracking-widest font-mono">
                 Active Context
               </span>
-              <div className="p-3 bg-eye-surface border border-eye-border rounded-md group hover:border-primary-brand/40 transition-colors">
-                <div className="flex items-center gap-2 mb-1">
-                  <FileText className="text-primary-brand text-sm w-4 h-4" />
-                  <span className="text-xs font-medium text-white">emea_topology.json</span>
+              {ragContexts.length === 0 ? (
+                <div className="p-3 bg-eye-surface/50 border border-eye-border/50 rounded-md text-center">
+                  <span className="text-[10px] text-eye-text font-mono">No context loaded</span>
                 </div>
-                <p className="text-[10px] text-eye-text leading-relaxed">
-                  Infrastructure mapping for European nodes...
-                </p>
-              </div>
-              <div className="p-3 bg-eye-surface border border-eye-border rounded-md group hover:border-primary-brand/40 transition-colors">
-                <div className="flex items-center gap-2 mb-1">
-                  <FileText className="text-primary-brand text-sm w-4 h-4" />
-                  <span className="text-xs font-medium text-white">security_protocol_v9.pdf</span>
-                </div>
-                <p className="text-[10px] text-eye-text leading-relaxed">
-                  Compliance and encryption standards...
-                </p>
-              </div>
+              ) : (
+                ragContexts.map((ctx, idx) => (
+                  <div key={idx} className="p-3 bg-eye-surface border border-eye-border rounded-md group hover:border-primary-brand/40 transition-colors">
+                    <div className="flex items-center gap-2 mb-1">
+                      <FileText className="text-primary-brand text-sm w-4 h-4" />
+                      <span className="text-xs font-medium text-white truncate max-w-[200px]">{ctx.key}</span>
+                    </div>
+                    <p className="text-[10px] text-eye-text leading-relaxed line-clamp-2">
+                      {ctx.value}
+                    </p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

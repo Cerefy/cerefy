@@ -252,3 +252,16 @@ html[data-js-ready] [data-fade-up].visible {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid #1a1a1c;
 }
+
+@utility message-gradient {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.05) 0%, transparent 100%);
+}
+
+@utility thinking-dot {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+}

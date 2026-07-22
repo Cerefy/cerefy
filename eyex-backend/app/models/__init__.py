@@ -1,4 +1,5 @@
 from app.models.base import Base
+from app.models.data_import import ImportReport, UniversalRecord
 from app.models.gtm import (
     BusinessImpactMeasurement,
     CaseStudy,
@@ -47,4 +48,5 @@ __all__ = [
     "UsageBasedBilling", "MarketplaceRevenue", "IndustrySolution",
     "Partner", "PartnershipIntegration", "MarketOpportunity", "SalesPrediction",
     "CaseStudy", "ROICalculator", "CustomerSuccessReport", "BusinessImpactMeasurement",
+    "ImportReport", "UniversalRecord",
 ]

@@ -110,17 +110,13 @@ export function AppShell({
           mobileOpen ? "flex" : "hidden"
         } md:flex w-[240px] flex-shrink-0 border-r border-border bg-background flex-col h-full py-6 absolute md:relative z-40 inset-y-0 left-0`}
       >
-        <div className="px-6 mb-8 flex items-center gap-2">
-          <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-white overflow-hidden">
-            <img src="/logo.svg" alt="EyeX Logo" className="h-full w-full object-cover" />
+        <div className="px-6 mb-8 mt-2 flex items-center gap-3">
+          <div className="w-8 h-8 bg-[#38BDF8] rounded-sm flex items-center justify-center">
+            <span className="material-symbols-outlined text-[#003549] text-xl font-bold" style={{fontVariationSettings: "'FILL' 1"}}>terminal</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold text-sm tracking-tight text-white leading-none">
-              EYEX
-            </span>
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider leading-none mt-1">
-              Business OS
-            </span>
+            <h1 className="text-[18px] font-bold tracking-tight text-white leading-none">QORX</h1>
+            <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] leading-none mt-1">Analytic Core</p>
           </div>
         </div>
 
@@ -139,14 +135,14 @@ export function AppShell({
                       key={item.to}
                       to={item.to}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-md text-xs transition-colors ${
+                      className={`flex items-center gap-3 py-2.5 px-4 text-sm transition-colors font-medium border-l-2 ${
                         active
-                          ? "bg-white/5 text-white"
-                          : "text-muted-foreground hover:text-white hover:bg-white/[0.03]"
+                          ? "text-primary border-primary bg-primary/5"
+                          : "text-muted-foreground hover:text-white hover:bg-white/[0.03] border-transparent"
                       }`}
                     >
-                      <Icon size={16} className={active ? "text-white" : "text-muted-foreground"} />
-                      <span className="font-medium">{item.label}</span>
+                      <Icon size={18} className={active ? "text-primary" : "text-muted-foreground"} />
+                      <span>{item.label}</span>
                     </Link>
                   );
                 })}

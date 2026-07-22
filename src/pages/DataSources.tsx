@@ -7,6 +7,7 @@ import { DynamicDashboard, DashboardConfig } from "@/components/dashboard/Dynami
 import { RefreshCw, Upload, Database, Globe, Package, Loader2, AlertCircle, CheckCircle, X } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { ImportWizard } from "@/components/data-sources/ImportWizard";
 
 interface DataSource {
   id: string;
@@ -24,6 +25,9 @@ export function DataSourcesPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [generatedDashboard, setGeneratedDashboard] = useState<DashboardConfig | null>(null);
+  const [processingResult, setProcessingResult] = useState<any>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [currentDatasetId, setCurrentDatasetId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
@@ -59,9 +63,8 @@ export function DataSourcesPage() {
         
         // If processing results exist, show them
         if (result.processing) {
-          // Convert processing results to dashboard config
-          const dashboardConfig = convertProcessingToDashboard(result.processing);
-          setGeneratedDashboard(dashboardConfig);
+          setProcessingResult(result.processing);
+          setCurrentDatasetId(result.dataset.id);
         }
       }
       setUploading(false);
@@ -90,6 +93,8 @@ export function DataSourcesPage() {
     setUploading(true);
     setError(null);
     setGeneratedDashboard(null);
+    setProcessingResult(null);
+    setSelectedFile(file);
 
     uploadMutation.mutate(file);
 
@@ -181,7 +186,20 @@ export function DataSourcesPage() {
         </div>
       )}
 
-      {generatedDashboard ? (
+      {processingResult && selectedFile && currentDatasetId ? (
+        <div className="mb-8">
+          <ImportWizard 
+            file={selectedFile} 
+            datasetId={currentDatasetId}
+            initialProcessingResult={processingResult}
+            onClose={() => {
+              setProcessingResult(null);
+              setSelectedFile(null);
+              setCurrentDatasetId(null);
+            }} 
+          />
+        </div>
+      ) : generatedDashboard ? (
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
