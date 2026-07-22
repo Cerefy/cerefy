@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { chatWithCopilotFn } from "@/services/chat.service";
+import { ChatService } from "@/services/chat.service";
 import {
   Search,
   CheckCircle2,
@@ -38,7 +38,7 @@ export function AiCopilotPage() {
 
   const mutation = useMutation({
     mutationFn: (message: string) =>
-      chatWithCopilotFn({ data: { message, history } }) as Promise<CopilotResult>,
+      ChatService.sendMessage(message, history) as Promise<CopilotResult>,
     onSuccess: (result: CopilotResult) => {
       if (result?.success) {
         const assistantMsg: ChatMessage = { role: "assistant", text: result.text ?? "" };

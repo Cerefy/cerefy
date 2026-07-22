@@ -1,34 +1,36 @@
-import { createServerFn } from "@tanstack/react-start";
-import { OrchestratorAgent } from "@/agents/orchestrator";
+export interface CopilotStep {
+  agent: string;
+  duration: number;
+  result: string;
+}
 
-const orchestrator = new OrchestratorAgent();
+export interface CopilotResult {
+  success: boolean;
+  text?: string;
+  steps?: CopilotStep[];
+  structured?: any;
+  error?: string;
+}
 
-export const chatWithCopilotFn = createServerFn({ method: "POST" })
-  .validator((data: { message: string; history: { role: string; text: string }[] }) => data)
-  .handler(async ({ data }) => {
+export const ChatService = {
+  async sendMessage(message: string, history: { role: string; text: string }[]): Promise<CopilotResult> {
     try {
-      const { message, history } = data;
-
-      const result = await orchestrator.orchestrate({
-        messages: [
-          ...history.map((h) => ({
-            role: h.role as "user" | "assistant" | "system",
-            text: h.text,
-          })),
-          { role: "user" as const, text: message },
-        ],
+      const response = await fetch("http://localhost:8000/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, history }),
       });
 
-      return {
-        success: true,
-        text: result.final,
-        steps: result.steps.map((s) => ({
-          agent: s.agent,
-          duration: s.duration,
-          result: s.result.output,
-        })),
-        structured: result.structured,
-      };
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error);
+      }
+
+      return data;
     } catch (error) {
       console.error("Chat Error:", error);
       return {
@@ -36,18 +38,5 @@ export const chatWithCopilotFn = createServerFn({ method: "POST" })
         error: error instanceof Error ? error.message : String(error),
       };
     }
-  });
-
-export const ChatService = {
-  async sendMessage(message: string, history: { role: string; text: string }[]) {
-    const response = await chatWithCopilotFn({
-      data: { message, history },
-    });
-
-    if (!response.success) {
-      throw new Error(response.error);
-    }
-
-    return response;
   },
 };
