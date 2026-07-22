@@ -1,101 +1,45 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
-import { BrandMark } from "./BrandMark";
-
-const NAV = [
-  { to: "/", label: "Platform" },
-  { to: "/dashboard", label: "Dashboard" },
-  { to: "/enterprise", label: "Enterprise" },
-  { to: "/enterprise-demo", label: "Demo" },
-  { to: "/enterprise-reports", label: "Reports" },
-  { to: "/intelligence", label: "Intelligence" },
-  { to: "/ai-chat", label: "AI Chat" },
-  { to: "/documents", label: "Documents" },
-  { to: "/api", label: "API" },
-  { to: "/analytics", label: "Analytics" },
-  { to: "/about", label: "About" },
-] as const;
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass-nav h-16 flex items-center justify-center px-6">
-      <div className="max-w-[1200px] w-full flex items-center justify-between">
-        <Link to="/" className="shrink-0" onClick={() => setOpen(false)}>
-          <BrandMark />
+    <header className="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 bg-background/80 dark:bg-background/80 backdrop-blur-xl border-b border-white/10">
+      <div className="flex items-center gap-4">
+        <span className="material-symbols-outlined text-primary font-headline-md text-headline-md">visibility</span>
+        <Link to="/" className="font-headline-md text-headline-md font-bold tracking-tighter text-primary dark:text-primary">
+          EyeX
         </Link>
-
-        <div className="hidden lg:flex items-center gap-8 text-[10px] font-medium uppercase tracking-widest">
-          {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="text-eye-text hover:text-eye-white transition-colors"
-              activeProps={{ className: "text-eye-white" }}
-              activeOptions={{ exact: item.to === "/" }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-4">
-          <Link
-            to="/login"
-            className="hidden md:inline-flex text-[10px] font-medium uppercase tracking-widest text-eye-text hover:text-eye-white transition-colors"
-          >
-            Login
-          </Link>
-          <Link
-            to="/signup"
-            className="luminous-btn-primary px-5 py-2 text-[10px] font-bold uppercase tracking-widest hidden sm:inline-flex"
-          >
-            Sign Up
-          </Link>
-          <button
-            aria-label="Toggle menu"
-            className="lg:hidden inline-flex items-center justify-center h-9 w-9 border border-eye-border text-eye-white"
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <X size={16} /> : <Menu size={16} />}
-          </button>
-        </div>
+      </div>
+      <nav className="hidden md:flex gap-10 items-center">
+        <Link className="font-label-caps text-label-caps text-primary transition-colors hover:text-secondary-container" to="/">Vision Hero</Link>
+        <Link className="font-label-caps text-label-caps text-on-surface-variant transition-colors hover:text-secondary-container" to="/about">Solutions</Link>
+        <Link className="font-label-caps text-label-caps text-on-surface-variant transition-colors hover:text-secondary-container" to="/analytics">Analytics</Link>
+        <Link className="font-label-caps text-label-caps text-on-surface-variant transition-colors hover:text-secondary-container" to="/contact">Contact</Link>
+      </nav>
+      <div className="flex items-center gap-6">
+        <button 
+          className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors lg:hidden"
+          onClick={() => setOpen(!open)}
+        >
+          {open ? 'close' : 'menu'}
+        </button>
+        <Link to="/login" className="hidden lg:inline-flex border border-white/20 text-primary font-label-caps text-label-caps px-4 py-2 rounded hover:border-white transition-all uppercase tracking-widest">
+          Login
+        </Link>
       </div>
 
       {open && (
-        <div className="absolute top-16 left-0 right-0 lg:hidden bg-eye-bg border-b border-eye-border">
-          <div className="max-w-[1200px] mx-auto px-6 py-6 flex flex-col gap-4">
-            {NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setOpen(false)}
-                className="text-eye-text hover:text-eye-white transition-colors text-sm uppercase tracking-widest font-medium"
-                activeProps={{ className: "text-eye-white" }}
-                activeOptions={{ exact: item.to === "/" }}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Link
-              to="/login"
-              onClick={() => setOpen(false)}
-              className="text-eye-text hover:text-eye-white transition-colors text-sm uppercase tracking-widest font-medium"
-            >
-              Login
-            </Link>
-            <Link
-              to="/signup"
-              onClick={() => setOpen(false)}
-              className="luminous-btn-primary h-11 px-5 mt-2 text-[10px] font-bold uppercase tracking-widest self-start text-center"
-            >
-              Sign Up
-            </Link>
-          </div>
+        <div className="absolute top-20 left-0 w-full bg-background border-b border-white/10 p-6 flex flex-col gap-6 lg:hidden">
+          <Link onClick={() => setOpen(false)} className="font-label-caps text-label-caps text-primary uppercase" to="/">Vision Hero</Link>
+          <Link onClick={() => setOpen(false)} className="font-label-caps text-label-caps text-on-surface-variant uppercase" to="/about">Solutions</Link>
+          <Link onClick={() => setOpen(false)} className="font-label-caps text-label-caps text-on-surface-variant uppercase" to="/analytics">Analytics</Link>
+          <Link onClick={() => setOpen(false)} className="font-label-caps text-label-caps text-on-surface-variant uppercase" to="/contact">Contact</Link>
+          <Link onClick={() => setOpen(false)} className="font-label-caps text-label-caps text-secondary-fixed-dim uppercase" to="/login">Login</Link>
         </div>
       )}
-    </nav>
+    </header>
   );
 }

@@ -1,289 +1,188 @@
-import { Brain, ShieldCheck, Layers, Globe } from "lucide-react";
-
 export function AboutPage() {
   return (
-    <>
-      {/* Ambient background effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary-brand/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-primary-brand/5 rounded-full blur-[120px]" />
-      </div>
-
-      <main className="pt-32">
-        {/* Hero Section */}
-        <section
-          className="max-w-[1200px] mx-auto px-6 mb-[6rem] text-center relative"
-          data-fade-up
-        >
-          <div className="inline-block px-4 py-1 mb-6 rounded-full border border-eye-border bg-eye-surface text-primary-brand font-mono text-[12px] tracking-[0.15em] uppercase">
-            Established MMXIX
+    <div className="pt-20">
+      {/* Hero Section */}
+      <section className="relative h-[819px] flex items-center justify-center overflow-hidden px-margin-desktop">
+        <div className="relative z-10 text-center max-w-4xl">
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <span className="w-2 h-2 rounded-full bg-secondary-fixed-dim animate-pulse"></span>
+            <span className="font-mono-data text-mono-data text-secondary-fixed-dim tracking-[0.2em] uppercase">Status: Core Active</span>
           </div>
-          <h1 className="text-[48px] md:text-[72px] font-medium mb-6 tracking-tight leading-[1.1]">
-            About EyeX Technologies
-          </h1>
-          <p className="text-[20px] leading-[1.6] text-eye-text max-w-2xl mx-auto">
-            Architecting the substrate for the next era of computational sovereignty. High-precision
-            infrastructure for the formidable enterprise.
+          <h1 className="font-display-lg text-display-lg text-primary mb-8 tracking-tighter">Advanced Optical Intelligence</h1>
+          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">
+            Precision-engineered vision systems designed for the next era of high-performance automation, healthcare, and navigation. 
           </p>
-        </section>
-
-        {/* Mission Statement */}
-        <section className="max-w-[1200px] mx-auto px-6 mb-[6rem]" data-fade-up>
-          <div className="p-12 md:p-24 rounded-3xl border border-eye-border bg-eye-surface/50 relative overflow-hidden text-center">
-            <div className="absolute inset-0 opacity-10 pointer-events-none" />
-            <h2
-              className="font-medium text-3xl md:text-5xl leading-tight max-w-4xl mx-auto"
-              style={{
-                background: "linear-gradient(to bottom right, #FAFAFA 30%, #38BDF8 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              "Our mission is to decouple technical capability from geographic limitation, creating
-              a seamless global fabric of intelligence."
-            </h2>
+          <div className="flex gap-4 justify-center">
+            <button className="px-8 py-4 bg-primary text-background font-label-caps text-label-caps rounded-lg hover:bg-secondary-fixed-dim transition-all glow-cyan uppercase">Deploy Module</button>
+            <button className="px-8 py-4 border border-outline-variant text-primary font-label-caps text-label-caps rounded-lg hover:bg-white/5 transition-all uppercase">View SDK</button>
           </div>
-        </section>
+        </div>
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-background to-transparent"></div>
+      </section>
 
-        {/* Stats Row */}
-        <section className="max-w-[1200px] mx-auto px-6 mb-[6rem]">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bento-card p-10 rounded-2xl text-center" data-fade-up>
-              <div className="text-primary-brand text-[72px] font-medium mb-2 font-bold leading-[1.1]">
-                120+
-              </div>
-              <div className="text-eye-white text-lg mb-1 font-medium">Research Force</div>
-              <div className="text-eye-text text-[14px] leading-[1.6]">
-                Dedicated PhDs in Neural Architecture
-              </div>
-            </div>
-            <div className="bento-card p-10 rounded-2xl text-center" data-fade-up>
-              <div className="text-primary-brand text-[72px] font-medium mb-2 font-bold leading-[1.1]">
-                4
-              </div>
-              <div className="text-eye-white text-lg mb-1 font-medium">Global Hubs</div>
-              <div className="text-eye-text text-[14px] leading-[1.6]">
-                Distributed Infrastructure Nodes
-              </div>
-            </div>
-            <div className="bento-card p-10 rounded-2xl text-center" data-fade-up>
-              <div className="text-primary-brand text-[72px] font-medium mb-2 font-bold leading-[1.1]">
-                ∞
-              </div>
-              <div className="text-eye-white text-lg mb-1 font-medium">Scalability</div>
-              <div className="text-eye-text text-[14px] leading-[1.6]">
-                Boundless Computational Commitment
-              </div>
+      {/* Solution Sections (Alternating) */}
+      <section className="py-24 px-margin-desktop">
+        <div className="grid md:grid-cols-2 gap-gutter items-center">
+          <div className="glass-panel rounded-xl overflow-hidden aspect-video relative group border border-white/5">
+            <img className="w-full h-full object-cover grayscale brightness-75 group-hover:scale-105 transition-transform duration-700" alt="Autonomous Navigation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1xW5QfxSopjoUoXD3ctbTkimGN7YIuEhfFdQkPPh4EGHR2VfxqitDtvNFMq__GZN92stNHRij_etBgUQSNFMYpKrPFHC-LwW6pLnI2HqKA5QLwbo_y9jBXbB8_xehb33JBEDmJ41mWixebIMzYPhCpF48zEIGQk0R9ouBuqhAlbxKR2bHE9PXVs6usHTS0DHjPCvpWGMhVns0EQDHnhyeKbgsocxMvKdpJWpWnYH3tpohyo7VXAhS06pg3-1X7MHUjshdKyNxDrnC" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+            <div className="absolute bottom-6 left-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-secondary-fixed-dim" style={{ fontVariationSettings: "'FILL' 1" }}>explore</span>
+              <span className="font-mono-data text-mono-data text-white">MODULE_AUTO_NAV_V4</span>
             </div>
           </div>
-        </section>
-
-        {/* Evolution Timeline */}
-        <section className="max-w-[1200px] mx-auto px-6 mb-[6rem]">
-          <div className="text-center mb-16" data-fade-up>
-            <h3 className="text-[36px] mb-4 font-medium leading-[1.2] tracking-[-0.01em]">
-              The Evolution
-            </h3>
-            <p className="text-eye-text text-[14px] leading-[1.6]">
-              The trajectory of computational dominance.
+          <div className="pl-12">
+            <span className="font-label-caps text-label-caps text-secondary-fixed-dim block mb-4 uppercase">Navigation Systems</span>
+            <h2 className="font-headline-md text-headline-md text-primary mb-6">Autonomous Navigation</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-8 leading-relaxed">
+              EyeX provides sub-millimeter spatial awareness for autonomous platforms. Our proprietary optical-flow algorithms enable high-speed processing in unpredictable environments, from aerial drones to terrestrial logistics fleets.
             </p>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3 border-b border-white/5 pb-4">
+                <span className="material-symbols-outlined text-secondary-fixed-dim" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                <span className="font-body-md text-on-surface">Ultra-low latency inference ( &lt; 2ms )</span>
+              </li>
+              <li className="flex items-start gap-3 border-b border-white/5 pb-4">
+                <span className="material-symbols-outlined text-secondary-fixed-dim" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                <span className="font-body-md text-on-surface">Adverse weather pattern compensation</span>
+              </li>
+            </ul>
           </div>
-          <div className="relative max-w-3xl mx-auto">
-            <div className="absolute left-1/2 top-0 bottom-0 w-[1px] timeline-line -translate-x-1/2" />
-            <div className="space-y-24 relative">
-              {/* 2019 */}
-              <div className="flex flex-col md:flex-row items-center justify-between" data-fade-up>
-                <div className="md:w-5/12 text-center md:text-right">
-                  <h4 className="text-[72px] font-medium text-primary-brand mb-2 tracking-tight leading-[1.1]">
-                    2019
-                  </h4>
-                  <p className="text-eye-white font-medium">Founding in Cairo</p>
-                  <p className="text-eye-text text-sm">
-                    Initiating the vision of edge intelligence in North Africa's tech hub.
-                  </p>
-                </div>
-                <div className="w-4 h-4 bg-primary-brand rounded-full z-10 my-4 md:my-0 shadow-[0_0_15px_#38BDF8]" />
-                <div className="md:w-5/12 hidden md:block" />
-              </div>
-              {/* 2021 */}
-              <div className="flex flex-col md:flex-row items-center justify-between" data-fade-up>
-                <div className="md:w-5/12 hidden md:block" />
-                <div className="w-4 h-4 bg-primary-brand rounded-full z-10 my-4 md:my-0 shadow-[0_0_15px_#38BDF8]" />
-                <div className="md:w-5/12 text-center md:text-left">
-                  <h4 className="text-[72px] font-medium text-primary-brand mb-2 tracking-tight leading-[1.1]">
-                    2021
-                  </h4>
-                  <p className="text-eye-white font-medium">Expansion to Milan</p>
-                  <p className="text-eye-text text-sm">
-                    Strategic European node integration for low-latency enterprise operations.
-                  </p>
-                </div>
-              </div>
-              {/* 2024 */}
-              <div className="flex flex-col md:flex-row items-center justify-between" data-fade-up>
-                <div className="md:w-5/12 text-center md:text-right">
-                  <h4 className="text-[72px] font-medium text-primary-brand mb-2 tracking-tight leading-[1.1]">
-                    2024
-                  </h4>
-                  <p className="text-eye-white font-medium">Launch of QORX Flagship</p>
-                  <p className="text-eye-text text-sm">
-                    The world's first fully autonomous AI infrastructure deployment system.
-                  </p>
-                </div>
-                <div className="w-4 h-4 bg-primary-brand rounded-full z-10 my-4 md:my-0 shadow-[0_0_15px_#38BDF8]" />
-                <div className="md:w-5/12 hidden md:block" />
-              </div>
-              {/* 2026 */}
-              <div className="flex flex-col md:flex-row items-center justify-between" data-fade-up>
-                <div className="md:w-5/12 hidden md:block" />
-                <div className="w-4 h-4 bg-primary-brand rounded-full z-10 my-4 md:my-0 shadow-[0_0_15px_#38BDF8]" />
-                <div className="md:w-5/12 text-center md:text-left">
-                  <h4 className="text-[72px] font-medium text-primary-brand mb-2 tracking-tight leading-[1.1]">
-                    2026
-                  </h4>
-                  <p className="text-eye-white font-medium">Global Scale</p>
-                  <p className="text-eye-text text-sm">
-                    Ubiquitous computational presence across every major technological corridor.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Core Principles */}
-        <section className="max-w-[1200px] mx-auto px-6 mb-[6rem]">
-          <h3 className="text-[36px] mb-12 text-center font-medium leading-[1.2] tracking-[-0.01em]">
-            Core Principles
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bento-card p-8 rounded-xl group" data-fade-up>
-              <div className="w-12 h-12 bg-primary-brand/10 border border-primary-brand/20 rounded-lg flex items-center justify-center mb-6 text-primary-brand group-hover:scale-110 transition-transform">
-                <Brain size={24} />
+      <section className="py-24 px-margin-desktop bg-surface-container-lowest/30 border-y border-white/5">
+        <div className="grid md:grid-cols-2 gap-gutter items-center">
+          <div className="order-2 md:order-1 pr-12">
+            <span className="font-label-caps text-label-caps text-secondary-fixed-dim block mb-4 uppercase">Bio-Imaging</span>
+            <h2 className="font-headline-md text-headline-md text-primary mb-6">Healthcare Diagnostics</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-8 leading-relaxed">
+              Precision diagnostics powered by hyper-spectral vision. Our sensors identify micro-anomalies in tissue structures before they become clinically visible, integrating directly into robotic surgical suites and remote triage units.
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="glass-panel border border-white/5 p-4 rounded">
+                <div className="text-secondary-fixed-dim font-headline-md text-[24px] mb-1">99.8%</div>
+                <div className="text-on-surface-variant font-label-caps text-[10px] uppercase">Accuracy Rate</div>
               </div>
-              <h5 className="text-eye-white font-medium mb-3">Intelligence</h5>
-              <p className="text-eye-text text-[14px] leading-[1.6]">
-                Sub-millisecond inference across a globally distributed mesh network.
-              </p>
-            </div>
-            <div className="bento-card p-8 rounded-xl group" data-fade-up>
-              <div className="w-12 h-12 bg-primary-brand/10 border border-primary-brand/20 rounded-lg flex items-center justify-center mb-6 text-primary-brand group-hover:scale-110 transition-transform">
-                <ShieldCheck size={24} />
+              <div className="glass-panel border border-white/5 p-4 rounded">
+                <div className="text-secondary-fixed-dim font-headline-md text-[24px] mb-1">REAL-TIME</div>
+                <div className="text-on-surface-variant font-label-caps text-[10px] uppercase">Analysis Engine</div>
               </div>
-              <h5 className="text-eye-white font-medium mb-3">Trust</h5>
-              <p className="text-eye-text text-[14px] leading-[1.6]">
-                Encryption baked into the hardware layer. Security that never sleeps.
-              </p>
-            </div>
-            <div className="bento-card p-8 rounded-xl group" data-fade-up>
-              <div className="w-12 h-12 bg-primary-brand/10 border border-primary-brand/20 rounded-lg flex items-center justify-center mb-6 text-primary-brand group-hover:scale-110 transition-transform">
-                <Layers size={24} />
-              </div>
-              <h5 className="text-eye-white font-medium mb-3">Simplicity</h5>
-              <p className="text-eye-text text-[14px] leading-[1.6]">
-                Complex infrastructure reduced to a single, intuitive API interaction.
-              </p>
-            </div>
-            <div className="bento-card p-8 rounded-xl group" data-fade-up>
-              <div className="w-12 h-12 bg-primary-brand/10 border border-primary-brand/20 rounded-lg flex items-center justify-center mb-6 text-primary-brand group-hover:scale-110 transition-transform">
-                <Globe size={24} />
-              </div>
-              <h5 className="text-eye-white font-medium mb-3">Human Impact</h5>
-              <p className="text-eye-text text-[14px] leading-[1.6]">
-                Advancing human potential through surgical precision in technology.
-              </p>
             </div>
           </div>
-        </section>
+          <div className="order-1 md:order-2 glass-panel rounded-xl overflow-hidden aspect-video relative group border border-white/5">
+            <img className="w-full h-full object-cover grayscale brightness-90 group-hover:scale-105 transition-transform duration-700" alt="Bio-Imaging" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJvzyx0gyqdbn7aVCseQNF58kXcvQ0ePZUHUyWm3AQ2-IqOH7HzmfWdihqnihwhkZeBeNegRl7WOrooch6WUyTA4jrKNGFnH5FMZy_HgdGMrGgjT2ymnoNowcsT19iW_Ux8pkSFETQfWBkuvce-uiQ6jsO13xlExgpMWPcdACcjYr0mHfKdCbVMFJvuVqYi3U5Csn4bspBdRwIL9SmfQpsu12k09Uu1Df54CZFtIc346NtCuyxj5warpMbaaCggh840xWg2Xfvdvm5" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+            <div className="absolute bottom-6 left-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-secondary-fixed-dim" style={{ fontVariationSettings: "'FILL' 1" }}>biotech</span>
+              <span className="font-mono-data text-mono-data text-white">MODULE_BIO_VIS_X1</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        {/* Strategic Leadership */}
-        <section className="max-w-[1200px] mx-auto px-6 mb-[6rem]">
-          <h3 className="text-[36px] mb-12 text-center font-medium leading-[1.2] tracking-[-0.01em]">
-            Strategic Leadership
-          </h3>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="text-center group" data-fade-up>
-              <div className="aspect-[4/5] overflow-hidden rounded-2xl mb-4 grayscale hover:grayscale-0 transition-all duration-500 border border-eye-border group-hover:border-primary-brand/50">
-                <div
-                  className="w-full h-full bg-cover bg-center"
-                  style={{
-                    backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuA0Z3_H3MYlGtQYTxE9upBONkEO7yCVHz_eRuqyiOt-io2b3NKHw8jCqmh2pW4700S5MQVg35GoKppqWF05wV2hpERekWi7weljNJfQZCQFevEMwQF3fGa1zO-eGki1gJXyyn3nqZVECsyggmEw6sLrMdBlwOVx246IlP1Ib6TIUsfNW3o5oZRYcDSMfRDI_NN6ctR5j4mYMP_mhXuj9TP3a90c_sDtO5fLuf_hPfNAflaUvbkemaMOfH9JJFBr0cR_dm7ZG31DQGc')",
-                  }}
-                />
-              </div>
-              <h6 className="text-eye-white font-medium">Dr. Elias Vance</h6>
-              <span className="text-eye-text text-xs uppercase tracking-widest font-mono">
-                CEO / Founder
-              </span>
-            </div>
-            <div className="text-center group" data-fade-up>
-              <div className="aspect-[4/5] overflow-hidden rounded-2xl mb-4 grayscale hover:grayscale-0 transition-all duration-500 border border-eye-border group-hover:border-primary-brand/50">
-                <div
-                  className="w-full h-full bg-cover bg-center"
-                  style={{
-                    backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDDuhL3hgFfGhhxyl36pu83xN2PBvbynqLY6FjoMbBgD8omeP9dL3G21IkdCgDfS9xdDpeBLAAV3dc6ha31JlOprtU3RlvrHU_hNRRjxbiL8YZ7yT2ieOcY5hsg5SNG_HgKY0kzziNyoS2Ar-kHNgcYC_LAJZ4Owr-dRyrSyUwhyKQoJu_evyZY2RP8HGJ_hQEVFsh8rsUS_XXVyWodYoOeq4B7xO8RPXqdexVGwakdEIST2zkSY99ASMJ_hD5bU6y4I9HsYqZAQEg')",
-                  }}
-                />
-              </div>
-              <h6 className="text-eye-white font-medium">Sarah Al-Zaid</h6>
-              <span className="text-eye-text text-xs uppercase tracking-widest font-mono">
-                Chief Network Architect
-              </span>
-            </div>
-            <div className="text-center group" data-fade-up>
-              <div className="aspect-[4/5] overflow-hidden rounded-2xl mb-4 grayscale hover:grayscale-0 transition-all duration-500 border border-eye-border group-hover:border-primary-brand/50">
-                <div
-                  className="w-full h-full bg-cover bg-center"
-                  style={{
-                    backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDgL8Ye3Kjnq6sT2P_o5FZt0J_SdzGYDdTFZ-VFOM5Ca7N3jvig4HVEXor4u5fmtV_e9R30kUteDl6jvWBkHtOkA7_AZCYAw_X9qrPUy8Mo1EZUSiPNEp_UIZM25Ib2b3Exs94nkBFkdgplMtqvikTdcy4XDCrldSfJOeFEbcDUj1D_TnpW7WoOuNnJTSGh9pwJYh6MxaeC22NMwOrFc3oRGU8eMJ6KwQkFMmVdPR-3k1VLUE3sT6bIV7mOcVhRcOxukYJ1z33Qm48')",
-                  }}
-                />
-              </div>
-              <h6 className="text-eye-white font-medium">Marco Rossi</h6>
-              <span className="text-eye-text text-xs uppercase tracking-widest font-mono">
-                Operations Lead
-              </span>
-            </div>
-            <div className="text-center group" data-fade-up>
-              <div className="aspect-[4/5] overflow-hidden rounded-2xl mb-4 grayscale hover:grayscale-0 transition-all duration-500 border border-eye-border group-hover:border-primary-brand/50">
-                <div
-                  className="w-full h-full bg-cover bg-center"
-                  style={{
-                    backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBJBLsm5S_QxrZUOrINO9gmq5gg2D39xqb-yVYHP_QHp2NIR70dFqCzjWK5i8-FkOS2cj02MK3D4GAqSfU1L4LEq1Xw9XkFacPYPBkmEIzeSBPPZgwUcM03O9PqWAo5UeKV8IacCeZCgOw08EASzZvuFO9qgpQBILZXtgAbliMkia4baja0BVKtypO3bWxWoBJilfDWFwAIEwqT8uEOpIPbpm7zCq7uqkAVx1g21Gh9FUpplPA1hVHzJ76m8h7o_r94IbobWMzMEIk')",
-                  }}
-                />
-              </div>
-              <h6 className="text-eye-white font-medium">Chen Wei</h6>
-              <span className="text-eye-text text-xs uppercase tracking-widest font-mono">
-                Head of Security
-              </span>
+      <section className="py-24 px-margin-desktop">
+        <div className="grid md:grid-cols-2 gap-gutter items-center">
+          <div className="glass-panel rounded-xl overflow-hidden aspect-video relative group border border-white/5">
+            <img className="w-full h-full object-cover grayscale brightness-75 group-hover:scale-105 transition-transform duration-700" alt="Industrial Automation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-3O9TDZYWGe4wjXu_clAgqGFnd-a85V-xrDtY4u4Co7qvEmSDbMr74-nA6VFp5zS4RM8nKUeypBJo74XUPwlO3MqB1MWe_icIo0Y-q_u0pgXOrPUGPpJ35pjCcyJqUSCziSsKFywGmtVIJt3nWDGgXQQIjXcF2HGuFqmkqvIv4sSKa5rdgasK4rVTa2hVwLsNEPSx5LTp8eWTtDD6f5HwHBFYDUWxkPNIHYAkBVraIq2EbNX87efFEH-h09ZoIpKMvWIOPaZDtOMV" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+            <div className="absolute bottom-6 left-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-secondary-fixed-dim" style={{ fontVariationSettings: "'FILL' 1" }}>precision_manufacturing</span>
+              <span className="font-mono-data text-mono-data text-white">MODULE_IND_PROC_S9</span>
             </div>
           </div>
-        </section>
+          <div className="pl-12">
+            <span className="font-label-caps text-label-caps text-secondary-fixed-dim block mb-4 uppercase">Robotic Logistics</span>
+            <h2 className="font-headline-md text-headline-md text-primary mb-6">Industrial Automation</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-8 leading-relaxed">
+              Scale production with machine vision that never blinks. From defect detection on high-speed assembly lines to collaborative robotics in smart factories, EyeX ensures absolute consistency in every cycle.
+            </p>
+            <button className="group flex items-center gap-3 text-primary font-label-caps text-label-caps uppercase tracking-widest">
+              Technical Datasheet 
+              <span className="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </section>
 
-        {/* Closing CTA */}
-        <section className="max-w-[1200px] mx-auto px-6 mb-[6rem]" data-fade-up>
-          <div className="relative py-24 rounded-[3rem] border border-eye-border bg-eye-surface overflow-hidden text-center">
-            <div className="relative z-10">
-              <h2 className="text-[48px] md:text-5xl mb-8 tracking-tighter font-medium">
-                Ready for Dominance?
-              </h2>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <button className="bg-[#FAFAFA] text-[#050505] px-10 py-4 rounded-full font-medium hover:shadow-[0_0_25px_rgba(56,189,248,0.4)] transition-all transform hover:-translate-y-1 active:scale-95 w-full sm:w-auto">
-                  Deploy Infrastructure
-                </button>
-                <button className="bg-transparent text-white border border-[#27272A] px-10 py-4 rounded-full font-medium hover:border-primary-brand hover:text-primary-brand transition-all transform hover:-translate-y-1 active:scale-95 w-full sm:w-auto">
-                  Speak to an Architect
-                </button>
+      <section className="py-24 bg-surface-dim border-y border-white/5">
+        <div className="max-w-6xl mx-auto px-margin-mobile md:px-0">
+          <div className="mb-12 text-center">
+            <h2 className="font-headline-md text-headline-md text-primary mb-4">Developer-First Integration</h2>
+            <p className="font-body-md text-on-surface-variant">Three lines of code to initialize the future of optical compute.</p>
+          </div>
+          <div className="rounded-xl overflow-hidden border border-outline-variant bg-[#050505] shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-4 bg-[#111111] border-b border-outline-variant">
+              <div className="flex gap-2">
+                <div className="w-3 h-3 rounded-full bg-error/40"></div>
+                <div className="w-3 h-3 rounded-full bg-surface-tint/40"></div>
+                <div className="w-3 h-3 rounded-full bg-secondary-fixed-dim/40"></div>
               </div>
+              <div className="text-on-surface-variant font-mono-data text-[12px]">eyex_main.py</div>
+              <button className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors text-[18px]">content_copy</button>
+            </div>
+            <div className="p-8 font-mono-data text-mono-data text-[14px] leading-relaxed overflow-x-auto">
+              <pre className="text-[#888]"><code><span className="text-secondary-fixed-dim">import</span> eyex_core <span className="text-secondary-fixed-dim">as</span> ex
+{"\n"}
+<span className="text-[#555]"># Initialize optical cluster with neural prioritization</span>
+cluster = ex.VisionCluster(config=<span className="text-[#00eefc]">"ultra_low_latency"</span>)
+{"\n"}
+<span className="text-[#555]"># Deploy diagnostic module to active feed</span>
+module = cluster.deploy(<span className="text-secondary-fixed-dim">"BIO_VIS_X1"</span>)
+{"\n"}
+<span className="text-[#555]"># Stream inference results at 240fps</span>
+<span className="text-secondary-fixed-dim">while</span> cluster.is_active:
+    telemetry = module.get_telemetry()
+    <span className="text-primary">print</span>(f<span className="text-[#00eefc]">"Inference: {'{telemetry.accuracy}'}% | Latency: {'{telemetry.ms}'}ms"</span>)</code></pre>
             </div>
           </div>
-        </section>
-      </main>
-    </>
+        </div>
+      </section>
+
+      <section className="py-24 px-margin-desktop">
+        <div className="mb-12">
+          <div className="line-detail mb-8"></div>
+          <h2 className="font-headline-md text-headline-md text-primary tracking-tight">Engineering Specifications</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b-2 border-primary">
+                <th className="py-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Parameter</th>
+                <th className="py-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Standard Core</th>
+                <th className="py-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Quantum Ultra</th>
+                <th className="py-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Enterprise Hub</th>
+              </tr>
+            </thead>
+            <tbody className="font-mono-data text-mono-data">
+              <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
+                <td className="py-6 text-on-surface-variant">Optical Resolution</td>
+                <td className="py-6 text-primary">8K Raw</td>
+                <td className="py-6 text-primary">12K Hyper</td>
+                <td className="py-6 text-secondary-fixed-dim">Dynamic Array</td>
+              </tr>
+              <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                <td className="py-6 text-on-surface-variant">Inference Speed</td>
+                <td className="py-6 text-primary">120 FPS</td>
+                <td className="py-6 text-primary">480 FPS</td>
+                <td className="py-6 text-secondary-fixed-dim">Sub-ms Cluster</td>
+              </tr>
+              <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                <td className="py-6 text-on-surface-variant">Spectral Range</td>
+                <td className="py-6 text-primary">RGB + IR</td>
+                <td className="py-6 text-primary">Full Hyper-S</td>
+                <td className="py-6 text-secondary-fixed-dim">User Defined</td>
+              </tr>
+              <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                <td className="py-6 text-on-surface-variant">Neural Core Count</td>
+                <td className="py-6 text-primary">128 TOPS</td>
+                <td className="py-6 text-primary">512 TOPS</td>
+                <td className="py-6 text-secondary-fixed-dim">Scalable Hub</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   );
 }

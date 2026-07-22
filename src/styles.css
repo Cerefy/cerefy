@@ -32,6 +32,48 @@
   --font-mono: "Geist Mono", ui-monospace, monospace;
 
   --radius: 0.125rem;
+
+  /* Stitch Tokens */
+  --spacing-margin-mobile: 20px;
+  --spacing-margin-desktop: 64px;
+  --spacing-gutter: 24px;
+  --spacing-unit: 4px;
+  
+  --color-secondary-fixed-dim: #00dbe9;
+  --color-on-secondary-fixed: #002022;
+  --color-tertiary-fixed-dim: #c6c6c7;
+  --color-inverse-on-surface: #313030;
+  --color-on-surface-variant: #c4c7c8;
+
+  --text-headline-md: 32px;
+  --text-headline-md--line-height: 40px;
+  --text-headline-md--letter-spacing: -0.02em;
+  --text-headline-md--font-weight: 600;
+
+  --text-label-caps: 12px;
+  --text-label-caps--line-height: 16px;
+  --text-label-caps--letter-spacing: 0.1em;
+  --text-label-caps--font-weight: 600;
+
+  --text-display-lg: 64px;
+  --text-display-lg--line-height: 72px;
+  --text-display-lg--letter-spacing: -0.04em;
+  --text-display-lg--font-weight: 700;
+
+  --text-display-lg-mobile: 40px;
+  --text-display-lg-mobile--line-height: 48px;
+  --text-display-lg-mobile--letter-spacing: -0.02em;
+  --text-display-lg-mobile--font-weight: 700;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+
+  --text-mono-data: 14px;
+  --text-mono-data--line-height: 20px;
+  --text-mono-data--font-weight: 500;
 }
 
 @theme inline {
