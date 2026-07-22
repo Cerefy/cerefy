@@ -1,14 +1,18 @@
 /// <reference types="vite/client" />
 
-import { hydrateRoot } from "react-dom/client";
-import { StartClient } from "@tanstack/react-start/client";
-import { getRouter } from "./router";
+import { createRoot } from "react-dom/client";
+import { RouterProvider } from "@tanstack/react-router";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { getRouter, queryClient } from "./router";
+
+const router = getRouter();
 
 const root = document.getElementById("root")!;
-
-if (!root.dataset.hydrated) {
-  hydrateRoot(root, <StartClient router={getRouter()} />);
-}
+createRoot(root).render(
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+  </QueryClientProvider>
+);
 
 document.documentElement.setAttribute("data-js-ready", "");
 
