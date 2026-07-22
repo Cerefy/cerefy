@@ -41,9 +41,9 @@ export function AiCopilotPage() {
       chatWithCopilotFn({ data: { message, history } }) as Promise<CopilotResult>,
     onSuccess: (result: CopilotResult) => {
       if (result?.success) {
-        const assistantMsg: ChatMessage = { role: "assistant", text: result.text };
+        const assistantMsg: ChatMessage = { role: "assistant", text: result.text ?? "" };
         setMessages((prev) => [...prev, assistantMsg]);
-        setHistory((prev) => [...prev, { role: "assistant", text: result.text }]);
+        setHistory((prev) => [...prev, { role: "assistant", text: result.text ?? "" }]);
       } else {
         setMessages((prev) => [
           ...prev,
