@@ -309,7 +309,7 @@ function renderStepCard(step: (typeof DEMO_STEPS)[number], data: DemoStepResult 
   return (
     <Card key={step.key} title={title}>
       <div className="p-5">
-        {data.step === "problem" && data.problems && (
+        {data.step === "problem" && "problems" in data && data.problems && (
           <div className="space-y-3">
             {data.problems.map((p: DemoProblem, i: number) => (
               <div
@@ -326,7 +326,7 @@ function renderStepCard(step: (typeof DEMO_STEPS)[number], data: DemoStepResult 
           </div>
         )}
 
-        {data.step === "analysis" && (
+        {data.step === "analysis" && "metrics" in data && (
           <div className="space-y-4">
             {data.metrics && (
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
@@ -340,7 +340,7 @@ function renderStepCard(step: (typeof DEMO_STEPS)[number], data: DemoStepResult 
                 ))}
               </div>
             )}
-            {data.context && (
+            {"context" in data && data.context && (
               <div className="text-xs text-muted-foreground bg-secondary/20 rounded-lg p-3">
                 {data.context}
               </div>
@@ -348,7 +348,7 @@ function renderStepCard(step: (typeof DEMO_STEPS)[number], data: DemoStepResult 
           </div>
         )}
 
-        {data.step === "executive" && (
+        {data.step === "executive" && "ceo" in data && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <ExecutiveCard
               role="CEO"
@@ -382,7 +382,7 @@ function renderStepCard(step: (typeof DEMO_STEPS)[number], data: DemoStepResult 
           </div>
         )}
 
-        {data.step === "recommendations" && data.insights && (
+        {data.step === "recommendations" && "insights" in data && data.insights && (
           <div className="space-y-3">
             {data.insights.map((ins: DemoRecommendation, i: number) => (
               <div key={i} className="flex items-start gap-3 border border-border rounded-lg p-4">
@@ -404,7 +404,7 @@ function renderStepCard(step: (typeof DEMO_STEPS)[number], data: DemoStepResult 
           </div>
         )}
 
-        {data.step === "impact" && (
+        {data.step === "impact" && "analytics" in data && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <ImpactMetric
@@ -430,7 +430,7 @@ function renderStepCard(step: (typeof DEMO_STEPS)[number], data: DemoStepResult 
                 label="Impact Score"
               />
             </div>
-            {data.message && <div className="text-xs text-muted-foreground">{data.message}</div>}
+            {"message" in data && data.message && <div className="text-xs text-muted-foreground">{data.message}</div>}
           </div>
         )}
       </div>

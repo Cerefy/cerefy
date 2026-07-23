@@ -146,13 +146,14 @@ export function Card({
   );
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function DataTable<T = any>({
   columns,
   rows,
   onRowClick,
 }: {
   columns: {
-    key: keyof T;
+    key: string;
     label: string;
     align?: "left" | "right";
     render?: (row: T) => ReactNode;
@@ -187,7 +188,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 key={String(c.key)}
                 className={`${c.align === "right" ? "text-right font-mono text-muted-foreground" : "text-white truncate"}`}
               >
-                {c.render ? c.render(row) : String(row[c.key] ?? "")}
+                {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? "")}
               </div>
             ))}
           </div>

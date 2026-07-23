@@ -31,7 +31,7 @@ export function DataSourcesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
-  const { data: sources = [], isLoading: sourcesLoading } = useQuery({
+  const { data: sources = [], isLoading: sourcesLoading } = useQuery<DataSource[]>({
     queryKey: ["data_sources"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -39,7 +39,17 @@ export function DataSourcesPage() {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data ?? [];
+      // Map to DataSource shape (file_size and file_type may not exist in DB yet)
+      return (data ?? []).map((row) => ({
+        id: row.id,
+        name: row.name,
+        original_filename: row.original_filename ?? "",
+        status: row.status,
+        file_size: (row as any).file_size ?? 0,
+        file_type: (row as any).file_type ?? "",
+        created_at: row.created_at,
+        processing_progress: (row as any).processing_progress,
+      })) as DataSource[];
     },
   });
 
@@ -85,8 +95,9 @@ export function DataSourcesPage() {
     // Validate file before upload
     const validation = UploadService.validateFile(file);
     if (!validation.valid) {
-      setError(validation.error);
-      toast.error(validation.error);
+      const errMsg = validation.error ?? "Invalid file";
+      setError(errMsg);
+      toast.error(errMsg);
       return;
     }
 
@@ -115,26 +126,24 @@ export function DataSourcesPage() {
 
   const convertProcessingToDashboard = (processing: any): DashboardConfig => {
     // Convert cognitive data pipeline results to dashboard config
+    const rowCount = processing.sheets?.[0]?.tables?.[0]?.row_count || 0;
+    const colCount = processing.sheets?.[0]?.tables?.[0]?.columns?.length || 0;
     return {
-      title: "Data Analysis Dashboard",
-      layout: "grid",
       widgets: [
         {
-          type: "kpi",
+          type: "kpi" as const,
           title: "Total Rows",
-          value: processing.sheets?.[0]?.tables?.[0]?.row_count || 0,
-          format: "number",
+          value: String(rowCount),
         },
         {
-          type: "kpi",
+          type: "kpi" as const,
           title: "Columns Detected",
-          value: processing.sheets?.[0]?.tables?.[0]?.columns?.length || 0,
-          format: "number",
+          value: String(colCount),
         },
         {
-          type: "table",
+          type: "insight" as const,
           title: "Schema Analysis",
-          data: processing.sheets?.[0]?.tables?.[0]?.columns || [],
+          text: `Detected ${colCount} columns and ${rowCount} rows in the uploaded dataset.`,
         },
       ],
     };
@@ -284,55 +293,53 @@ export function DataSourcesPage() {
             <span className="text-xs">Upload a file or connect a database to get started</span>
           </div>
         ) : (
-          <DataTable
-            columns={
-              [
-                { key: "name", label: "Dataset Name" },
-                { key: "original_filename", label: "File Name" },
-                {
-                  key: "status",
-                  label: "Status",
-                  render: (r: DataSource) => (
-                    <Badge tone={r.status === "processed" ? "success" : r.status === "processing" ? "warning" : "danger"}>
-                      {r.status}
-                    </Badge>
-                  ),
-                },
-                {
-                  key: "file_size",
-                  label: "Size",
-                  align: "right",
-                  render: (r: DataSource) => (
-                    <span className="font-mono text-muted-foreground">
-                      {(r.file_size / 1024).toFixed(1)} KB
-                    </span>
-                  ),
-                },
-                {
-                  key: "created_at",
-                  label: "Uploaded",
-                  align: "right",
-                  render: (r: DataSource) => (
-                    <span className="font-mono text-muted-foreground">
-                      {new Date(r.created_at).toLocaleDateString()}
-                    </span>
-                  ),
-                },
-                {
-                  key: "actions",
-                  label: "",
-                  align: "right",
-                  render: (r: DataSource) => (
-                    <button
-                      onClick={() => handleDelete(r.id)}
-                      className="text-muted-foreground hover:text-red-400 transition-colors"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  ),
-                },
-              ] as const
-            }
+          <DataTable<DataSource>
+            columns={[
+              { key: "name", label: "Dataset Name" },
+              { key: "original_filename", label: "File Name" },
+              {
+                key: "status",
+                label: "Status",
+                render: (r) => (
+                  <Badge tone={r.status === "processed" ? "success" : r.status === "processing" ? "warn" : "danger"}>
+                    {r.status}
+                  </Badge>
+                ),
+              },
+              {
+                key: "file_size",
+                label: "Size",
+                align: "right",
+                render: (r) => (
+                  <span className="font-mono text-muted-foreground">
+                    {r.file_size ? (r.file_size / 1024).toFixed(1) + " KB" : "—"}
+                  </span>
+                ),
+              },
+              {
+                key: "created_at",
+                label: "Uploaded",
+                align: "right",
+                render: (r) => (
+                  <span className="font-mono text-muted-foreground">
+                    {new Date(r.created_at).toLocaleDateString()}
+                  </span>
+                ),
+              },
+              {
+                key: "actions",
+                label: "",
+                align: "right",
+                render: (r) => (
+                  <button
+                    onClick={() => handleDelete(r.id)}
+                    className="text-muted-foreground hover:text-red-400 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                ),
+              },
+            ]}
             rows={sources}
           />
         )}

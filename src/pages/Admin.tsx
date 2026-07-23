@@ -58,7 +58,7 @@ export function AdminPage() {
 
   const health = useQuery<DetailedHealth>({
     queryKey: ["admin-health-detailed"],
-    queryFn: () => BackendApi.getDetailedHealth(),
+    queryFn: () => BackendApi.getDetailedHealth() as Promise<DetailedHealth>,
     refetchInterval: 10000,
   });
 

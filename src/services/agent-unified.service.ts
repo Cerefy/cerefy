@@ -11,8 +11,10 @@ async function isPythonBackendAvailable(): Promise<boolean> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3000);
+    const backendUrl = import.meta.env.VITE_PYTHON_BACKEND_URL || "/api/v1";
+    const baseUrl = backendUrl.endsWith("/api/v1") ? backendUrl.slice(0, -7) : backendUrl;
     const resp = await fetch(
-      `${process.env.PYTHON_BACKEND_URL || "http://eyex-api:8000"}/api/v1/health`,
+      `${baseUrl}/api/v1/health`,
       { signal: controller.signal },
     );
     clearTimeout(timeout);

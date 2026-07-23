@@ -15,8 +15,10 @@ interface KnowledgeRecord {
 
 interface IntelligenceDocument {
   name?: string;
+  filename?: string;
   file_type?: string;
   created_at?: string;
+  chunks?: number;
 }
 
 export function IntelligenceHubPage() {
@@ -72,15 +74,15 @@ export function IntelligenceHubPage() {
     onError: (err) => toast.error(err instanceof Error ? err.message : "Failed to store"),
   });
 
-  const { data: knowledge } = useQuery({
+  const { data: knowledge } = useQuery<{ records?: KnowledgeRecord[] }>({
     queryKey: ["knowledge", sessionId],
-    queryFn: () => BackendApi.getKnowledgeData(sessionId),
+    queryFn: () => BackendApi.getKnowledgeData(sessionId) as Promise<{ records?: KnowledgeRecord[] }>,
     enabled: activeTab === "knowledge",
   });
 
-  const { data: documents } = useQuery({
+  const { data: documents } = useQuery<{ documents?: IntelligenceDocument[] }>({
     queryKey: ["documents", sessionId],
-    queryFn: () => BackendApi.listDocuments(sessionId),
+    queryFn: () => BackendApi.listDocuments(sessionId) as Promise<{ documents?: IntelligenceDocument[] }>,
     enabled: activeTab === "documents",
   });
 
@@ -298,9 +300,9 @@ export function IntelligenceHubPage() {
                   <div key={i} className="px-5 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <FileText size={14} className="text-muted-foreground" />
-                      <span className="text-xs text-white">{d.filename}</span>
+                      <span className="text-xs text-white">{d.filename ?? d.name ?? "Document"}</span>
                     </div>
-                    <Badge tone="neutral">{d.chunks} chunks</Badge>
+                    <Badge tone="neutral">{d.chunks ?? 0} chunks</Badge>
                   </div>
                 ))}
               </div>

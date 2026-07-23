@@ -4,19 +4,15 @@ import {
   BackendApi,
   type SubscriptionPlanRead,
   type SubscriptionRead,
+  type InvoiceRead,
 } from "@/services/backend-api.service";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card, DataTable, Badge } from "@/components/common/primitives";
 import { toast } from "sonner";
 import { Loader2, Check } from "lucide-react";
 
-interface Invoice {
-  description?: string;
-  amount: number;
-  status: string;
-  created_at: string;
-  invoice_url?: string;
-}
+// Use InvoiceRead from backend-api.service instead
+type Invoice = InvoiceRead;
 
 function PlanCard({
   plan,
@@ -153,17 +149,17 @@ export function BillingPage() {
 
   const invoiceColumns = [
     {
-      key: "description" as const,
+      key: "description",
       label: "Description",
       render: (row: Invoice) => <span className="text-white">{row.description ?? "Invoice"}</span>,
     },
     {
-      key: "amount" as const,
+      key: "amount",
       label: "Amount",
       render: (row: Invoice) => <span className="font-mono">${row.amount.toFixed(2)}</span>,
     },
     {
-      key: "status" as const,
+      key: "status",
       label: "Status",
       render: (row: Invoice) => (
         <Badge
@@ -174,7 +170,7 @@ export function BillingPage() {
       ),
     },
     {
-      key: "created_at" as const,
+      key: "created_at",
       label: "Date",
       render: (row: Invoice) => (
         <span className="font-mono text-muted-foreground text-[10px]">
@@ -183,7 +179,7 @@ export function BillingPage() {
       ),
     },
     {
-      key: "invoice_url" as const,
+      key: "invoice_url",
       label: "",
       render: (row: Invoice) =>
         row.invoice_url ? (

@@ -44,14 +44,15 @@ export function KpiRow({
   );
 }
 
-export function TableCard<T extends Record<string, unknown>>({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function TableCard<T = any>({
   title,
   columns,
   rows,
 }: {
   title: string;
   columns: {
-    key: keyof T;
+    key: string;
     label: string;
     align?: "left" | "right";
     render?: (row: T) => ReactNode;

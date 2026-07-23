@@ -48,17 +48,19 @@ export const UploadService = {
         return { error: `Failed to upload file: ${uploadError.message}` };
       }
 
-      // Create dataset record
+      // Create dataset record (file_size, file_type, storage_path will be added via migration)
+      const insertPayload = {
+        name: datasetName,
+        original_filename: file.name,
+        status: "uploaded",
+        file_size: file.size,
+        file_type: file.type,
+        storage_path: storagePath,
+      };
       const { data: dataset, error: datasetError } = await supabase
         .from("imported_datasets")
-        .insert({
-          name: datasetName,
-          original_filename: file.name,
-          status: "uploaded",
-          file_size: file.size,
-          file_type: file.type,
-          storage_path: storagePath,
-        })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .insert(insertPayload as any)
         .select()
         .single();
 
@@ -184,7 +186,8 @@ export const UploadService = {
   },
 
   async getUploadProgress(datasetId: string): Promise<{ status: string; progress: number }> {
-    const { data, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase as any)
       .from("imported_datasets")
       .select("status, processing_progress")
       .eq("id", datasetId)
@@ -193,14 +196,15 @@ export const UploadService = {
     if (error) throw error;
     
     return {
-      status: data.status,
-      progress: data.processing_progress || 0,
+      status: (data as any).status,
+      progress: (data as any).processing_progress || 0,
     };
   },
 
   async deleteDataset(datasetId: string): Promise<void> {
     // Get dataset info to clean up storage
-    const { data: dataset, error: fetchError } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: dataset, error: fetchError } = await (supabase as any)
       .from("imported_datasets")
       .select("storage_path")
       .eq("id", datasetId)
@@ -209,10 +213,10 @@ export const UploadService = {
     if (fetchError) throw fetchError;
 
     // Delete from storage
-    if (dataset?.storage_path) {
+    if ((dataset as any)?.storage_path) {
       const { error: storageError } = await supabase.storage
         .from("files")
-        .remove([dataset.storage_path]);
+        .remove([(dataset as any).storage_path]);
       
       if (storageError) console.error("Storage deletion error:", storageError);
     }

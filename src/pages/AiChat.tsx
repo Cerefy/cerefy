@@ -172,8 +172,8 @@ export function AiChatPage() {
 
   const loadThread = async (threadId: string) => {
     try {
-      const conversation = await BackendApi.getConversation(threadId);
-      const loadedMessages: ChatMessage[] = conversation.messages.map((msg: any) => ({
+      const conversation = await BackendApi.getConversation(threadId) as { messages: Array<{ role: string; content: string; created_at: string }> };
+      const loadedMessages: ChatMessage[] = conversation.messages.map((msg) => ({
         role: msg.role as "user" | "assistant",
         text: msg.content,
         timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),

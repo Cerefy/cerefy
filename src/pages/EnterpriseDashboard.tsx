@@ -199,9 +199,9 @@ export function EnterpriseDashboardPage() {
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">
                     Key Metrics
                   </div>
-                  {Object.entries(profile.metrics)
+                  {Object.entries(profile.metrics as Record<string, string | number>)
                     .slice(0, 5)
-                    .map(([k, v]: [string, string | number]) => (
+                    .map(([k, v]) => (
                       <div key={k} className="flex justify-between text-[11px] py-1">
                         <span className="text-muted-foreground">{k.replace(/_/g, " ")}</span>
                         <span className="text-white font-mono">{v}</span>

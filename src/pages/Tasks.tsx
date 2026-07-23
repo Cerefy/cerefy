@@ -1,9 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { BackendApi, type TaskExecutionRead } from "@/services/backend-api.service";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card, DataTable, Badge, Tabs } from "@/components/common/primitives";
-import { Clock, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const STATUS_MAP: Record<
   string,
@@ -80,16 +80,16 @@ export function TasksPage() {
   const tasks = tasksData?.tasks ?? [];
   const total = tasksData?.total ?? 0;
 
-  const columns = [
+  const columns: { key: string; label: string; align?: "left" | "right"; render?: (row: TaskExecutionRead) => React.ReactNode }[] = [
     {
-      key: "agent_role" as const,
+      key: "agent_role",
       label: "Agent",
       render: (row: TaskExecutionRead) => (
         <span className="text-white font-medium">{row.agent_role ?? "—"}</span>
       ),
     },
     {
-      key: "status" as const,
+      key: "status",
       label: "Status",
       render: (row: TaskExecutionRead) => {
         const st = STATUS_MAP[row.status] ?? { label: row.status, tone: "neutral" as const };
@@ -97,7 +97,7 @@ export function TasksPage() {
       },
     },
     {
-      key: "duration_ms" as const,
+      key: "duration_ms",
       label: "Duration",
       render: (row: TaskExecutionRead) => (
         <span className="font-mono text-muted-foreground">
@@ -106,7 +106,7 @@ export function TasksPage() {
       ),
     },
     {
-      key: "created_at" as const,
+      key: "created_at",
       label: "Date",
       render: (row: TaskExecutionRead) => (
         <span className="font-mono text-muted-foreground text-[10px]">
@@ -157,7 +157,7 @@ export function TasksPage() {
                   <TaskDetail task={selectedTask} />
                 </div>
               ) : (
-                <DataTable
+                <DataTable<TaskExecutionRead>
                   columns={columns}
                   rows={tasks}
                   onRowClick={(row) => setSelectedTask(row)}

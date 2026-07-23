@@ -262,6 +262,10 @@ export const BackendApi = {
     return apiFetch(`/chat/${sessionId}`);
   },
 
+  async deleteConversation(sessionId: string): Promise<void> {
+    return apiFetch(`/chat/${sessionId}`, { method: "DELETE" });
+  },
+
   async listAgents(): Promise<{ agents: AgentInfo[] }> {
     return apiFetch("/agents");
   },

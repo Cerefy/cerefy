@@ -1258,6 +1258,390 @@ export interface Database {
           },
         ];
       };
+      workspaces: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          slug: string;
+          description: string | null;
+          is_default: boolean;
+          settings: Json | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          slug: string;
+          description?: string | null;
+          is_default?: boolean;
+          settings?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          name?: string;
+          slug?: string;
+          description?: string | null;
+          is_default?: boolean;
+          settings?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      agent_configs: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          agent_role: string;
+          display_name: string;
+          description: string | null;
+          is_enabled: boolean;
+          model: string | null;
+          temperature: number | null;
+          max_tokens: number | null;
+          config: Json | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          agent_role: string;
+          display_name: string;
+          description?: string | null;
+          is_enabled?: boolean;
+          model?: string | null;
+          temperature?: number | null;
+          max_tokens?: number | null;
+          config?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          agent_role?: string;
+          display_name?: string;
+          description?: string | null;
+          is_enabled?: boolean;
+          model?: string | null;
+          temperature?: number | null;
+          max_tokens?: number | null;
+          config?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      task_executions: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          user_id: string | null;
+          session_id: string | null;
+          agent_role: string | null;
+          input_text: string | null;
+          output_text: string | null;
+          status: string;
+          duration_ms: number | null;
+          steps: Json | null;
+          error: string | null;
+          tokens_used: number | null;
+          cost: number | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          user_id?: string | null;
+          session_id?: string | null;
+          agent_role?: string | null;
+          input_text?: string | null;
+          output_text?: string | null;
+          status?: string;
+          duration_ms?: number | null;
+          steps?: Json | null;
+          error?: string | null;
+          tokens_used?: number | null;
+          cost?: number | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          user_id?: string | null;
+          session_id?: string | null;
+          agent_role?: string | null;
+          input_text?: string | null;
+          output_text?: string | null;
+          status?: string;
+          duration_ms?: number | null;
+          steps?: Json | null;
+          error?: string | null;
+          tokens_used?: number | null;
+          cost?: number | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      audit_logs: {
+        Row: {
+          id: string;
+          organization_id: string;
+          user_id: string | null;
+          action: string;
+          resource_type: string | null;
+          resource_id: string | null;
+          metadata: Json | null;
+          ip_address: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          user_id?: string | null;
+          action: string;
+          resource_type?: string | null;
+          resource_id?: string | null;
+          metadata?: Json | null;
+          ip_address?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          user_id?: string | null;
+          action?: string;
+          resource_type?: string | null;
+          resource_id?: string | null;
+          metadata?: Json | null;
+          ip_address?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      company_memory: {
+        Row: {
+          id: string;
+          organization_id: string;
+          key: string;
+          value: string;
+          category: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          key: string;
+          value: string;
+          category?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          key?: string;
+          value?: string;
+          category?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      missions: {
+        Row: {
+          id: string;
+          organization_id: string;
+          workspace_id: string | null;
+          title: string;
+          description: string | null;
+          status: string;
+          priority: string | null;
+          assigned_agents: string[] | null;
+          result: Json | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          workspace_id?: string | null;
+          title: string;
+          description?: string | null;
+          status?: string;
+          priority?: string | null;
+          assigned_agents?: string[] | null;
+          result?: Json | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          workspace_id?: string | null;
+          title?: string;
+          description?: string | null;
+          status?: string;
+          priority?: string | null;
+          assigned_agents?: string[] | null;
+          result?: Json | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      subscription_plans: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          description: string | null;
+          price_monthly: number;
+          price_yearly: number;
+          currency: string;
+          max_users: number;
+          max_agents: number;
+          max_tasks_per_month: number;
+          features: Json | null;
+          is_active: boolean;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          description?: string | null;
+          price_monthly?: number;
+          price_yearly?: number;
+          currency?: string;
+          max_users?: number;
+          max_agents?: number;
+          max_tasks_per_month?: number;
+          features?: Json | null;
+          is_active?: boolean;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          description?: string | null;
+          price_monthly?: number;
+          price_yearly?: number;
+          currency?: string;
+          max_users?: number;
+          max_agents?: number;
+          max_tasks_per_month?: number;
+          features?: Json | null;
+          is_active?: boolean;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      subscriptions: {
+        Row: {
+          id: string;
+          organization_id: string;
+          plan_id: string;
+          status: string;
+          billing_interval: string;
+          current_period_start: string;
+          current_period_end: string | null;
+          trial_end: string | null;
+          cancel_at_period_end: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          plan_id: string;
+          status?: string;
+          billing_interval?: string;
+          current_period_start?: string;
+          current_period_end?: string | null;
+          trial_end?: string | null;
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          plan_id?: string;
+          status?: string;
+          billing_interval?: string;
+          current_period_start?: string;
+          current_period_end?: string | null;
+          trial_end?: string | null;
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      billing_invoices: {
+        Row: {
+          id: string;
+          subscription_id: string;
+          amount: number;
+          currency: string;
+          status: string;
+          description: string | null;
+          period_start: string | null;
+          period_end: string | null;
+          paid_at: string | null;
+          invoice_url: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          subscription_id: string;
+          amount: number;
+          currency?: string;
+          status?: string;
+          description?: string | null;
+          period_start?: string | null;
+          period_end?: string | null;
+          paid_at?: string | null;
+          invoice_url?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          subscription_id?: string;
+          amount?: number;
+          currency?: string;
+          status?: string;
+          description?: string | null;
+          period_start?: string | null;
+          period_end?: string | null;
+          paid_at?: string | null;
+          invoice_url?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

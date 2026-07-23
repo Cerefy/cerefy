@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/layout/AppShell";
-import { Card, DataTable, Badge } from "@/components/common/primitives";
+import { Card, DataTable } from "@/components/common/primitives";
 import { supabase } from "@/lib/supabase/client";
 import { Loader2, FileText } from "lucide-react";
+import type { Database } from "@/lib/supabase/types";
+
+type DashboardRow = Database["public"]["Tables"]["dashboards"]["Row"];
 
 export function ReportsPage() {
   const [cat, setCat] = useState("All");
   const cats = ["All", "Business", "Financial", "Marketing", "Sales", "HR"];
 
-  const { data: reports = [], isLoading } = useQuery({
+  const { data: reports = [], isLoading } = useQuery<DashboardRow[]>({
     queryKey: ["dashboards"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -24,7 +27,7 @@ export function ReportsPage() {
   const filtered =
     cat === "All"
       ? reports
-      : reports.filter((r: { name?: string }) => {
+      : reports.filter((r) => {
           const name = (r.name ?? "").toLowerCase();
           return name.includes(cat.toLowerCase());
         });
@@ -66,38 +69,36 @@ export function ReportsPage() {
             <span className="text-xs">Upload data to generate your first report</span>
           </div>
         ) : (
-          <DataTable
-            columns={
-              [
-                { key: "name", label: "Report" },
-                {
-                  key: "description",
-                  label: "Description",
-                  render: (r: { description?: string }) => (
-                    <span className="text-muted-foreground truncate">{r.description ?? "—"}</span>
-                  ),
-                },
-                {
-                  key: "created_by",
-                  label: "Owner",
-                  render: (r: { created_by?: string }) => (
-                    <span className="text-muted-foreground">
-                      {r.created_by ? r.created_by.slice(0, 8) + "..." : "—"}
-                    </span>
-                  ),
-                },
-                {
-                  key: "created_at",
-                  label: "Updated",
-                  align: "right",
-                  render: (r: { created_at?: string }) => (
-                    <span className="font-mono text-muted-foreground">
-                      {new Date(r.created_at).toLocaleDateString()}
-                    </span>
-                  ),
-                },
-              ] as const
-            }
+          <DataTable<DashboardRow>
+            columns={[
+              { key: "name", label: "Report" },
+              {
+                key: "description",
+                label: "Description",
+                render: (r) => (
+                  <span className="text-muted-foreground truncate">{r.description ?? "—"}</span>
+                ),
+              },
+              {
+                key: "created_by",
+                label: "Owner",
+                render: (r) => (
+                  <span className="text-muted-foreground">
+                    {r.created_by ? r.created_by.slice(0, 8) + "..." : "—"}
+                  </span>
+                ),
+              },
+              {
+                key: "created_at",
+                label: "Updated",
+                align: "right",
+                render: (r) => (
+                  <span className="font-mono text-muted-foreground">
+                    {r.created_at ? new Date(r.created_at).toLocaleDateString() : "—"}
+                  </span>
+                ),
+              },
+            ]}
             rows={filtered}
           />
         )}

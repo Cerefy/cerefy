@@ -1,53 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const BASE_URL = "https://eyex-technologies.eyextech.workers.dev";
-
-interface SitemapEntry {
-  path: string;
-  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
-  priority?: string;
-}
-
+// Note: Server-side sitemap generation is not supported in this client-side router config.
+// The sitemap is served as a static file from /public/sitemap.xml instead.
 export const Route = createFileRoute("/sitemap.xml")({
-  server: {
-    handlers: {
-      GET: async () => {
-        const entries: SitemapEntry[] = [
-          { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/dashboard", changefreq: "weekly", priority: "0.8" },
-          { path: "/ai-chat", changefreq: "weekly", priority: "0.8" },
-          { path: "/documents", changefreq: "weekly", priority: "0.8" },
-          { path: "/api", changefreq: "weekly", priority: "0.8" },
-          { path: "/analytics", changefreq: "weekly", priority: "0.8" },
-          { path: "/about", changefreq: "monthly", priority: "0.7" },
-        ];
-
-        const urls = entries.map((e) =>
-          [
-            `  <url>`,
-            `    <loc>${BASE_URL}${e.path}</loc>`,
-            e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
-            e.priority ? `    <priority>${e.priority}</priority>` : null,
-            `  </url>`,
-          ]
-            .filter(Boolean)
-            .join("\n"),
-        );
-
-        const xml = [
-          `<?xml version="1.0" encoding="UTF-8"?>`,
-          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
-          ...urls,
-          `</urlset>`,
-        ].join("\n");
-
-        return new Response(xml, {
-          headers: {
-            "Content-Type": "application/xml",
-            "Cache-Control": "public, max-age=3600",
-          },
-        });
-      },
-    },
-  },
+  component: () => null,
 });

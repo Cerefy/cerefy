@@ -31,7 +31,10 @@ class Settings(BaseSettings):
     workers: int = 4
     cors_origins: list[str] = [
         "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:4173",
         "https://eyex-technologies.eyextech.workers.dev",
+        "https://eyex-ui.eyex0.workers.dev",
     ]
     enable_security_headers: bool = True
 

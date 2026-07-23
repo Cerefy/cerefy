@@ -118,11 +118,7 @@ function DangerZoneTab() {
     if (confirmText !== "DELETE") return;
     setLoading(true);
     try {
-      const { error } = await supabase.rpc("ensure_organization" as string, {
-        p_slug: "temp",
-        p_name: "temp",
-      });
-      // Fallback: just sign out since account deletion requires server-side
+      // Account deletion requires server-side processing — sign out for now
       await signOut();
       toast.success("Account deletion requested. You have been signed out.");
     } catch {
