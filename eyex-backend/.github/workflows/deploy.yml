@@ -1,21 +1,16 @@
 name: EyeX Backend Deploy
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "eyex-backend/**"
   workflow_dispatch:
-    inputs:
-      environment:
-        description: "Deployment environment"
-        required: true
-        default: "staging"
-        type: choice
-        options:
-          - staging
-          - production
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment }}
+    environment: production
     defaults:
       run:
         working-directory: ./eyex-backend
@@ -45,7 +40,6 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Deploy to server
-        if: github.event.inputs.environment == 'production'
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
