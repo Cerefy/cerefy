@@ -12,7 +12,7 @@
     "format": "prettier --write .",
     "test": "vitest",
     "db:seed": "node scripts/seed-database.js",
-    "deploy": "npm run build && npx wrangler pages deploy dist --project-name eyex-ui"
+    "deploy": "npm run build && npx wrangler deploy --domain eyex.com --domain www.eyex.com --domain app.eyex.com --domain api.eyex.com --domain auth.eyex.com --domain docs.eyex.com"
   },
   "dependencies": {
     "@google/genai": "^2.11.0",
