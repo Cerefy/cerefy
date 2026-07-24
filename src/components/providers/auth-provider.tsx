@@ -15,10 +15,44 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function buildOrganizationName(authUser: User): string {
+  return (
+    (authUser.user_metadata?.full_name as string | undefined)?.trim() ||
+    (authUser.user_metadata?.company_name as string | undefined)?.trim() ||
+    authUser.email?.split("@")[0] ||
+    "EyeX Organization"
+  );
+}
+
+function buildOrganizationSlug(name: string): string {
+  return (
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 48) || "eyex-org"
+  );
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const ensureOrganizationForUser = async (authUser: User | null) => {
+    if (!authUser) return;
+
+    try {
+      const organizationName = buildOrganizationName(authUser);
+      const organizationSlug = buildOrganizationSlug(organizationName);
+      await supabase.rpc("ensure_organization", {
+        p_slug: organizationSlug,
+        p_name: organizationName,
+      });
+    } catch (error) {
+      console.error("Organization provisioning failed:", error);
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -34,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(s?.user ?? null);
           setLoading(false);
         }
+        await ensureOrganizationForUser(s?.user ?? null);
       } catch (error) {
         console.error("Auth initialization failed:", error);
         if (mounted) {
@@ -52,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(s?.user ?? null);
         setLoading(false);
       }
+      await ensureOrganizationForUser(s?.user ?? null);
     });
 
     return () => {
@@ -91,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: error.message };
       }
 
+      await ensureOrganizationForUser(data.user ?? null);
       return { success: true };
     } catch (error) {
       console.error("Sign in error:", error);
@@ -138,6 +175,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         return { error: error.message };
       }
+
+      await ensureOrganizationForUser(data.session?.user ?? null);
 
       // Check if email verification is required
       return { 
