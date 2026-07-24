@@ -121,9 +121,9 @@ export function DashboardPage() {
                 <div key={task.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer group">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-mono-data text-[10px] text-secondary-fixed-dim">{task.status}</span>
-                    <span className="font-mono-data text-[10px] text-on-surface-variant">{new Date(task.created_at).toLocaleTimeString()}</span>
+                    <span className="font-mono-data text-[10px] text-on-surface-variant">{task.created_at ? new Date(task.created_at).toLocaleTimeString() : '—'}</span>
                   </div>
-                  <p className="font-body-md text-sm text-primary mb-1 truncate">{task.request}</p>
+                  <p className="font-body-md text-sm text-primary mb-1 truncate">{task.agent_role ?? "Task"}</p>
                   <span className="font-label-caps text-[9px] text-on-surface-variant group-hover:text-secondary-fixed-dim">VIEW_DETAILS →</span>
                 </div>
               ))}
