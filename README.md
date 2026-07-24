@@ -1,19 +1,40 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# EyeX Technologies
 
-# Run and deploy your AI Studio app
+EyeX is a Vite + React frontend, a FastAPI backend, and a Supabase-backed enterprise AI platform.
 
-This contains everything you need to run your app locally.
+## Frontend
 
-View your app in AI Studio: https://ai.studio/apps/4e8a92c9-9550-4ffc-b9bf-e9f4f267dd39
+```bash
+npm install
+npm run build
+npm run deploy
+```
 
-## Run Locally
+The frontend is configured for static deployment with `dist/` as the build output.
 
-**Prerequisites:** Node.js
+## Backend
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+cd eyex-backend
+cp .env.example .env
+docker compose -f docker-compose.prod.yml up --build
+```
+
+## Data layer
+
+```bash
+# Apply Supabase migrations
+supabase db push
+```
+
+## Environment
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `VITE_PYTHON_BACKEND_URL`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `OPENAI_API_KEY`
+- `APP_SECRET_KEY`
+
+See `.env.example` and `eyex-backend/.env.production.example` for the full configuration.
