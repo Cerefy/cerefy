@@ -1,20 +1,34 @@
-FROM node:22-alpine AS base
-WORKDIR /app
-COPY package.json package-lock.json ./
-COPY packages/api/package.json ./packages/api/
-COPY packages/services/package.json ./packages/services/
-COPY packages/agents/package.json ./packages/agents/
-RUN npm ci
+FROM python:3.12-slim AS builder
 
-FROM base AS build
-COPY . .
-RUN npm run build --workspace=packages/api --workspace=packages/services --workspace=packages/agents
-
-FROM node:22-alpine AS production
 WORKDIR /app
-RUN addgroup --system app && adduser --system --ingroup app app
-COPY --from=build /app/packages/api/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
-USER app
-EXPOSE 3001
-CMD ["node", "dist/index.js"]
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY eyex-backend/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Stage 2: Runtime
+FROM python:3.12-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev curl && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /root/.local /root/.local
+ENV PATH=/root/.local/bin:$PATH
+
+COPY eyex-backend/ .
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/api/v1/health || exit 1
+
+COPY eyex-backend/scripts/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
