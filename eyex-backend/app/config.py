@@ -33,8 +33,15 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://localhost:5173",
         "http://localhost:4173",
-        "https://eyex-technologies.eyextech.workers.dev",
+        "https://eyex.com",
+        "https://www.eyex.com",
+        "https://app.eyex.com",
+        "https://api.eyex.com",
+        "https://auth.eyex.com",
+        "https://docs.eyex.com",
+        "https://eyex.eyex0.workers.dev",
         "https://eyex-ui.eyex0.workers.dev",
+        "https://eyex-technologies.eyextech.workers.dev",
     ]
     enable_security_headers: bool = True
 
