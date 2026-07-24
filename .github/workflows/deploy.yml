@@ -1,24 +1,33 @@
-name: Deploy
+name: Deploy Frontend
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [master]
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "wrangler.jsonc"
+      - ".github/workflows/deploy.yml"
 
 jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+
       - run: npm ci
       - run: npm run build
+
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          command: pages deploy dist --project-name=x
+          command: deploy --domain eyex.com --domain www.eyex.com --domain app.eyex.com --domain api.eyex.com --domain auth.eyex.com --domain docs.eyex.com
