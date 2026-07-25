@@ -1,18 +1,21 @@
 from __future__ import annotations
 
 import logging
+import re
 from collections.abc import AsyncGenerator
 from uuid import UUID
 
 from fastapi import Depends, Header, HTTPException
+from sqlalchemy import select
 
 from app.config import get_settings
 from app.core.context import org_id_ctx
 from app.core.exceptions import ForbiddenException, UnauthorizedException
 from app.core.quota import get_quota_service
-from app.core.security import decode_token
+from app.core.security import decode_token, hash_password
 from app.core.supabase_auth import decode_supabase_token, is_supabase_token
 from app.database import async_session_factory
+from app.models.organization import Organization, OrganizationMember
 from app.models.user import User
 
 logger = logging.getLogger("eyex.dependencies")
@@ -31,6 +34,91 @@ def _raise_auth_error(error: str) -> None:
     raise UnauthorizedException("Invalid token")
 
 
+def _slugify(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+    return slug[:48] or "eyex-org"
+
+
+async def _sync_supabase_user(payload: dict) -> User:
+    user_id = payload.get("sub")
+    if not user_id:
+        raise UnauthorizedException("Invalid token")
+
+    try:
+        user_uuid = UUID(user_id)
+    except ValueError:
+        raise UnauthorizedException("Invalid token")
+
+    metadata = payload.get("user_metadata") or {}
+    email = (payload.get("email") or metadata.get("email") or f"{user_id}@supabase.local").strip()
+    full_name = (
+        metadata.get("full_name")
+        or metadata.get("name")
+        or payload.get("full_name")
+        or email.split("@")[0]
+        or "EyeX User"
+    )
+    avatar_url = metadata.get("avatar_url") or payload.get("avatar_url")
+
+    async with async_session_factory() as session:
+        user = await session.get(User, user_uuid)
+        if user is None:
+            user = User(
+                id=user_uuid,
+                email=email,
+                hashed_password=hash_password(f"supabase-{user_id}"),
+                full_name=full_name,
+                avatar_url=avatar_url,
+            )
+            session.add(user)
+        else:
+            user.email = email
+            user.full_name = full_name
+            user.avatar_url = avatar_url
+            user.is_active = True
+
+        await session.flush()
+
+        member_result = await session.execute(
+            select(OrganizationMember).where(OrganizationMember.user_id == user_uuid)
+        )
+        membership = member_result.scalar_one_or_none()
+        if membership is None:
+            org_name = (
+                metadata.get("organization_name")
+                or metadata.get("company_name")
+                or full_name
+                or email.split("@")[0]
+                or "EyeX Organization"
+            )
+            slug_base = _slugify(org_name)
+            slug = slug_base
+            suffix = user_id.replace("-", "")[:6] or "org"
+
+            while True:
+                slug_result = await session.execute(
+                    select(Organization.id).where(Organization.slug == slug)
+                )
+                if slug_result.scalar_one_or_none() is None:
+                    break
+                slug = f"{slug_base}-{suffix}"
+
+            organization = Organization(name=org_name, slug=slug, owner_id=user_uuid)
+            session.add(organization)
+            await session.flush()
+            session.add(
+                OrganizationMember(
+                    organization_id=organization.id,
+                    user_id=user_uuid,
+                    role="owner",
+                )
+            )
+
+        await session.commit()
+        await session.refresh(user)
+        return user
+
+
 async def _resolve_user_from_payload(payload: dict) -> User:
     user_id = payload.get("sub")
     if not user_id:
@@ -44,8 +132,8 @@ async def _resolve_user_from_payload(payload: dict) -> User:
     async with async_session_factory() as session:
         user = await session.get(User, user_uuid)
         if not user:
-            logger.warning("Authenticated user %s not found in backend database", user_id)
-            raise UnauthorizedException("User not found")
+            logger.info("Auto-provisioning backend identity for Supabase user %s", user_id)
+            return await _sync_supabase_user(payload)
         return user
 
 
