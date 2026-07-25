@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     cors_origins: list[str] = [
         "http://localhost:3000",
         "https://eyex-technologies.eyextech.workers.dev",
+        "https://eyex.com",
+        "https://www.eyex.com",
     ]
     enable_security_headers: bool = True
 
@@ -73,6 +75,8 @@ class Settings(BaseSettings):
     supabase_url: str = ""
     supabase_anon_key: str = ""
     supabase_jwt_secret: str = ""
+    supabase_jwks_url: str = ""
+    supabase_service_role_key: str = ""
 
     # OpenTelemetry
     otlp_endpoint: str = ""
