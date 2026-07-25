@@ -45,7 +45,9 @@ workspaces_router = APIRouter(prefix="/workspaces", tags=["Workspaces"])
 
 async def _get_org_for_user(db: AsyncSession, user_id: str) -> Organization:
     result = await db.execute(
-        select(Organization).join(OrganizationMember).where(
+        select(Organization)
+        .join(OrganizationMember)
+        .where(
             OrganizationMember.user_id == user_id,
             OrganizationMember.role.in_(["admin", "owner"]),
         )
@@ -53,11 +55,11 @@ async def _get_org_for_user(db: AsyncSession, user_id: str) -> Organization:
     org = result.scalar_one_or_none()
     if not org:
         result = await db.execute(
-        select(Organization).join(OrganizationMember).where(
-            OrganizationMember.user_id == user_id,
+            select(Organization)
+            .join(OrganizationMember)
+            .where(OrganizationMember.user_id == user_id)
         )
-    )
-    org = result.scalar_one_or_none()
+        org = result.scalar_one_or_none()
     if not org:
         raise NotFoundException("Organization")
     return org
