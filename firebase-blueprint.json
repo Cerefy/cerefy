@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Enterprise Platform User Profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "description": "Email address" },
+        "displayName": { "type": "string", "description": "Display Name" },
+        "role": { "type": "string", "enum": ["SUPER_ADMIN", "TENANT_ADMIN", "ANALYST", "VIEWER"] },
+        "tenantId": { "type": "string", "description": "Organization Tenant ID" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "tenantId"]
+    },
+    "Agent": {
+      "title": "Agent",
+      "description": "AI Agent Roster Member",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tenantId": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "department": { "type": "string" },
+        "status": { "type": "string", "enum": ["IDLE", "RUNNING", "FAILED", "SUCCESS"] },
+        "description": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "tenantId", "name", "role", "status"]
+    },
+    "Log": {
+      "title": "Log",
+      "description": "Agent Execution & Security Log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tenantId": { "type": "string" },
+        "agentId": { "type": "string" },
+        "executionTimeMs": { "type": "number" },
+        "status": { "type": "string", "enum": ["SUCCESS", "FAILED", "RUNNING"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "tenantId", "agentId", "status"]
+    },
+    "MemoryItem": {
+      "title": "MemoryItem",
+      "description": "Multi-tier Vector & Knowledge Memory Item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tenantId": { "type": "string" },
+        "tier": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "tenantId", "tier", "content"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profile collection"
+    },
+    "/agents/{agentId}": {
+      "schema": { "$ref": "#/entities/Agent" },
+      "description": "AI Agents collection"
+    },
+    "/logs/{logId}": {
+      "schema": { "$ref": "#/entities/Log" },
+      "description": "System execution logs collection"
+    },
+    "/memories/{memoryId}": {
+      "schema": { "$ref": "#/entities/MemoryItem" },
+      "description": "Multi-tier memory collection"
+    }
+  }
+}

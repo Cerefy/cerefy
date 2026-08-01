@@ -1,0 +1,6 @@
+{
+  "name": "Cerefy",
+  "description": "AI-native startup ecosystem and sovereign multi-agent OS. Deploy executive agent rosters, simulate startup lifecycles, orchestrate knowledge memory graphs, and monitor sovereign infrastructure with zero-trust security.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
