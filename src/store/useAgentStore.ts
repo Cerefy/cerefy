@@ -24,26 +24,6 @@ import {
   KnowledgeArticle,
   IntegrationConnector,
 } from '../types';
-import {
-  INITIAL_TENANTS,
-  INITIAL_KG_NODES,
-  INITIAL_KG_EDGES,
-  INITIAL_DOCUMENTS,
-  INITIAL_CHUNKS,
-  INITIAL_SHORT_TERM_MEMORY,
-  INITIAL_LOGS,
-  INITIAL_POLICIES,
-  INITIAL_TELEMETRY,
-  INITIAL_DECISIONS,
-  INITIAL_AGENTS,
-  INITIAL_PROJECTS,
-  INITIAL_TASKS,
-  INITIAL_MEETINGS,
-  INITIAL_WORKFLOW_NODES,
-  INITIAL_INTEGRATIONS,
-  INITIAL_WORKFLOWS,
-  INITIAL_KNOWLEDGE_ARTICLES,
-} from '../data/initialData';
 
 interface AgentStore {
   currentUser: any | null;
@@ -101,15 +81,11 @@ interface AgentStore {
   updatePolicyAllowedRoles: (policyId: string, roles: TenantRole[]) => void;
   addTelemetrySpan: (span: Omit<TelemetrySpan, 'id'>) => void;
 
-  // Decision actions
   approveDecision: (decisionId: string) => void;
   runDecisionSimulation: (decisionId: string) => void;
-  addDecision: (title: string, question: string) => void;
-
-  // Agent actions
+  addDecision: (title: string, question: string) => Promise<void>;
+  fetchDecisions: () => Promise<void>;
   runAgentTask: (agentId: string) => void;
-
-  // Project / Task actions
   addTask: (task: TaskItem) => void;
   updateTaskStatus: (taskId: string, status: TaskItem['status']) => void;
   fetchProjects: () => Promise<void>;
@@ -125,32 +101,32 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
   authLoading: true,
   appMode: 'WORKSPACE',
   activeTab: 'command-center',
-  tenants: INITIAL_TENANTS,
-  activeTenantId: INITIAL_TENANTS[0].id,
+  tenants: [],
+  activeTenantId: 'tenant_cerefy_101',
   activeSessionId: 'sess_' + Math.random().toString(36).substring(2, 9),
   activeRole: 'TENANT_ADMIN',
   executionPlan: null,
   isExecuting: false,
-  graphNodes: INITIAL_KG_NODES,
-  graphEdges: INITIAL_KG_EDGES,
-  documents: INITIAL_DOCUMENTS,
-  chunks: INITIAL_CHUNKS,
-  shortTermMemory: INITIAL_SHORT_TERM_MEMORY,
-  logs: INITIAL_LOGS,
-  policies: INITIAL_POLICIES,
-  telemetry: INITIAL_TELEMETRY,
+  graphNodes: [],
+  graphEdges: [],
+  documents: [],
+  chunks: [],
+  shortTermMemory: [],
+  logs: [],
+  policies: [],
+  telemetry: [],
   commandPaletteOpen: false,
 
-  decisions: INITIAL_DECISIONS,
-  agents: INITIAL_AGENTS,
-  projects: INITIAL_PROJECTS,
-  tasks: INITIAL_TASKS,
-  meetings: INITIAL_MEETINGS,
-  workflowNodes: INITIAL_WORKFLOW_NODES,
-  workflows: INITIAL_WORKFLOWS as any,
-  connectors: INITIAL_INTEGRATIONS,
-  knowledgeArticles: INITIAL_KNOWLEDGE_ARTICLES,
-  integrations: INITIAL_INTEGRATIONS,
+  decisions: [],
+  agents: [],
+  projects: [],
+  tasks: [],
+  meetings: [],
+  workflowNodes: [],
+  workflows: [],
+  connectors: [],
+  knowledgeArticles: [],
+  integrations: [],
 
   setCurrentUser: (currentUser) => set({ currentUser }),
   setAuthLoading: (authLoading) => set({ authLoading }),
@@ -214,100 +190,46 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
       graphEdges: state.graphEdges.filter((e) => e.source !== nodeId && e.target !== nodeId),
     })),
 
-  ingestDocumentLocal: async (title, content, mimeType = 'PDF') => {
-    const state = get();
-    const docId = 'doc_' + Math.random().toString(36).substring(2, 9);
-    
-    // Recursive chunking
-    const chunkSize = 300;
-    const chunkOverlap = 40;
-    const textChunks: string[] = [];
-    let start = 0;
-    while (start < content.length) {
-      let end = start + chunkSize;
-      if (end < content.length) {
-        const lastSpace = content.lastIndexOf(' ', end);
-        if (lastSpace > start) end = lastSpace;
+  ingestDocumentLocal: async (title, content, mimeType: any = 'PDF') => {
+    try {
+      const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
+      const response = await fetch('/api/v1/ingestion/chunk', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-tenant-id': get().activeTenantId,
+          'Authorization': `Bearer ${authHeader}`
+        },
+        body: JSON.stringify({ title, content, chunkSize: 500, chunkOverlap: 50 }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to ingest document');
       }
-      textChunks.push(content.slice(start, end).trim());
-      start = end - chunkOverlap;
+      
+      const result = await response.json();
+      
+      const newDoc: IngestedDocument = {
+        id: result.documentId || 'doc_' + Math.random().toString(36).substring(2, 9),
+        tenantId: get().activeTenantId,
+        title: result.title,
+        mimeType: mimeType as any,
+        rawContent: content,
+        chunkCount: result.chunkCount || 0,
+        createdAt: new Date().toISOString(),
+      };
+      
+      set((state) => ({ documents: [newDoc, ...state.documents] }));
+      return newDoc;
+    } catch (error) {
+      console.error('Ingestion error:', error);
+      throw error;
     }
-    const cleanChunks = textChunks.filter((c) => c.length > 0);
-
-    const newDoc: IngestedDocument = {
-      id: docId,
-      tenantId: state.activeTenantId,
-      title,
-      mimeType,
-      type: mimeType,
-      uploadedAt: new Date().toISOString().split('T')[0],
-      fileSize: '1.2 MB',
-      rawContent: content,
-      chunkCount: cleanChunks.length,
-      extractedData: {
-        extractedBy: 'OCR & AI Vision Pipeline',
-        detectedEntities: ['Tenant_Core', 'Policy_Boundary'],
-        confidence: '98.5%',
-      },
-      ocrEntities: [
-        { key: 'Contract Parties', value: 'Acme Global Enterprises & Vendor SE' },
-        { key: 'Target Jurisdiction', value: 'Frankfurt, Germany' },
-        { key: 'SLA Level', value: '99.99% Availability' },
-      ],
-      summary: `Document uploaded and indexed into ${cleanChunks.length} vector embeddings.`,
-      ocrConfidence: 0.98,
-      linkedProject: 'proj_1',
-      linkedOwner: 'CEO Executive AI',
-      createdAt: new Date().toISOString(),
-    };
-
-    const newChunkObjects: DocumentChunk[] = cleanChunks.map((chunkText, idx) => ({
-      id: 'chunk_' + Math.random().toString(36).substring(2, 9),
-      documentId: docId,
-      tenantId: state.activeTenantId,
-      chunkIndex: idx,
-      content: chunkText,
-      embedding: Array.from({ length: 16 }, (_, i) => Math.sin((i + idx) * 0.3) * 0.5 + 0.1),
-      similarityScore: 0.85 + (idx % 3) * 0.04,
-      metadata: {
-        title,
-        mimeType,
-        tokenCount: Math.ceil(chunkText.length / 4),
-      },
-    }));
-
-    // Auto add node to knowledge graph for the document
-    const newDocNode: KGNode = {
-      id: 'node_' + docId,
-      tenantId: state.activeTenantId,
-      label: title,
-      type: 'Document',
-      x: 300 + Math.random() * 200,
-      y: 200 + Math.random() * 100,
-      color: '#8b5cf6',
-      properties: { mimeType, chunks: String(cleanChunks.length) },
-    };
-
-    set((s) => ({
-      documents: [newDoc, ...s.documents],
-      chunks: [...newChunkObjects, ...s.chunks],
-      graphNodes: [...s.graphNodes, newDocNode],
-    }));
-
-    return newDoc;
   },
 
   queryVectorStoreLocal: (query) => {
-    const state = get();
-    const queryLower = query.toLowerCase();
-    return state.chunks
-      .filter((c) => c.tenantId === state.activeTenantId)
-      .map((chunk) => {
-        const containsMatch = chunk.content.toLowerCase().includes(queryLower);
-        const score = containsMatch ? 0.95 : Math.random() * 0.4 + 0.5;
-        return { ...chunk, similarityScore: Number(score.toFixed(2)) };
-      })
-      .sort((a, b) => (b.similarityScore || 0) - (a.similarityScore || 0));
+    // Phase 3 will replace this with real API call
+    return [];
   },
 
   clearSessionMemory: () => set({ shortTermMemory: [] }),
@@ -352,39 +274,50 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
           return {
             ...d,
             status: 'IN_SIMULATION',
-            simulationResult: {
-              expectedRevenue: '$3,800,000 ARR',
-              estimatedCost: '$420,000 OpEx',
-              riskFactor: 'LOW-MEDIUM (28/100)',
-              timeline: '3 Months',
-              confidence: 96,
-            },
           };
         }
         return d;
       }),
     })),
 
-  addDecision: (title, question) =>
-    set((state) => ({
-      decisions: [
-        {
-          id: 'dec_' + Math.random().toString(36).substring(2, 9),
-          tenantId: state.activeTenantId,
-          title,
-          question,
-          riskScore: 25,
-          businessImpact: 'HIGH',
-          expectedROI: 'Estimated +180% ROI',
-          alternativesCount: 3,
-          confidenceScore: 92,
-          status: 'OPEN',
-          aiRecommendation: 'PROCEED WITH AI MONITORED IMPLEMENTATION. Calculated risk is within acceptable enterprise bounds.',
-          createdAt: new Date().toISOString(),
+  fetchDecisions: async () => {
+    try {
+      const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
+      const response = await fetch('/api/v1/decisions', {
+        headers: { 
+          'x-tenant-id': get().activeTenantId,
+          'Authorization': `Bearer ${authHeader}`
+        }
+      });
+      if (response.ok) {
+        const { data } = await response.json();
+        set({ decisions: data });
+      }
+    } catch (error) {
+      console.error('Failed to fetch decisions', error);
+    }
+  },
+
+  addDecision: async (title, question) => {
+    try {
+      const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
+      const response = await fetch('/api/v1/decisions', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-tenant-id': get().activeTenantId,
+          'Authorization': `Bearer ${authHeader}`
         },
-        ...state.decisions,
-      ],
-    })),
+        body: JSON.stringify({ title, question })
+      });
+      if (response.ok) {
+        const { data } = await response.json();
+        set((state) => ({ decisions: [data, ...state.decisions] }));
+      }
+    } catch (error) {
+      console.error('Failed to add decision', error);
+    }
+  },
 
   runAgentTask: (agentId) =>
     set((state) => ({
@@ -403,11 +336,17 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
 
   fetchProjects: async () => {
     try {
+      const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
       const response = await fetch('/api/v1/projects', {
-        headers: { 'x-tenant-id': get().activeTenantId }
+        headers: { 
+          'x-tenant-id': get().activeTenantId,
+          'Authorization': `Bearer ${authHeader}`
+        }
       });
-      const { data } = await response.json();
-      set({ projects: data });
+      if (response.ok) {
+        const { data } = await response.json();
+        set({ projects: data });
+      }
     } catch (error) {
       console.error('Failed to fetch projects', error);
     }
@@ -420,27 +359,25 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
       code: 'PROJ-AI-' + Math.floor(Math.random() * 90 + 10),
       department,
       status: 'Planning',
-      progress: 10,
-      progressPercent: 10,
-      milestonesCount: 5,
-      completedMilestones: 1,
+      progress: 0,
       budget: budget,
-      assignees: ['Montaser', 'CEO Executive AI'],
-      agentLead: 'CEO Executive AI',
-      budgetUsed: '$0 / ' + budget,
-      dueDate: '2026-12-31',
+      dueDate: new Date().toISOString().split('T')[0],
     };
     try {
+      const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
       const response = await fetch('/api/v1/projects', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
-            'x-tenant-id': get().activeTenantId 
+            'x-tenant-id': get().activeTenantId,
+            'Authorization': `Bearer ${authHeader}`
         },
         body: JSON.stringify(newProject),
       });
-      const { data } = await response.json();
-      set((state) => ({ projects: [data, ...state.projects] }));
+      if (response.ok) {
+        const { data } = await response.json();
+        set((state) => ({ projects: [data, ...state.projects] }));
+      }
     } catch (error) {
       console.error('Failed to add project', error);
     }
@@ -455,12 +392,12 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
           date: new Date().toISOString().split('T')[0],
           time: '10:00 AM',
           duration,
-          durationMinutes: 30,
-          participants: ['Montaser', 'CEO Agent', 'CTO Agent'],
-          attendees: ['Montaser', 'CEO Agent', 'CTO Agent'],
-          transcriptSummary: 'Meeting initiated. AI transcribed audio stream and summarized core deliverables.',
-          actionItems: [{ task: 'Review AI Generated Action Items', assignee: 'CEO Agent' }],
-          assignedTasksCount: 2,
+          durationMinutes: parseInt(duration) || 30,
+          participants: [],
+          attendees: [],
+          transcriptSummary: 'Pending transcription',
+          actionItems: [],
+          assignedTasksCount: 0,
         },
         ...state.meetings,
       ],
@@ -500,5 +437,3 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
       ),
     })),
 }));
-
-

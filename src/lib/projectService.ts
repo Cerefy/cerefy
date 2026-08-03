@@ -1,33 +1,31 @@
-import admin from 'firebase-admin';
-
-// Initialize lazily
-let db: admin.firestore.Firestore | null = null;
-
-const getDb = () => {
-  if (!db) {
-    db = admin.firestore();
-  }
-  return db;
-};
+import { db, withTenantContext } from '../db';
+import { projects } from '../db/schema';
+import { eq } from 'drizzle-orm';
 
 export const getAllProjects = async (tenantId: string) => {
-  const snapshot = await getDb()
-    .collection('projects')
-    .where('tenantId', '==', tenantId)
-    .get();
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return await withTenantContext(tenantId, async (tx) => {
+    // Because of RLS, this will only return projects for the current tenantId context
+    const results = await tx.select().from(projects);
+    return results;
+  });
 };
 
 export const createProject = async (tenantId: string, projectData: any) => {
-  const docRef = await getDb().collection('projects').add({
-    ...projectData,
-    tenantId,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  return await withTenantContext(tenantId, async (tx) => {
+    const [newProject] = await tx.insert(projects).values({
+      ...projectData,
+      tenantId,
+    }).returning();
+    return newProject;
   });
-  return { id: docRef.id, ...projectData, tenantId };
 };
 
-export const updateProject = async (projectId: string, projectData: any) => {
-  await getDb().collection('projects').doc(projectId).update(projectData);
-  return { id: projectId, ...projectData };
+export const updateProject = async (tenantId: string, projectId: string, projectData: any) => {
+  return await withTenantContext(tenantId, async (tx) => {
+    const [updated] = await tx.update(projects)
+      .set(projectData)
+      .where(eq(projects.id, projectId))
+      .returning();
+    return updated;
+  });
 };

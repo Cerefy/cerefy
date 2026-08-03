@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: cerefy-web
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: NEO4J_URI
+        sync: false

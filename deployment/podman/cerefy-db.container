@@ -1,0 +1,18 @@
+[Unit]
+Description=Cerefy PostgreSQL Database with pgvector
+After=network-online.target
+
+[Container]
+Image=docker.io/pgvector/pgvector:pg16
+ContainerName=cerefy-db
+Environment=POSTGRES_USER=cerefy
+Environment=POSTGRES_PASSWORD=cerefy_password
+Environment=POSTGRES_DB=cerefy
+PublishPort=5432:5432
+Volume=cerefy-pgdata:/var/lib/postgresql/data
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

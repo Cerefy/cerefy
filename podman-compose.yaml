@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  db:
+    image: docker.io/pgvector/pgvector:pg16
+    container_name: cerefy-db
+    environment:
+      POSTGRES_USER: cerefy
+      POSTGRES_PASSWORD: cerefy_password
+      POSTGRES_DB: cerefy
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  graph:
+    image: docker.io/neo4j:5-community
+    container_name: cerefy-graph
+    environment:
+      NEO4J_AUTH: neo4j/cerefy_neo4j
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4jdata:/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  neo4jdata:

@@ -24,6 +24,7 @@ export const AgentOrchestratorView: React.FC = () => {
     executionPlan,
     addLog,
     addTelemetrySpan,
+    currentUser,
   } = useAgentStore();
 
   const [query, setQuery] = useState(
@@ -91,13 +92,14 @@ export const AgentOrchestratorView: React.FC = () => {
 
     try {
       // Call backend Express API `/api/v1/agents/execute`
+      const authHeader = currentUser ? await currentUser.getIdToken() : '';
       const startTime = Date.now();
       const res = await fetch('/api/v1/agents/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Tenant-ID': activeTenantId,
-          'X-User-ID': 'user_admin_01',
+          'Authorization': `Bearer ${authHeader}`,
         },
         body: JSON.stringify({ query, sessionId }),
       });

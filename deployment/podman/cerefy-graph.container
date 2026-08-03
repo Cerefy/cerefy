@@ -1,0 +1,19 @@
+[Unit]
+Description=Cerefy Neo4j Knowledge Graph
+After=network-online.target
+
+[Container]
+Image=docker.io/neo4j:5-community
+ContainerName=cerefy-graph
+Environment=NEO4J_AUTH=neo4j/cerefy_neo4j
+Environment=NEO4J_PLUGINS=["apoc"]
+Environment=NEO4J_dbms_security_procedures_unrestricted=apoc.*
+PublishPort=7474:7474
+PublishPort=7687:7687
+Volume=cerefy-neo4jdata:/data
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

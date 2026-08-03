@@ -1,0 +1,20 @@
+[Unit]
+Description=Cerefy Enterprise Web Server
+After=network-online.target
+Requires=cerefy-db.service cerefy-graph.service
+
+[Container]
+Image=localhost/cerefy-web:latest
+ContainerName=cerefy-web
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=DATABASE_URL=postgres://cerefy:cerefy_password@cerefy-db:5432/cerefy
+Environment=NEO4J_URI=neo4j://cerefy-graph:7687
+PublishPort=3000:3000
+Network=cerefy-network
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

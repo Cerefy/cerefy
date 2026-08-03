@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Outlet, useNavigate } from 'react-router-dom';
+import { Routes, Route, Outlet, useNavigate, Navigate } from 'react-router-dom';
 import { useAgentStore } from './store/useAgentStore';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
@@ -78,17 +78,39 @@ const WorkspaceLayout = () => {
   );
 };
 
+const RequireAuth = ({ children }: { children: React.ReactNode }) => {
+  const { currentUser, authLoading } = useAgentStore();
+  
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#08080a] flex flex-col items-center justify-center text-zinc-400 font-mono text-sm space-y-4">
+        <span className="h-4 w-4 rounded-full bg-indigo-500 animate-ping" />
+        <p>Authenticating Session...</p>
+      </div>
+    );
+  }
+  
+  if (!currentUser) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 export default function App() {
-  const { fetchProjects } = useAgentStore();
+  const { fetchProjects, fetchDecisions, currentUser } = useAgentStore();
 
   React.useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
+    if (currentUser) {
+      fetchProjects();
+      fetchDecisions();
+    }
+  }, [fetchProjects, fetchDecisions, currentUser]);
 
   return (
     <Routes>
       <Route path="/" element={<PublicMarketingSite />} />
-      <Route path="/workspace" element={<WorkspaceLayout />}>
+      <Route path="/workspace" element={<RequireAuth><WorkspaceLayout /></RequireAuth>}>
         <Route index element={<AICommandCenter />} />
         <Route path="command-center" element={<AICommandCenter />} />
         <Route path="dashboard" element={<DashboardOverview />} />
