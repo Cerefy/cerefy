@@ -1,1 +1,339 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
+
+/* ============================================================
+   CEREFY ENTERPRISE AI — DESIGN SYSTEM TOKENS
+   Obsidian Black · Titanium Silver · Electric Cyan · Glassmorphism
+   ============================================================ */
+
+:root {
+  /* ─── Core Palette ─── */
+  --color-obsidian: #08080a;
+  --color-obsidian-light: #0e0e12;
+  --color-obsidian-lighter: #141418;
+  --color-titanium-100: #f4f4f5;
+  --color-titanium-200: #d4d4d8;
+  --color-titanium-300: #a1a1aa;
+  --color-titanium-400: #71717a;
+  --color-titanium-500: #52525b;
+  --color-titanium-600: #3f3f46;
+  --color-titanium-700: #27272a;
+  --color-titanium-800: #18181b;
+  --color-titanium-900: #0f0f12;
+  --color-cyan-glow: #00D8F6;
+  --color-cyan-bright: #00e5ff;
+  --color-cyan-dim: #0891b2;
+  --color-cyan-muted: #164e63;
+  --color-indigo-accent: #6366f1;
+  --color-indigo-dim: #4338ca;
+  --color-emerald-signal: #34d399;
+  --color-amber-signal: #fbbf24;
+  --color-red-signal: #f87171;
+
+  /* ─── Typography ─── */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Menlo, monospace;
+
+  /* ─── Spacing Scale ─── */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* ─── Border Radius ─── */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-full: 9999px;
+
+  /* ─── Shadows ─── */
+  --shadow-glow-cyan: 0 0 20px rgba(0, 216, 246, 0.15), 0 0 60px rgba(0, 216, 246, 0.05);
+  --shadow-glow-indigo: 0 0 20px rgba(99, 102, 241, 0.15), 0 0 60px rgba(99, 102, 241, 0.05);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.2);
+  --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-modal: 0 16px 64px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  /* ─── Glassmorphism ─── */
+  --glass-bg: rgba(14, 14, 18, 0.6);
+  --glass-bg-light: rgba(24, 24, 27, 0.5);
+  --glass-border: rgba(63, 63, 70, 0.3);
+  --glass-blur: 16px;
+  --glass-blur-heavy: 24px;
+
+  /* ─── Transitions ─── */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ─── Z-Index Scale ─── */
+  --z-dropdown: 50;
+  --z-sticky: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+  --z-command-palette: 500;
+}
+
+/* ============================================================
+   GLOBAL BASE STYLES
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-obsidian);
+  color: var(--color-titanium-200);
+  font-family: var(--font-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(0, 216, 246, 0.2);
+  color: white;
+}
+
+/* ============================================================
+   SCROLLBAR — Obsidian Custom
+   ============================================================ */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-titanium-700);
+  border-radius: var(--radius-full);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-titanium-600);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-titanium-700) transparent;
+}
+
+/* ============================================================
+   GLASSMORPHISM UTILITIES
+   ============================================================ */
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+.glass-heavy {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: rgba(14, 14, 18, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(39, 39, 42, 0.5);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+}
+
+.glass-card-hover {
+  transition: all var(--transition-normal);
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(0, 216, 246, 0.2);
+  box-shadow: var(--shadow-glow-cyan);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   GLOW EFFECTS
+   ============================================================ */
+
+.glow-cyan {
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.glow-indigo {
+  box-shadow: var(--shadow-glow-indigo);
+}
+
+.glow-text-cyan {
+  text-shadow: 0 0 20px rgba(0, 216, 246, 0.5), 0 0 40px rgba(0, 216, 246, 0.2);
+}
+
+.glow-text-indigo {
+  text-shadow: 0 0 20px rgba(99, 102, 241, 0.5), 0 0 40px rgba(99, 102, 241, 0.2);
+}
+
+/* ============================================================
+   GRADIENT UTILITIES
+   ============================================================ */
+
+.gradient-cyan {
+  background: linear-gradient(135deg, #0891b2, #00D8F6);
+}
+
+.gradient-indigo {
+  background: linear-gradient(135deg, #4338ca, #6366f1);
+}
+
+.gradient-cyan-to-indigo {
+  background: linear-gradient(135deg, #00D8F6, #6366f1);
+}
+
+.gradient-obsidian {
+  background: linear-gradient(180deg, var(--color-obsidian), var(--color-obsidian-lighter));
+}
+
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 216, 246, 0.3), rgba(99, 102, 241, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ============================================================
+   ANIMATION UTILITIES
+   ============================================================ */
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 25%,
+    rgba(0, 216, 246, 0.05) 50%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out forwards;
+}
+
+/* ============================================================
+   GRID PATTERN BACKGROUND (for workspace)
+   ============================================================ */
+
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(rgba(39, 39, 42, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(39, 39, 42, 0.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ============================================================
+   FOCUS STYLES
+   ============================================================ */
+
+.focus-ring:focus,
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-obsidian), 0 0 0 4px rgba(0, 216, 246, 0.4);
+}
+
+/* ============================================================
+   TYPOGRAPHY UTILITIES
+   ============================================================ */
+
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #00D8F6, #0891b2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-indigo {
+  background: linear-gradient(135deg, #818cf8, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-mixed {
+  background: linear-gradient(135deg, #00D8F6, #6366f1, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

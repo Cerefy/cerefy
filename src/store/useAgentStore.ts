@@ -1,4 +1,8 @@
 import { create } from 'zustand';
+import { projectsApi, Project } from '../api/projects';
+import { decisionsApi, Decision } from '../api/decisions';
+import { agentsApi, AgentProfile } from '../api/agents';
+
 import {
   AppMode,
   WorkspaceTab,
@@ -57,7 +61,9 @@ interface AgentStore {
   knowledgeArticles: KnowledgeArticle[];
   integrations: IntegrationConnector[];
 
-  // Actions
+  isLoading: boolean;
+  error: string | null;
+
   setCurrentUser: (user: any | null) => void;
   setAuthLoading: (loading: boolean) => void;
   setAppMode: (mode: AppMode) => void;
@@ -81,15 +87,20 @@ interface AgentStore {
   updatePolicyAllowedRoles: (policyId: string, roles: TenantRole[]) => void;
   addTelemetrySpan: (span: Omit<TelemetrySpan, 'id'>) => void;
 
-  approveDecision: (decisionId: string) => void;
-  runDecisionSimulation: (decisionId: string) => void;
+  approveDecision: (decisionId: string) => Promise<void>;
+  runDecisionSimulation: (decisionId: string) => Promise<void>;
   addDecision: (title: string, question: string) => Promise<void>;
   fetchDecisions: () => Promise<void>;
+  
+  fetchAgents: () => Promise<void>;
   runAgentTask: (agentId: string) => void;
+  
   addTask: (task: TaskItem) => void;
   updateTaskStatus: (taskId: string, status: TaskItem['status']) => void;
+  
   fetchProjects: () => Promise<void>;
   addProject: (title: string, department: string, budget: string) => Promise<void>;
+  
   addMeeting: (title: string, duration: string) => void;
   addWorkflowNode: (type: WorkflowNode['type'], label: string, description: string) => void;
   toggleIntegration: (id: string) => void;
@@ -128,6 +139,9 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
   knowledgeArticles: [],
   integrations: [],
 
+  isLoading: false,
+  error: null,
+
   setCurrentUser: (currentUser) => set({ currentUser }),
   setAuthLoading: (authLoading) => set({ authLoading }),
   setAppMode: (appMode) => set({ appMode }),
@@ -162,27 +176,14 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
     }),
 
   addGraphNode: (nodeData) =>
-    set((state) => {
-      const newNode: KGNode = {
-        ...nodeData,
-        id: 'node_' + Math.random().toString(36).substring(2, 9),
-        tenantId: state.activeTenantId,
-      };
-      return { graphNodes: [...state.graphNodes, newNode] };
-    }),
+    set((state) => ({
+      graphNodes: [...state.graphNodes, { ...nodeData, id: 'node_' + Math.random().toString(36).substring(2, 9), tenantId: state.activeTenantId }],
+    })),
 
   addGraphEdge: (source, target, relation) =>
-    set((state) => {
-      const newEdge: KGEdge = {
-        id: 'edge_' + Math.random().toString(36).substring(2, 9),
-        tenantId: state.activeTenantId,
-        source,
-        target,
-        relation,
-        updatedAt: new Date().toISOString(),
-      };
-      return { graphEdges: [...state.graphEdges, newEdge] };
-    }),
+    set((state) => ({
+      graphEdges: [...state.graphEdges, { id: 'edge_' + Math.random().toString(36).substring(2, 9), tenantId: state.activeTenantId, source, target, relation, updatedAt: new Date().toISOString() }],
+    })),
 
   deleteGraphNode: (nodeId) =>
     set((state) => ({
@@ -195,20 +196,11 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
       const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
       const response = await fetch('/api/v1/ingestion/chunk', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-tenant-id': get().activeTenantId,
-          'Authorization': `Bearer ${authHeader}`
-        },
+        headers: { 'Content-Type': 'application/json', 'x-tenant-id': get().activeTenantId, 'Authorization': `Bearer ${authHeader}` },
         body: JSON.stringify({ title, content, chunkSize: 500, chunkOverlap: 50 }),
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to ingest document');
-      }
-      
+      if (!response.ok) throw new Error('Failed to ingest document');
       const result = await response.json();
-      
       const newDoc: IngestedDocument = {
         id: result.documentId || 'doc_' + Math.random().toString(36).substring(2, 9),
         tenantId: get().activeTenantId,
@@ -218,7 +210,6 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
         chunkCount: result.chunkCount || 0,
         createdAt: new Date().toISOString(),
       };
-      
       set((state) => ({ documents: [newDoc, ...state.documents] }));
       return newDoc;
     } catch (error) {
@@ -227,23 +218,13 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
     }
   },
 
-  queryVectorStoreLocal: (query) => {
-    // Phase 3 will replace this with real API call
-    return [];
-  },
+  queryVectorStoreLocal: (query) => [],
 
   clearSessionMemory: () => set({ shortTermMemory: [] }),
 
   addLog: (logData) =>
     set((state) => ({
-      logs: [
-        {
-          ...logData,
-          id: 'log_' + Math.random().toString(36).substring(2, 9),
-          createdAt: new Date().toISOString(),
-        },
-        ...state.logs,
-      ],
+      logs: [{ ...logData, id: 'log_' + Math.random().toString(36).substring(2, 9), createdAt: new Date().toISOString() }, ...state.logs],
     })),
 
   updatePolicyAllowedRoles: (policyId, roles) =>
@@ -253,69 +234,62 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
 
   addTelemetrySpan: (spanData) =>
     set((state) => ({
-      telemetry: [
-        {
-          ...spanData,
-          id: 'span_' + Math.random().toString(36).substring(2, 9),
-        },
-        ...state.telemetry,
-      ],
-    })),
-
-  approveDecision: (decisionId) =>
-    set((state) => ({
-      decisions: state.decisions.map((d) => (d.id === decisionId ? { ...d, status: 'APPROVED' } : d)),
-    })),
-
-  runDecisionSimulation: (decisionId) =>
-    set((state) => ({
-      decisions: state.decisions.map((d) => {
-        if (d.id === decisionId) {
-          return {
-            ...d,
-            status: 'IN_SIMULATION',
-          };
-        }
-        return d;
-      }),
+      telemetry: [{ ...spanData, id: 'span_' + Math.random().toString(36).substring(2, 9) }, ...state.telemetry],
     })),
 
   fetchDecisions: async () => {
+    set({ isLoading: true, error: null });
     try {
-      const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
-      const response = await fetch('/api/v1/decisions', {
-        headers: { 
-          'x-tenant-id': get().activeTenantId,
-          'Authorization': `Bearer ${authHeader}`
-        }
-      });
-      if (response.ok) {
-        const { data } = await response.json();
-        set({ decisions: data });
-      }
-    } catch (error) {
-      console.error('Failed to fetch decisions', error);
+      const data = await decisionsApi.list();
+      set({ decisions: data as unknown as DecisionItem[], isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
     }
   },
 
   addDecision: async (title, question) => {
+    set({ isLoading: true, error: null });
     try {
-      const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
-      const response = await fetch('/api/v1/decisions', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-tenant-id': get().activeTenantId,
-          'Authorization': `Bearer ${authHeader}`
-        },
-        body: JSON.stringify({ title, question })
-      });
-      if (response.ok) {
-        const { data } = await response.json();
-        set((state) => ({ decisions: [data, ...state.decisions] }));
-      }
-    } catch (error) {
-      console.error('Failed to add decision', error);
+      const data = await decisionsApi.create({ title, question });
+      set((state) => ({ decisions: [data as unknown as DecisionItem, ...state.decisions], isLoading: false }));
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+
+  approveDecision: async (decisionId) => {
+    set({ isLoading: true, error: null });
+    try {
+      await decisionsApi.approve(decisionId);
+      set((state) => ({
+        decisions: state.decisions.map((d) => (d.id === decisionId ? { ...d, status: 'APPROVED' } : d)),
+        isLoading: false
+      }));
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+
+  runDecisionSimulation: async (decisionId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const data = await decisionsApi.simulate(decisionId);
+      set((state) => ({
+        decisions: state.decisions.map((d) => (d.id === decisionId ? (data as unknown as DecisionItem) : d)),
+        isLoading: false
+      }));
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+
+  fetchAgents: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const data = await agentsApi.listAgents();
+      set({ agents: data as unknown as AIAgentProfile[], isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
     }
   },
 
@@ -324,80 +298,37 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
       agents: state.agents.map((a) => (a.id === agentId ? { ...a, status: 'busy', currentTask: 'Executing automated task sequence...' } : a)),
     })),
 
-  addTask: (taskObj) =>
-    set((state) => ({
-      tasks: [taskObj, ...state.tasks],
-    })),
-
-  updateTaskStatus: (taskId, status) =>
-    set((state) => ({
-      tasks: state.tasks.map((t) => (t.id === taskId ? { ...t, status } : t)),
-    })),
-
   fetchProjects: async () => {
+    set({ isLoading: true, error: null });
     try {
-      const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
-      const response = await fetch('/api/v1/projects', {
-        headers: { 
-          'x-tenant-id': get().activeTenantId,
-          'Authorization': `Bearer ${authHeader}`
-        }
-      });
-      if (response.ok) {
-        const { data } = await response.json();
-        set({ projects: data });
-      }
-    } catch (error) {
-      console.error('Failed to fetch projects', error);
+      const data = await projectsApi.list();
+      set({ projects: data as unknown as ProjectItem[], isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
     }
   },
 
   addProject: async (title, department, budget) => {
-    const newProject = {
-      title,
-      name: title,
-      code: 'PROJ-AI-' + Math.floor(Math.random() * 90 + 10),
-      department,
-      status: 'Planning',
-      progress: 0,
-      budget: budget,
-      dueDate: new Date().toISOString().split('T')[0],
-    };
+    set({ isLoading: true, error: null });
     try {
-      const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
-      const response = await fetch('/api/v1/projects', {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'x-tenant-id': get().activeTenantId,
-            'Authorization': `Bearer ${authHeader}`
-        },
-        body: JSON.stringify(newProject),
-      });
-      if (response.ok) {
-        const { data } = await response.json();
-        set((state) => ({ projects: [data, ...state.projects] }));
-      }
-    } catch (error) {
-      console.error('Failed to add project', error);
+      const data = await projectsApi.create({ title, department, budget });
+      set((state) => ({ projects: [data as unknown as ProjectItem, ...state.projects], isLoading: false }));
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
     }
   },
 
+  addTask: (taskObj) => set((state) => ({ tasks: [taskObj, ...state.tasks] })),
+  updateTaskStatus: (taskId, status) => set((state) => ({ tasks: state.tasks.map((t) => (t.id === taskId ? { ...t, status } : t)) })),
+  
   addMeeting: (title, duration) =>
     set((state) => ({
       meetings: [
         {
           id: 'meet_' + Math.random().toString(36).substring(2, 9),
-          title,
-          date: new Date().toISOString().split('T')[0],
-          time: '10:00 AM',
-          duration,
-          durationMinutes: parseInt(duration) || 30,
-          participants: [],
-          attendees: [],
-          transcriptSummary: 'Pending transcription',
-          actionItems: [],
-          assignedTasksCount: 0,
+          title, date: new Date().toISOString().split('T')[0], time: '10:00 AM',
+          duration, durationMinutes: parseInt(duration) || 30, participants: [], attendees: [],
+          transcriptSummary: 'Pending transcription', actionItems: [], assignedTasksCount: 0,
         },
         ...state.meetings,
       ],
@@ -405,35 +336,18 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
 
   addWorkflowNode: (type, label, description) =>
     set((state) => ({
-      workflowNodes: [
-        ...state.workflowNodes,
-        {
-          id: 'wn_' + Math.random().toString(36).substring(2, 9),
-          type,
-          label,
-          description,
-          status: 'pending',
-        },
-      ],
+      workflowNodes: [...state.workflowNodes, { id: 'wn_' + Math.random().toString(36).substring(2, 9), type, label, description, status: 'pending' }],
     })),
 
   toggleIntegration: (id) =>
     set((state) => ({
-      integrations: state.integrations.map((i) =>
-        i.id === id ? { ...i, status: i.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' } : i
-      ),
-      connectors: state.connectors.map((i) =>
-        i.id === id ? { ...i, status: i.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' } : i
-      ),
+      integrations: state.integrations.map((i) => i.id === id ? { ...i, status: i.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' } : i),
+      connectors: state.connectors.map((i) => i.id === id ? { ...i, status: i.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' } : i),
     })),
 
   toggleConnectorStatus: (id) =>
     set((state) => ({
-      integrations: state.integrations.map((i) =>
-        i.id === id ? { ...i, status: i.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' } : i
-      ),
-      connectors: state.connectors.map((i) =>
-        i.id === id ? { ...i, status: i.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' } : i
-      ),
+      integrations: state.integrations.map((i) => i.id === id ? { ...i, status: i.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' } : i),
+      connectors: state.connectors.map((i) => i.id === id ? { ...i, status: i.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' } : i),
     })),
 }));

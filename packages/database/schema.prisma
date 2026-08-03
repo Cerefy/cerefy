@@ -1,0 +1,341 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPERADMIN
+  ORG_ADMIN
+  PROJECT_MANAGER
+  CONSULTANT
+  REVIEWER
+  VIEWER
+}
+
+enum EntityType {
+  USER
+  ORGANIZATION
+  WORKSPACE
+  PROJECT
+  REQUIREMENT
+  DOCUMENT
+  KNOWLEDGE_NODE
+  KNOWLEDGE_EDGE
+  DECISION
+  APPROVAL
+  COMMENT
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  DELETED
+}
+
+model User {
+  id             String        @id @default(uuid())
+  email          String        @unique
+  passwordHash   String
+  firstName      String?
+  lastName       String?
+  role           Role          @default(CONSULTANT)
+  permissions    String[]      @default([])
+  refreshToken   String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+  workspaces     Workspace[]   @relation("WorkspaceMembers")
+  projects       Project[]     @relation("ProjectOwner")
+  projectMembers ProjectMember[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+
+  @@index([email])
+  @@index([organizationId])
+}
+
+model Organization {
+  id          String        @id @default(uuid())
+  name        String
+  domain      String?       @unique
+  users       User[]
+  workspaces  Workspace[]
+  stakeholders Stakeholder[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+}
+
+model Workspace {
+  id             String       @id @default(uuid())
+  name           String
+  slug           String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  projects       Project[]
+  members        User[]       @relation("WorkspaceMembers")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+
+  @@index([organizationId])
+}
+
+model Project {
+  id           String          @id @default(uuid())
+  name         String
+  description  String?
+  workspace    Workspace       @relation(fields: [workspaceId], references: [id])
+  workspaceId  String
+  owner        User            @relation("ProjectOwner", fields: [ownerId], references: [id])
+  ownerId      String
+  members      ProjectMember[]
+  requirements Requirement[]
+  processMaps  ProcessMap[]
+  decisions    Decision[]
+  documents    Document[]
+  workflows    Workflow[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  deletedAt    DateTime?
+
+  @@index([workspaceId])
+  @@index([ownerId])
+}
+
+model ProjectMember {
+  id        String    @id @default(uuid())
+  project   Project   @relation(fields: [projectId], references: [id])
+  projectId String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  role      Role      @default(CONSULTANT)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@unique([projectId, userId])
+}
+
+model Requirement {
+  id              String    @id @default(uuid())
+  title           String
+  description     String?
+  project         Project   @relation(fields: [projectId], references: [id])
+  projectId       String
+  sourceDocument  String?
+  priority        Int?      @default(3)
+  confidenceScore Float?
+  status          Status    @default(ACTIVE)
+  createdByAgent  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  @@index([projectId])
+}
+
+model ProcessMap {
+  id        String    @id @default(uuid())
+  name      String
+  bpmnJson  String
+  version   Int       @default(1)
+  project   Project   @relation(fields: [projectId], references: [id])
+  projectId String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([projectId])
+}
+
+model Stakeholder {
+  id             String       @id @default(uuid())
+  name           String
+  email          String?
+  role           String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+
+  @@index([organizationId])
+}
+
+model Decision {
+  id              String     @id @default(uuid())
+  title           String
+  description     String?
+  project         Project    @relation(fields: [projectId], references: [id])
+  projectId       String
+  agent           String?
+  decisionType    String?
+  inputContext    String?
+  aiOutput        String?
+  confidenceScore Float?
+  riskLevel       String?
+  approvalStatus  String?    @default("PENDING")
+  approvedBy      String?
+  approvals       Approval[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  deletedAt       DateTime?
+
+  @@index([projectId])
+}
+
+model Approval {
+  id         String   @id @default(uuid())
+  decision   Decision @relation(fields: [decisionId], references: [id])
+  decisionId String
+  approverId String
+  status     String
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  @@index([decisionId])
+}
+
+model AuditLog {
+  id         String     @id @default(uuid())
+  tenantId   String?
+  entityId   String
+  entityType EntityType
+  actorId    String?
+  actorType  String
+  action     String
+  payload    Json?
+  timestamp  DateTime   @default(now())
+
+  @@index([tenantId])
+  @@index([entityId])
+}
+
+model KnowledgeNode {
+  id          String          @id @default(uuid())
+  entityType  EntityType
+  content     String
+  metadata    Json?
+  embeddingId String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+  edgesFrom   KnowledgeEdge[] @relation("FromNode")
+  edgesTo     KnowledgeEdge[] @relation("ToNode")
+}
+
+model KnowledgeEdge {
+  id           String        @id @default(uuid())
+  fromNode     KnowledgeNode @relation("FromNode", fields: [fromNodeId], references: [id])
+  fromNodeId   String
+  toNode       KnowledgeNode @relation("ToNode", fields: [toNodeId], references: [id])
+  toNodeId     String
+  relationship String
+  createdAt    DateTime      @default(now())
+}
+
+model Document {
+  id         String          @id @default(uuid())
+  title      String
+  project    Project         @relation(fields: [projectId], references: [id])
+  projectId  String
+  url        String
+  uploadedAt DateTime        @default(now())
+  chunks     DocumentChunk[]
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  deletedAt  DateTime?
+
+  @@index([projectId])
+}
+
+model DocumentChunk {
+  id          String   @id @default(uuid())
+  document    Document @relation(fields: [documentId], references: [id])
+  documentId  String
+  content     String
+  embeddingId String?
+  createdAt   DateTime @default(now())
+
+  @@index([documentId])
+}
+
+model Embedding {
+  id        String   @id @default(uuid())
+  vector    Float[]
+  createdAt DateTime @default(now())
+}
+
+model AgentRun {
+  id         String    @id @default(uuid())
+  agentName  String
+  status     String
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  payload    Json?
+}
+
+model Workflow {
+  id        String         @id @default(uuid())
+  name      String
+  project   Project        @relation(fields: [projectId], references: [id])
+  projectId String
+  status    String
+  createdAt DateTime       @default(now())
+  steps     WorkflowStep[]
+
+  @@index([projectId])
+}
+
+model WorkflowStep {
+  id         String    @id @default(uuid())
+  workflow   Workflow  @relation(fields: [workflowId], references: [id])
+  workflowId String
+  name       String
+  status     String
+  payload    Json?
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  @@index([workflowId])
+}
+
+model Comment {
+  id         String     @id @default(uuid())
+  entityId   String
+  entityType EntityType
+  authorId   String
+  content    String
+  createdAt  DateTime   @default(now())
+
+  @@index([entityId])
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  recipientId String
+  type        String
+  payload     Json?
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([recipientId])
+}
+
+model ApiKey {
+  id        String    @id @default(uuid())
+  key       String    @unique
+  ownerId   String
+  ownerType String
+  scopes    String[]
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([ownerId])
+}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAgentStore } from '../store/useAgentStore';
+import { useNavigate } from 'react-router-dom';
 import {
   auth,
   signOut,
@@ -15,10 +16,11 @@ export const FirebaseSync: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
+    console.log('FirebaseSync: initializing auth listener');
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log('FirebaseSync: auth state changed', user);
       setCurrentUser(user);
       setAuthLoading(false);
-
       if (user) {
         // Sync user profile to Firestore
         const userRef = doc(db, 'users', user.uid);
@@ -34,14 +36,22 @@ export const FirebaseSync: React.FC = () => {
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             });
+            console.log('FirebaseSync: created new user profile');
           }
         } catch (err) {
           console.warn('Firebase profile sync error:', err);
         }
       }
     });
-
-    return () => unsubscribe();
+    // Fallback timeout in case auth listener does not fire
+    const timeoutId = setTimeout(() => {
+      console.warn('FirebaseSync: auth listener timeout, proceeding without user');
+      setAuthLoading(false);
+    }, 5000);
+    return () => {
+      clearTimeout(timeoutId);
+      unsubscribe();
+    };
   }, [setCurrentUser, setAuthLoading, activeTenantId, activeRole]);
 
   const handleSignOut = async () => {

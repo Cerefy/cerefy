@@ -1,6 +1,10 @@
 import React from 'react';
+import { FirebaseSync } from './components/FirebaseSync';
 import { Routes, Route, Outlet, useNavigate, Navigate } from 'react-router-dom';
 import { useAgentStore } from './store/useAgentStore';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
+import NotFound from './components/NotFound';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { CommandPalette } from './components/CommandPalette';
@@ -25,6 +29,12 @@ import { MultiTierMemoryView } from './components/MultiTierMemoryView';
 import { TenantSecurityView } from './components/TenantSecurityView';
 import { SystemTelemetryView } from './components/SystemTelemetryView';
 import { PublicMarketingSite } from './components/PublicMarketingSite';
+import { LoginPage } from './components/LoginPage';
+import { RegisterPage } from './components/RegisterPage';
+import { AICanvasView } from './components/AICanvasView';
+import { BPMNWorkspaceView } from './components/BPMNWorkspaceView';
+import { GovernanceDashboardView } from './components/GovernanceDashboardView';
+import { ActivityFeedView } from './components/ActivityFeedView';
 
 const WorkspaceLayout = () => {
   const navigate = useNavigate();
@@ -38,7 +48,7 @@ const WorkspaceLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#08080a] text-zinc-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200 antialiased">
+    <div className="min-h-screen bg-[#08080a] text-zinc-100 flex flex-col font-sans selection:bg-cyan-500/20 selection:text-cyan-100 antialiased">
       {/* Top Fixed Header */}
       <Navbar />
 
@@ -68,7 +78,7 @@ const WorkspaceLayout = () => {
         <div className="flex items-center gap-4">
           <span>CPU: 12%</span>
           <span>MEM: 1.4GB</span>
-          <span className="text-indigo-400 font-bold">LATENCY: 24ms</span>
+          <span className="text-cyan-400 font-bold">LATENCY: 24ms</span>
         </div>
       </footer>
 
@@ -79,25 +89,27 @@ const WorkspaceLayout = () => {
 };
 
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
-  const { currentUser, authLoading } = useAgentStore();
-  
-  if (authLoading) {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#08080a] flex flex-col items-center justify-center text-zinc-400 font-mono text-sm space-y-4">
-        <span className="h-4 w-4 rounded-full bg-indigo-500 animate-ping" />
-        <p>Authenticating Session...</p>
+      <div className="min-h-screen bg-[#08080a] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" />
+          <p className="text-zinc-500 text-sm font-mono">CEREFY OS — AUTHENTICATING...</p>
+        </div>
       </div>
     );
   }
-  
-  if (!currentUser) {
-    return <Navigate to="/" replace />;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
-  
+
   return <>{children}</>;
 };
 
-export default function App() {
+function AppRoutes() {
   const { fetchProjects, fetchDecisions, currentUser } = useAgentStore();
 
   React.useEffect(() => {
@@ -108,31 +120,57 @@ export default function App() {
   }, [fetchProjects, fetchDecisions, currentUser]);
 
   return (
-    <Routes>
-      <Route path="/" element={<PublicMarketingSite />} />
-      <Route path="/workspace" element={<RequireAuth><WorkspaceLayout /></RequireAuth>}>
-        <Route index element={<AICommandCenter />} />
-        <Route path="command-center" element={<AICommandCenter />} />
-        <Route path="dashboard" element={<DashboardOverview />} />
-        <Route path="decisions" element={<DecisionCenterView />} />
-        <Route path="agents" element={<AgentsRosterView />} />
-        <Route path="projects" element={<ProjectsTrackerView />} />
-        <Route path="documents" element={<DocumentsOCRView />} />
-        <Route path="meetings" element={<MeetingsView />} />
-        <Route path="tasks" element={<TasksKanbanView />} />
-        <Route path="knowledge" element={<KnowledgeHubView />} />
-        <Route path="studio" element={<AIStudioWorkflowView />} />
-        <Route path="analytics" element={<AnalyticsView />} />
-        <Route path="integrations" element={<IntegrationsView />} />
-        <Route path="settings" element={<WorkspaceSettingsView />} />
-        <Route path="orchestrator" element={<AgentOrchestratorView />} />
-        <Route path="graph" element={<KnowledgeGraphView />} />
-        <Route path="ingestion" element={<IngestionPipeline />} />
-        <Route path="memory" element={<MultiTierMemoryView />} />
-        <Route path="security" element={<TenantSecurityView />} />
-        <Route path="telemetry" element={<SystemTelemetryView />} />
-      </Route>
-      <Route path="/admin" element={<AdminConsole />} />
-    </Routes>
+    <>
+      <FirebaseSync />
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<PublicMarketingSite />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* Protected Workspace Routes */}
+        <Route path="/workspace" element={<RequireAuth><WorkspaceLayout /></RequireAuth>}>
+          <Route index element={<AICommandCenter />} />
+          <Route path="command-center" element={<AICommandCenter />} />
+          <Route path="dashboard" element={<DashboardOverview />} />
+          <Route path="decisions" element={<DecisionCenterView />} />
+          <Route path="agents" element={<AgentsRosterView />} />
+          <Route path="projects" element={<ProjectsTrackerView />} />
+          <Route path="documents" element={<DocumentsOCRView />} />
+          <Route path="meetings" element={<MeetingsView />} />
+          <Route path="tasks" element={<TasksKanbanView />} />
+          <Route path="knowledge" element={<KnowledgeHubView />} />
+          <Route path="studio" element={<AIStudioWorkflowView />} />
+          <Route path="analytics" element={<AnalyticsView />} />
+          <Route path="integrations" element={<IntegrationsView />} />
+          <Route path="settings" element={<WorkspaceSettingsView />} />
+          <Route path="orchestrator" element={<AgentOrchestratorView />} />
+          <Route path="graph" element={<KnowledgeGraphView />} />
+          <Route path="ingestion" element={<IngestionPipeline />} />
+          <Route path="memory" element={<MultiTierMemoryView />} />
+          <Route path="security" element={<TenantSecurityView />} />
+          <Route path="telemetry" element={<SystemTelemetryView />} />
+          {/* New AI-powered workspace routes */}
+          <Route path="ai-canvas" element={<AICanvasView />} />
+          <Route path="bpmn" element={<BPMNWorkspaceView />} />
+          <Route path="governance" element={<GovernanceDashboardView />} />
+          <Route path="activity" element={<ActivityFeedView />} />
+        </Route>
+
+        {/* Admin Console */}
+        <Route path="/admin" element={<AdminConsole />} />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   );
 }

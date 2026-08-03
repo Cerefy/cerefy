@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  cerefy-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cerefy-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USER=${NEO4J_USER}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      cerefy-db:
+        condition: service_healthy
+      cerefy-graph:
+        condition: service_healthy
+    networks:
+      - cerefy-net
+
+  cerefy-db:
+    image: pgvector/pgvector:pg16
+    container_name: cerefy-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-cerefy}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-cerefy_password}
+      POSTGRES_DB: ${DB_NAME:-cerefy_production}
+    ports:
+      - "5432:5432"
+    volumes:
+      - cerefy-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-cerefy}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cerefy-net
+
+  cerefy-graph:
+    image: neo4j:5.20.0
+    container_name: cerefy-graph
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: ${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-cerefy_neo4j_pwd}
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - cerefy-neodata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cerefy-net
+
+  cerefy-proxy:
+    image: nginx:alpine
+    container_name: cerefy-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - cerefy-app
+    networks:
+      - cerefy-net
+
+networks:
+  cerefy-net:
+    driver: bridge
+
+volumes:
+  cerefy-pgdata:
+  cerefy-neodata:

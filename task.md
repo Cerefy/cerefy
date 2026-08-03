@@ -1,0 +1,27 @@
+# Phase 4 Tasks: Enterprise Integration Framework
+
+- [ ] Verify/Create API Clients (`src/api/*`)
+  - [ ] Auth, Agents, Projects, Decisions, Workspaces
+- [ ] Refactor Zustand Store (`useAgentStore.ts`)
+  - [ ] Remove mock data dependencies
+  - [ ] Integrate with API clients
+  - [ ] Add loading/error state management
+- [ ] Connect Components to Real APIs
+  - [ ] Dashboard, Projects, AI Canvas, Governance
+  - [ ] Implement empty/loading states
+- [ ] Complete Socket.IO Integration
+  - [ ] `useRealtime.ts` hooks
+  - [ ] Real-time updates in `ActivityFeedView` and `AICanvasView`
+- [ ] Remove Mock Data
+  - [ ] Delete `src/mockData.ts` and references
+- [ ] Setup Deployment Configurations
+  - [ ] `Dockerfile`
+  - [ ] `docker-compose.production.yml`
+  - [ ] `nginx.conf`
+  - [ ] `DEPLOYMENT.md`
+- [ ] Run Verification
+  - [ ] `npm run lint`
+  - [ ] `npm run build`
+- [ ] Git Operations
+  - [ ] Commit changes
+  - [ ] Push to GitHub

@@ -1,21 +1,26 @@
 FROM node:22-alpine AS builder
 
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm ci
+
 COPY . .
 RUN npm run build
 
-FROM node:22-alpine
+FROM node:22-alpine AS runner
+
 WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Install only production dependencies for the server.cjs if externalized
 COPY package*.json ./
 RUN npm ci --omit=dev
+
 COPY --from=builder /app/dist ./dist
-# If instrumentation.ts needs to be included, esbuild will bundle it if imported in server.ts.
-# Otherwise, we might need to copy it if it's external, but esbuild --bundle handles it.
+COPY --from=builder /app/package.json ./
 
-ENV NODE_ENV=production
-ENV PORT=8080
-EXPOSE 8080
+EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]

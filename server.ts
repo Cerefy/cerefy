@@ -15,7 +15,7 @@ import { DecodedIdToken } from 'firebase-admin/auth';
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = 3002; // changed to avoid conflict
 
 app.use(express.json({ limit: '10mb' }));
 

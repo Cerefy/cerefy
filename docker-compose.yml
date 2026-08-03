@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cerefy-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: cerefy
+      POSTGRES_PASSWORD: cerefy_secret_pass
+      POSTGRES_DB: cerefy_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U cerefy -d cerefy_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: cerefy-redis
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    container_name: cerefy-qdrant
+    restart: always
+    ports:
+      - '6333:6333'
+      - '6334:6334'
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  neo4j:
+    image: neo4j:5.16-community
+    container_name: cerefy-neo4j
+    restart: always
+    environment:
+      NEO4J_AUTH: neo4j/cerefy_neo4j_pass
+    ports:
+      - '7474:7474'
+      - '7687:7687'
+    volumes:
+      - neo4j_data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: cerefy-rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: cerefy
+      RABBITMQ_DEFAULT_PASS: cerefy_mq_pass
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cerefy-api
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://cerefy:cerefy_secret_pass@postgres:5432/cerefy_db?schema=public
+      JWT_SECRET: cerefy-super-secret-jwt-key-2026
+      JWT_REFRESH_SECRET: cerefy-refresh-token-secret-2026
+      PORT: 4000
+    ports:
+      - '4000:4000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  qdrant_data:
+  neo4j_data:
