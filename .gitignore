@@ -1,8 +1,44 @@
+# Dependencies
 node_modules/
-build/
+
+# Build output
 dist/
-coverage/
-.DS_Store
+build/
+
+# Logs
+logs/
 *.log
-.env*
+
+# Environment files (never commit secrets)
+.env
+.env.local
+.env.production
 !.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Test coverage
+coverage/
+
+# Docker
+*.env.docker
+
+# Backups
+backups/
+*.sql.gz
+*.dump
+*.dump.gz
+
+# Temp files
+*.tmp
+*.temp

@@ -11,62 +11,78 @@ import * as decisionService from './src/lib/decisionService';
 import { buildAgentOrchestrator } from './src/lib/agentOrchestrator';
 import admin from 'firebase-admin';
 import { DecodedIdToken } from 'firebase-admin/auth';
+import { logger, httpLogger } from './src/lib/logger';
+import { corsMiddleware, securityHeaders, requestId, requestSizeLimiter } from './src/lib/securityMiddleware';
+import { apiRateLimiter, authRateLimiter, aiRateLimiter } from './src/lib/rateLimiter';
+import { livenessCheck, readinessCheck, simpleHealthCheck } from './src/lib/healthCheck';
 
 dotenv.config();
 
 const app = express();
-const PORT = 3002; // changed to avoid conflict
+const PORT = parseInt(process.env.PORT || '3002', 10);
 
+// ─── Global Middleware ─────────────────────────────────────────────────────
+app.set('trust proxy', 1);
+app.use(requestId);
+app.use(corsMiddleware);
+app.use(securityHeaders);
+app.use(requestSizeLimiter);
 app.use(express.json({ limit: '10mb' }));
+app.use(httpLogger);
 
-// Lazy initialize Gemini client
+// ─── Health & Monitoring Endpoints (no auth, no rate limit) ───────────────
+app.get('/health', simpleHealthCheck);
+app.get('/api/health', simpleHealthCheck);
+app.get('/health/live', livenessCheck);
+app.get('/health/ready', readinessCheck);
+
+// ─── Metrics endpoint ─────────────────────────────────────────────────────
+app.get('/api/metrics', (req: Request, res: Response) => {
+  const memUsage = process.memoryUsage();
+  res.json({
+    uptime: process.uptime(),
+    memory: {
+      heapUsedMB: Math.round(memUsage.heapUsed / 1024 / 1024),
+      heapTotalMB: Math.round(memUsage.heapTotal / 1024 / 1024),
+      rssMB: Math.round(memUsage.rss / 1024 / 1024),
+    },
+    cpu: process.cpuUsage(),
+    nodeVersion: process.version,
+    pid: process.pid,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// ─── Lazy Singletons ─────────────────────────────────────────────────────
 let aiClient: GoogleGenAI | null = null;
 function getGeminiClient(): GoogleGenAI | null {
   if (!aiClient && process.env.GEMINI_API_KEY) {
     try {
       aiClient = new GoogleGenAI({
         apiKey: process.env.GEMINI_API_KEY,
-        httpOptions: {
-          headers: {
-            'User-Agent': 'aistudio-build',
-          },
-        },
+        httpOptions: { headers: { 'User-Agent': 'cerefy-enterprise/1.0' } },
       });
     } catch (err) {
-      console.warn('Failed to initialize GoogleGenAI client:', err);
+      logger.warn('Failed to initialize GoogleGenAI client', { error: err });
     }
   }
   return aiClient;
 }
 
-// Lazy initialize Firebase Admin
 let firebaseApp: any | null = null;
 function getFirebaseAdmin() {
   if (!firebaseApp) {
     try {
       firebaseApp = admin.initializeApp();
-      console.log('Firebase Admin initialized');
+      logger.info('Firebase Admin initialized');
     } catch (err) {
-      console.error('Failed to initialize Firebase Admin:', err);
+      logger.error('Failed to initialize Firebase Admin', { error: err });
     }
   }
   return firebaseApp;
 }
 
-// ------------------------------------------------------------------
-// API Gateway & Middleware
-// ------------------------------------------------------------------
-
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    environment: process.env.NODE_ENV || 'development',
-    geminiConfigured: !!process.env.GEMINI_API_KEY,
-    firebaseConfigured: !!getFirebaseAdmin(),
-    timestamp: new Date().toISOString(),
-  });
-});
-
+// ─── Auth Middleware ──────────────────────────────────────────────────────
 export interface AuthenticatedRequest extends Request {
   user?: DecodedIdToken;
 }
@@ -81,26 +97,27 @@ const requireAuth = async (req: AuthenticatedRequest, res: Response, next: NextF
   const idToken = authHeader.split('Bearer ')[1];
   try {
     const firebaseAdmin = getFirebaseAdmin();
-    if (!firebaseAdmin) {
-      throw new Error('Firebase Admin not initialized');
-    }
+    if (!firebaseAdmin) throw new Error('Firebase Admin not initialized');
     const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
     req.user = decodedToken;
     next();
   } catch (error) {
-    console.error('Auth verification failed:', error);
+    logger.warn('Auth verification failed', { error });
     res.status(403).json({ error: 'Unauthorized: Invalid token' });
-    return;
   }
 };
 
-// Project Endpoints
+// ─── Apply API Rate Limiter to all /api/v1 routes ────────────────────────
+app.use('/api/v1', apiRateLimiter);
+
+// ─── Project Endpoints ────────────────────────────────────────────────────
 app.get('/api/v1/projects', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
   try {
     const projects = await projectService.getAllProjects(tenantId);
     res.json({ status: 'success', data: projects });
   } catch (error) {
+    logger.error('Failed to fetch projects', { error, tenantId });
     res.status(500).json({ status: 'error', message: 'Failed to fetch projects' });
   }
 });
@@ -111,17 +128,19 @@ app.post('/api/v1/projects', requireAuth, async (req: AuthenticatedRequest, res:
     const project = await projectService.createProject(tenantId, req.body);
     res.json({ status: 'success', data: project });
   } catch (error) {
+    logger.error('Failed to create project', { error, tenantId });
     res.status(500).json({ status: 'error', message: 'Failed to create project' });
   }
 });
 
-// Decision Endpoints
+// ─── Decision Endpoints ───────────────────────────────────────────────────
 app.get('/api/v1/decisions', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
   try {
     const results = await decisionService.getAllDecisions(tenantId);
     res.json({ status: 'success', data: results });
   } catch (error) {
+    logger.error('Failed to fetch decisions', { error, tenantId });
     res.status(500).json({ status: 'error', message: 'Failed to fetch decisions' });
   }
 });
@@ -132,12 +151,13 @@ app.post('/api/v1/decisions', requireAuth, async (req: AuthenticatedRequest, res
     const decision = await decisionService.createDecision(tenantId, req.body);
     res.json({ status: 'success', data: decision });
   } catch (error) {
+    logger.error('Failed to create decision', { error, tenantId });
     res.status(500).json({ status: 'error', message: 'Failed to create decision' });
   }
 });
 
-// Multi-Agent Orchestrator Execution Endpoint
-app.post('/api/v1/agents/execute', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+// ─── AI Agent Orchestration ───────────────────────────────────────────────
+app.post('/api/v1/agents/execute', requireAuth, aiRateLimiter, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
   const userId = req.user?.uid || 'user_admin_01';
   const { query, sessionId = 'sess_default' } = req.body;
@@ -151,8 +171,6 @@ app.post('/api/v1/agents/execute', requireAuth, async (req: AuthenticatedRequest
 
   try {
     const orchestrator = buildAgentOrchestrator();
-    
-    // Invoke the stateful LangGraph
     const finalState = await orchestrator.invoke({
       tenantId,
       query,
@@ -160,10 +178,12 @@ app.post('/api/v1/agents/execute', requireAuth, async (req: AuthenticatedRequest
       retrievedContext: '',
       reasoningOutput: '',
       reflectionCritique: '',
-      status: 'started'
+      status: 'started',
     });
 
     const durationMs = Date.now() - startTime;
+
+    logger.info('Agent execution complete', { tenantId, userId, sessionId, durationMs });
 
     res.json({
       status: 'success',
@@ -175,11 +195,11 @@ app.post('/api/v1/agents/execute', requireAuth, async (req: AuthenticatedRequest
       response: finalState.reasoningOutput || 'No response generated.',
       reflectionCritique: finalState.reflectionCritique || 'No critique.',
       reflectionAttempts: 1,
-      tokensUsed: 250, // placeholder metric
+      tokensUsed: 250,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('Agent Execution Error:', error);
+    logger.error('Agent Execution Error', { error: error?.message, tenantId });
     res.status(500).json({
       status: 'error',
       message: error?.message || 'Agent execution failed',
@@ -188,7 +208,7 @@ app.post('/api/v1/agents/execute', requireAuth, async (req: AuthenticatedRequest
   }
 });
 
-// Document Chunking API Endpoint
+// ─── Document Ingestion ───────────────────────────────────────────────────
 app.post('/api/v1/ingestion/chunk', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
   const { content, chunkSize = 300, chunkOverlap = 40, title = 'Document' } = req.body;
@@ -198,36 +218,23 @@ app.post('/api/v1/ingestion/chunk', requireAuth, async (req: AuthenticatedReques
     return;
   }
 
-  const aiClient = getGeminiClient();
-  if (!aiClient) {
+  const aiClientInst = getGeminiClient();
+  if (!aiClientInst) {
     res.status(500).json({ error: 'AI Client not initialized. Check GEMINI_API_KEY.' });
     return;
   }
 
   try {
-    const result = await ingestionService.processDocument(
-      tenantId,
-      title,
-      content,
-      aiClient,
-      chunkSize,
-      chunkOverlap
-    );
-
-    res.json({
-      status: 'success',
-      title,
-      documentId: result.documentId,
-      chunkCount: result.chunkCount,
-    });
+    const result = await ingestionService.processDocument(tenantId, title, content, aiClientInst, chunkSize, chunkOverlap);
+    res.json({ status: 'success', title, documentId: result.documentId, chunkCount: result.chunkCount });
   } catch (error: any) {
-    console.error('Ingestion error:', error);
+    logger.error('Ingestion error', { error: error?.message, tenantId });
     res.status(500).json({ error: 'Failed to process document' });
   }
 });
 
-// Cypher Graph Sandbox API
-app.post('/api/v1/graph/cypher', (req, res) => {
+// ─── Knowledge Graph Sandbox ──────────────────────────────────────────────
+app.post('/api/v1/graph/cypher', requireAuth, (req: Request, res: Response) => {
   const { cypher, tenantId = 'tenant_acme_101' } = req.body;
   res.json({
     status: 'success',
@@ -235,16 +242,28 @@ app.post('/api/v1/graph/cypher', (req, res) => {
     tenantId,
     executedInMs: 8.4,
     nodesMatched: 6,
-    relationshipsMatched: 5,
     records: [
-      { id: 'node_tenant_core', label: 'Acme Core Tenant', type: 'Tenant' },
+      { id: 'node_tenant_core', label: 'Cerefy Core Tenant', type: 'Tenant' },
       { id: 'node_auth_policy', label: 'OAuth MFA Policy', type: 'Policy' },
-      { id: 'node_soc2_report', label: 'SOC2 Security Audit 2026', type: 'Document' },
     ],
   });
 });
 
-// Start Express Server
+// ─── Error Handler ────────────────────────────────────────────────────────
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  logger.error('Unhandled error', {
+    error: err.message,
+    stack: err.stack,
+    url: req.url,
+    method: req.method,
+  });
+  res.status(500).json({
+    error: 'Internal server error',
+    requestId: req.headers['x-request-id'],
+  });
+});
+
+// ─── Start Server ─────────────────────────────────────────────────────────
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
@@ -254,14 +273,18 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    app.use(express.static(distPath, { maxAge: '1y', etag: false }));
+    app.get('*', (req: Request, res: Response) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Enterprise Platform server running on http://0.0.0.0:${PORT}`);
+    logger.info(`🚀 Cerefy Enterprise AI running`, {
+      port: PORT,
+      env: process.env.NODE_ENV || 'development',
+      url: `http://0.0.0.0:${PORT}`,
+    });
   });
 }
 

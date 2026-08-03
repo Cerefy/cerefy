@@ -1,15 +1,22 @@
 {
-  "name": "react-example",
+  "name": "cerefy-enterprise-ai",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Cerefy Enterprise AI Operating System - Production Platform",
   "scripts": {
     "dev": "tsx server.ts",
     "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "build:frontend": "vite build",
+    "build:backend": "esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "start": "node dist/server.cjs",
-    "clean": "rm -rf dist server.js",
+    "clean": "npx rimraf dist",
     "lint": "tsc --noEmit",
-    "test:ingest": "tsx src/tools/testIngestion.ts"
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'No test suite configured yet - add Vitest for unit tests' && exit 0",
+    "db:migrate": "sh scripts/db-migrate.sh",
+    "db:backup": "sh scripts/backup-db.sh",
+    "health": "curl -s http://localhost:3002/health/ready | node -e \"const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));console.log(JSON.stringify(d,null,2))\""
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

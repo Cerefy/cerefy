@@ -15,12 +15,18 @@ export type WorkspaceTab =
   | 'analytics'
   | 'integrations'
   | 'settings'
+  // AI & Workspace Views
+  | 'ai-canvas'
+  | 'bpmn'
+  | 'governance'
+  | 'activity'
   // Legacy / Direct access mappings
   | 'orchestrator'
   | 'graph'
   | 'ingestion'
   | 'security'
   | 'telemetry';
+
 
 export type TenantRole = 'SUPER_ADMIN' | 'TENANT_ADMIN' | 'ANALYST' | 'VIEWER';
 
