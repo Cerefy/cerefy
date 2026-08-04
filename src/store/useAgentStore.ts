@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import api from '../api/axios';
 import { projectsApi, Project } from '../api/projects';
 import { decisionsApi, Decision } from '../api/decisions';
 import { agentsApi, AgentProfile } from '../api/agents';
@@ -193,14 +194,15 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
 
   ingestDocumentLocal: async (title, content, mimeType: any = 'PDF') => {
     try {
-      const authHeader = get().currentUser ? await get().currentUser.getIdToken() : '';
-      const response = await fetch('/api/v1/ingestion/chunk', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-tenant-id': get().activeTenantId, 'Authorization': `Bearer ${authHeader}` },
-        body: JSON.stringify({ title, content, chunkSize: 500, chunkOverlap: 50 }),
+      const response = await api.post('/api/v1/ingestion/chunk', {
+        title,
+        content,
+        chunkSize: 500,
+        chunkOverlap: 50,
+      }, {
+        headers: { 'x-tenant-id': get().activeTenantId },
       });
-      if (!response.ok) throw new Error('Failed to ingest document');
-      const result = await response.json();
+      const result = response.data;
       const newDoc: IngestedDocument = {
         id: result.documentId || 'doc_' + Math.random().toString(36).substring(2, 9),
         tenantId: get().activeTenantId,

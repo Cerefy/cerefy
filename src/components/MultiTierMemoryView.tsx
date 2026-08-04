@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 import { useAgentStore } from '../store/useAgentStore';
 import {
   Search,
@@ -49,12 +50,10 @@ export const MultiTierMemoryView: React.FC = () => {
     e.preventDefault();
     setIsExecutingCypher(true);
     try {
-      const res = await fetch('/api/v1/graph/cypher', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cypher: cypherQuery, tenantId: activeTenantId }),
+      const response = await api.post('/api/v1/graph/cypher', { cypher: cypherQuery, tenantId: activeTenantId }, {
+        headers: { 'x-tenant-id': activeTenantId },
       });
-      const data = await res.json();
+      const data = response.data;
       setCypherResult(data);
     } catch (err) {
       setCypherResult({

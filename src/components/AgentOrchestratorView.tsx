@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../api/axios';
 import { useAgentStore } from '../store/useAgentStore';
 import { AgentStep, MultiAgentExecutionPlan } from '../types';
 import { AgentMonitor } from './AgentMonitor';
@@ -92,19 +93,11 @@ export const AgentOrchestratorView: React.FC = () => {
 
     try {
       // Call backend Express API `/api/v1/agents/execute`
-      const authHeader = currentUser ? await currentUser.getIdToken() : '';
       const startTime = Date.now();
-      const res = await fetch('/api/v1/agents/execute', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Tenant-ID': activeTenantId,
-          'Authorization': `Bearer ${authHeader}`,
-        },
-        body: JSON.stringify({ query, sessionId }),
+      const response = await api.post('/api/v1/agents/execute', { query, sessionId }, {
+        headers: { 'x-tenant-id': activeTenantId },
       });
-
-      const data = await res.json();
+      const data = response.data;
       const latencyMs = Date.now() - startTime;
 
       if (data.status === 'success') {

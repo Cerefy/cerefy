@@ -4,6 +4,7 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { authApi, UserProfile, AuthTokens } from '../api/auth';
 import socketService from '../api/socket';
+import { useAgentStore } from '../store/useAgentStore';
 
 export interface AuthState {
   user: UserProfile | null;
@@ -26,6 +27,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // mirror authenticated user into the global agent store so UI can react
+  const setCurrentUser = useAgentStore((s) => s.setCurrentUser);
+
   // Attempt to restore session on mount
   useEffect(() => {
     const restoreSession = async () => {
@@ -38,6 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const profile = await authApi.me();
         setUser(profile);
         socketService.connect();
+        setCurrentUser(profile);
       } catch {
         // Token expired — try refresh
         try {
@@ -45,9 +50,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const profile = await authApi.me();
           setUser(profile);
           socketService.connect();
+          setCurrentUser(profile);
         } catch {
           localStorage.removeItem('cerefy_access_token');
           localStorage.removeItem('cerefy_refresh_token');
+          setCurrentUser(null);
         }
       } finally {
         setIsLoading(false);
@@ -59,6 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const handleForcedLogout = () => {
       setUser(null);
       socketService.disconnect();
+      setCurrentUser(null);
     };
     window.addEventListener('cerefy:auth:logout', handleForcedLogout);
     return () => {
@@ -73,6 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authApi.login({ email, password });
       setUser(response.user);
       socketService.connect();
+      setCurrentUser(response.user);
     } catch (err: unknown) {
       const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Login failed. Please check your credentials.';
       setError(message);
@@ -89,6 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authApi.register({ email, password, firstName, lastName, organizationName });
       setUser(response.user);
       socketService.connect();
+      setCurrentUser(response.user);
     } catch (err: unknown) {
       const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Registration failed.';
       setError(message);
@@ -104,6 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setUser(null);
       socketService.disconnect();
+      setCurrentUser(null);
     }
   }, []);
 

@@ -27,3 +27,24 @@ export const updateDecision = async (tenantId: string, decisionId: string, updat
     return updated;
   });
 };
+
+export const approveDecision = async (tenantId: string, decisionId: string) => {
+  return await updateDecision(tenantId, decisionId, { status: 'APPROVED' });
+};
+
+export const rejectDecision = async (tenantId: string, decisionId: string, reason: string) => {
+  return await updateDecision(tenantId, decisionId, { status: 'REJECTED', aiRecommendation: `Rejected: ${reason}` });
+};
+
+export const simulateDecision = async (tenantId: string, decisionId: string) => {
+  return await updateDecision(tenantId, decisionId, {
+    status: 'IN_SIMULATION',
+    simulationResult: {
+      expectedRevenue: '$1.9M',
+      estimatedCost: '$270K',
+      riskFactor: 'Medium',
+      timeline: '12 weeks',
+      confidence: 72,
+    },
+  });
+};

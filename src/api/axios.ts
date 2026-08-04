@@ -1,4 +1,4 @@
-// src/api/axios.ts
+﻿// src/api/axios.ts
 // Production-ready Axios instance with JWT interceptors and token refresh
 
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
@@ -89,6 +89,7 @@ api.interceptors.response.use(
         processQueue(null, accessToken);
 
         if (originalRequest.headers) {
+          // use the freshly obtained accessToken for the retry
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         }
         return api(originalRequest);

@@ -29,3 +29,16 @@ export const updateProject = async (tenantId: string, projectId: string, project
     return updated;
   });
 };
+
+export const getProjectById = async (tenantId: string, projectId: string) => {
+  return await withTenantContext(tenantId, async (tx) => {
+    const [project] = await tx.select().from(projects).where(eq(projects.id, projectId));
+    return project;
+  });
+};
+
+export const deleteProject = async (tenantId: string, projectId: string) => {
+  return await withTenantContext(tenantId, async (tx) => {
+    await tx.delete(projects).where(eq(projects.id, projectId));
+  });
+};
