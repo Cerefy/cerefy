@@ -2,6 +2,8 @@ services:
   - type: web
     name: cerefy-web
     env: docker
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:prod
     dockerfilePath: ./Dockerfile
     plan: free
     envVars:
