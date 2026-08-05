@@ -33,6 +33,7 @@ export async function codeAgent(state: CerefyGraphState) {
 
   const nextState = {
     ...state,
+    codeComplete: true,
     confidence: Math.max(state.confidence, 66),
     output: {
       ...state.output,
