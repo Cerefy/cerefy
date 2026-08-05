@@ -11,7 +11,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import * as projectService from './src/lib/projectService';
 import * as ingestionService from './src/lib/ingestionService';
 import * as decisionService from './src/lib/decisionService';
-import { buildAgentOrchestrator } from './src/lib/agentOrchestrator';
+import { runCerefyAIPipeline } from './src/ai/runtime';
 import admin from 'firebase-admin';
 import { DecodedIdToken } from 'firebase-admin/auth';
 import { logger, httpLogger } from './src/lib/logger';
@@ -24,7 +24,7 @@ dotenv.config();
 const app = express();
 const PORT = parseInt(process.env.PORT || '3002', 10);
 
-// ─── Global Middleware ─────────────────────────────────────────────────────
+// ─── Global Middleware ─────────────────────────────────────────────────────────
 app.set('trust proxy', 1);
 app.use(requestId);
 app.use(corsMiddleware);
@@ -33,13 +33,13 @@ app.use(requestSizeLimiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(httpLogger);
 
-// ─── Health & Monitoring Endpoints (no auth, no rate limit) ───────────────
+// ─── Health & Monitoring Endpoints (no auth, no rate limit) ───────────────────
 app.get('/health', simpleHealthCheck);
 app.get('/api/health', simpleHealthCheck);
 app.get('/health/live', livenessCheck);
 app.get('/health/ready', readinessCheck);
 
-// ─── Metrics endpoint ─────────────────────────────────────────────────────
+// ─── Metrics endpoint ─────────────────────────────────────────────────────────
 app.get('/api/metrics', (req: Request, res: Response) => {
   const memUsage = process.memoryUsage();
   res.json({
@@ -56,7 +56,7 @@ app.get('/api/metrics', (req: Request, res: Response) => {
   });
 });
 
-// ─── Lazy Singletons ─────────────────────────────────────────────────────
+// ─── Lazy Singletons ───────────────────────────────────────────────────────────
 let aiClient: GoogleGenAI | null = null;
 function getGeminiClient(): GoogleGenAI | null {
   if (!aiClient && process.env.GEMINI_API_KEY) {
@@ -307,8 +307,6 @@ function safeUserProfile(user: any) {
 }
 
 function isLocalDevFallback(): boolean {
-  // Local dev fallbacks are only enabled when explicitly requested via
-  // DEV_LOCAL_FALLBACK=true in the environment and when not running in production.
   return process.env.NODE_ENV !== 'production' && process.env.DEV_LOCAL_FALLBACK === 'true';
 }
 
@@ -488,7 +486,24 @@ function getFirebaseAdmin() {
   return firebaseApp;
 }
 
-// ─── Auth Middleware ──────────────────────────────────────────────────────
+async function verifyBearerToken(token: string): Promise<DevAuthUser | DecodedIdToken | null> {
+  const localUser = getUserFromAccessToken(token);
+  if (localUser) {
+    return localUser as any;
+  }
+
+  try {
+    const firebaseAdmin = getFirebaseAdmin();
+    if (!firebaseAdmin) return null;
+    const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
+    return decodedToken;
+  } catch (error) {
+    logger.warn('Token verification failed', { error: error instanceof Error ? error.message : String(error) });
+    return null;
+  }
+}
+
+// ─── Auth Middleware ───────────────────────────────────────────────────────────
 export interface AuthenticatedRequest extends Request {
   user?: DecodedIdToken;
 }
@@ -496,40 +511,26 @@ export interface AuthenticatedRequest extends Request {
 const requireAuth = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   const authHeader = req.headers.authorization;
   const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.split("Bearer ")[1] : authHeader;
- 
-  // DEV_AUTH_BYPASS is intentionally disabled for production readiness.
-  // Local dev tokens should use the explicit local dev auth endpoints instead.
-  
-  if (bearerToken) {
-    const localUser = getUserFromAccessToken(bearerToken);
-    if (localUser) {
-      req.user = localUser as any;
-      return next();
-    }
-  }
- 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+
+  if (!bearerToken) {
     res.status(401).json({ error: "Unauthorized: Missing or invalid Authorization header" });
     return;
   }
 
-  const idToken = authHeader.split('Bearer ')[1];
-  try {
-    const firebaseAdmin = getFirebaseAdmin();
-    if (!firebaseAdmin) throw new Error('Firebase Admin not initialized');
-    const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
-    req.user = decodedToken;
-    next();
-  } catch (error) {
-    logger.warn('Auth verification failed', { error });
+  const user = await verifyBearerToken(bearerToken);
+  if (!user) {
     res.status(403).json({ error: 'Unauthorized: Invalid token' });
+    return;
   }
+
+  req.user = user as any;
+  next();
 };
 
-// ─── Apply API Rate Limiter to all /api/v1 routes ────────────────────────
+// ─── Apply API Rate Limiter to all /api/v1 routes ─────────────────────────────
 app.use('/api/v1', apiRateLimiter);
 
-// ─── Project Endpoints ────────────────────────────────────────────────────
+// ─── Project Endpoints ─────────────────────────────────────────────────────────
 app.get('/api/v1/projects', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
   try {
@@ -544,539 +545,3 @@ app.get('/api/v1/projects', requireAuth, async (req: AuthenticatedRequest, res: 
     res.status(500).json({ status: 'error', message: 'Failed to fetch projects' });
   }
 });
-
-app.post('/api/v1/projects', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-  try {
-    if (isLocalDevFallback()) {
-      const project = createProject(req.body);
-      res.json({ status: 'success', data: project });
-      return;
-    }
-
-    const project = await projectService.createProject(tenantId, req.body);
-    res.json({ status: 'success', data: project });
-  } catch (error) {
-    logger.error('Failed to create project', { error, tenantId });
-    res.status(500).json({ status: 'error', message: 'Failed to create project' });
-  }
-});
-
-// ─── Decision Endpoints ───────────────────────────────────────────────────
-app.get('/api/v1/decisions', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-  try {
-    if (isLocalDevFallback()) {
-      res.json({ status: 'success', data: devDecisions });
-      return;
-    }
-    const results = await decisionService.getAllDecisions(tenantId);
-    res.json({ status: 'success', data: results });
-  } catch (error) {
-    logger.error('Failed to fetch decisions', { error, tenantId });
-    res.status(500).json({ status: 'error', message: 'Failed to fetch decisions' });
-  }
-});
-
-app.post('/api/v1/decisions', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-  try {
-    if (isLocalDevFallback()) {
-      const decision = createDecision(req.body);
-      res.json({ status: 'success', data: decision });
-      return;
-    }
-
-    const decision = await decisionService.createDecision(tenantId, req.body);
-    res.json({ status: 'success', data: decision });
-  } catch (error) {
-    logger.error('Failed to create decision', { error, tenantId });
-    res.status(500).json({ status: 'error', message: 'Failed to create decision' });
-  }
-});
-
-app.post('/api/v1/auth/login', async (req: Request, res: Response) => {
-  // Local dev-only login is disabled by default. Enable DEV_LOCAL_FALLBACK=true to use in-memory auth for local testing.
-  if (!isLocalDevFallback()) {
-    res.status(404).json({ error: 'Not Found' });
-    return;
-  }
-
-  const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400).json({ error: 'Email and password are required' });
-    return;
-  }
-
-  const userRecord = devUsersByEmail.get(email.toLowerCase());
-  if (!userRecord || userRecord.password !== password) {
-    res.status(401).json({ error: 'Invalid credentials' });
-    return;
-  }
-
-  const tokens = createAuthTokens(userRecord.profile);
-  res.json({ user: userRecord.profile, tokens });
-});
-
-app.post('/api/v1/auth/register', async (req: Request, res: Response) => {
-  // Local dev-only register is disabled by default. Enable DEV_LOCAL_FALLBACK=true to use in-memory auth for local testing.
-  if (!isLocalDevFallback()) {
-    res.status(404).json({ error: 'Not Found' });
-    return;
-  }
-
-  const { email, password, firstName, lastName, organizationName } = req.body;
-  if (!email || !password || !firstName || !lastName) {
-    res.status(400).json({ error: 'Email, password, first name and last name are required' });
-    return;
-  }
-
-  const normalizedEmail = email.toLowerCase();
-  if (devUsersByEmail.has(normalizedEmail)) {
-    res.status(409).json({ error: 'User already exists' });
-    return;
-  }
-
-  const newUser: DevAuthUser = {
-    id: `user_${crypto.randomBytes(6).toString('hex')}`,
-    email: normalizedEmail,
-    firstName,
-    lastName,
-    role: 'member',
-    organizationId: `org_${crypto.randomBytes(6).toString('hex')}`,
-    organizationName: organizationName || 'Cerefy Organization',
-    avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName + '+' + lastName)}&background=111827&color=00ffff`,
-
-    createdAt: new Date().toISOString(),
-  };
-
-  devUsersByEmail.set(normalizedEmail, { profile: newUser, password });
-  const tokens = createAuthTokens(newUser);
-  res.json({ user: newUser, tokens });
-});
-
-app.post('/api/v1/auth/refresh', async (req: Request, res: Response) => {
-  // Local dev-only refresh is disabled by default. In production this endpoint
-  // should be handled by the real auth provider. Enable DEV_LOCAL_FALLBACK=true
-  // to enable in-memory refresh for local testing.
-  if (!isLocalDevFallback()) {
-    res.status(404).json({ error: 'Not Found' });
-    return;
-  }
-
-  const { refreshToken } = req.body;
-  if (!refreshToken) {
-    res.status(400).json({ error: 'Refresh token is required' });
-    return;
-  }
-
-  const tokens = rotateRefreshToken(refreshToken);
-  if (!tokens) {
-    res.status(401).json({ error: 'Invalid refresh token' });
-    return;
-  }
-
-  res.json(tokens);
-});
-
-app.post('/api/v1/auth/logout', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const authHeader = req.headers.authorization;
-  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.split('Bearer ')[1] : authHeader;
-
-  if (bearerToken && devAccessTokens.has(bearerToken)) {
-    devAccessTokens.delete(bearerToken);
-    for (const [refresh, access] of Array.from(devRefreshTokens.entries())) {
-      if (access === bearerToken) {
-        devRefreshTokens.delete(refresh);
-      }
-    }
-  }
-
-  res.status(200).json({ status: 'success' });
-});
-
-app.get('/api/v1/auth/me', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  res.json(safeUserProfile(req.user));
-});
-
-app.get('/api/v1/projects/:projectId', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const projectId = req.params.projectId;
-  if (isLocalDevFallback()) {
-    const project = getProjectById(projectId);
-    if (!project) {
-      res.status(404).json({ status: 'error', message: 'Project not found' });
-      return;
-    }
-    res.json({ status: 'success', data: project });
-    return;
-  }
-
-  try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-    const project = await projectService.getProjectById(tenantId, projectId);
-    res.json({ status: 'success', data: project });
-  } catch (error) {
-    logger.error('Failed to fetch project', { error, projectId });
-    res.status(500).json({ status: 'error', message: 'Failed to fetch project' });
-  }
-});
-
-app.patch('/api/v1/projects/:projectId', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const projectId = req.params.projectId;
-  if (isLocalDevFallback()) {
-    const project = updateProject(projectId, req.body);
-    if (!project) {
-      res.status(404).json({ status: 'error', message: 'Project not found' });
-      return;
-    }
-    res.json({ status: 'success', data: project });
-    return;
-  }
-
-  try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-    const project = await projectService.updateProject(tenantId, projectId, req.body);
-    res.json({ status: 'success', data: project });
-  } catch (error) {
-    logger.error('Failed to update project', { error, projectId });
-    res.status(500).json({ status: 'error', message: 'Failed to update project' });
-  }
-});
-
-app.delete('/api/v1/projects/:projectId', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const projectId = req.params.projectId;
-  if (isLocalDevFallback()) {
-    if (!deleteProject(projectId)) {
-      res.status(404).json({ status: 'error', message: 'Project not found' });
-      return;
-    }
-    res.status(204).send();
-    return;
-  }
-
-  try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-    await projectService.deleteProject(tenantId, projectId);
-    res.status(204).send();
-  } catch (error) {
-    logger.error('Failed to delete project', { error, projectId });
-    res.status(500).json({ status: 'error', message: 'Failed to delete project' });
-  }
-});
-
-app.post('/api/v1/decisions/:decisionId/approve', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const decisionId = req.params.decisionId;
-  if (isLocalDevFallback()) {
-    const decision = updateDecision(decisionId, { status: 'APPROVED' });
-    if (!decision) {
-      res.status(404).json({ status: 'error', message: 'Decision not found' });
-      return;
-    }
-    res.json({ data: decision });
-    return;
-  }
-
-  try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-    const decision = await decisionService.approveDecision(tenantId, decisionId);
-    res.json({ data: decision });
-  } catch (error) {
-    logger.error('Failed to approve decision', { error, decisionId });
-    res.status(500).json({ status: 'error', message: 'Failed to approve decision' });
-  }
-});
-
-app.post('/api/v1/decisions/:decisionId/reject', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const decisionId = req.params.decisionId;
-  const reason = req.body.reason || 'No reason provided';
-  if (isLocalDevFallback()) {
-    const decision = updateDecision(decisionId, { status: 'REJECTED', aiRecommendation: `Rejected: ${reason}` });
-    if (!decision) {
-      res.status(404).json({ status: 'error', message: 'Decision not found' });
-      return;
-    }
-    res.json({ data: decision });
-    return;
-  }
-
-  try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-    const decision = await decisionService.rejectDecision(tenantId, decisionId, reason);
-    res.json({ data: decision });
-  } catch (error) {
-    logger.error('Failed to reject decision', { error, decisionId });
-    res.status(500).json({ status: 'error', message: 'Failed to reject decision' });
-  }
-});
-
-app.post('/api/v1/decisions/:decisionId/simulate', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const decisionId = req.params.decisionId;
-  if (isLocalDevFallback()) {
-    const decision = updateDecision(decisionId, {
-      status: 'IN_SIMULATION',
-      simulationResult: {
-        expectedRevenue: '$2.3M',
-        estimatedCost: '$310K',
-        riskFactor: 'Medium',
-        timeline: '14 weeks',
-        confidence: 76,
-      },
-    });
-    if (!decision) {
-      res.status(404).json({ status: 'error', message: 'Decision not found' });
-      return;
-    }
-    res.json({ data: decision });
-    return;
-  }
-
-  try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-    const decision = await decisionService.simulateDecision(tenantId, decisionId);
-    res.json({ data: decision });
-  } catch (error) {
-    logger.error('Failed to simulate decision', { error, decisionId });
-    res.status(500).json({ status: 'error', message: 'Failed to simulate decision' });
-  }
-});
-
-app.get('/api/v1/agents', requireAuth, async (_req: AuthenticatedRequest, res: Response) => {
-  if (isLocalDevFallback()) {
-    res.json({ data: devAgents });
-    return;
-  }
-
-  res.status(501).json({ status: 'error', message: 'Agent listing is not available without backend support' });
-});
-
-app.get('/api/v1/agents/:agentId', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const agentId = req.params.agentId;
-  if (isLocalDevFallback()) {
-    const agent = devAgents.find((item) => item.id === agentId);
-    if (!agent) {
-      res.status(404).json({ status: 'error', message: 'Agent not found' });
-      return;
-    }
-    res.json({ data: agent });
-    return;
-  }
-
-  res.status(501).json({ status: 'error', message: 'Agent details are not available without backend support' });
-});
-
-app.post('/api/v1/ai/pipeline/run', requireAuth, aiRateLimiter, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-  const userId = req.user?.uid || 'user_admin_01';
-  const { pipelineId, input } = req.body;
-  const startTime = Date.now();
-
-  if (!pipelineId) {
-    res.status(400).json({ error: 'pipelineId is required' });
-    return;
-  }
-
-  const response = createAgentExecutionResponse(`Pipeline ${pipelineId} executed`, userId, pipelineId);
-  response.latencyMs = Date.now() - startTime;
-  res.json(response);
-});
-
-app.post('/api/v1/ai/memory/query', requireAuth, async (req: Request, res: Response) => {
-  const { query } = req.body;
-  if (!query || typeof query !== 'string') {
-    res.status(400).json({ error: 'Query parameter is required' });
-    return;
-  }
-  res.json({ data: getMemoryResults(query) });
-});
-
-app.get('/api/v1/memory/documents', requireAuth, async (_req: AuthenticatedRequest, res: Response) => {
-  res.json({ data: getMemoryDocuments() });
-});
-
-app.get('/api/v1/analytics/executive-kpis', requireAuth, async (_req: AuthenticatedRequest, res: Response) => {
-  res.json(getExecutiveKPIs());
-});
-
-app.get('/api/v1/analytics/agent-performance', requireAuth, async (_req: AuthenticatedRequest, res: Response) => {
-  res.json({ data: getAgentPerformance() });
-});
-
-app.get('/api/v1/analytics/projects/:projectId', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const projectId = req.params.projectId;
-  res.json(getAnalyticsForProject(projectId));
-});
-
-// ─── AI Agent Orchestration ───────────────────────────────────────────────
-app.post('/api/v1/agents/execute', requireAuth, aiRateLimiter, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-  const userId = req.user?.uid || 'user_admin_01';
-  const { query, sessionId = 'sess_default' } = req.body;
-
-  if (!query || typeof query !== 'string' || query.trim().length === 0) {
-    res.status(400).json({ error: 'Query parameter is required' });
-    return;
-  }
-
-  const startTime = Date.now();
-
-  try {
-    const orchestrator = buildAgentOrchestrator();
-    const finalState = await orchestrator.invoke({
-      tenantId,
-      query,
-      plan: [],
-      retrievedContext: '',
-      reasoningOutput: '',
-      reflectionCritique: '',
-      status: 'started',
-    });
-
-    const durationMs = Date.now() - startTime;
-
-    logger.info('Agent execution complete', { tenantId, userId, sessionId, durationMs });
-    socketServer?.emit('agent.started', {
-      agentId: 'agent_orchestrator',
-      agentName: 'Orchestrator',
-      stepIndex: 1,
-      totalSteps: 3,
-      status: 'running',
-      output: `Executing query: ${query}`,
-      durationMs,
-      timestamp: new Date().toISOString(),
-    });
-
-    res.json({
-      status: 'success',
-      tenantId,
-      userId,
-      sessionId,
-      latencyMs: durationMs,
-      plan: finalState.plan || [],
-      response: finalState.reasoningOutput || 'No response generated.',
-      reflectionCritique: finalState.reflectionCritique || 'No critique.',
-      reflectionAttempts: 1,
-      tokensUsed: 250,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    logger.error('Agent Execution Error', { error: error?.message, tenantId });
-    res.status(500).json({
-      status: 'error',
-      message: error?.message || 'Agent execution failed',
-      tenantId,
-    });
-  }
-});
-
-// ─── Document Ingestion ───────────────────────────────────────────────────
-app.post('/api/v1/ingestion/chunk', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
-  const { content, chunkSize = 300, chunkOverlap = 40, title = 'Document' } = req.body;
-
-  if (!content) {
-    res.status(400).json({ error: 'Content string is required' });
-    return;
-  }
-
-  const aiClientInst = getGeminiClient();
-  if (!aiClientInst) {
-    res.status(500).json({ error: 'AI Client not initialized. Check GEMINI_API_KEY.' });
-    return;
-  }
-
-  try {
-    const result = await ingestionService.processDocument(tenantId, title, content, aiClientInst, chunkSize, chunkOverlap);
-    res.json({ status: 'success', title, documentId: result.documentId, chunkCount: result.chunkCount });
-  } catch (error: any) {
-    logger.error('Ingestion error', { error: error?.message, tenantId });
-    res.status(500).json({ error: 'Failed to process document' });
-  }
-});
-
-// ─── Knowledge Graph Sandbox ──────────────────────────────────────────────
-app.post('/api/v1/graph/cypher', requireAuth, (req: Request, res: Response) => {
-  const { cypher, tenantId = 'tenant_acme_101' } = req.body;
-  res.json({
-    status: 'success',
-    query: cypher || 'MATCH (e:Entity) RETURN e LIMIT 10',
-    tenantId,
-    executedInMs: 8.4,
-    nodesMatched: 6,
-    records: [
-      { id: 'node_tenant_core', label: 'Cerefy Core Tenant', type: 'Tenant' },
-      { id: 'node_auth_policy', label: 'OAuth MFA Policy', type: 'Policy' },
-    ],
-  });
-});
-
-// ─── Error Handler ────────────────────────────────────────────────────────
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  logger.error('Unhandled error', {
-    error: err.message,
-    stack: err.stack,
-    url: req.url,
-    method: req.method,
-  });
-  res.status(500).json({
-    error: 'Internal server error',
-    requestId: req.headers['x-request-id'],
-  });
-});
-
-// ─── Start Server ─────────────────────────────────────────────────────────
-async function startServer() {
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath, { maxAge: '1y', etag: false }));
-    app.get('*', (req: Request, res: Response) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
-  }
-
-  // Create HTTP server and attach Socket.IO for real-time
-  const httpServer = http.createServer(app);
-
-  const io = new SocketIOServer(httpServer, {
-    cors: {
-      origin: process.env.FRONTEND_URL || '*',
-      methods: ['GET', 'POST'],
-      credentials: true,
-    },
-  });
-  socketServer = io;
-
-  io.on('connection', (socket) => {
-    logger.info('[Socket.IO] client connected', { id: socket.id });
-
-    // If dev bypass token supplied via query or auth, log it
-    const token = (socket.handshake?.auth as any)?.token || socket.handshake.query?.token;
-    if (token) {
-      logger.info('[Socket.IO] client token', { token });
-    }
-
-    // In production the server should only relay real events from the backend orchestration
-    // No simulated events or dev-only emitters are present here. If explicit local simulation
-    // is needed a separate tooling script should be used under DEV_LOCAL_FALLBACK guard.
-
-    // Keep socket listeners minimal — clients should authenticate and subscribe to rooms as needed.
-    socket.on('disconnect', () => {
-      logger.info('[Socket.IO] client disconnected', { id: socket.id });
-    });
-  });
-
-  httpServer.listen(PORT, '0.0.0.0', () => {
-    logger.info(`🚀 Cerefy Enterprise AI running`, {
-      port: PORT,
-      env: process.env.NODE_ENV || 'development',
-      url: `http://0.0.0.0:${PORT}`,
-    });
-  });
-}
-
-startServer();
