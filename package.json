@@ -14,7 +14,7 @@
     "clean": "npx rimraf dist",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'No test suite configured yet - add Vitest for unit tests' && exit 0",
+    "test": "node --test --import tsx src/ai/**/*.test.ts",
     "db:migrate": "sh scripts/db-migrate.sh",
     "db:backup": "sh scripts/backup-db.sh",
     "health": "curl -s http://localhost:3002/health/ready | node -e \"const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));console.log(JSON.stringify(d,null,2))\""
