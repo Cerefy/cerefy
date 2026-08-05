@@ -51,19 +51,9 @@ const getSeverityIcon = (severity: string) => {
   }
 };
 
-// Fallback data if no real-time events yet
-const mockActivities = [
-  { id: 'act-1', type: 'agent', title: 'Solution Architect Completed', description: 'Generated microservices topology for new feature.', severity: 'success', timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
-  { id: 'act-2', type: 'decision', title: 'Governance Review Required', description: 'Pending approval for Kubernetes migration.', severity: 'warning', timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString() },
-  { id: 'act-3', type: 'workflow', title: 'Onboarding Process Started', description: 'New client onboarding initiated by System.', severity: 'info', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() },
-  { id: 'act-4', type: 'system', title: 'Database Sync Failed', description: 'Failed to sync with replica DB. Retrying...', severity: 'error', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString() },
-];
-
 export const ActivityFeedView: React.FC = () => {
   const { activities: realActivities, clearActivities } = useRealtimeActivity();
-
-  // Combine real and mock for demonstration if real is empty
-  const displayActivities = realActivities.length > 0 ? realActivities : mockActivities;
+  const displayActivities = realActivities;
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">

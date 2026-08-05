@@ -2,7 +2,7 @@
 // BPMN Process Workspace — Visual process modeling and mapping
 // Uses existing Cerefy Obsidian/Cyan identity
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import {
   Workflow,
@@ -30,6 +30,7 @@ import {
 import { Badge } from './ui/Badge';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
+import { useAgentStore } from '../store/useAgentStore';
 
 interface ProcessNode {
   id: string;
@@ -88,11 +89,39 @@ const nodeStatusColor: Record<string, string> = {
 };
 
 export const BPMNWorkspaceView: React.FC = () => {
+  const projects = useAgentStore((state) => state.projects);
+  const fetchProjects = useAgentStore((state) => state.fetchProjects);
   const [selectedProcess, setSelectedProcess] = useState<ProcessDefinition>(sampleProcesses[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNode, setSelectedNode] = useState<ProcessNode | null>(null);
 
-  const filteredProcesses = sampleProcesses.filter((p) =>
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
+  const projectProcesses: ProcessDefinition[] = projects.map((project) => ({
+    id: project.id,
+    name: project.title,
+    version: project.code || 'v1.0',
+    status: project.status === 'Planning' ? 'draft' : project.status === 'In Progress' ? 'active' : 'archived',
+    nodeCount: project.milestonesCount ?? 10,
+    lastModified: project.dueDate || 'Unknown',
+    owner: project.agentLead || 'AI Agent',
+  }));
+
+  const availableProcesses = projectProcesses.length > 0 ? projectProcesses : sampleProcesses;
+
+  useEffect(() => {
+    setSelectedProcess((current) => {
+      if (availableProcesses.length === 0) return current;
+      if (!availableProcesses.find((proc) => proc.id === current.id)) {
+        return availableProcesses[0];
+      }
+      return current;
+    });
+  }, [availableProcesses]);
+
+  const filteredProcesses = availableProcesses.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 

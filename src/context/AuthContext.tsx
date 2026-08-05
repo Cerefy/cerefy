@@ -1,9 +1,18 @@
 // src/context/AuthContext.tsx
-// Production auth context with JWT management, token refresh, and user state
+// Production auth context with Firebase authentication, JWT management, and optional local fallback
 
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
-import { authApi, UserProfile, AuthTokens } from '../api/auth';
+import { authApi, UserProfile } from '../api/auth';
 import socketService from '../api/socket';
+import {
+  auth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  updateProfile,
+  type User,
+} from '../lib/firebase';
 import { useAgentStore } from '../store/useAgentStore';
 
 export interface AuthState {
@@ -22,101 +31,159 @@ export interface AuthContextValue extends AuthState {
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+function mapFirebaseUserToProfile(user: User): UserProfile {
+  const displayName = user.displayName || '';
+  const [firstName = 'Cerefy', ...remaining] = displayName.split(' ');
+  const lastName = remaining.join(' ') || 'User';
+
+  return {
+    id: user.uid,
+    email: user.email || 'unknown@cerefy.local',
+    firstName,
+    lastName,
+    role: 'member',
+    organizationId: 'org_cerefy_101',
+    organizationName: 'Cerefy Enterprise',
+    avatarUrl:
+      user.photoURL ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName + '+' + lastName)}&background=111827&color=00ffff`,
+    createdAt: user.metadata.creationTime || new Date().toISOString(),
+  };
+}
+
+async function setFirebaseAccessToken(user: User): Promise<string> {
+  const idToken = await user.getIdToken();
+  localStorage.setItem('cerefy_access_token', idToken);
+  return idToken;
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // mirror authenticated user into the global agent store so UI can react
   const setCurrentUser = useAgentStore((s) => s.setCurrentUser);
 
-  // Attempt to restore session on mount
   useEffect(() => {
-    const restoreSession = async () => {
-      const token = localStorage.getItem('cerefy_access_token');
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-      try {
-        const profile = await authApi.me();
-        setUser(profile);
-        socketService.connect();
-        setCurrentUser(profile);
-      } catch {
-        // Token expired — try refresh
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
         try {
-          await authApi.refresh();
-          const profile = await authApi.me();
+          await setFirebaseAccessToken(firebaseUser);
+          const profile = mapFirebaseUserToProfile(firebaseUser);
           setUser(profile);
-          socketService.connect();
           setCurrentUser(profile);
-        } catch {
-          localStorage.removeItem('cerefy_access_token');
-          localStorage.removeItem('cerefy_refresh_token');
+          socketService.connect();
+        } catch (err) {
+          console.warn('AuthContext: failed to initialize Firebase session', err);
+        }
+      } else {
+        const refreshToken = localStorage.getItem('cerefy_refresh_token');
+        if (refreshToken) {
+          try {
+            await authApi.refresh();
+            const profile = await authApi.me();
+            setUser(profile);
+            setCurrentUser(profile);
+            socketService.connect();
+          } catch {
+            localStorage.removeItem('cerefy_access_token');
+            localStorage.removeItem('cerefy_refresh_token');
+            setUser(null);
+            setCurrentUser(null);
+          }
+        } else {
+          setUser(null);
           setCurrentUser(null);
         }
-      } finally {
-        setIsLoading(false);
       }
-    };
-    restoreSession();
+      setIsLoading(false);
+    });
 
-    // Listen for forced logout events from axios interceptor
-    const handleForcedLogout = () => {
-      setUser(null);
-      socketService.disconnect();
-      setCurrentUser(null);
-    };
-    window.addEventListener('cerefy:auth:logout', handleForcedLogout);
-    return () => {
-      window.removeEventListener('cerefy:auth:logout', handleForcedLogout);
-    };
-  }, []);
+    return () => unsubscribe();
+  }, [setCurrentUser]);
 
   const login = useCallback(async (email: string, password: string) => {
     setError(null);
     setIsLoading(true);
+
     try {
-      const response = await authApi.login({ email, password });
-      setUser(response.user);
+      const credential = await signInWithEmailAndPassword(auth, email, password);
+      const profile = mapFirebaseUserToProfile(credential.user);
+      await setFirebaseAccessToken(credential.user);
+      setUser(profile);
+      setCurrentUser(profile);
       socketService.connect();
-      setCurrentUser(response.user);
-    } catch (err: unknown) {
-      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Login failed. Please check your credentials.';
-      setError(message);
-      throw err;
+    } catch (firebaseError: unknown) {
+      try {
+        const response = await authApi.login({ email, password });
+        const profile = response.user;
+        localStorage.setItem('cerefy_access_token', response.tokens.accessToken);
+        localStorage.setItem('cerefy_refresh_token', response.tokens.refreshToken);
+        setUser(profile);
+        setCurrentUser(profile);
+        socketService.connect();
+      } catch (error: any) {
+        const message =
+          (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          'Login failed. Please check your credentials.';
+        setError(message);
+        throw firebaseError;
+      }
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setCurrentUser]);
 
   const register = useCallback(async (email: string, password: string, firstName: string, lastName: string, organizationName?: string) => {
     setError(null);
     setIsLoading(true);
+
     try {
-      const response = await authApi.register({ email, password, firstName, lastName, organizationName });
-      setUser(response.user);
+      const credential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(credential.user, { displayName: `${firstName} ${lastName}` });
+      await setFirebaseAccessToken(credential.user);
+      const profile = mapFirebaseUserToProfile(credential.user);
+      setUser(profile);
+      setCurrentUser(profile);
       socketService.connect();
-      setCurrentUser(response.user);
-    } catch (err: unknown) {
-      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Registration failed.';
-      setError(message);
-      throw err;
+    } catch (firebaseError: unknown) {
+      try {
+        const response = await authApi.register({ email, password, firstName, lastName, organizationName });
+        const profile = response.user;
+        localStorage.setItem('cerefy_access_token', response.tokens.accessToken);
+        localStorage.setItem('cerefy_refresh_token', response.tokens.refreshToken);
+        setUser(profile);
+        setCurrentUser(profile);
+        socketService.connect();
+      } catch (error: any) {
+        const message =
+          (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          'Registration failed.';
+        setError(message);
+        throw firebaseError;
+      }
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setCurrentUser]);
 
   const logout = useCallback(async () => {
     try {
-      await authApi.logout();
+      await signOut(auth);
+    } catch {
+      try {
+        await authApi.logout();
+      } catch {
+        // ignore logout fallback failures
+      }
     } finally {
+      localStorage.removeItem('cerefy_access_token');
+      localStorage.removeItem('cerefy_refresh_token');
       setUser(null);
       socketService.disconnect();
       setCurrentUser(null);
     }
-  }, []);
+  }, [setCurrentUser]);
 
   const clearError = useCallback(() => setError(null), []);
 

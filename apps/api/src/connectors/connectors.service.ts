@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConnectorConfig, SyncResult } from './connector.interface';
-import { PrismaService } from '../../../../packages/database/src/prisma.service';
+import { PrismaService } from '@packages/database/src/prisma.service';
 
 @Injectable()
 export class ConnectorsService {

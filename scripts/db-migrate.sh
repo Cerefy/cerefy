@@ -13,13 +13,21 @@ fi
 
 echo "✅ DATABASE_URL configured"
 
-# Check if drizzle-kit is available and run push
-if npx drizzle-kit --version > /dev/null 2>&1; then
-  echo "🔄 Running Drizzle migrations..."
-  npx drizzle-kit push --config=drizzle.config.ts
-  echo "✅ Drizzle migrations complete"
+# Prefer Prisma migrations in the consolidated repository
+if npx prisma --version > /dev/null 2>&1; then
+  echo "🔄 Running Prisma migrate deploy..."
+  npx prisma migrate deploy
+  echo "✅ Prisma migrations deployed"
 else
-  echo "⚠️  drizzle-kit not found, skipping migrations"
+  echo "⚠️  Prisma CLI not found, falling back to drizzle if available"
+  if npx drizzle-kit --version > /dev/null 2>&1; then
+    echo "🔄 Running Drizzle migrations..."
+    npx drizzle-kit push --config=drizzle.config.ts
+    echo "✅ Drizzle migrations complete"
+  else
+    echo "⚠️  No migration tool found; please install Prisma CLI or drizzle-kit"
+    exit 1
+  fi
 fi
 
 echo "✅ Database migration complete"

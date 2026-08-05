@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../../../packages/database/src/prisma.service';
+import { PrismaService } from '@packages/database/src/prisma.service';
 import { EntityType } from '@prisma/client';
 
 export interface CreateNodeDto {

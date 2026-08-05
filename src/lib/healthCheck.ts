@@ -46,6 +46,23 @@ async function checkGemini(): Promise<ComponentHealth> {
   return { status: 'up', message: 'API key configured' };
 }
 
+async function checkNeo4j(): Promise<ComponentHealth> {
+  if (!process.env.NEO4J_URI) {
+    return { status: 'unknown', message: 'NEO4J_URI not configured' };
+  }
+  try {
+    const { getNeo4jDriver } = await import('./neo4j');
+    const driver = getNeo4jDriver();
+    const session = driver.session();
+    const start = Date.now();
+    await session.run('RETURN 1 AS value');
+    await session.close();
+    return { status: 'up', latencyMs: Date.now() - start };
+  } catch (err: any) {
+    return { status: 'down', message: err.message };
+  }
+}
+
 async function checkFirebase(): Promise<ComponentHealth> {
   try {
     const adminModule = await import('firebase-admin');
@@ -80,14 +97,15 @@ export async function readinessCheck(req: Request, res: Response): Promise<void>
   let overallStatus: HealthStatus['status'] = 'healthy';
 
   // Run all checks in parallel
-  const [db, gemini, firebase] = await Promise.all([checkDatabase(), checkGemini(), checkFirebase()]);
+  const [db, gemini, neo4j, firebase] = await Promise.all([checkDatabase(), checkGemini(), checkNeo4j(), checkFirebase()]);
 
   checks.database = db;
   checks.gemini = gemini;
+  checks.neo4j = neo4j;
   checks.firebase = firebase;
 
   // Determine overall status
-  if (db.status === 'down') overallStatus = 'degraded';
+  if (db.status === 'down' || neo4j.status === 'down') overallStatus = 'degraded';
 
   const health: HealthStatus = {
     status: overallStatus,

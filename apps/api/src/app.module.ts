@@ -15,6 +15,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { AIModule } from './ai/ai.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
+import { SocketService } from './common/socket.service';
 
 @Module({
   imports: [
@@ -37,6 +38,8 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     AIModule,
     AnalyticsModule,
   ],
+  providers: [SocketService],
+  exports: [SocketService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

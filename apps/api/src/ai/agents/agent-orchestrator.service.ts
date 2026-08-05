@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AgentRegistryService } from './agent-registry.service';
 import { AgentExecutionInput, AgentExecutionOutput } from './base-agent';
-import { PrismaService } from '../../../../../packages/database/src/prisma.service';
+import { PrismaService } from '@packages/database/src/prisma.service';
 
 export interface WorkflowPipelineRequest {
   projectId: string;

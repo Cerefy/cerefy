@@ -5,6 +5,6 @@ export default {
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL || 'postgres://cerefy:cerefy_password@localhost:5432/cerefy',
+    url: process.env.DATABASE_URL || 'postgresql://cerefy:cerefy@localhost:5432/cerefy',
   },
 } satisfies Config;

@@ -11,6 +11,7 @@ All required and optional environment variables for running the Cerefy platform.
 | `NODE_ENV` | `production` | Runtime environment (`development` / `production`) |
 | `PORT` | `3000` | HTTP port the server listens on |
 | `GEMINI_API_KEY` | `AIza...` | Google Gemini API Key for AI features |
+| `OPENAI_API_KEY` | `sk-...` | OpenAI or compatible LLM provider API key |
 | `DATABASE_URL` | `postgresql://user:pass@host:5432/db` | Full Postgres connection string |
 
 ---
@@ -22,6 +23,8 @@ All required and optional environment variables for running the Cerefy platform.
 | `JWT_SECRET` | *(random 64-char string)* | Secret for signing JWT access tokens |
 | `JWT_REFRESH_SECRET` | *(random 64-char string)* | Secret for refresh tokens |
 | `FRONTEND_URL` | `https://cerefy.yourcompany.com` | Allowed CORS origin |
+| `VITE_API_URL` | `` | Frontend API base URL (empty = same origin) |
+| `VITE_SOCKET_URL` | `` | Socket.IO server URL (empty = same origin) |
 
 > **Generate secrets with:** `openssl rand -base64 48`
 
@@ -32,6 +35,7 @@ All required and optional environment variables for running the Cerefy platform.
 | Variable | Example | Description |
 |----------|---------|-------------|
 | `GOOGLE_APPLICATION_CREDENTIALS` | `/secrets/firebase-sa.json` | Path to Firebase service account JSON |
+| `GOOGLE_APPLICATION_CREDENTIALS_JSON` | `{...}` | Service account JSON payload for Firebase Admin |
 | `FIREBASE_PROJECT_ID` | `cerefy-prod` | Firebase project ID |
 
 ---

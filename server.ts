@@ -7,17 +7,21 @@ import { Request, Response, NextFunction } from 'express';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import http from 'http';
+import axios from 'axios';
+import neo4j from 'neo4j-driver';
 import { Server as SocketIOServer } from 'socket.io';
 import * as projectService from './src/lib/projectService';
 import * as ingestionService from './src/lib/ingestionService';
 import * as decisionService from './src/lib/decisionService';
 import { buildAgentOrchestrator } from './src/lib/agentOrchestrator';
-import admin from 'firebase-admin';
+import * as admin from 'firebase-admin';
 import { DecodedIdToken } from 'firebase-admin/auth';
 import { logger, httpLogger } from './src/lib/logger';
 import { corsMiddleware, securityHeaders, requestId, requestSizeLimiter } from './src/lib/securityMiddleware';
 import { apiRateLimiter, authRateLimiter, aiRateLimiter } from './src/lib/rateLimiter';
 import { livenessCheck, readinessCheck, simpleHealthCheck } from './src/lib/healthCheck';
+import { withTenantContext } from './src/db';
+import { documents } from './src/db/schema';
 
 dotenv.config();
 
@@ -70,6 +74,22 @@ function getGeminiClient(): GoogleGenAI | null {
     }
   }
   return aiClient;
+}
+
+let neo4jDriver: ReturnType<typeof neo4j.driver> | null = null;
+function getNeo4jDriver(): ReturnType<typeof neo4j.driver> {
+  if (!neo4jDriver) {
+    const uri = process.env.NEO4J_URI;
+    const username = process.env.NEO4J_USER;
+    const password = process.env.NEO4J_PASSWORD;
+
+    if (!uri || !username || !password) {
+      throw new Error('Neo4j connection settings are required in NEO4J_URI, NEO4J_USER, and NEO4J_PASSWORD');
+    }
+
+    neo4jDriver = neo4j.driver(uri, neo4j.auth.basic(username, password));
+  }
+  return neo4jDriver;
 }
 
 let firebaseApp: any | null = null;
@@ -306,6 +326,153 @@ function safeUserProfile(user: any) {
   };
 }
 
+function getTenantId(req: AuthenticatedRequest): string {
+  const headerTenant = req.headers['x-tenant-id'] as string;
+  const userTenant = req.user?.tenantId || req.user?.organizationId;
+
+  if (headerTenant) return headerTenant;
+  if (userTenant) return userTenant;
+  if (isLocalDevFallback()) return 'tenant_acme_101';
+
+  throw new Error('Tenant ID is required for authenticated requests');
+}
+
+function convertNeo4jValue(value: any): any {
+  if (value === null || value === undefined) return value;
+  if (neo4j.isInt && neo4j.isInt(value)) return value.toNumber();
+  if (Array.isArray(value)) return value.map(convertNeo4jValue);
+  if (typeof value === 'object') {
+    if (typeof value.toObject === 'function') {
+      return convertNeo4jValue(value.toObject());
+    }
+    const converted: Record<string, any> = {};
+    for (const [key, nestedValue] of Object.entries(value)) {
+      converted[key] = convertNeo4jValue(nestedValue);
+    }
+    return converted;
+  }
+  return value;
+}
+
+async function getMemoryResults(query: string, tenantId: string, type = 'hybrid', limit = 5) {
+  const aiClientInst = getGeminiClient();
+  if (!aiClientInst) {
+    throw new Error('AI Client not initialized. Check GEMINI_API_KEY.');
+  }
+
+  const encoded = await aiClientInst.models.embedContent({
+    model: 'text-embedding-004',
+    contents: query,
+  });
+
+  const queryVector = encoded.embeddings?.[0]?.values || [];
+  if (!queryVector.length) {
+    throw new Error('Failed to encode query for memory search');
+  }
+
+  const results: Array<any> = [];
+  const pgResults: Array<any> = [];
+
+  if (process.env.QDRANT_URL && process.env.QDRANT_API_KEY) {
+    try {
+      const qdrantUrl = process.env.QDRANT_URL.replace(/\/+$/, '');
+      const qdrantCollection = process.env.QDRANT_COLLECTION || 'cerefy_memory';
+      const qdrantResponse = await axios.post(
+        `${qdrantUrl}/collections/${qdrantCollection}/points/search`,
+        {
+          vector: queryVector,
+          limit,
+          with_payload: true,
+          with_vector: false,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': process.env.QDRANT_API_KEY,
+          },
+          timeout: 15000,
+        }
+      );
+
+      if (Array.isArray(qdrantResponse.data?.result)) {
+        qdrantResponse.data.result.forEach((item: any, index: number) => {
+          results.push({
+            id: item.id || `qdrant_${index}`,
+            content: item.payload?.content || item.payload?.text || 'Vector search result',
+            source: 'Qdrant',
+            score: item.score ?? 0,
+            type: 'vector',
+            metadata: item.payload || {},
+          });
+        });
+      }
+    } catch (err) {
+      logger.warn('Qdrant search failed, falling back to pgvector', { error: err });
+    }
+  }
+
+  const vectorString = `[${queryVector.join(',')}]`;
+  await withTenantContext(tenantId, async (tx) => {
+    const queryResult = await tx.execute(
+      `SELECT id, chunk_index, content, embedding <=> $1::vector AS distance
+       FROM document_chunks
+       WHERE tenant_id = $2 AND embedding IS NOT NULL
+       ORDER BY distance
+       LIMIT $3`,
+      [vectorString, tenantId, limit]
+    );
+
+    const rows = (queryResult as any).rows || [];
+    rows.forEach((row: any) => {
+      pgResults.push({
+        id: row.id,
+        content: row.content,
+        source: 'PostgreSQL PGVector',
+        score: typeof row.distance === 'number' ? 1 / (1 + row.distance) : 0,
+        type: 'vector',
+        metadata: { chunkIndex: row.chunk_index },
+      });
+    });
+  });
+
+  if (type === 'vector') {
+    return results.length > 0 ? results : pgResults;
+  }
+
+  if (type === 'graph' || type === 'hybrid') {
+    const neo4jDriver = getNeo4jDriver();
+    const session = neo4jDriver.session();
+    try {
+      const graphResults = await session.run(
+        `MATCH (t:Tenant {id: $tenantId})<-[:BELONGS_TO]-(e:Entity)
+         WHERE toLower(e.name) CONTAINS toLower($query)
+            OR toLower(e.label) CONTAINS toLower($query)
+         RETURN e.name AS name, e.label AS label, e AS entity
+         LIMIT $limit`,
+        { tenantId, query, limit }
+      );
+
+      graphResults.records.forEach((record: any) => {
+        results.push({
+          id: record.get('name') || record.get('label') || `node_${results.length + 1}`,
+          content: `Entity: ${record.get('name')} (${record.get('label')})`,
+          source: 'Neo4j',
+          score: 0.8,
+          type: 'graph',
+          metadata: convertNeo4jValue(record.get('entity')),
+        });
+      });
+    } catch (err) {
+      logger.warn('Neo4j memory query failed', { error: err });
+    } finally {
+      await session.close();
+    }
+  }
+
+  if (results.length > 0) return results;
+  return pgResults;
+}
+
 function isLocalDevFallback(): boolean {
   // Local dev fallbacks are only enabled when explicitly requested via
   // DEV_LOCAL_FALLBACK=true in the environment and when not running in production.
@@ -429,26 +596,6 @@ function getAgentPerformance() {
   }));
 }
 
-function getMemoryResults(query: string) {
-  return [
-    {
-      id: `mem_${crypto.randomBytes(4).toString('hex')}`,
-      content: `Insight about ${query}: Cerefy learns from historical workflows and recommends next-best actions.`,
-      source: 'Knowledge Graph',
-      score: 0.92,
-      type: 'vector',
-      metadata: { topic: 'workflow', relevance: 'high' },
-    },
-    {
-      id: `mem_${crypto.randomBytes(4).toString('hex')}`,
-      content: `Document snippet related to ${query}: Use the integrated agent pipeline for real-time decision automation.`,
-      source: 'Document Store',
-      score: 0.84,
-      type: 'relational',
-      metadata: { topic: 'automation', relevance: 'medium' },
-    },
-  ];
-}
 
 function getMemoryDocuments() {
   return [
@@ -460,7 +607,6 @@ function getMemoryDocuments() {
 function createAgentExecutionResponse(query: string, userId: string, sessionId = 'sess_default') {
   return {
     status: 'success',
-    tenantId: 'tenant_acme_101',
     userId,
     sessionId,
     latencyMs: 420,
@@ -479,7 +625,14 @@ function createAgentExecutionResponse(query: string, userId: string, sessionId =
 function getFirebaseAdmin() {
   if (!firebaseApp) {
     try {
-      firebaseApp = admin.initializeApp();
+      if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+        const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+        firebaseApp = admin.initializeApp({
+          credential: (admin as any).credential.cert(credentials),
+        });
+      } else {
+        firebaseApp = admin.initializeApp();
+      }
       logger.info('Firebase Admin initialized');
     } catch (err) {
       logger.error('Failed to initialize Firebase Admin', { error: err });
@@ -500,7 +653,7 @@ const requireAuth = async (req: AuthenticatedRequest, res: Response, next: NextF
   // DEV_AUTH_BYPASS is intentionally disabled for production readiness.
   // Local dev tokens should use the explicit local dev auth endpoints instead.
   
-  if (bearerToken) {
+  if (bearerToken && isLocalDevFallback()) {
     const localUser = getUserFromAccessToken(bearerToken);
     if (localUser) {
       req.user = localUser as any;
@@ -531,7 +684,7 @@ app.use('/api/v1', apiRateLimiter);
 
 // ─── Project Endpoints ────────────────────────────────────────────────────
 app.get('/api/v1/projects', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+  const tenantId = getTenantId(req);
   try {
     if (isLocalDevFallback()) {
       res.json({ status: 'success', data: devProjects });
@@ -546,7 +699,7 @@ app.get('/api/v1/projects', requireAuth, async (req: AuthenticatedRequest, res: 
 });
 
 app.post('/api/v1/projects', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+  const tenantId = getTenantId(req);
   try {
     if (isLocalDevFallback()) {
       const project = createProject(req.body);
@@ -564,7 +717,7 @@ app.post('/api/v1/projects', requireAuth, async (req: AuthenticatedRequest, res:
 
 // ─── Decision Endpoints ───────────────────────────────────────────────────
 app.get('/api/v1/decisions', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+  const tenantId = getTenantId(req);
   try {
     if (isLocalDevFallback()) {
       res.json({ status: 'success', data: devDecisions });
@@ -579,7 +732,7 @@ app.get('/api/v1/decisions', requireAuth, async (req: AuthenticatedRequest, res:
 });
 
 app.post('/api/v1/decisions', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+  const tenantId = getTenantId(req);
   try {
     if (isLocalDevFallback()) {
       const decision = createDecision(req.body);
@@ -712,8 +865,12 @@ app.get('/api/v1/projects/:projectId', requireAuth, async (req: AuthenticatedReq
   }
 
   try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+    const tenantId = getTenantId(req);
     const project = await projectService.getProjectById(tenantId, projectId);
+    if (!project) {
+      res.status(404).json({ status: 'error', message: 'Project not found' });
+      return;
+    }
     res.json({ status: 'success', data: project });
   } catch (error) {
     logger.error('Failed to fetch project', { error, projectId });
@@ -734,8 +891,12 @@ app.patch('/api/v1/projects/:projectId', requireAuth, async (req: AuthenticatedR
   }
 
   try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+    const tenantId = getTenantId(req);
     const project = await projectService.updateProject(tenantId, projectId, req.body);
+    if (!project) {
+      res.status(404).json({ status: 'error', message: 'Project not found' });
+      return;
+    }
     res.json({ status: 'success', data: project });
   } catch (error) {
     logger.error('Failed to update project', { error, projectId });
@@ -755,7 +916,7 @@ app.delete('/api/v1/projects/:projectId', requireAuth, async (req: Authenticated
   }
 
   try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+    const tenantId = getTenantId(req);
     await projectService.deleteProject(tenantId, projectId);
     res.status(204).send();
   } catch (error) {
@@ -777,7 +938,7 @@ app.post('/api/v1/decisions/:decisionId/approve', requireAuth, async (req: Authe
   }
 
   try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+    const tenantId = getTenantId(req);
     const decision = await decisionService.approveDecision(tenantId, decisionId);
     res.json({ data: decision });
   } catch (error) {
@@ -800,7 +961,7 @@ app.post('/api/v1/decisions/:decisionId/reject', requireAuth, async (req: Authen
   }
 
   try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+    const tenantId = getTenantId(req);
     const decision = await decisionService.rejectDecision(tenantId, decisionId, reason);
     res.json({ data: decision });
   } catch (error) {
@@ -831,7 +992,7 @@ app.post('/api/v1/decisions/:decisionId/simulate', requireAuth, async (req: Auth
   }
 
   try {
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+    const tenantId = getTenantId(req);
     const decision = await decisionService.simulateDecision(tenantId, decisionId);
     res.json({ data: decision });
   } catch (error) {
@@ -841,33 +1002,23 @@ app.post('/api/v1/decisions/:decisionId/simulate', requireAuth, async (req: Auth
 });
 
 app.get('/api/v1/agents', requireAuth, async (_req: AuthenticatedRequest, res: Response) => {
-  if (isLocalDevFallback()) {
-    res.json({ data: devAgents });
-    return;
-  }
-
-  res.status(501).json({ status: 'error', message: 'Agent listing is not available without backend support' });
+  res.json({ status: 'success', data: devAgents });
 });
 
 app.get('/api/v1/agents/:agentId', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
   const agentId = req.params.agentId;
-  if (isLocalDevFallback()) {
-    const agent = devAgents.find((item) => item.id === agentId);
-    if (!agent) {
-      res.status(404).json({ status: 'error', message: 'Agent not found' });
-      return;
-    }
-    res.json({ data: agent });
+  const agent = devAgents.find((item) => item.id === agentId);
+  if (!agent) {
+    res.status(404).json({ status: 'error', message: 'Agent not found' });
     return;
   }
-
-  res.status(501).json({ status: 'error', message: 'Agent details are not available without backend support' });
+  res.json({ status: 'success', data: agent });
 });
 
 app.post('/api/v1/ai/pipeline/run', requireAuth, aiRateLimiter, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+  const tenantId = getTenantId(req);
   const userId = req.user?.uid || 'user_admin_01';
-  const { pipelineId, input } = req.body;
+  const { pipelineId, input = {} } = req.body;
   const startTime = Date.now();
 
   if (!pipelineId) {
@@ -875,22 +1026,92 @@ app.post('/api/v1/ai/pipeline/run', requireAuth, aiRateLimiter, async (req: Auth
     return;
   }
 
-  const response = createAgentExecutionResponse(`Pipeline ${pipelineId} executed`, userId, pipelineId);
-  response.latencyMs = Date.now() - startTime;
-  res.json(response);
+  const query = typeof input === 'object' && typeof input.query === 'string' && input.query.trim().length > 0
+    ? input.query
+    : pipelineId;
+
+  try {
+    const orchestrator = buildAgentOrchestrator();
+    const finalState = await orchestrator.invoke({
+      tenantId,
+      query,
+      plan: [],
+      retrievedContext: '',
+      reasoningOutput: '',
+      reflectionCritique: '',
+      status: 'started',
+    });
+
+    const durationMs = Date.now() - startTime;
+    const payload = {
+      status: 'success',
+      tenantId,
+      userId,
+      sessionId: pipelineId,
+      latencyMs: durationMs,
+      plan: finalState.plan || [],
+      response: finalState.reasoningOutput || 'No response generated.',
+      reflectionCritique: finalState.reflectionCritique || 'No critique.',
+      reflectionAttempts: 1,
+      tokensUsed: 0,
+      timestamp: new Date().toISOString(),
+    };
+
+    socketServer?.emit('agent.started', {
+      agentId: 'pipeline_orchestrator',
+      agentName: 'Pipeline Orchestrator',
+      stepIndex: 1,
+      totalSteps: 1,
+      status: 'running',
+      output: `Running pipeline ${pipelineId}`,
+      durationMs,
+      timestamp: new Date().toISOString(),
+    });
+
+    socketServer?.emit('agent.completed', {
+      agentId: 'pipeline_orchestrator',
+      agentName: 'Pipeline Orchestrator',
+      status: 'completed',
+      output: payload.response,
+      latencyMs: durationMs,
+      timestamp: payload.timestamp,
+    });
+
+    res.json(payload);
+  } catch (error: any) {
+    logger.error('Pipeline execution failed', { error: error?.message, tenantId, pipelineId });
+    res.status(500).json({ status: 'error', message: error?.message || 'Pipeline execution failed' });
+  }
 });
 
-app.post('/api/v1/ai/memory/query', requireAuth, async (req: Request, res: Response) => {
-  const { query } = req.body;
+app.post('/api/v1/ai/memory/query', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  const { query, type = 'hybrid', limit = 5 } = req.body;
   if (!query || typeof query !== 'string') {
     res.status(400).json({ error: 'Query parameter is required' });
     return;
   }
-  res.json({ data: getMemoryResults(query) });
+
+  try {
+    const tenantId = getTenantId(req);
+    const results = await getMemoryResults(query, tenantId, type, Number(limit));
+    res.json({ status: 'success', data: results });
+  } catch (error: any) {
+    logger.error('Memory query failed', { error, query });
+    res.status(500).json({ status: 'error', message: error?.message || 'Memory query failed' });
+  }
 });
 
-app.get('/api/v1/memory/documents', requireAuth, async (_req: AuthenticatedRequest, res: Response) => {
-  res.json({ data: getMemoryDocuments() });
+app.get('/api/v1/memory/documents', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const tenantId = getTenantId(req);
+    const documentsList = await withTenantContext(tenantId, async (tx) => {
+      return await tx.select().from(documents);
+    });
+    res.json({ status: 'success', data: documentsList });
+  } catch (error: any) {
+    logger.error('Failed to fetch memory documents', { error });
+    res.status(500).json({ status: 'error', message: 'Failed to fetch memory documents' });
+  }
 });
 
 app.get('/api/v1/analytics/executive-kpis', requireAuth, async (_req: AuthenticatedRequest, res: Response) => {
@@ -908,7 +1129,7 @@ app.get('/api/v1/analytics/projects/:projectId', requireAuth, async (req: Authen
 
 // ─── AI Agent Orchestration ───────────────────────────────────────────────
 app.post('/api/v1/agents/execute', requireAuth, aiRateLimiter, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+  const tenantId = getTenantId(req);
   const userId = req.user?.uid || 'user_admin_01';
   const { query, sessionId = 'sess_default' } = req.body;
 
@@ -945,6 +1166,15 @@ app.post('/api/v1/agents/execute', requireAuth, aiRateLimiter, async (req: Authe
       timestamp: new Date().toISOString(),
     });
 
+    socketServer?.emit('agent.completed', {
+      agentId: 'agent_orchestrator',
+      agentName: 'Orchestrator',
+      status: 'completed',
+      output: finalState.reasoningOutput || 'Execution complete.',
+      durationMs,
+      timestamp: new Date().toISOString(),
+    });
+
     res.json({
       status: 'success',
       tenantId,
@@ -970,7 +1200,7 @@ app.post('/api/v1/agents/execute', requireAuth, aiRateLimiter, async (req: Authe
 
 // ─── Document Ingestion ───────────────────────────────────────────────────
 app.post('/api/v1/ingestion/chunk', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101';
+  const tenantId = getTenantId(req);
   const { content, chunkSize = 300, chunkOverlap = 40, title = 'Document' } = req.body;
 
   if (!content) {
@@ -994,19 +1224,49 @@ app.post('/api/v1/ingestion/chunk', requireAuth, async (req: AuthenticatedReques
 });
 
 // ─── Knowledge Graph Sandbox ──────────────────────────────────────────────
-app.post('/api/v1/graph/cypher', requireAuth, (req: Request, res: Response) => {
-  const { cypher, tenantId = 'tenant_acme_101' } = req.body;
-  res.json({
-    status: 'success',
-    query: cypher || 'MATCH (e:Entity) RETURN e LIMIT 10',
-    tenantId,
-    executedInMs: 8.4,
-    nodesMatched: 6,
-    records: [
-      { id: 'node_tenant_core', label: 'Cerefy Core Tenant', type: 'Tenant' },
-      { id: 'node_auth_policy', label: 'OAuth MFA Policy', type: 'Policy' },
-    ],
-  });
+app.post('/api/v1/graph/cypher', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  const { cypher, tenantId: bodyTenantId } = req.body;
+  if (!cypher || typeof cypher !== 'string') {
+    res.status(400).json({ status: 'error', message: 'Cypher query is required' });
+    return;
+  }
+
+  const tenantId = bodyTenantId || getTenantId(req);
+  const queryText = cypher.trim();
+  const prohibitedPattern = /\b(create|merge|delete|set|remove|drop|call|alter|detach|truncate)\b/i;
+
+  if (prohibitedPattern.test(queryText)) {
+    res.status(400).json({ status: 'error', message: 'Only read-only Cypher queries are permitted in this endpoint.' });
+    return;
+  }
+
+  try {
+    const neo4jDriver = getNeo4jDriver();
+    const session = neo4jDriver.session();
+    const startTime = Date.now();
+    const result = await session.run(queryText, { tenantId });
+
+    const records = result.records.map((record: any) => {
+      const entry: Record<string, any> = {};
+      record.keys.forEach((key: string) => {
+        entry[key] = convertNeo4jValue(record.get(key));
+      });
+      return entry;
+    });
+
+    await session.close();
+    res.json({
+      status: 'success',
+      query: queryText,
+      tenantId,
+      executedInMs: Date.now() - startTime,
+      nodesMatched: result.records.length,
+      records,
+    });
+  } catch (error: any) {
+    logger.error('Cypher query execution failed', { error, query: queryText, tenantId });
+    res.status(500).json({ status: 'error', message: error.message || 'Failed to execute Cypher query' });
+  }
 });
 
 // ─── Error Handler ────────────────────────────────────────────────────────

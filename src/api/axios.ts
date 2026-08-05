@@ -2,6 +2,7 @@
 // Production-ready Axios instance with JWT interceptors and token refresh
 
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { auth } from '../lib/firebase';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
@@ -33,23 +34,31 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Request interceptor — attach access token
+// Request interceptor - attach access token
 api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('cerefy_access_token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config: InternalAxiosRequestConfig) => {
+    let token = localStorage.getItem('cerefy_access_token');
+
+    if (!token && auth.currentUser) {
+      token = await auth.currentUser.getIdToken();
+      localStorage.setItem('cerefy_access_token', token);
     }
+
+    if (token && config.headers) {
+      config.headers.Authorization = 'Bearer ' + token;
+    }
+
     const tenantId = localStorage.getItem('cerefy_tenant_id') || 'tenant_cerefy_101';
     if (config.headers) {
       config.headers['x-tenant-id'] = tenantId;
     }
+
     return config;
   },
   (error) => Promise.reject(error),
 );
 
-// Response interceptor — handle 401 with token refresh
+// Response interceptor - handle 401 with token refresh
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -62,7 +71,7 @@ api.interceptors.response.use(
         })
           .then((token) => {
             if (originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${token}`;
+              originalRequest.headers.Authorization = 'Bearer ' + token;
             }
             return api(originalRequest);
           })
@@ -73,25 +82,32 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem('cerefy_refresh_token');
-        if (!refreshToken) {
-          throw new Error('No refresh token available');
+        let accessToken: string | null = null;
+
+        if (auth.currentUser) {
+          accessToken = await auth.currentUser.getIdToken(true);
+          localStorage.setItem('cerefy_access_token', accessToken);
+        } else {
+          const refreshToken = localStorage.getItem('cerefy_refresh_token');
+          if (!refreshToken) {
+            throw new Error('No refresh token available');
+          }
+
+          const { data } = await axios.post(`${API_BASE_URL}/api/v1/auth/refresh`, {
+            refreshToken,
+          });
+
+          accessToken = data.accessToken;
+          localStorage.setItem('cerefy_access_token', accessToken);
+          localStorage.setItem('cerefy_refresh_token', data.refreshToken);
         }
-
-        const { data } = await axios.post(`${API_BASE_URL}/api/v1/auth/refresh`, {
-          refreshToken,
-        });
-
-        const { accessToken, refreshToken: newRefreshToken } = data;
-        localStorage.setItem('cerefy_access_token', accessToken);
-        localStorage.setItem('cerefy_refresh_token', newRefreshToken);
 
         processQueue(null, accessToken);
 
-        if (originalRequest.headers) {
-          // use the freshly obtained accessToken for the retry
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        if (originalRequest.headers && accessToken) {
+          originalRequest.headers.Authorization = 'Bearer ' + accessToken;
         }
+
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as Error, null);

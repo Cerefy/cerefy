@@ -2,6 +2,7 @@ import { StateGraph, START, END, Annotation } from '@langchain/langgraph';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { db, withTenantContext } from '../db';
 import { documentChunks } from '../db/schema';
+import { desc } from 'drizzle-orm';
 import { getNeo4jDriver } from './neo4j';
 
 export const AgentState = Annotation.Root({
@@ -34,10 +35,7 @@ async function retrieverAgent(state: typeof AgentState.State): Promise<Partial<t
   let context = '';
   
   await withTenantContext(state.tenantId, async (tx) => {
-    // Basic retrieval (pgvector similarity search requires raw SQL, simplified here for demo)
-    const chunks = await tx.query.documentChunks.findMany({
-      limit: 3
-    });
+    const chunks = await tx.select().from(documentChunks).orderBy(desc(documentChunks.createdAt)).limit(3);
     context += chunks.map((c: any) => c.content).join('\n\n');
   });
 

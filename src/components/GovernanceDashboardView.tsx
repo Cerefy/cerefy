@@ -26,6 +26,9 @@ import {
 import { Badge } from './ui/Badge';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
+import { useEffect } from 'react';
+import { useAgentStore } from '../store/useAgentStore';
+import { DecisionItem } from '../types';
 
 interface GovernanceDecision {
   id: string;
@@ -67,14 +70,47 @@ const statusConfig: Record<string, { icon: React.FC<{ className?: string; size?:
 export const GovernanceDashboardView: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
   const [selectedDecision, setSelectedDecision] = useState<GovernanceDecision | null>(null);
+  const decisions = useAgentStore((state) => state.decisions);
+  const fetchDecisions = useAgentStore((state) => state.fetchDecisions);
 
-  const filtered = filter === 'all' ? sampleDecisions : sampleDecisions.filter((d) => d.status === filter);
+  useEffect(() => {
+    fetchDecisions();
+  }, [fetchDecisions]);
+
+  const governanceDecisions: GovernanceDecision[] =
+    decisions.length > 0
+      ? decisions.map((decision: DecisionItem) => {
+          const risk = decision.riskScore >= 80 ? 'critical' : decision.riskScore >= 60 ? 'high' : decision.riskScore >= 40 ? 'medium' : 'low';
+          const status = decision.status === 'OPEN' ? 'pending' : decision.status === 'IN_SIMULATION' ? 'review' : decision.status.toLowerCase() as GovernanceDecision['status'];
+          const recommendation = decision.aiRecommendation?.toLowerCase();
+          return {
+            id: decision.id,
+            title: decision.title,
+            type: (decision.category as GovernanceDecision['type']) || 'process',
+            status,
+            risk,
+            requestedBy: 'Governance AI',
+            assignedTo: 'Governance Team',
+            createdAt: new Date(decision.createdAt).toLocaleString(),
+            impact: decision.businessImpact || 'Enterprise impact details not available',
+            aiConfidence: Math.min(100, Math.max(0, decision.confidenceScore || 0)) / 100,
+            aiRecommendation:
+              recommendation?.includes('approve')
+                ? 'approve'
+                : recommendation?.includes('reject')
+                ? 'reject'
+                : 'review',
+          };
+        })
+      : sampleDecisions;
+
+  const filtered = filter === 'all' ? governanceDecisions : governanceDecisions.filter((d) => d.status === filter);
 
   const stats = {
-    pending: sampleDecisions.filter((d) => d.status === 'pending').length,
-    approved: sampleDecisions.filter((d) => d.status === 'approved').length,
-    rejected: sampleDecisions.filter((d) => d.status === 'rejected').length,
-    critical: sampleDecisions.filter((d) => d.risk === 'critical').length,
+    pending: governanceDecisions.filter((d) => d.status === 'pending').length,
+    approved: governanceDecisions.filter((d) => d.status === 'approved').length,
+    rejected: governanceDecisions.filter((d) => d.status === 'rejected').length,
+    critical: governanceDecisions.filter((d) => d.risk === 'critical').length,
   };
 
   return (

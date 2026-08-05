@@ -2,6 +2,7 @@
 // Socket.IO real-time client for agent execution updates, workflow status, and activity feed
 
 import { io, Socket } from 'socket.io-client';
+import { auth } from '../lib/firebase';
 
 export type SocketEvent =
   | 'agent.started'
@@ -49,10 +50,17 @@ class SocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 10;
 
-  connect(): void {
+  async connect(): Promise<void> {
     if (this.socket?.connected) return;
 
-    const token = localStorage.getItem('cerefy_access_token');
+    let token = localStorage.getItem('cerefy_access_token');
+    if (!token && auth.currentUser) {
+      token = await auth.currentUser.getIdToken();
+      if (token) {
+        localStorage.setItem('cerefy_access_token', token);
+      }
+    }
+
     const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
 
     this.socket = io(socketUrl, {

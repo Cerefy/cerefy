@@ -22,6 +22,11 @@ export const projects = pgTable('projects', {
   status: text('status').default('Planning'),
   progress: integer('progress').default(0),
   budget: text('budget'),
+  budgetUsed: text('budget_used'),
+  agentLead: text('agent_lead'),
+  assignees: jsonb('assignees'),
+  milestonesCount: integer('milestones_count').default(0),
+  completedMilestones: integer('completed_milestones').default(0),
   dueDate: text('due_date'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
@@ -57,5 +62,6 @@ export const decisions = pgTable('decisions', {
   confidenceScore: real('confidence_score').default(0),
   status: text('status').default('OPEN'),
   aiRecommendation: text('ai_recommendation'),
+  simulationResult: jsonb('simulation_result'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

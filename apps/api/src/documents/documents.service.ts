@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../../../packages/database/src/prisma.service';
+import { PrismaService } from '@packages/database/src/prisma.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { PaginationQueryDto, PaginatedResult } from '../common/dto/pagination.dto';
 

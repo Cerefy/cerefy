@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../../../packages/database/src/prisma.service';
+import { PrismaService } from '@packages/database/src/prisma.service';
 import { VectorStoreService } from '../memory/vector-store.service';
 import { KnowledgeGraphService } from '../memory/knowledge-graph.service';
 import { AIProviderService } from '../provider/ai-provider.service';

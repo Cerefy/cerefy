@@ -16,14 +16,15 @@
     "allowJs": true,
     "jsx": "react-jsx",
     "types": ["vite/client"],
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    },
+    "baseUrl": ".",
+        "paths": {
+          "@/*": ["./*"],
+          "@packages/*": ["packages/*"],
+          "@root/*": ["./*"]
+        },
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "include": ["src", "server.ts", "instrumentation.ts", "drizzle.config.ts", "vite.config.ts"],
+  "include": ["src", "server.bootstrap.ts", "instrumentation.ts", "vite.config.ts"],
   "exclude": ["node_modules", "dist", "apps", "packages", "scripts"]
 }
