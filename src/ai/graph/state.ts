@@ -27,6 +27,11 @@ export interface CerefyExecutionState {
   history: Array<Record<string, unknown>>;
   memoryComplete: boolean;
   discoveryComplete: boolean;
+  requirementComplete: boolean;
+  processComplete: boolean;
+  dataComplete: boolean;
+  codeComplete: boolean;
+  validationComplete: boolean;
   analystComplete: boolean;
   governanceComplete: boolean;
   summary: string;
@@ -50,6 +55,11 @@ export const CerefyStateAnnotation = Annotation.Root({
   history: Annotation<Array<Record<string, unknown>>>(),
   memoryComplete: Annotation<boolean>(),
   discoveryComplete: Annotation<boolean>(),
+  requirementComplete: Annotation<boolean>(),
+  processComplete: Annotation<boolean>(),
+  dataComplete: Annotation<boolean>(),
+  codeComplete: Annotation<boolean>(),
+  validationComplete: Annotation<boolean>(),
   analystComplete: Annotation<boolean>(),
   governanceComplete: Annotation<boolean>(),
   summary: Annotation<string>(),
