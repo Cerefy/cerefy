@@ -2,9 +2,14 @@ import type { Server as SocketIOServer } from 'socket.io';
 import { createInitialExecutionState } from './graph/workflow';
 import type { CerefyExecutionInput, CerefyGraphState } from './graph/state';
 import { analystAgent } from './agents/analyst.agent';
+import { codeAgent } from './agents/code.agent';
+import { dataAgent } from './agents/data.agent';
 import { discoveryAgent } from './agents/discovery.agent';
 import { governanceAgent } from './agents/governance.agent';
 import { memoryAgent } from './agents/memory.agent';
+import { processAgent } from './agents/process.agent';
+import { requirementAgent } from './agents/requirement.agent';
+import { validationAgent } from './agents/validation.agent';
 import { supervisorAgent } from './graph/supervisor';
 import { appendAgentExecutionError, appendAgentExecutionEvent, createAgentExecutionRecord, updateAgentExecutionRecord } from './tools/databaseTool';
 import { ensureCoreAgentsRegistered, recordAgentExecution } from './registry';
@@ -116,6 +121,121 @@ function buildParallelState(base: CerefyGraphState): CerefyGraphState {
   };
 }
 
+function isRequirementType(type: string) {
+  return type === 'requirements_analysis' || type === 'requirement_analysis';
+}
+
+function isProcessType(type: string) {
+  return type === 'process_analysis' || type === 'workflow_analysis';
+}
+
+function isDataType(type: string) {
+  return type === 'data_analysis' || type === 'analytics';
+}
+
+function isCodeType(type: string) {
+  return type === 'code_generation' || type === 'implementation';
+}
+
+function isValidationType(type: string) {
+  return type === 'validation' || type === 'validation_review';
+}
+
+function shouldUseMemory(input: CerefyExecutionInput, state: CerefyGraphState) {
+  return state.documents.length > 0
+    || state.requirements.length > 0
+    || state.decisions.length > 0
+    || input.type === 'document_analysis'
+    || input.type === 'discovery'
+    || isRequirementType(input.type)
+    || isProcessType(input.type)
+    || isDataType(input.type)
+    || isCodeType(input.type)
+    || isValidationType(input.type);
+}
+
+async function runStage(params: {
+  io: SocketIOServer | null;
+  executionId: string;
+  agentName: string;
+  stepIndex: number;
+  totalSteps: number;
+  task: string;
+  inputState: CerefyGraphState;
+  inputPayload: Record<string, unknown>;
+  stageFn: (state: CerefyGraphState) => Promise<CerefyGraphState>;
+  tools?: string[];
+}) {
+  const startedAt = Date.now();
+  emitAgentLifecycle(params.io, params.executionId, params.agentName, 'started', {
+    stepIndex: params.stepIndex,
+    totalSteps: params.totalSteps,
+  });
+  if (params.tools?.length) {
+    emitToolCall(params.io, params.executionId, params.agentName, params.tools);
+  }
+
+  try {
+    const result = await params.stageFn(params.inputState);
+    emitAgentLifecycle(params.io, params.executionId, params.agentName, 'progress', {
+      stepIndex: params.stepIndex,
+      totalSteps: params.totalSteps,
+      output: result.output,
+      confidence: result.confidence,
+    });
+    emitAgentLifecycle(params.io, params.executionId, params.agentName, 'completed', {
+      stepIndex: params.stepIndex,
+      totalSteps: params.totalSteps,
+      output: result.output,
+      confidence: result.confidence,
+    });
+
+    await persistTrace(
+      params.io,
+      params.executionId,
+      params.agentName,
+      params.task,
+      params.inputPayload,
+      (result.output || {}) as Record<string, unknown>,
+      startedAt,
+      result.confidence || 0,
+    );
+
+    return result;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    emitAgentLifecycle(params.io, params.executionId, params.agentName, 'failed', {
+      stepIndex: params.stepIndex,
+      totalSteps: params.totalSteps,
+      error: message,
+    });
+    await appendAgentExecutionError(params.executionId, message);
+    await appendAgentExecutionEvent(params.executionId, {
+      event: 'agent.failed',
+      payload: { agent: params.agentName, error: message },
+      timestamp: now(),
+    });
+    await updateAgentExecutionRecord(params.executionId, {
+      status: 'FAILED',
+      currentAgent: params.agentName,
+      errors: [message],
+      completedAt: null,
+    });
+    await persistTrace(
+      params.io,
+      params.executionId,
+      params.agentName,
+      `${params.task}-failed`,
+      params.inputPayload,
+      { error: message },
+      startedAt,
+      0,
+      [message],
+    );
+    throw error;
+  }
+}
+
 export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: SocketIOServer | null): Promise<RunExecutionResult> {
   await ensureCoreAgentsRegistered();
 
@@ -145,7 +265,7 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
   emitAgentLifecycle(io, executionId, 'supervisor', 'started', {
     status: 'running',
     stepIndex: 1,
-    totalSteps: 4,
+    totalSteps: 10,
     plan: supervisorPlan,
   });
 
@@ -168,27 +288,22 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
   });
 
   try {
-    const initialState = createInitialExecutionState({
-      ...input,
-      metadata: { ...(input.metadata || {}), executionId },
-    });
-
-    const parallelState = buildParallelState({
-      ...initialState,
+    let currentState = buildParallelState({
+      ...supervisorState,
       nextAgent: 'parallel',
       summary: `Parallel execution planned by supervisor: ${supervisorPlan}`,
       output: {
         plan: supervisorPlan,
       },
       history: [
-        ...initialState.history,
+        ...supervisorState.history,
         { agent: 'supervisor', nextAgent: supervisorPlan, plan: supervisorPlan },
       ],
     });
 
     emitAgentLifecycle(io, executionId, 'supervisor', 'completed', {
       stepIndex: 1,
-      totalSteps: 4,
+      totalSteps: 10,
       output: { plan: supervisorPlan },
     });
     await appendAgentExecutionEvent(executionId, {
@@ -217,163 +332,178 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       60,
     );
 
-    emitAgentLifecycle(io, executionId, 'memory', 'started', { stepIndex: 2, totalSteps: 4 });
-    emitAgentLifecycle(io, executionId, 'discovery', 'started', { stepIndex: 2, totalSteps: 4 });
-    emitAgentLifecycle(io, executionId, 'analyst', 'started', { stepIndex: 2, totalSteps: 4 });
+    if (shouldUseMemory(input, currentState)) {
+      currentState = await runStage({
+        io,
+        executionId,
+        agentName: 'memory',
+        stepIndex: 2,
+        totalSteps: 10,
+        task: 'enterprise-memory-retrieval',
+        inputState: currentState,
+        inputPayload: {
+          tenantId: input.tenantId,
+          projectId: input.projectId || '',
+          documentId: input.documentId || '',
+          type: input.type,
+        },
+        stageFn: memoryAgent,
+        tools: ['vectorMemory', 'knowledgeGraph'],
+      });
+    }
 
-    emitToolCall(io, executionId, 'memory', ['vectorMemory', 'knowledgeGraph']);
-    emitToolCall(io, executionId, 'discovery', ['documentTool', 'vectorMemory', 'knowledgeGraph']);
-    emitToolCall(io, executionId, 'analyst', ['reasoningPrompt', 'recommendationSynthesis']);
+    if (input.documents?.length || input.type === 'document_analysis' || input.type === 'discovery') {
+      currentState = await runStage({
+        io,
+        executionId,
+        agentName: 'discovery',
+        stepIndex: 3,
+        totalSteps: 10,
+        task: 'context-discovery',
+        inputState: currentState,
+        inputPayload: {
+          tenantId: input.tenantId,
+          projectId: input.projectId || '',
+          documentId: input.documentId || '',
+          type: input.type,
+        },
+        stageFn: discoveryAgent,
+        tools: ['documentTool', 'vectorMemory', 'knowledgeGraph'],
+      });
+    }
 
-    const memoryStartedAt = Date.now();
-    const discoveryStartedAt = Date.now();
-    const analystStartedAt = Date.now();
+    if (isRequirementType(input.type)) {
+      currentState = await runStage({
+        io,
+        executionId,
+        agentName: 'requirement',
+        stepIndex: 4,
+        totalSteps: 10,
+        task: 'requirement-synthesis',
+        inputState: currentState,
+        inputPayload: {
+          tenantId: input.tenantId,
+          projectId: input.projectId || '',
+          documentId: input.documentId || '',
+          type: input.type,
+        },
+        stageFn: requirementAgent,
+        tools: ['discoveryContext', 'memoryContext'],
+      });
+    }
 
-    const [memoryResult, discoveryResult, analystResult] = await Promise.all([
-      memoryAgent(parallelState),
-      discoveryAgent(parallelState),
-      analystAgent(parallelState),
-    ]);
+    if (isProcessType(input.type)) {
+      currentState = await runStage({
+        io,
+        executionId,
+        agentName: 'process',
+        stepIndex: 5,
+        totalSteps: 10,
+        task: 'process-intelligence',
+        inputState: currentState,
+        inputPayload: {
+          tenantId: input.tenantId,
+          projectId: input.projectId || '',
+          documentId: input.documentId || '',
+          type: input.type,
+        },
+        stageFn: processAgent,
+        tools: ['workflow-analysis', 'optimization-rules'],
+      });
+    }
 
-    emitAgentLifecycle(io, executionId, 'memory', 'progress', {
-      stepIndex: 2,
-      totalSteps: 4,
-      output: memoryResult.output,
-    });
-    emitAgentLifecycle(io, executionId, 'discovery', 'progress', {
-      stepIndex: 2,
-      totalSteps: 4,
-      confidence: discoveryResult.confidence,
-      output: discoveryResult.output,
-    });
-    emitAgentLifecycle(io, executionId, 'analyst', 'progress', {
-      stepIndex: 2,
-      totalSteps: 4,
-      confidence: analystResult.confidence,
-      output: analystResult.output,
-    });
+    if (isDataType(input.type)) {
+      currentState = await runStage({
+        io,
+        executionId,
+        agentName: 'data',
+        stepIndex: 6,
+        totalSteps: 10,
+        task: 'data-intelligence',
+        inputState: currentState,
+        inputPayload: {
+          tenantId: input.tenantId,
+          projectId: input.projectId || '',
+          documentId: input.documentId || '',
+          type: input.type,
+        },
+        stageFn: dataAgent,
+        tools: ['dataset-analysis', 'analytics-logic'],
+      });
+    }
 
-    emitAgentLifecycle(io, executionId, 'memory', 'completed', {
-      stepIndex: 2,
-      totalSteps: 4,
-      output: memoryResult.output,
-    });
-    emitAgentLifecycle(io, executionId, 'discovery', 'completed', {
-      stepIndex: 2,
-      totalSteps: 4,
-      confidence: discoveryResult.confidence,
-      output: discoveryResult.output,
-    });
-    emitAgentLifecycle(io, executionId, 'analyst', 'completed', {
-      stepIndex: 2,
-      totalSteps: 4,
-      confidence: analystResult.confidence,
-      output: analystResult.output,
-    });
+    if (isCodeType(input.type)) {
+      currentState = await runStage({
+        io,
+        executionId,
+        agentName: 'code',
+        stepIndex: 7,
+        totalSteps: 10,
+        task: 'code-generation',
+        inputState: currentState,
+        inputPayload: {
+          tenantId: input.tenantId,
+          projectId: input.projectId || '',
+          documentId: input.documentId || '',
+          type: input.type,
+        },
+        stageFn: codeAgent,
+        tools: ['implementation-plan', 'test-generation'],
+      });
+    }
 
-    await persistTrace(
-      io,
-      executionId,
-      'memory',
-      'enterprise-memory-retrieval',
-      {
-        tenantId: input.tenantId,
-        projectId: input.projectId || '',
-        documentId: input.documentId || '',
-        type: input.type,
-      },
-      (memoryResult.output || {}) as Record<string, unknown>,
-      memoryStartedAt,
-      58,
-    );
-    await persistTrace(
-      io,
-      executionId,
-      'discovery',
-      'context-discovery',
-      {
-        tenantId: input.tenantId,
-        projectId: input.projectId || '',
-        documentId: input.documentId || '',
-        type: input.type,
-      },
-      (discoveryResult.output || {}) as Record<string, unknown>,
-      discoveryStartedAt,
-      discoveryResult.confidence || 0,
-    );
-    await persistTrace(
-      io,
-      executionId,
-      'analyst',
-      'requirements-synthesis',
-      {
-        tenantId: input.tenantId,
-        projectId: input.projectId || '',
-        documentId: input.documentId || '',
-        type: input.type,
-      },
-      (analystResult.output || {}) as Record<string, unknown>,
-      analystStartedAt,
-      analystResult.confidence || 0,
-    );
+    if (isValidationType(input.type)) {
+      currentState = await runStage({
+        io,
+        executionId,
+        agentName: 'validation',
+        stepIndex: 8,
+        totalSteps: 10,
+        task: 'validation',
+        inputState: currentState,
+        inputPayload: {
+          tenantId: input.tenantId,
+          projectId: input.projectId || '',
+          documentId: input.documentId || '',
+          type: input.type,
+        },
+        stageFn: validationAgent,
+        tools: ['lint', 'typecheck', 'build', 'tests'],
+      });
+    }
 
-    await recordAgentExecution('memory', {
-      executionId,
-      status: 'COMPLETED',
-      confidence: 58,
-      output: memoryResult.output,
-    });
-    await recordAgentExecution('discovery', {
-      executionId,
-      status: 'COMPLETED',
-      confidence: discoveryResult.confidence,
-      output: discoveryResult.output,
-    });
-    await recordAgentExecution('analyst', {
-      executionId,
-      status: 'COMPLETED',
-      confidence: analystResult.confidence,
-      output: analystResult.output,
-    });
-
-    const mergedOutput = {
-      plan: supervisorPlan,
-      memory: memoryResult.output?.memory ?? memoryResult.output,
-      discovery: discoveryResult.output?.discovery ?? discoveryResult.output,
-      analysis: analystResult.output?.analysis ?? analystResult.output,
-    };
-
-    const governanceState = buildParallelState({
-      ...parallelState,
-      documents: discoveryResult.documents || parallelState.documents,
-      requirements: analystResult.requirements || parallelState.requirements,
-      decisions: analystResult.decisions || parallelState.decisions,
-      confidence: Math.max(memoryResult.output ? 58 : 0, discoveryResult.confidence || 0, analystResult.confidence || 0),
-      nextAgent: 'governance',
-      discoveryComplete: true,
-      analystComplete: true,
-      output: mergedOutput,
-      history: [
-        ...parallelState.history,
-        ...memoryResult.history.slice(-1),
-        ...discoveryResult.history.slice(-1),
-        ...analystResult.history.slice(-1),
-      ],
-    });
+    if (currentState.documents.length > 0 || currentState.requirements.length > 0 || input.type === 'requirements_analysis' || input.type === 'requirement_analysis' || input.type === 'document_analysis' || input.type === 'discovery') {
+      currentState = await runStage({
+        io,
+        executionId,
+        agentName: 'analyst',
+        stepIndex: 9,
+        totalSteps: 10,
+        task: 'requirements-synthesis',
+        inputState: currentState,
+        inputPayload: {
+          tenantId: input.tenantId,
+          projectId: input.projectId || '',
+          documentId: input.documentId || '',
+          type: input.type,
+        },
+        stageFn: analystAgent,
+        tools: ['reasoningPrompt', 'recommendationSynthesis'],
+      });
+    }
 
     const governanceStartedAt = Date.now();
-
-    emitAgentLifecycle(io, executionId, 'governance', 'started', { stepIndex: 3, totalSteps: 4 });
+    emitAgentLifecycle(io, executionId, 'governance', 'started', { stepIndex: 10, totalSteps: 10 });
     emitAgentLifecycle(io, executionId, 'governance', 'progress', {
-      stepIndex: 3,
-      totalSteps: 4,
-      output: mergedOutput,
+      stepIndex: 10,
+      totalSteps: 10,
+      output: currentState.output,
     });
     emitToolCall(io, executionId, 'governance', ['enterpriseRules', 'riskScoring', 'approvalPolicy']);
 
-    const finalState = await governanceAgent(governanceState);
-    const output = finalState.output || mergedOutput;
-    const confidence = finalState.confidence || governanceState.confidence || 0;
+    const finalState = await governanceAgent(currentState);
+    const output = finalState.output || currentState.output;
+    const confidence = finalState.confidence || currentState.confidence || 0;
 
     await updateAgentExecutionRecord(executionId, {
       status: finalState.governanceComplete ? 'COMPLETED' : 'RUNNING',
@@ -391,8 +521,8 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
     });
 
     emitAgentLifecycle(io, executionId, 'governance', 'completed', {
-      stepIndex: 4,
-      totalSteps: 4,
+      stepIndex: 10,
+      totalSteps: 10,
       confidence,
       output: finalState.output,
     });
@@ -407,7 +537,8 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
         projectId: input.projectId || '',
         documentId: input.documentId || '',
         type: input.type,
-        requirements: governanceState.requirements,
+        requirements: currentState.requirements,
+        memoryComplete: currentState.memoryComplete,
       },
       (output || {}) as Record<string, unknown>,
       governanceStartedAt,
