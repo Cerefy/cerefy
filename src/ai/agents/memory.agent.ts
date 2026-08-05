@@ -13,6 +13,7 @@ export async function memoryAgent(state: CerefyGraphState) {
     documentSummary: vectorMemory.documentSummary,
     chunkSnippets: vectorMemory.chunkSnippets,
     decisionHistory: vectorMemory.decisionHistory,
+    executionSummaries: vectorMemory.executionSummaries,
     graphSummary: graphMemory.summary,
     graphTriples: graphMemory.triples,
   };
