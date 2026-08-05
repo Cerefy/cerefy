@@ -157,6 +157,24 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       analystAgent(parallelState),
     ]);
 
+    emitAgentLifecycle(io, executionId, 'memory', 'progress', {
+      stepIndex: 2,
+      totalSteps: 4,
+      output: memoryResult.output,
+    });
+    emitAgentLifecycle(io, executionId, 'discovery', 'progress', {
+      stepIndex: 2,
+      totalSteps: 4,
+      confidence: discoveryResult.confidence,
+      output: discoveryResult.output,
+    });
+    emitAgentLifecycle(io, executionId, 'analyst', 'progress', {
+      stepIndex: 2,
+      totalSteps: 4,
+      confidence: analystResult.confidence,
+      output: analystResult.output,
+    });
+
     emitAgentLifecycle(io, executionId, 'memory', 'completed', {
       stepIndex: 2,
       totalSteps: 4,
@@ -220,6 +238,11 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
     });
 
     emitAgentLifecycle(io, executionId, 'governance', 'started', { stepIndex: 3, totalSteps: 4 });
+    emitAgentLifecycle(io, executionId, 'governance', 'progress', {
+      stepIndex: 3,
+      totalSteps: 4,
+      output: mergedOutput,
+    });
     emitToolCall(io, executionId, 'governance', ['enterpriseRules', 'riskScoring', 'approvalPolicy']);
 
     const finalState = await governanceAgent(governanceState);
