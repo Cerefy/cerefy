@@ -39,6 +39,11 @@ export function useAgentProgress() {
       setHistory((prev) => [...prev, event]);
     });
 
+    const unsubFailed = socketService.on<AgentProgressEvent>('agent.failed', (event) => {
+      setProgress(event);
+      setHistory((prev) => [...prev, event]);
+    });
+
     const unsubError = socketService.on<AgentProgressEvent>('agent.error', (event) => {
       setProgress(event);
       setHistory((prev) => [...prev, event]);
@@ -48,6 +53,7 @@ export function useAgentProgress() {
       unsubStart();
       unsubProgress();
       unsubComplete();
+      unsubFailed();
       unsubError();
     };
   }, []);
