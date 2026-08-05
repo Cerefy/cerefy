@@ -7,6 +7,7 @@ export type SocketEvent =
   | 'agent.started'
   | 'agent.progress'
   | 'agent.completed'
+  | 'agent.failed'
   | 'agent.error'
   | 'workflow.updated'
   | 'decision.pending'
@@ -79,7 +80,6 @@ class SocketService {
       console.error(`[Cerefy Socket] Connection error (attempt ${this.reconnectAttempts}):`, error.message);
     });
 
-    // Re-register all existing listeners on the new socket
     this.listeners.forEach((callbacks, event) => {
       callbacks.forEach((cb) => {
         this.socket?.on(event, cb as (...args: unknown[]) => void);
@@ -103,7 +103,6 @@ class SocketService {
     this.listeners.get(event)!.add(callback as (...args: unknown[]) => void);
     this.socket?.on(event, callback as (...args: unknown[]) => void);
 
-    // Return unsubscribe function
     return () => {
       this.listeners.get(event)?.delete(callback as (...args: unknown[]) => void);
       this.socket?.off(event, callback as (...args: unknown[]) => void);
