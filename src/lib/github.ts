@@ -12,6 +12,10 @@ function requireGitHubToken(): string {
   return token;
 }
 
+function encodeGitHubPath(filePath: string): string {
+  return filePath.split('/').map((part) => encodeURIComponent(part)).join('/');
+}
+
 async function githubRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = requireGitHubToken();
   const response = await fetch(`${GITHUB_API_BASE}${path}`, {
@@ -74,11 +78,11 @@ export async function updateGitHubFile(params: {
 }) {
   const existing = params.sha
     ? { sha: params.sha }
-    : await githubRequest<{ sha: string }>(`/repos/${params.repository}/contents/${encodeURIComponent(params.filePath)}`, {
+    : await githubRequest<{ sha: string }>(`/repos/${params.repository}/contents/${encodeGitHubPath(params.filePath)}`, {
         method: 'GET',
       }).catch(() => null);
 
-  return githubRequest<Record<string, unknown>>(`/repos/${params.repository}/contents/${params.filePath}`, {
+  return githubRequest<Record<string, unknown>>(`/repos/${params.repository}/contents/${encodeGitHubPath(params.filePath)}`, {
     method: 'PUT',
     body: JSON.stringify({
       message: params.commitMessage,
