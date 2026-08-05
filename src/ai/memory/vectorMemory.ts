@@ -53,6 +53,7 @@ export async function loadVectorMemoryContext(params: {
 
     const qdrantMatches = await searchQdrantMemory(
       [documentRow?.title, documentRow?.rawContent, ...chunks.map((chunk) => chunk.content)].filter(Boolean).join(' '),
+      params.tenantId,
       limit,
     ).catch(() => []);
 
