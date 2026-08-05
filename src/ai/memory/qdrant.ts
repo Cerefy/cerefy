@@ -12,7 +12,11 @@ function isQdrantConfigured(): boolean {
   return Boolean(QDRANT_API_BASE);
 }
 
-function payloadMatchesQuery(payload: Record<string, unknown>, query: string): boolean {
+function payloadMatchesQuery(payload: Record<string, unknown>, query: string, tenantId: string): boolean {
+  if (payload.tenantId && String(payload.tenantId) !== tenantId) {
+    return false;
+  }
+
   const haystack = Object.values(payload)
     .map((value) => (typeof value === 'string' ? value : JSON.stringify(value)))
     .join(' ')
@@ -20,7 +24,7 @@ function payloadMatchesQuery(payload: Record<string, unknown>, query: string): b
   return haystack.includes(query.toLowerCase());
 }
 
-export async function searchQdrantMemory(query: string, limit = 5): Promise<QdrantMemoryMatch[]> {
+export async function searchQdrantMemory(query: string, tenantId: string, limit = 5): Promise<QdrantMemoryMatch[]> {
   if (!isQdrantConfigured()) {
     return [];
   }
@@ -44,7 +48,7 @@ export async function searchQdrantMemory(query: string, limit = 5): Promise<Qdra
 
   const data = await response.json() as { result?: Array<{ id: string; payload?: Record<string, unknown> }> };
   return (data.result || [])
-    .filter((item) => payloadMatchesQuery(item.payload || {}, query))
+    .filter((item) => payloadMatchesQuery(item.payload || {}, query, tenantId))
     .slice(0, limit)
     .map((item, index) => ({
       id: item.id,
