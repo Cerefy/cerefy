@@ -49,6 +49,64 @@ function emitToolCall(io: SocketIOServer | null, executionId: string, agentName:
   });
 }
 
+function buildTraceRecord(params: {
+  executionId: string;
+  agentName: string;
+  task: string;
+  input: Record<string, unknown>;
+  output: Record<string, unknown>;
+  startedAt: number;
+  errors?: string[];
+  qualityScore?: number;
+}) {
+  const latencyMs = Math.max(0, Date.now() - params.startedAt);
+  return {
+    trace_id: `trace_${params.executionId}_${params.agentName}_${params.task}_${Date.now()}`,
+    agent_name: params.agentName,
+    task: params.task,
+    input: params.input,
+    output: params.output,
+    latency_ms: latencyMs,
+    errors: params.errors ?? [],
+    quality_score: params.qualityScore ?? 0,
+    timestamp: now(),
+  };
+}
+
+async function persistTrace(
+  io: SocketIOServer | null,
+  executionId: string,
+  agentName: string,
+  task: string,
+  input: Record<string, unknown>,
+  output: Record<string, unknown>,
+  startedAt: number,
+  qualityScore = 0,
+  errors: string[] = [],
+) {
+  const trace = buildTraceRecord({
+    executionId,
+    agentName,
+    task,
+    input,
+    output,
+    startedAt,
+    errors,
+    qualityScore,
+  });
+
+  emit(io, 'agent.trace', { executionId, ...trace });
+
+  await appendAgentExecutionEvent(executionId, {
+    event: 'agent.trace',
+    payload: trace,
+    timestamp: now(),
+  });
+
+  await recordAgentExecution(agentName, trace);
+  return trace;
+}
+
 function buildParallelState(base: CerefyGraphState): CerefyGraphState {
   return {
     ...base,
@@ -63,6 +121,7 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
 
   const execution = await createAgentExecutionRecord(input);
   const executionId = String(execution.id);
+  const orchestrationStartedAt = Date.now();
   const supervisorState = createInitialExecutionState({
     ...input,
     metadata: { ...(input.metadata || {}), executionId },
@@ -142,6 +201,21 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       status: 'COMPLETED',
       plan: supervisorPlan,
     });
+    await persistTrace(
+      io,
+      executionId,
+      'supervisor',
+      'routing',
+      {
+        type: input.type,
+        tenantId: input.tenantId,
+        projectId: input.projectId || '',
+        documentId: input.documentId || '',
+      },
+      { plan: supervisorPlan },
+      orchestrationStartedAt,
+      60,
+    );
 
     emitAgentLifecycle(io, executionId, 'memory', 'started', { stepIndex: 2, totalSteps: 4 });
     emitAgentLifecycle(io, executionId, 'discovery', 'started', { stepIndex: 2, totalSteps: 4 });
@@ -150,6 +224,10 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
     emitToolCall(io, executionId, 'memory', ['vectorMemory', 'knowledgeGraph']);
     emitToolCall(io, executionId, 'discovery', ['documentTool', 'vectorMemory', 'knowledgeGraph']);
     emitToolCall(io, executionId, 'analyst', ['reasoningPrompt', 'recommendationSynthesis']);
+
+    const memoryStartedAt = Date.now();
+    const discoveryStartedAt = Date.now();
+    const analystStartedAt = Date.now();
 
     const [memoryResult, discoveryResult, analystResult] = await Promise.all([
       memoryAgent(parallelState),
@@ -193,10 +271,56 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       output: analystResult.output,
     });
 
+    await persistTrace(
+      io,
+      executionId,
+      'memory',
+      'enterprise-memory-retrieval',
+      {
+        tenantId: input.tenantId,
+        projectId: input.projectId || '',
+        documentId: input.documentId || '',
+        type: input.type,
+      },
+      (memoryResult.output || {}) as Record<string, unknown>,
+      memoryStartedAt,
+      58,
+    );
+    await persistTrace(
+      io,
+      executionId,
+      'discovery',
+      'context-discovery',
+      {
+        tenantId: input.tenantId,
+        projectId: input.projectId || '',
+        documentId: input.documentId || '',
+        type: input.type,
+      },
+      (discoveryResult.output || {}) as Record<string, unknown>,
+      discoveryStartedAt,
+      discoveryResult.confidence || 0,
+    );
+    await persistTrace(
+      io,
+      executionId,
+      'analyst',
+      'requirements-synthesis',
+      {
+        tenantId: input.tenantId,
+        projectId: input.projectId || '',
+        documentId: input.documentId || '',
+        type: input.type,
+      },
+      (analystResult.output || {}) as Record<string, unknown>,
+      analystStartedAt,
+      analystResult.confidence || 0,
+    );
+
     await recordAgentExecution('memory', {
       executionId,
       status: 'COMPLETED',
-      confidence: 55,
+      confidence: 58,
       output: memoryResult.output,
     });
     await recordAgentExecution('discovery', {
@@ -224,7 +348,7 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       documents: discoveryResult.documents || parallelState.documents,
       requirements: analystResult.requirements || parallelState.requirements,
       decisions: analystResult.decisions || parallelState.decisions,
-      confidence: Math.max(memoryResult.output ? 55 : 0, discoveryResult.confidence || 0, analystResult.confidence || 0),
+      confidence: Math.max(memoryResult.output ? 58 : 0, discoveryResult.confidence || 0, analystResult.confidence || 0),
       nextAgent: 'governance',
       discoveryComplete: true,
       analystComplete: true,
@@ -236,6 +360,8 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
         ...analystResult.history.slice(-1),
       ],
     });
+
+    const governanceStartedAt = Date.now();
 
     emitAgentLifecycle(io, executionId, 'governance', 'started', { stepIndex: 3, totalSteps: 4 });
     emitAgentLifecycle(io, executionId, 'governance', 'progress', {
@@ -270,6 +396,23 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       confidence,
       output: finalState.output,
     });
+
+    await persistTrace(
+      io,
+      executionId,
+      'governance',
+      'governance-review',
+      {
+        tenantId: input.tenantId,
+        projectId: input.projectId || '',
+        documentId: input.documentId || '',
+        type: input.type,
+        requirements: governanceState.requirements,
+      },
+      (output || {}) as Record<string, unknown>,
+      governanceStartedAt,
+      confidence,
+    );
 
     emit(io, 'workflow.completed', {
       ...basePayload,
@@ -322,6 +465,23 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       payload: { error: message },
       timestamp: now(),
     });
+
+    await persistTrace(
+      io,
+      executionId,
+      'supervisor',
+      'pipeline-failure',
+      {
+        tenantId: input.tenantId,
+        projectId: input.projectId || '',
+        documentId: input.documentId || '',
+        type: input.type,
+      },
+      { error: message },
+      orchestrationStartedAt,
+      0,
+      [message],
+    );
 
     await recordAgentExecution('supervisor', {
       executionId,
