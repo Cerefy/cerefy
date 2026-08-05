@@ -1,12 +1,14 @@
 import { desc, eq } from 'drizzle-orm';
 import { withTenantContext } from '../../db';
 import { agentExecutions, decisions, documentChunks, documents } from '../../db/schema';
+import { searchQdrantMemory } from './qdrant';
 
 export interface VectorMemoryContext {
   documentSummary: string;
   chunkSnippets: string[];
   decisionHistory: Array<Record<string, unknown>>;
   executionSummaries: Array<Record<string, unknown>>;
+  qdrantMatches: Array<Record<string, unknown>>;
 }
 
 export async function loadVectorMemoryContext(params: {
@@ -49,6 +51,11 @@ export async function loadVectorMemoryContext(params: {
       .orderBy(desc(agentExecutions.updatedAt))
       .limit(limit);
 
+    const qdrantMatches = await searchQdrantMemory(
+      [documentRow?.title, documentRow?.rawContent, ...chunks.map((chunk) => chunk.content)].filter(Boolean).join(' '),
+      limit,
+    ).catch(() => []);
+
     return {
       documentSummary: documentRow?.title
         ? `${documentRow.title}${documentRow.rawContent ? `: ${String(documentRow.rawContent).slice(0, 800)}` : ''}`
@@ -64,6 +71,11 @@ export async function loadVectorMemoryContext(params: {
         output: execution.output,
         errors: execution.errors,
         updatedAt: execution.updatedAt,
+      })),
+      qdrantMatches: qdrantMatches.map((match) => ({
+        id: match.id,
+        score: match.score,
+        payload: match.payload,
       })),
     };
   });
