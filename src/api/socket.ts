@@ -2,6 +2,7 @@
 // Socket.IO real-time client for agent execution updates, workflow status, and activity feed
 
 import { io, Socket } from 'socket.io-client';
+import { getBrowserOrigin, isBrowser, readStorage } from '../lib/browser';
 
 export type SocketEvent =
   | 'agent.started'
@@ -51,10 +52,12 @@ class SocketService {
   private maxReconnectAttempts = 10;
 
   connect(): void {
-    if (this.socket?.connected) return;
+    if (!isBrowser || this.socket?.connected) return;
 
-    const token = localStorage.getItem('cerefy_access_token');
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+    const token = readStorage('cerefy_access_token');
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || getBrowserOrigin();
+
+    if (!socketUrl) return;
 
     this.socket = io(socketUrl, {
       auth: { token },
