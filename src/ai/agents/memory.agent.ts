@@ -20,6 +20,9 @@ export async function memoryAgent(state: CerefyGraphState) {
   const nextState = {
     ...state,
     nextAgent: 'discovery',
+    memoryComplete: true,
+    confidence: Math.max(state.confidence, 58),
+    summary: `Memory retrieval completed for ${state.type}`,
     output: {
       ...state.output,
       memory: memoryContext,
@@ -33,12 +36,14 @@ export async function memoryAgent(state: CerefyGraphState) {
       payload: {
         agent: 'memory',
         tools: ['vectorMemory', 'knowledgeGraph'],
+        output: memoryContext,
       },
       timestamp: new Date().toISOString(),
     });
 
     await updateAgentExecutionRecord(state.executionId, {
       currentAgent: 'memory',
+      confidence: nextState.confidence,
       output: nextState.output,
     });
   }
