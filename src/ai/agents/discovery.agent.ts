@@ -3,6 +3,7 @@ import type { CerefyGraphState } from '../graph/state';
 import { loadKnowledgeGraphContext } from '../memory/knowledgeGraph';
 import { loadVectorMemoryContext } from '../memory/vectorMemory';
 import { extractDocumentSignals } from '../tools/documentTool';
+import { appendAgentExecutionEvent, updateAgentExecutionRecord } from '../tools/databaseTool';
 
 function getLLM() {
   return new ChatGoogleGenerativeAI({
@@ -65,7 +66,7 @@ Analyze the following business context and return valid JSON with entities, proc
     }
   }
 
-  return {
+  const nextState = {
     nextAgent: 'analyst',
     documents: state.documents,
     requirements: state.requirements,
@@ -81,6 +82,21 @@ Analyze the following business context and return valid JSON with entities, proc
     },
     history: [...state.history, { agent: 'discovery', output: reasoning }],
   };
+
+  if (state.executionId) {
+    await appendAgentExecutionEvent(state.executionId, {
+      event: 'agent.progress',
+      payload: { agent: 'discovery', output: reasoning, confidence: nextState.confidence },
+      timestamp: new Date().toISOString(),
+    });
+    await updateAgentExecutionRecord(state.executionId, {
+      currentAgent: 'discovery',
+      confidence: nextState.confidence,
+      output: nextState.output,
+    });
+  }
+
+  return nextState;
 }
 
 function safeParseJson(raw: string): Record<string, unknown> | null {
