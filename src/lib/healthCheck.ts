@@ -2,6 +2,7 @@
 // Comprehensive health check and readiness probe endpoints
 
 import { Request, Response } from 'express';
+import { getNeo4jDriver } from './neo4j';
 
 interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -21,18 +22,21 @@ interface ComponentHealth {
 const startTime = Date.now();
 
 async function checkDatabase(): Promise<ComponentHealth> {
-  // Check if DATABASE_URL is configured
   if (!process.env.DATABASE_URL) {
     return { status: 'down', message: 'DATABASE_URL not configured' };
   }
+
   try {
     const { Pool } = await import('pg');
     const pool = new Pool({ connectionString: process.env.DATABASE_URL, connectionTimeoutMillis: 3000 });
     const start = Date.now();
     const client = await pool.connect();
-    await client.query('SELECT 1');
-    client.release();
-    await pool.end();
+    try {
+      await client.query('SELECT 1');
+    } finally {
+      client.release();
+      await pool.end();
+    }
     return { status: 'up', latencyMs: Date.now() - start };
   } catch (err: any) {
     return { status: 'down', message: err.message };
@@ -50,7 +54,6 @@ async function checkFirebase(): Promise<ComponentHealth> {
   try {
     const adminModule = await import('firebase-admin');
     const adminApp = adminModule.default;
-    // Check if any firebase apps have been initialized
     const apps = (adminApp as any).apps;
     if (apps && apps.length > 0) {
       return { status: 'up', message: 'Firebase Admin initialized' };
@@ -58,6 +61,26 @@ async function checkFirebase(): Promise<ComponentHealth> {
     return { status: 'unknown', message: 'Firebase Admin not yet initialized' };
   } catch {
     return { status: 'down', message: 'Firebase Admin unavailable' };
+  }
+}
+
+async function checkNeo4j(): Promise<ComponentHealth> {
+  if (!process.env.NEO4J_URI) {
+    return { status: 'unknown', message: 'NEO4J_URI not configured' };
+  }
+
+  try {
+    const driver = getNeo4jDriver();
+    const session = driver.session();
+    const start = Date.now();
+    try {
+      await session.run('RETURN 1 AS ok');
+    } finally {
+      await session.close();
+    }
+    return { status: 'up', latencyMs: Date.now() - start };
+  } catch (err: any) {
+    return { status: 'down', message: err.message };
   }
 }
 
@@ -79,15 +102,19 @@ export async function readinessCheck(req: Request, res: Response): Promise<void>
   const checks: Record<string, ComponentHealth> = {};
   let overallStatus: HealthStatus['status'] = 'healthy';
 
-  // Run all checks in parallel
-  const [db, gemini, firebase] = await Promise.all([checkDatabase(), checkGemini(), checkFirebase()]);
+  const [db, neo4j, gemini, firebase] = await Promise.all([checkDatabase(), checkNeo4j(), checkGemini(), checkFirebase()]);
 
   checks.database = db;
+  checks.neo4j = neo4j;
   checks.gemini = gemini;
   checks.firebase = firebase;
 
-  // Determine overall status
-  if (db.status === 'down') overallStatus = 'degraded';
+  if (db.status === 'down' || neo4j.status === 'down') {
+    overallStatus = 'degraded';
+  }
+  if (db.status === 'down' && neo4j.status === 'down') {
+    overallStatus = 'unhealthy';
+  }
 
   const health: HealthStatus = {
     status: overallStatus,
@@ -98,9 +125,8 @@ export async function readinessCheck(req: Request, res: Response): Promise<void>
     checks,
   };
 
-  const statusCode = overallStatus !== 'healthy' ? 503 : 200;
+  const statusCode = overallStatus === 'healthy' ? 200 : overallStatus === 'degraded' ? 503 : 500;
   res.status(statusCode).json(health);
-
 }
 
 /**
