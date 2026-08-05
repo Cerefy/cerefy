@@ -358,7 +358,7 @@ async function startServer() {
     socket.on('disconnect', () => { logger.info('[Socket.IO] client disconnected', { id: socket.id }); });
   });
 
-  httpServer.listen(PORT, '0.0.0.0', () => { logger.info(` Cerefy Enterprise AI running`, { port: PORT, env: process.env.NODE_ENV || 'development', url: `http://0.0.0.0:${PORT}` }); });
+  httpServer.listen(PORT, '0.0.0.0', () => { logger.info(`🚀 Cerefy Enterprise AI running`, { port: PORT, env: process.env.NODE_ENV || 'development', url: `http://0.0.0.0:${PORT}` }); });
 }
 
 startServer();
