@@ -45,7 +45,7 @@ export async function getGitHubRepository(repository: string) {
 }
 
 export async function createGitHubBranch(repository: string, branch: string, baseBranch = 'main') {
-  const ref = await githubRequest<{ object: { sha: string } }>(`/repos/${repository}/git/ref/heads/${baseBranch}`);
+  const ref = await githubRequest<{ object: { sha: string } }>(`/repos/${repository}/git/ref/heads/${encodeGitHubPath(baseBranch)}`);
   return githubRequest<Record<string, unknown>>(`/repos/${repository}/git/refs`, {
     method: 'POST',
     body: JSON.stringify({
