@@ -15,7 +15,12 @@ export const coreAgentDefinitions: AgentDefinition[] = [
   { name: 'supervisor', capabilities: ['planning', 'routing', 'coordination'], tools: ['langgraph', 'socket.io'], status: 'ACTIVE' },
   { name: 'memory', capabilities: ['retrieval', 'context synthesis', 'enterprise memory'], tools: ['postgresql', 'pgvector', 'neo4j'], status: 'ACTIVE' },
   { name: 'discovery', capabilities: ['document analysis', 'entity extraction', 'process discovery'], tools: ['langchain', 'gemini', 'vector search'], status: 'ACTIVE' },
+  { name: 'requirement', capabilities: ['requirement synthesis', 'traceability', 'gap detection'], tools: ['langchain', 'gemini'], status: 'ACTIVE' },
+  { name: 'processAnalysis', capabilities: ['workflow analysis', 'dependency mapping', 'bottleneck detection'], tools: ['langchain', 'gemini'], status: 'ACTIVE' },
+  { name: 'dataIntelligence', capabilities: ['signal extraction', 'context scoring', 'knowledge synthesis'], tools: ['postgresql', 'pgvector', 'neo4j'], status: 'ACTIVE' },
+  { name: 'codeGeneration', capabilities: ['implementation guidance', 'contract drafting', 'integration planning'], tools: ['langchain', 'gemini'], status: 'ACTIVE' },
   { name: 'analyst', capabilities: ['reasoning', 'recommendation generation', 'insight synthesis'], tools: ['langchain', 'gemini'], status: 'ACTIVE' },
+  { name: 'validation', capabilities: ['validation', 'quality checks', 'completion gating'], tools: ['langgraph', 'enterprise rules'], status: 'ACTIVE' },
   { name: 'governance', capabilities: ['policy validation', 'risk scoring', 'approval checks'], tools: ['langchain', 'gemini', 'enterprise rules'], status: 'ACTIVE' },
 ];
 
