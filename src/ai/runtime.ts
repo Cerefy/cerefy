@@ -63,12 +63,11 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
 
   const execution = await createAgentExecutionRecord(input);
   const executionId = String(execution.id);
-  const supervisorPlan = supervisorAgent({
-    ...createInitialExecutionState({
-      ...input,
-      metadata: { ...(input.metadata || {}), executionId },
-    }),
+  const supervisorState = createInitialExecutionState({
+    ...input,
+    metadata: { ...(input.metadata || {}), executionId },
   });
+  const supervisorPlan = supervisorAgent(supervisorState);
 
   const basePayload = {
     executionId,
@@ -103,6 +102,12 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
     confidence: 0,
   });
 
+  await recordAgentExecution('supervisor', {
+    executionId,
+    status: 'STARTED',
+    plan: supervisorPlan,
+  });
+
   try {
     const initialState = createInitialExecutionState({
       ...input,
@@ -135,6 +140,24 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       discoveryAgent(parallelState),
       analystAgent(parallelState),
     ]);
+
+    emitAgentLifecycle(io, executionId, 'memory', 'completed', {
+      stepIndex: 2,
+      totalSteps: 4,
+      output: memoryResult.output,
+    });
+    emitAgentLifecycle(io, executionId, 'discovery', 'completed', {
+      stepIndex: 2,
+      totalSteps: 4,
+      confidence: discoveryResult.confidence,
+      output: discoveryResult.output,
+    });
+    emitAgentLifecycle(io, executionId, 'analyst', 'completed', {
+      stepIndex: 2,
+      totalSteps: 4,
+      confidence: analystResult.confidence,
+      output: analystResult.output,
+    });
 
     await recordAgentExecution('memory', {
       executionId,
