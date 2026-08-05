@@ -298,7 +298,7 @@ app.post('/api/v1/github/file', requireAuth, apiRateLimiter, async (req: Request
   }
 });
 
-app.get('/api/v1/memory/query', requireAuth, async (req: Request, res: Response) => { const { query } = req.body; if (!query || typeof query !== 'string') { res.status(400).json({ error: 'Query parameter is required' }); return; } res.json({ data: getMemoryResults(query) }); });
+app.get('/api/v1/memory/query', requireAuth, async (req: Request, res: Response) => { const query = String(req.query.query || req.body?.query || '').trim(); if (!query) { res.status(400).json({ error: 'Query parameter is required' }); return; } res.json({ data: getMemoryResults(query) }); });
 app.get('/api/v1/memory/documents', requireAuth, async (_req: AuthenticatedRequest, res: Response) => { res.json({ data: getMemoryDocuments() }); });
 app.get('/api/v1/analytics/executive-kpis', requireAuth, async (_req: AuthenticatedRequest, res: Response) => { res.json(getExecutiveKPIs()); });
 app.get('/api/v1/analytics/agent-performance', requireAuth, async (_req: AuthenticatedRequest, res: Response) => { res.json({ data: getAgentPerformance() }); });
