@@ -16,6 +16,10 @@ function encodeGitHubPath(filePath: string): string {
   return filePath.split('/').map((part) => encodeURIComponent(part)).join('/');
 }
 
+function encodeGitHubRef(ref: string): string {
+  return encodeURIComponent(ref);
+}
+
 async function githubRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = requireGitHubToken();
   const response = await fetch(`${GITHUB_API_BASE}${path}`, {
@@ -30,7 +34,14 @@ async function githubRequest<T>(path: string, init: RequestInit = {}): Promise<T
   });
 
   const text = await response.text();
-  const payload = text ? JSON.parse(text) : null;
+  let payload: any = null;
+  if (text) {
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      payload = text;
+    }
+  }
 
   if (!response.ok) {
     const message = payload?.message || response.statusText || 'GitHub request failed';
@@ -45,7 +56,7 @@ export async function getGitHubRepository(repository: string) {
 }
 
 export async function createGitHubBranch(repository: string, branch: string, baseBranch = 'main') {
-  const ref = await githubRequest<{ object: { sha: string } }>(`/repos/${repository}/git/ref/heads/${encodeGitHubPath(baseBranch)}`);
+  const ref = await githubRequest<{ object: { sha: string } }>(`/repos/${repository}/git/ref/heads/${encodeGitHubRef(baseBranch)}`);
   return githubRequest<Record<string, unknown>>(`/repos/${repository}/git/refs`, {
     method: 'POST',
     body: JSON.stringify({
