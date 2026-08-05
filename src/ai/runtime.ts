@@ -16,6 +16,10 @@ function now() {
 
 function emit(io: SocketIOServer | null, event: string, payload: Record<string, unknown>) {
   io?.emit(event, payload);
+  const executionId = typeof payload.executionId === 'string' ? payload.executionId : null;
+  if (executionId) {
+    io?.to(`execution:${executionId}`).emit(event, payload);
+  }
 }
 
 export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: SocketIOServer | null): Promise<RunExecutionResult> {
