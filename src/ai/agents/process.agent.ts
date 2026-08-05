@@ -34,6 +34,7 @@ export async function processAgent(state: CerefyGraphState) {
 
   const nextState = {
     ...state,
+    processComplete: true,
     confidence: Math.max(state.confidence, 68),
     output: {
       ...state.output,
