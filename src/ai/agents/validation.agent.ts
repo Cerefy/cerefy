@@ -33,6 +33,7 @@ export async function validationAgent(state: CerefyGraphState) {
 
   const nextState = {
     ...state,
+    validationComplete: true,
     confidence: Math.max(state.confidence, 78),
     output: {
       ...state.output,
