@@ -40,11 +40,16 @@ export async function getAgentExecutionById(executionId: string) {
 }
 
 export async function listAgentExecutions(tenantId?: string, limit = 25) {
-  const query = db.select().from(agentExecutions).orderBy(desc(agentExecutions.createdAt)).limit(limit);
-  if (!tenantId) {
-    return query;
+  if (tenantId) {
+    return db
+      .select()
+      .from(agentExecutions)
+      .where(eq(agentExecutions.tenantId, tenantId))
+      .orderBy(desc(agentExecutions.createdAt))
+      .limit(limit);
   }
-  return query.where(eq(agentExecutions.tenantId, tenantId));
+
+  return db.select().from(agentExecutions).orderBy(desc(agentExecutions.createdAt)).limit(limit);
 }
 
 export async function updateAgentExecutionRecord(
