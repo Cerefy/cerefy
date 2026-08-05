@@ -38,6 +38,9 @@ All required and optional environment variables for running the Cerefy platform.
 | `QDRANT_URL` | `http://localhost:6333` | Qdrant vector DB endpoint |
 | `QDRANT_API_KEY` | `...` | Qdrant API key |
 | `QDRANT_COLLECTION` | `cerefy-memory` | Qdrant collection for long-term memory |
+| `TEMPORAL_ADDRESS` | `localhost:7233` | Temporal server address for workflow orchestration |
+| `TEMPORAL_NAMESPACE` | `default` | Temporal namespace |
+| `TEMPORAL_TASK_QUEUE` | `cerefy-ai` | Temporal task queue for Cerefy workflows |
 
 ---
 
