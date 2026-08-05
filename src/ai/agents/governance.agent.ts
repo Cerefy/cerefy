@@ -19,6 +19,7 @@ export async function governanceAgent(state: CerefyGraphState) {
     requirements,
     memory: {
       executions: Array.isArray(memory?.executionSummaries) ? memory.executionSummaries : [],
+      qdrantMatches: Array.isArray(memory?.qdrantMatches) ? memory.qdrantMatches : [],
       graph: Array.isArray(memory?.graphTriples) ? memory.graphTriples : [],
     },
     history: state.history,
