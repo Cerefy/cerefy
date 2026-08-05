@@ -5,19 +5,43 @@ import { governanceAgent } from '../agents/governance.agent';
 import { supervisorAgent } from './supervisor';
 import { CerefyStateAnnotation, type CerefyExecutionInput, type CerefyGraphState } from './state';
 
+function routeFromSupervisor(state: CerefyGraphState) {
+  if (state.documents.length > 0 || state.type === 'document_analysis' || state.type === 'discovery') {
+    return 'discovery';
+  }
+  if (state.requirements.length > 0 || state.type === 'requirements_analysis') {
+    return 'analyst';
+  }
+  return 'governance';
+}
+
+function routeAfterDiscovery(state: CerefyGraphState) {
+  if (!state.analystComplete) {
+    return 'analyst';
+  }
+  return state.governanceComplete ? END : 'governance';
+}
+
+function routeAfterAnalyst(state: CerefyGraphState) {
+  return state.governanceComplete ? END : 'governance';
+}
+
 export function buildCerefyWorkflow() {
   const workflow = new StateGraph(CerefyStateAnnotation)
-    .addNode('supervisor', async (state: CerefyGraphState) => ({
-      nextAgent: supervisorAgent(state),
-      history: [...state.history, { agent: 'supervisor', nextAgent: supervisorAgent(state) }],
-    }))
+    .addNode('supervisor', async (state: CerefyGraphState) => {
+      const nextAgent = supervisorAgent(state);
+      return {
+        nextAgent,
+        history: [...state.history, { agent: 'supervisor', nextAgent }],
+      };
+    })
     .addNode('discovery', discoveryAgent)
     .addNode('analyst', analystAgent)
     .addNode('governance', governanceAgent)
     .addEdge(START, 'supervisor')
-    .addEdge('supervisor', 'discovery')
-    .addEdge('discovery', 'analyst')
-    .addEdge('analyst', 'governance')
+    .addConditionalEdges('supervisor', routeFromSupervisor)
+    .addConditionalEdges('discovery', routeAfterDiscovery)
+    .addConditionalEdges('analyst', routeAfterAnalyst)
     .addEdge('governance', END);
 
   return workflow.compile();
