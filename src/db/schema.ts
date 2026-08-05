@@ -77,3 +77,14 @@ export const agentExecutions = pgTable('agent_executions', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   completedAt: timestamp('completed_at'),
 });
+
+export const agentRegistry = pgTable('agent_registry', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  capabilities: jsonb('capabilities').notNull(),
+  tools: jsonb('tools').notNull(),
+  status: text('status').default('ACTIVE').notNull(),
+  executionHistory: jsonb('execution_history').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
