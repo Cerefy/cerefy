@@ -13,8 +13,13 @@ export interface AgentDefinition {
 
 export const coreAgentDefinitions: AgentDefinition[] = [
   { name: 'supervisor', capabilities: ['planning', 'routing', 'coordination'], tools: ['langgraph', 'socket.io'], status: 'ACTIVE' },
-  { name: 'memory', capabilities: ['retrieval', 'context synthesis', 'enterprise memory'], tools: ['postgresql', 'pgvector', 'neo4j'], status: 'ACTIVE' },
+  { name: 'memory', capabilities: ['retrieval', 'context synthesis', 'enterprise memory'], tools: ['postgresql', 'pgvector', 'neo4j', 'qdrant'], status: 'ACTIVE' },
   { name: 'discovery', capabilities: ['document analysis', 'entity extraction', 'process discovery'], tools: ['langchain', 'gemini', 'vector search'], status: 'ACTIVE' },
+  { name: 'requirement', capabilities: ['specification', 'acceptance criteria', 'implementation planning'], tools: ['langchain', 'gemini'], status: 'ACTIVE' },
+  { name: 'process', capabilities: ['workflow analysis', 'optimization opportunities', 'business process design'], tools: ['langchain', 'gemini', 'neo4j'], status: 'ACTIVE' },
+  { name: 'data', capabilities: ['dataset analysis', 'insights generation', 'analytics logic'], tools: ['langchain', 'gemini', 'postgresql'], status: 'ACTIVE' },
+  { name: 'code', capabilities: ['safe implementation', 'refactoring', 'test generation'], tools: ['typescript', 'drizzle', 'express'], status: 'ACTIVE' },
+  { name: 'validation', capabilities: ['lint', 'typecheck', 'build verification', 'regression detection'], tools: ['npm', 'typescript', 'ci'], status: 'ACTIVE' },
   { name: 'analyst', capabilities: ['reasoning', 'recommendation generation', 'insight synthesis'], tools: ['langchain', 'gemini'], status: 'ACTIVE' },
   { name: 'governance', capabilities: ['policy validation', 'risk scoring', 'approval checks'], tools: ['langchain', 'gemini', 'enterprise rules'], status: 'ACTIVE' },
 ];
