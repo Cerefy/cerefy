@@ -14,6 +14,7 @@ export async function memoryAgent(state: CerefyGraphState) {
     chunkSnippets: vectorMemory.chunkSnippets,
     decisionHistory: vectorMemory.decisionHistory,
     executionSummaries: vectorMemory.executionSummaries,
+    qdrantMatches: vectorMemory.qdrantMatches,
     graphSummary: graphMemory.summary,
     graphTriples: graphMemory.triples,
   };
