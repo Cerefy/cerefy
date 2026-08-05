@@ -59,3 +59,21 @@ export const decisions = pgTable('decisions', {
   aiRecommendation: text('ai_recommendation'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const agentExecutions = pgTable('agent_executions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull(),
+  projectId: text('project_id'),
+  documentId: text('document_id'),
+  type: text('type').notNull(),
+  status: text('status').default('RUNNING').notNull(),
+  currentAgent: text('current_agent').default('supervisor').notNull(),
+  confidence: real('confidence').default(0).notNull(),
+  input: jsonb('input').notNull(),
+  output: jsonb('output'),
+  eventLog: jsonb('event_log').notNull(),
+  errors: jsonb('errors').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  completedAt: timestamp('completed_at'),
+});
