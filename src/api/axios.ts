@@ -1,7 +1,13 @@
-﻿// src/api/axios.ts
+// src/api/axios.ts
 // Production-ready Axios instance with JWT interceptors and token refresh
 
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import {
+  dispatchBrowserEvent,
+  readStorage,
+  removeStorage,
+  writeStorage,
+} from '../lib/browser';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
@@ -36,11 +42,11 @@ const api = axios.create({
 // Request interceptor — attach access token
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('cerefy_access_token');
+    const token = readStorage('cerefy_access_token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    const tenantId = localStorage.getItem('cerefy_tenant_id') || 'tenant_cerefy_101';
+    const tenantId = readStorage('cerefy_tenant_id') || 'tenant_cerefy_101';
     if (config.headers) {
       config.headers['x-tenant-id'] = tenantId;
     }
@@ -73,7 +79,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem('cerefy_refresh_token');
+        const refreshToken = readStorage('cerefy_refresh_token');
         if (!refreshToken) {
           throw new Error('No refresh token available');
         }
@@ -83,8 +89,8 @@ api.interceptors.response.use(
         });
 
         const { accessToken, refreshToken: newRefreshToken } = data;
-        localStorage.setItem('cerefy_access_token', accessToken);
-        localStorage.setItem('cerefy_refresh_token', newRefreshToken);
+        writeStorage('cerefy_access_token', accessToken);
+        writeStorage('cerefy_refresh_token', newRefreshToken);
 
         processQueue(null, accessToken);
 
@@ -95,9 +101,9 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as Error, null);
-        localStorage.removeItem('cerefy_access_token');
-        localStorage.removeItem('cerefy_refresh_token');
-        window.dispatchEvent(new CustomEvent('cerefy:auth:logout'));
+        removeStorage('cerefy_access_token');
+        removeStorage('cerefy_refresh_token');
+        dispatchBrowserEvent('cerefy:auth:logout');
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
