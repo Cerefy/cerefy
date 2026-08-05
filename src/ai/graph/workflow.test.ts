@@ -18,12 +18,32 @@ test('supervisor routes document analysis to discovery', () => {
   assert.equal(next, 'discovery');
 });
 
-test('supervisor routes requirements work to analyst', () => {
+test('supervisor routes requirements work to requirement agent', () => {
   const next = supervisorAgent({ ...base, type: 'requirements_analysis', requirements: [{ id: 'req_1' }] });
-  assert.equal(next, 'analyst');
+  assert.equal(next, 'requirement');
 });
 
-test('supervisor routes everything else to governance', () => {
+test('supervisor routes process work to process agent', () => {
+  const next = supervisorAgent({ ...base, type: 'process_analysis' });
+  assert.equal(next, 'process');
+});
+
+test('supervisor routes data work to data agent', () => {
+  const next = supervisorAgent({ ...base, type: 'data_analysis' });
+  assert.equal(next, 'data');
+});
+
+test('supervisor routes code work to code agent', () => {
+  const next = supervisorAgent({ ...base, type: 'code_generation' });
+  assert.equal(next, 'code');
+});
+
+test('supervisor routes validation work to validation agent', () => {
+  const next = supervisorAgent({ ...base, type: 'validation' });
+  assert.equal(next, 'validation');
+});
+
+test('supervisor routes governance work to governance', () => {
   const next = supervisorAgent({ ...base, type: 'governance_review' });
   assert.equal(next, 'governance');
 });
