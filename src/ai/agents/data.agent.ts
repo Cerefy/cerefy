@@ -37,6 +37,7 @@ export async function dataAgent(state: CerefyGraphState) {
 
   const nextState = {
     ...state,
+    dataComplete: true,
     confidence: Math.max(state.confidence, 70),
     output: {
       ...state.output,
