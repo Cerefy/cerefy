@@ -28,7 +28,7 @@ test('supervisor routes everything else to governance', () => {
   assert.equal(next, 'governance');
 });
 
-test('initial execution state defaults memory completion to false', () => {
+test('initial execution state defaults all completion flags to false', () => {
   const state = createInitialExecutionState({
     type: 'discovery',
     tenantId: 'tenant_1',
@@ -36,5 +36,11 @@ test('initial execution state defaults memory completion to false', () => {
   });
 
   assert.equal(state.memoryComplete, false);
+  assert.equal(state.discoveryComplete, false);
+  assert.equal(state.requirementComplete, false);
+  assert.equal(state.processComplete, false);
+  assert.equal(state.dataComplete, false);
+  assert.equal(state.codeComplete, false);
+  assert.equal(state.validationComplete, false);
   assert.equal(state.nextAgent, 'supervisor');
 });
