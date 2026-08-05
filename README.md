@@ -1,36 +1,43 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Cerefy Enterprise AI Operating System
 
-# Run and deploy your AI Studio app
+Cerefy is a production-oriented enterprise AI workspace built around an Express + Node.js backend (`server.ts`), a Vite/React frontend, Drizzle ORM, PostgreSQL, Neo4j knowledge graph support, and observability hooks for LangSmith and Sentry.
 
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/56b8f5cc-76d5-4fcd-a61d-a0bab8d87ce2
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
+## Quick Start
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+   ```bash
+   npm ci
+   ```
+2. Copy `.env.example` to `.env.local` (or `.env`) and set the required values:
+   - `DATABASE_URL`
+   - `NEO4J_URI`
+   - `NEO4J_PASSWORD`
+   - `GEMINI_API_KEY`
+   - `JWT_SECRET`
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-## Deploy to Render (Free Tier)
+## Validation
 
-This platform is completely ready for a 1-click free deployment on Render.com using the included `render.yaml` Configuration and `Dockerfile`.
+Run the production checks after any change:
 
-**Requirements for Free Deployment:**
-1. A managed PostgreSQL database with `pgvector` enabled (e.g. [Neon.tech](https://neon.tech))
-2. A managed Neo4j Knowledge Graph (e.g. [Neo4j AuraDB Free](https://neo4j.com/cloud/aura-free/))
-3. Your code pushed to a GitHub repository.
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
 
-**How to Deploy:**
-1. Log into [Render.com](https://render.com/) with your GitHub account.
-2. Click **New +** and select **Blueprint**.
-3. Connect your GitHub repository.
-4. Render will automatically read the `render.yaml` file and create the Web Service for you.
-5. In the Render Dashboard, open the `cerefy-web` service settings, navigate to **Environment**, and paste in your external database credentials (`DATABASE_URL`, `NEO4J_URI`, and `GEMINI_API_KEY`).
+## Deployment
+
+- Production deployment and rollback guidance: [`DEPLOYMENT.md`](./DEPLOYMENT.md)
+- Container orchestration: [`docker-compose.production.yml`](./docker-compose.production.yml)
+- Operational procedures: [`OPERATIONS.md`](./OPERATIONS.md)
+
+## Architecture Guardrails
+
+- Preserve the existing Express + Node.js `server.ts` backend.
+- Keep Drizzle ORM and PostgreSQL as the production persistence layer.
+- Do not migrate to NestJS or Prisma.
+- Avoid changing frontend contracts unless a change is explicitly required and validated.
