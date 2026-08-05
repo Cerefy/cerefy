@@ -16,6 +16,7 @@ export async function analystAgent(state: CerefyGraphState) {
   const processes = Array.isArray(discovery?.processes) ? (discovery?.processes as string[]) : [];
   const stakeholders = Array.isArray(discovery?.stakeholders) ? (discovery?.stakeholders as string[]) : [];
   const executionSummaries = Array.isArray(memory?.executionSummaries) ? (memory?.executionSummaries as Array<Record<string, unknown>>) : [];
+  const qdrantMatches = Array.isArray(memory?.qdrantMatches) ? (memory?.qdrantMatches as Array<Record<string, unknown>>) : [];
 
   let requirements = [
     {
@@ -51,6 +52,7 @@ export async function analystAgent(state: CerefyGraphState) {
           discovery: discovery ?? {},
           memory: {
             executionSummaries,
+            qdrantMatches,
           },
         }, null, 2)}`,
       );
