@@ -7,7 +7,7 @@
 ## Architecture Overview
 
 ```
-Internet → Nginx (port 80/443) → cerefy-app (Node.js :3000) → PostgreSQL + Neo4j
+Internet → Nginx (port 80/443) → cerefy-app (Node.js :3000) → PostgreSQL + Neo4j + Qdrant + Temporal
 ```
 
 **Services:**
@@ -17,6 +17,8 @@ Internet → Nginx (port 80/443) → cerefy-app (Node.js :3000) → PostgreSQL +
 | `cerefy-db` | `pgvector/pgvector:pg16` | 5432 | PostgreSQL + Vector Search |
 | `cerefy-graph` | `neo4j:5.20.0` | 7687 / 7474 | Knowledge Graph |
 | `cerefy-proxy` | `nginx:alpine` | 80 / 443 | Reverse Proxy + TLS |
+| `cerefy-qdrant` | `qdrant/qdrant:latest` | 6333 / 6334 | Long-term vector memory |
+| `cerefy-temporal` | `temporalio/auto-setup:latest` | 7233 | Durable workflow execution |
 
 ---
 
@@ -27,6 +29,32 @@ Internet → Nginx (port 80/443) → cerefy-app (Node.js :3000) → PostgreSQL +
 - A domain name pointing to your server IP
 - SSL certificate (Let's Encrypt recommended)
 - GitHub Container Registry access (or Docker Hub)
+
+---
+
+## Required Environment
+
+Set these values before deployment:
+
+- `DATABASE_URL`
+- `GEMINI_API_KEY`
+- `NEO4J_URI`
+- `NEO4J_PASSWORD`
+- `GITHUB_TOKEN`
+- `QDRANT_URL`
+- `QDRANT_API_KEY`
+- `LANGSMITH_API_KEY`
+- `SENTRY_DSN`
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_ZONE_ID`
+- `JWT_SECRET`
+- `JWT_REFRESH_SECRET`
+- `GOOGLE_APPLICATION_CREDENTIALS`
+- `FIREBASE_PROJECT_ID`
+- `TEMPORAL_ADDRESS`
+- `TEMPORAL_NAMESPACE`
+- `TEMPORAL_TASK_QUEUE`
 
 ---
 
@@ -61,6 +89,7 @@ nano .env
 - `JWT_SECRET` — generate with `openssl rand -base64 48`
 - `GEMINI_API_KEY` — your Google Gemini API key
 - `FRONTEND_URL` — your actual domain (`https://cerefy.yourcompany.com`)
+- `QDRANT_API_KEY`, `LANGSMITH_API_KEY`, `SENTRY_DSN`, `CLOUDFLARE_API_TOKEN` — production credentials
 
 ### 4. Build the Docker image
 
@@ -100,6 +129,34 @@ curl http://localhost/health/ready
 sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d cerefy.yourcompany.com
 ```
+
+### 10. Configure Cloudflare
+
+- Add the production domain to Cloudflare.
+- Set DNS records to point at the Nginx reverse proxy.
+- Enable proxying / edge caching / WAF rules as needed.
+- Verify SSL mode is set to Full (strict).
+
+### 11. Configure LangSmith and Sentry
+
+- Set `LANGSMITH_API_KEY` and `LANGSMITH_PROJECT` for traces.
+- Set `SENTRY_DSN` and `SENTRY_ENVIRONMENT` for error reporting.
+- Confirm both systems receive events from runtime failures and agent executions.
+
+### 12. Configure Temporal
+
+- Provide `TEMPORAL_ADDRESS`, `TEMPORAL_NAMESPACE`, and `TEMPORAL_TASK_QUEUE`.
+- Verify workflow orchestration is reachable before enabling durable jobs.
+
+### 13. Verify external services
+
+- PostgreSQL: migrations applied and connections healthy
+- Neo4j: graph connection and query execution healthy
+- Qdrant: vector search healthy
+- GitHub: branch / PR automation operational
+- Cloudflare: DNS and SSL active
+- LangSmith: trace ingestion active
+- Sentry: release / error ingestion active
 
 ---
 
@@ -150,3 +207,5 @@ docker compose -f docker-compose.production.yml up -d --no-deps cerefy-app
 | 502 Bad Gateway | App not started | Check `docker ps` and app logs |
 | DB connection refused | DB not healthy | Wait for DB healthcheck to pass |
 | Firebase auth fails | Service account missing | Set `GOOGLE_APPLICATION_CREDENTIALS` |
+| Qdrant queries fail | Missing Qdrant credentials | Verify `QDRANT_URL` and `QDRANT_API_KEY` |
+| Temporal workflows unavailable | Temporal not configured | Set `TEMPORAL_*` environment variables |
