@@ -4,6 +4,47 @@ Operational guide for maintaining and monitoring the Cerefy platform in producti
 
 ---
 
+## Autonomous Engineering Loop
+
+When operating Cerefy as an autonomous engineering organization, follow this cycle continuously:
+
+1. Inspect the repository and identify weaknesses.
+2. Detect the highest-priority improvement opportunities.
+3. Create implementation tasks and assign specialized workstreams.
+4. Execute changes.
+5. Test with the standard validation commands.
+6. Commit and open or update the pull request.
+7. Deploy when safe and appropriate.
+8. Monitor LangSmith, Sentry, and platform health.
+9. Learn from the results and repeat.
+
+### Stop Conditions
+
+Only pause the loop for:
+- Missing secrets
+- Irreversible destructive database operations
+- Security-critical decisions
+
+### Required Validation After Every Change
+
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
+
+### Branching and PR Conventions
+
+- Use `feature/<name>` branches for all work.
+- Keep commits focused and descriptive.
+- Include a summary with:
+  - Changes
+  - Tests
+  - Risks
+  - Deployment notes
+
+---
+
 ## Health Monitoring
 
 ### Endpoints
@@ -71,7 +112,7 @@ Logs are structured JSON in production. Use `jq` to parse:
 
 ```bash
 # View recent errors
-docker logs cerefy-app 2>&1 | grep '"level":"error"' | jq .
+docker logs cerefy-app 2>&1 | grep '\"level\":\"error\"' | jq .
 
 # View HTTP 5xx errors
 docker logs cerefy-app 2>&1 | jq 'select(.statusCode >= 500)'
