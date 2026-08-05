@@ -35,6 +35,7 @@ export async function discoveryAgent(state: CerefyGraphState) {
     memory: {
       vector: vectorMemory.chunkSnippets,
       executions: vectorMemory.executionSummaries,
+      qdrant: vectorMemory.qdrantMatches,
       graph: graphMemory.triples,
     },
   };
@@ -49,6 +50,7 @@ Analyze the following business context and return valid JSON with entities, proc
             documentSummary: vectorMemory.documentSummary,
             chunks: vectorMemory.chunkSnippets,
             executions: vectorMemory.executionSummaries,
+            qdrant: vectorMemory.qdrantMatches,
             graph: graphMemory.summary,
           },
           null,
