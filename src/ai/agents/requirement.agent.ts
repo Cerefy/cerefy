@@ -12,12 +12,16 @@ function getLLM() {
 export async function requirementAgent(state: CerefyGraphState) {
   const discovery = state.output.discovery as Record<string, unknown> | undefined;
   const memory = state.output.memory as Record<string, unknown> | undefined;
+  const stakeholderName = Array.isArray(discovery?.stakeholders) && discovery.stakeholders.length > 0
+    ? String((discovery.stakeholders as string[])[0])
+    : 'business user';
+
   const requirements = Array.isArray(state.requirements) && state.requirements.length > 0
     ? state.requirements
     : [
         {
           title: 'Enterprise requirement synthesis',
-          userStory: `As a ${String(discovery?.stakeholders?.[0] || 'business user')} I want the workflow to reflect the discovered business process so that delivery is aligned with enterprise policy.`,
+          userStory: `As a ${stakeholderName} I want the workflow to reflect the discovered business process so that delivery is aligned with enterprise policy.`,
           acceptanceCriteria: [
             'The requirement must be traceable to discovery output.',
             'Acceptance criteria must reflect governance constraints.',
