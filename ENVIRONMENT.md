@@ -27,6 +27,42 @@ All required and optional environment variables for running the Cerefy platform.
 
 ---
 
+## AI / Runtime Integrations
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `GEMINI_MODEL` | `gemini-1.5-pro` | Default model for LangGraph agents |
+| `LANGSMITH_API_KEY` | `lsv2_...` | LangSmith API key for traces and evaluations |
+| `LANGSMITH_PROJECT` | `cerefy` | LangSmith project name |
+| `LANGSMITH_TRACING` | `true` | Enable LangSmith tracing when configured |
+| `QDRANT_URL` | `http://localhost:6333` | Qdrant vector DB endpoint |
+| `QDRANT_API_KEY` | `...` | Qdrant API key |
+| `QDRANT_COLLECTION` | `cerefy-memory` | Qdrant collection for long-term memory |
+
+---
+
+## GitHub Automation
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `GITHUB_TOKEN` | `ghp_...` | Token for branch / PR / file automation |
+| `GITHUB_OWNER` | `Cerefy` | Default repository owner |
+| `GITHUB_REPO` | `cerefy` | Default repository name |
+
+---
+
+## Observability / Edge Services
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `SENTRY_DSN` | `https://...` | Sentry DSN for exception monitoring |
+| `SENTRY_ENVIRONMENT` | `production` | Sentry environment name |
+| `CLOUDFLARE_API_TOKEN` | `...` | Cloudflare API token |
+| `CLOUDFLARE_ACCOUNT_ID` | `...` | Cloudflare account identifier |
+| `CLOUDFLARE_ZONE_ID` | `...` | Cloudflare zone identifier |
+
+---
+
 ## Firebase
 
 | Variable | Example | Description |
