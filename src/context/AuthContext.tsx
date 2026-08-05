@@ -2,9 +2,10 @@
 // Production auth context with JWT management, token refresh, and user state
 
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
-import { authApi, UserProfile, AuthTokens } from '../api/auth';
+import { authApi, UserProfile } from '../api/auth';
 import socketService from '../api/socket';
 import { useAgentStore } from '../store/useAgentStore';
+import { isBrowser, readStorage, removeStorage } from '../lib/browser';
 
 export interface AuthState {
   user: UserProfile | null;
@@ -33,7 +34,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Attempt to restore session on mount
   useEffect(() => {
     const restoreSession = async () => {
-      const token = localStorage.getItem('cerefy_access_token');
+      if (!isBrowser) {
+        setIsLoading(false);
+        return;
+      }
+
+      const token = readStorage('cerefy_access_token');
       if (!token) {
         setIsLoading(false);
         return;
@@ -52,8 +58,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           socketService.connect();
           setCurrentUser(profile);
         } catch {
-          localStorage.removeItem('cerefy_access_token');
-          localStorage.removeItem('cerefy_refresh_token');
+          removeStorage('cerefy_access_token');
+          removeStorage('cerefy_refresh_token');
           setCurrentUser(null);
         }
       } finally {
@@ -61,6 +67,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
     restoreSession();
+
+    if (!isBrowser) {
+      return;
+    }
 
     // Listen for forced logout events from axios interceptor
     const handleForcedLogout = () => {
@@ -72,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       window.removeEventListener('cerefy:auth:logout', handleForcedLogout);
     };
-  }, []);
+  }, [setCurrentUser]);
 
   const login = useCallback(async (email: string, password: string) => {
     setError(null);
@@ -89,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setCurrentUser]);
 
   const register = useCallback(async (email: string, password: string, firstName: string, lastName: string, organizationName?: string) => {
     setError(null);
@@ -106,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setCurrentUser]);
 
   const logout = useCallback(async () => {
     try {
@@ -116,7 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       socketService.disconnect();
       setCurrentUser(null);
     }
-  }, []);
+  }, [setCurrentUser]);
 
   const clearError = useCallback(() => setError(null), []);
 
