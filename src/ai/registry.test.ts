@@ -5,5 +5,8 @@ import { coreAgentDefinitions } from './registry';
 
 test('core registry includes the production agents', () => {
   const names = coreAgentDefinitions.map((agent) => agent.name);
-  assert.deepEqual(names.sort(), ['analyst', 'discovery', 'governance', 'memory', 'supervisor'].sort());
+  assert.deepEqual(
+    names.sort(),
+    ['analyst', 'codeGeneration', 'dataIntelligence', 'discovery', 'governance', 'memory', 'processAnalysis', 'requirement', 'supervisor', 'validation'].sort(),
+  );
 });
