@@ -27,3 +27,14 @@ test('supervisor routes everything else to governance', () => {
   const next = supervisorAgent({ ...base, type: 'governance_review' });
   assert.equal(next, 'governance');
 });
+
+test('initial execution state defaults memory completion to false', () => {
+  const state = createInitialExecutionState({
+    type: 'discovery',
+    tenantId: 'tenant_1',
+    userId: 'user_1',
+  });
+
+  assert.equal(state.memoryComplete, false);
+  assert.equal(state.nextAgent, 'supervisor');
+});
