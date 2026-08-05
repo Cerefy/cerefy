@@ -1,8 +1,8 @@
-import { Annotation, END, START, StateGraph } from '@langchain/langgraph';
+import { END, START, StateGraph } from '@langchain/langgraph';
 import { discoveryAgent } from '../agents/discovery.agent';
 import { analystAgent } from '../agents/analyst.agent';
 import { governanceAgent } from '../agents/governance.agent';
-import { supervisorAgent, shouldRunDiscovery, shouldRunAnalyst, shouldRunGovernance } from './supervisor';
+import { supervisorAgent } from './supervisor';
 import { CerefyStateAnnotation, type CerefyExecutionInput, type CerefyGraphState } from './state';
 
 export function buildCerefyWorkflow() {
@@ -15,21 +15,9 @@ export function buildCerefyWorkflow() {
     .addNode('analyst', analystAgent)
     .addNode('governance', governanceAgent)
     .addEdge(START, 'supervisor')
-    .addConditionalEdges('supervisor', (state) => {
-      if (shouldRunDiscovery(state)) return 'discovery';
-      if (shouldRunAnalyst(state)) return 'analyst';
-      if (shouldRunGovernance(state)) return 'governance';
-      return END;
-    })
-    .addConditionalEdges('discovery', (state) => {
-      if (shouldRunAnalyst(state)) return 'analyst';
-      if (shouldRunGovernance(state)) return 'governance';
-      return END;
-    })
-    .addConditionalEdges('analyst', (state) => {
-      if (shouldRunGovernance(state)) return 'governance';
-      return END;
-    })
+    .addEdge('supervisor', 'discovery')
+    .addEdge('discovery', 'analyst')
+    .addEdge('analyst', 'governance')
     .addEdge('governance', END);
 
   return workflow.compile();
@@ -37,7 +25,7 @@ export function buildCerefyWorkflow() {
 
 export function createInitialExecutionState(input: CerefyExecutionInput): CerefyGraphState {
   return {
-    executionId: input.metadata?.executionId as string || '',
+    executionId: (input.metadata?.executionId as string) || '',
     tenantId: input.tenantId,
     projectId: input.projectId || '',
     documentId: input.documentId || '',
