@@ -12,9 +12,8 @@ function getLLM() {
 export async function requirementAgent(state: CerefyGraphState) {
   const discovery = state.output.discovery as Record<string, unknown> | undefined;
   const memory = state.output.memory as Record<string, unknown> | undefined;
-  const stakeholderName = Array.isArray(discovery?.stakeholders) && discovery.stakeholders.length > 0
-    ? String((discovery.stakeholders as string[])[0])
-    : 'business user';
+  const stakeholderList = Array.isArray(discovery?.stakeholders) ? (discovery.stakeholders as string[]) : [];
+  const stakeholderName = stakeholderList.length > 0 ? String(stakeholderList[0]) : 'business user';
 
   const requirements = Array.isArray(state.requirements) && state.requirements.length > 0
     ? state.requirements
@@ -50,6 +49,7 @@ export async function requirementAgent(state: CerefyGraphState) {
 
   const nextState = {
     ...state,
+    requirementComplete: true,
     requirements: synthesizedRequirements,
     confidence: Math.max(state.confidence, 72),
     output: {
