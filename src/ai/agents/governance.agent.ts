@@ -1,5 +1,6 @@
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import type { CerefyGraphState } from '../graph/state';
+import { appendAgentExecutionEvent, updateAgentExecutionRecord } from '../tools/databaseTool';
 
 function getLLM() {
   return new ChatGoogleGenerativeAI({
@@ -50,7 +51,7 @@ export async function governanceAgent(state: CerefyGraphState) {
     checkpoint: decision.confidence < 85 ? 'HUMAN_APPROVAL_REQUIRED' : 'AUTO_APPROVED',
   };
 
-  return {
+  const nextState = {
     nextAgent: 'complete',
     decisions: [
       ...state.decisions,
@@ -65,6 +66,23 @@ export async function governanceAgent(state: CerefyGraphState) {
     },
     history: [...state.history, { agent: 'governance', output: finalDecision }],
   };
+
+  if (state.executionId) {
+    await appendAgentExecutionEvent(state.executionId, {
+      event: 'agent.progress',
+      payload: { agent: 'governance', output: finalDecision, confidence: nextState.confidence },
+      timestamp: new Date().toISOString(),
+    });
+    await updateAgentExecutionRecord(state.executionId, {
+      currentAgent: 'governance',
+      status: 'COMPLETED',
+      confidence: nextState.confidence,
+      output: nextState.output,
+      completedAt: new Date(),
+    });
+  }
+
+  return nextState;
 }
 
 function safeParseJson(raw: string): Record<string, unknown> | null {
