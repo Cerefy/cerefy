@@ -15,6 +15,7 @@ import { runCerefyAIPipeline } from './src/ai/runtime';
 import admin from 'firebase-admin';
 import { DecodedIdToken } from 'firebase-admin/auth';
 import { logger, httpLogger } from './src/lib/logger';
+import { captureSentryException } from './src/lib/sentry';
 import { corsMiddleware, securityHeaders, requestId, requestSizeLimiter } from './src/lib/securityMiddleware';
 import { apiRateLimiter, authRateLimiter, aiRateLimiter } from './src/lib/rateLimiter';
 import { livenessCheck, readinessCheck, simpleHealthCheck } from './src/lib/healthCheck';
@@ -24,6 +25,17 @@ dotenv.config();
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3002', 10);
+
+process.on('unhandledRejection', async (reason) => {
+  const error = reason instanceof Error ? reason : new Error(String(reason));
+  logger.error('Unhandled promise rejection', { error: error.message, stack: error.stack });
+  await captureSentryException(error, { level: 'error', source: 'unhandledRejection' });
+});
+
+process.on('uncaughtException', async (error) => {
+  logger.error('Uncaught exception', { error: error.message, stack: error.stack });
+  await captureSentryException(error, { level: 'fatal', source: 'uncaughtException' });
+});
 
 // ─── Global Middleware ───────────────────────────────────────────────────────
 app.set('trust proxy', 1);
@@ -346,7 +358,7 @@ async function startServer() {
     socket.on('disconnect', () => { logger.info('[Socket.IO] client disconnected', { id: socket.id }); });
   });
 
-  httpServer.listen(PORT, '0.0.0.0', () => { logger.info(`🚀 Cerefy Enterprise AI running`, { port: PORT, env: process.env.NODE_ENV || 'development', url: `http://0.0.0.0:${PORT}` }); });
+  httpServer.listen(PORT, '0.0.0.0', () => { logger.info(` Cerefy Enterprise AI running`, { port: PORT, env: process.env.NODE_ENV || 'development', url: `http://0.0.0.0:${PORT}` }); });
 }
 
 startServer();
