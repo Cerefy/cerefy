@@ -127,6 +127,22 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       ],
     });
 
+    emitAgentLifecycle(io, executionId, 'supervisor', 'completed', {
+      stepIndex: 1,
+      totalSteps: 4,
+      output: { plan: supervisorPlan },
+    });
+    await appendAgentExecutionEvent(executionId, {
+      event: 'agent.completed',
+      payload: { agent: 'supervisor', plan: supervisorPlan },
+      timestamp: now(),
+    });
+    await recordAgentExecution('supervisor', {
+      executionId,
+      status: 'COMPLETED',
+      plan: supervisorPlan,
+    });
+
     emitAgentLifecycle(io, executionId, 'memory', 'started', { stepIndex: 2, totalSteps: 4 });
     emitAgentLifecycle(io, executionId, 'discovery', 'started', { stepIndex: 2, totalSteps: 4 });
     emitAgentLifecycle(io, executionId, 'analyst', 'started', { stepIndex: 2, totalSteps: 4 });
