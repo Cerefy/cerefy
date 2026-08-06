@@ -11,6 +11,14 @@ interface RateLimitEntry {
 
 const store = new Map<string, RateLimitEntry>();
 
+function getClientIp(req: Request): string {
+  const forwardedFor = req.headers['x-forwarded-for'];
+  if (typeof forwardedFor === 'string' && forwardedFor.length > 0) {
+    return forwardedFor.split(',')[0].trim();
+  }
+  return req.socket.remoteAddress || 'unknown';
+}
+
 function createRateLimiter(options: {
   windowMs: number;
   max: number;
@@ -20,13 +28,11 @@ function createRateLimiter(options: {
   const { windowMs, max, message = 'Too many requests, please try again later.', keyPrefix = 'rl' } = options;
 
   return (req: Request, res: Response, next: NextFunction): void => {
-    const ip = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
-    const key = `${keyPrefix}:${ip}`;
+    const key = `${keyPrefix}:${getClientIp(req)}`;
     const now = Date.now();
 
     let entry = store.get(key);
 
-    // Clean expired entry
     if (!entry || now > entry.resetTime) {
       entry = { count: 0, resetTime: now + windowMs };
       store.set(key, entry);
@@ -34,7 +40,6 @@ function createRateLimiter(options: {
 
     entry.count++;
 
-    // Set rate limit headers
     res.setHeader('X-RateLimit-Limit', max);
     res.setHeader('X-RateLimit-Remaining', Math.max(0, max - entry.count));
     res.setHeader('X-RateLimit-Reset', Math.ceil(entry.resetTime / 1000));
@@ -74,7 +79,7 @@ export const aiRateLimiter = createRateLimiter({
 });
 
 // Clean up expired entries periodically
-setInterval(() => {
+const cleanupInterval = setInterval(() => {
   const now = Date.now();
   for (const [key, entry] of store.entries()) {
     if (now > entry.resetTime) {
@@ -82,3 +87,5 @@ setInterval(() => {
     }
   }
 }, 60 * 1000);
+
+cleanupInterval.unref?.();
