@@ -70,17 +70,15 @@ class SocketService {
     });
 
     this.socket.on('connect', () => {
-      console.log('[Cerefy Socket] Connected:', this.socket?.id);
       this.reconnectAttempts = 0;
     });
 
-    this.socket.on('disconnect', (reason) => {
-      console.warn('[Cerefy Socket] Disconnected:', reason);
+    this.socket.on('disconnect', () => {
+      // Reconnect handling is managed by Socket.IO.
     });
 
-    this.socket.on('connect_error', (error) => {
+    this.socket.on('connect_error', () => {
       this.reconnectAttempts++;
-      console.error(`[Cerefy Socket] Connection error (attempt ${this.reconnectAttempts}):`, error.message);
     });
 
     this.listeners.forEach((callbacks, event) => {
