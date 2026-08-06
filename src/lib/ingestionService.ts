@@ -18,16 +18,19 @@ export async function processDocument(
   chunkSize: number = 500,
   chunkOverlap: number = 50,
 ) {
+  const safeChunkSize = Math.max(64, Math.floor(chunkSize || 500));
+  const safeChunkOverlap = Math.min(Math.max(0, Math.floor(chunkOverlap || 50)), safeChunkSize - 1);
+
   const chunks: string[] = [];
   let start = 0;
   while (start < content.length) {
-    let end = start + chunkSize;
+    let end = start + safeChunkSize;
     if (end < content.length) {
       const lastSpace = content.lastIndexOf(' ', end);
       if (lastSpace > start) end = lastSpace;
     }
     chunks.push(content.slice(start, end).trim());
-    start = end - chunkOverlap;
+    start = end - safeChunkOverlap;
   }
   const cleanChunks = chunks.filter((c) => c.length > 0);
   logger.info(`🛠️ Chunking completed: ${cleanChunks.length} chunks generated for document '${title}'.`);
