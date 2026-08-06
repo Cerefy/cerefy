@@ -1,11 +1,14 @@
 import { desc, eq } from 'drizzle-orm';
 import { withTenantContext } from '../../db';
-import { decisions, documentChunks, documents } from '../../db/schema';
+import { agentExecutions, decisions, documentChunks, documents } from '../../db/schema';
+import { searchQdrantMemory } from './qdrant';
 
 export interface VectorMemoryContext {
   documentSummary: string;
   chunkSnippets: string[];
   decisionHistory: Array<Record<string, unknown>>;
+  executionSummaries: Array<Record<string, unknown>>;
+  qdrantMatches: Array<Record<string, unknown>>;
 }
 
 export async function loadVectorMemoryContext(params: {
@@ -41,12 +44,40 @@ export async function loadVectorMemoryContext(params: {
       .orderBy(desc(decisions.createdAt))
       .limit(limit);
 
+    const executionHistory = await tx
+      .select()
+      .from(agentExecutions)
+      .where(eq(agentExecutions.tenantId, params.tenantId))
+      .orderBy(desc(agentExecutions.updatedAt))
+      .limit(limit);
+
+    const qdrantMatches = await searchQdrantMemory(
+      [documentRow?.title, documentRow?.rawContent, ...chunks.map((chunk) => chunk.content)].filter(Boolean).join(' '),
+      params.tenantId,
+      limit,
+    ).catch(() => []);
+
     return {
       documentSummary: documentRow?.title
         ? `${documentRow.title}${documentRow.rawContent ? `: ${String(documentRow.rawContent).slice(0, 800)}` : ''}`
         : '',
       chunkSnippets: chunks.map((chunk) => chunk.content),
       decisionHistory: history.map((decision) => decision as unknown as Record<string, unknown>),
+      executionSummaries: executionHistory.map((execution) => ({
+        id: execution.id,
+        type: execution.type,
+        status: execution.status,
+        currentAgent: execution.currentAgent,
+        confidence: execution.confidence,
+        output: execution.output,
+        errors: execution.errors,
+        updatedAt: execution.updatedAt,
+      })),
+      qdrantMatches: qdrantMatches.map((match) => ({
+        id: match.id,
+        score: match.score,
+        payload: match.payload,
+      })),
     };
   });
 }

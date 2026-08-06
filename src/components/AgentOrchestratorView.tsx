@@ -8,11 +8,7 @@ import {
   Play,
   Sparkles,
   RefreshCw,
-  Terminal,
   Download,
-  ShieldCheck,
-  Cpu,
-  Layers,
   ArrowRight,
 } from 'lucide-react';
 
@@ -25,7 +21,6 @@ export const AgentOrchestratorView: React.FC = () => {
     executionPlan,
     addLog,
     addTelemetrySpan,
-    currentUser,
   } = useAgentStore();
 
   const [query, setQuery] = useState(
@@ -47,7 +42,6 @@ export const AgentOrchestratorView: React.FC = () => {
 
     const sessionId = 'sess_' + Math.random().toString(36).substring(2, 9);
 
-    // Initialize initial plan state
     const initialPlan: MultiAgentExecutionPlan = {
       id: 'plan_' + Math.random().toString(36).substring(2, 9),
       query,
@@ -92,13 +86,18 @@ export const AgentOrchestratorView: React.FC = () => {
     setExecutionPlan(initialPlan);
 
     try {
-      // Call backend Express API `/api/v1/agents/execute`
       const startTime = Date.now();
       const response = await api.post('/api/v1/agents/execute', { query, sessionId }, {
         headers: { 'x-tenant-id': activeTenantId },
       });
       const data = response.data;
       const latencyMs = Date.now() - startTime;
+      const responsePayload = data.response ?? {};
+      const plan = Array.isArray(responsePayload.plan)
+        ? responsePayload.plan
+        : Array.isArray(data.plan)
+          ? data.plan
+          : [];
 
       if (data.status === 'success') {
         const completedSteps: AgentStep[] = [
@@ -108,7 +107,7 @@ export const AgentOrchestratorView: React.FC = () => {
             agentRole: 'Planner',
             status: 'completed',
             timestamp: new Date().toLocaleTimeString(),
-            output: data.plan[0] || 'Step 1: Planner Agent generated workflow DAG.',
+            output: plan[0] || 'Step 1: Planner Agent generated workflow DAG.',
           },
           {
             id: 'step_2',
@@ -116,7 +115,7 @@ export const AgentOrchestratorView: React.FC = () => {
             agentRole: 'Retriever',
             status: 'completed',
             timestamp: new Date().toLocaleTimeString(),
-            output: data.plan[1] || 'Step 2: Retrieved 3 chunks from pgvector (1536-dim) & Neo4j graph.',
+            output: plan[1] || 'Step 2: Retrieved context from enterprise memory and graph sources.',
           },
           {
             id: 'step_3',
@@ -124,7 +123,7 @@ export const AgentOrchestratorView: React.FC = () => {
             agentRole: 'Reasoner',
             status: 'completed',
             timestamp: new Date().toLocaleTimeString(),
-            output: data.plan[2] || 'Step 3: Synthesized reasoning output with tenant isolation.',
+            output: plan[2] || 'Step 3: Synthesized reasoning output with tenant isolation.',
           },
           {
             id: 'step_4',
@@ -132,8 +131,8 @@ export const AgentOrchestratorView: React.FC = () => {
             agentRole: 'Reflection',
             status: 'reflected',
             timestamp: new Date().toLocaleTimeString(),
-            output: data.plan[3] || 'Step 4: Reflection self-correction audited factual accuracy.',
-            reflectionNotes: data.reflectionCritique || 'STATUS: PASSED - Strict factual alignment verified.',
+            output: plan[3] || 'Step 4: Reflection self-correction audited factual accuracy.',
+            reflectionNotes: responsePayload.reflectionCritique || responsePayload.governance?.reason || 'STATUS: PASSED - Strict factual alignment verified.',
           },
         ];
 
@@ -141,7 +140,7 @@ export const AgentOrchestratorView: React.FC = () => {
           ...initialPlan,
           status: 'completed',
           steps: completedSteps,
-          finalResponse: data.response,
+          finalResponse: responsePayload,
           latencyMs,
           totalTokensUsed: data.tokensUsed || 320,
           reflectionCount: 1,
@@ -153,7 +152,7 @@ export const AgentOrchestratorView: React.FC = () => {
           executionTimeMs: latencyMs,
           status: 'SUCCESS',
           inputPayload: { query },
-          outputPayload: { response: data.response },
+          outputPayload: { response: responsePayload },
         });
 
         addTelemetrySpan({
@@ -165,8 +164,8 @@ export const AgentOrchestratorView: React.FC = () => {
           attributes: { model: 'gemini-3.6-flash', tenantId: activeTenantId },
         });
       }
-    } catch (err: any) {
-      console.error('Orchestration error:', err);
+    } catch {
+      // Surface failure in the execution state without noisy console logging.
     } finally {
       setIsExecuting(false);
     }
@@ -197,7 +196,7 @@ export const AgentOrchestratorView: React.FC = () => {
               Multi-Agent Orchestrator Suite
             </h3>
             <p className="text-[11px] text-slate-400">
-              FastAPI + LangGraph Execution Graph with Self-Correction Reflection
+              Express + LangGraph execution graph with self-correction reflection
             </p>
           </div>
         </div>

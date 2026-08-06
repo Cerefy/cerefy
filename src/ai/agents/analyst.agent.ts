@@ -11,9 +11,12 @@ function getLLM() {
 
 export async function analystAgent(state: CerefyGraphState) {
   const discovery = state.output.discovery as Record<string, unknown> | undefined;
+  const memory = state.output.memory as Record<string, unknown> | undefined;
   const entities = Array.isArray(discovery?.entities) ? (discovery?.entities as string[]) : [];
   const processes = Array.isArray(discovery?.processes) ? (discovery?.processes as string[]) : [];
   const stakeholders = Array.isArray(discovery?.stakeholders) ? (discovery?.stakeholders as string[]) : [];
+  const executionSummaries = Array.isArray(memory?.executionSummaries) ? (memory?.executionSummaries as Array<Record<string, unknown>>) : [];
+  const qdrantMatches = Array.isArray(memory?.qdrantMatches) ? (memory?.qdrantMatches as Array<Record<string, unknown>>) : [];
 
   let requirements = [
     {
@@ -45,7 +48,13 @@ export async function analystAgent(state: CerefyGraphState) {
     try {
       const llm = getLLM();
       const response = await llm.invoke(
-        `You are the Business Analyst Agent for Cerefy. Convert the following discovery output into JSON with requirements, userStories, acceptanceCriteria, and risks.\n\nDiscovery:\n${JSON.stringify(discovery ?? {}, null, 2)}`,
+        `You are the Business Analyst Agent for Cerefy. Convert the following discovery output into JSON with requirements, userStories, acceptanceCriteria, and risks.\n\nDiscovery:\n${JSON.stringify({
+          discovery: discovery ?? {},
+          memory: {
+            executionSummaries,
+            qdrantMatches,
+          },
+        }, null, 2)}`,
       );
       const parsed = safeParseJson(String(response.content));
       if (parsed) {

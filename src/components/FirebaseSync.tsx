@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useAgentStore } from '../store/useAgentStore';
-import { useNavigate } from 'react-router-dom';
 import {
   auth,
   signOut,
@@ -8,7 +7,7 @@ import {
   db,
 } from '../lib/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { LogIn, LogOut, Shield } from 'lucide-react';
+import { LogIn, LogOut } from 'lucide-react';
 import { FirebaseAuthModal } from './FirebaseAuthModal';
 
 export const FirebaseSync: React.FC = () => {
@@ -16,13 +15,10 @@ export const FirebaseSync: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
-    console.log('FirebaseSync: initializing auth listener');
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      console.log('FirebaseSync: auth state changed', user);
       setCurrentUser(user);
       setAuthLoading(false);
       if (user) {
-        // Sync user profile to Firestore
         const userRef = doc(db, 'users', user.uid);
         try {
           const userSnap = await getDoc(userRef);
@@ -36,18 +32,17 @@ export const FirebaseSync: React.FC = () => {
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             });
-            console.log('FirebaseSync: created new user profile');
           }
-        } catch (err) {
-          console.warn('Firebase profile sync error:', err);
+        } catch {
+          // Ignore sync failures; auth should still function.
         }
       }
     });
-    // Fallback timeout in case auth listener does not fire
+
     const timeoutId = setTimeout(() => {
-      console.warn('FirebaseSync: auth listener timeout, proceeding without user');
       setAuthLoading(false);
     }, 5000);
+
     return () => {
       clearTimeout(timeoutId);
       unsubscribe();
@@ -57,8 +52,8 @@ export const FirebaseSync: React.FC = () => {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-    } catch (err: any) {
-      console.error('Sign Out Error:', err);
+    } catch {
+      // Ignore sign out failures; UI will continue in guest mode.
     }
   };
 
@@ -111,4 +106,3 @@ export const FirebaseSync: React.FC = () => {
     </>
   );
 };
-

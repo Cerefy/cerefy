@@ -14,20 +14,13 @@ import { useAgentStore } from '../store/useAgentStore';
 import { useNavigate } from 'react-router-dom';
 import { LogoIcon } from './LogoIcon';
 import {
-  Lock,
-  Mail,
-  Key,
-  
-  User,
-  ShieldCheck,
-  Building2,
-  ArrowRight,
-  Sparkles,
   AlertCircle,
-  CheckCircle2,
-  Globe,
-  Github,
+  ArrowRight,
   Check,
+  CheckCircle2,
+  Github,
+  ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 
 interface FirebaseAuthModalProps {
@@ -63,8 +56,8 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
         },
         { merge: true }
       );
-    } catch (err: any) {
-      console.warn('Firestore User Sync Warning:', err);
+    } catch {
+      setErrorMsg('Unable to sync user profile.');
     }
   };
 
@@ -81,9 +74,8 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
           navigate('/workspace/command-center');
         }, 600);
       }
-    } catch (err: any) {
-      console.error('Google Auth Error:', err);
-      setErrorMsg(err.message || 'Failed to sign in with Google');
+    } catch {
+      setErrorMsg('Failed to sign in with Google');
     } finally {
       setLoading(false);
     }
@@ -121,9 +113,8 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
         if (onSuccess) onSuccess();
         navigate('/workspace/command-center');
       }, 600);
-    } catch (err: any) {
-      console.error('Email Auth Error:', err);
-      setErrorMsg(err.message || 'Authentication failed. Please check credentials.');
+    } catch {
+      setErrorMsg('Authentication failed. Please check credentials.');
     } finally {
       setLoading(false);
     }
@@ -140,9 +131,8 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
         if (onSuccess) onSuccess();
         navigate('/workspace/command-center');
       }, 600);
-    } catch (err: any) {
-      console.error('Demo Auth Error:', err);
-      setErrorMsg(err.message || 'Failed to initialize demo session');
+    } catch {
+      setErrorMsg('Failed to initialize demo session');
     } finally {
       setLoading(false);
     }
@@ -283,7 +273,7 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
 
               <button
                 type="button"
-                onClick={handleGoogleSignIn}
+                onClick={() => setErrorMsg('GitHub OAuth is not configured yet.')}
                 disabled={loading}
                 className="py-2.5 px-3 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
               >

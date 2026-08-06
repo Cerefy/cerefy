@@ -11,11 +11,17 @@ function getLLM() {
 
 export async function governanceAgent(state: CerefyGraphState) {
   const requirements = state.requirements ?? [];
+  const memory = state.output.memory as Record<string, unknown> | undefined;
   const decisionContext = {
     tenantId: state.tenantId,
     projectId: state.projectId,
     documentId: state.documentId,
     requirements,
+    memory: {
+      executions: Array.isArray(memory?.executionSummaries) ? memory.executionSummaries : [],
+      qdrantMatches: Array.isArray(memory?.qdrantMatches) ? memory.qdrantMatches : [],
+      graph: Array.isArray(memory?.graphTriples) ? memory.graphTriples : [],
+    },
     history: state.history,
     confidence: state.confidence,
   };

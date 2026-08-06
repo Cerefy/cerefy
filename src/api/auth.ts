@@ -2,6 +2,7 @@
 // Authentication API service — register, login, refresh, logout, me
 
 import api from './axios';
+import { readStorage, removeStorage, writeStorage } from '../lib/browser';
 
 export interface LoginRequest {
   email: string;
@@ -42,26 +43,26 @@ export const authApi = {
   async register(data: RegisterRequest): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/api/v1/auth/register', data);
     const { tokens } = response.data;
-    localStorage.setItem('cerefy_access_token', tokens.accessToken);
-    localStorage.setItem('cerefy_refresh_token', tokens.refreshToken);
+    writeStorage('cerefy_access_token', tokens.accessToken);
+    writeStorage('cerefy_refresh_token', tokens.refreshToken);
     return response.data;
   },
 
   async login(data: LoginRequest): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/api/v1/auth/login', data);
     const { tokens } = response.data;
-    localStorage.setItem('cerefy_access_token', tokens.accessToken);
-    localStorage.setItem('cerefy_refresh_token', tokens.refreshToken);
+    writeStorage('cerefy_access_token', tokens.accessToken);
+    writeStorage('cerefy_refresh_token', tokens.refreshToken);
     return response.data;
   },
 
   async refresh(): Promise<AuthTokens> {
-    const refreshToken = localStorage.getItem('cerefy_refresh_token');
+    const refreshToken = readStorage('cerefy_refresh_token');
     if (!refreshToken) throw new Error('No refresh token');
     const response = await api.post<AuthTokens>('/api/v1/auth/refresh', { refreshToken });
     const tokens = response.data;
-    localStorage.setItem('cerefy_access_token', tokens.accessToken);
-    localStorage.setItem('cerefy_refresh_token', tokens.refreshToken);
+    writeStorage('cerefy_access_token', tokens.accessToken);
+    writeStorage('cerefy_refresh_token', tokens.refreshToken);
     return tokens;
   },
 
@@ -69,9 +70,9 @@ export const authApi = {
     try {
       await api.post('/api/v1/auth/logout');
     } finally {
-      localStorage.removeItem('cerefy_access_token');
-      localStorage.removeItem('cerefy_refresh_token');
-      localStorage.removeItem('cerefy_user');
+      removeStorage('cerefy_access_token');
+      removeStorage('cerefy_refresh_token');
+      removeStorage('cerefy_user');
     }
   },
 

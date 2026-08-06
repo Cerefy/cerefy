@@ -1,4 +1,4 @@
-# ─── Stage 1: Dependency Install ─────────────────────────────────────────
+# ─── Stage 1: Dependency Install ─────────────────────────────────────────────
 FROM node:22-alpine AS deps
 
 WORKDIR /app
@@ -9,7 +9,7 @@ RUN apk add --no-cache python3 make g++
 COPY package*.json ./
 RUN npm ci --ignore-scripts
 
-# ─── Stage 2: Frontend Build (Vite) ─────────────────────────────────────
+# ─── Stage 2: Frontend Build (Vite) ──────────────────────────────────────────
 FROM node:22-alpine AS frontend-builder
 
 WORKDIR /app
@@ -20,7 +20,7 @@ COPY . .
 # Build Vite frontend
 RUN npx vite build
 
-# ─── Stage 3: Backend Bundle (esbuild) ───────────────────────────────────
+# ─── Stage 3: Backend Bundle (esbuild) ───────────────────────────────────────
 FROM node:22-alpine AS backend-builder
 
 WORKDIR /app
@@ -38,7 +38,7 @@ RUN npx esbuild server.ts \
   --sourcemap \
   --outfile=dist/server.cjs
 
-# ─── Stage 4: Production Runner ───────────────────────────────────────────
+# ─── Stage 4: Production Runner ──────────────────────────────────────────────
 FROM node:22-alpine AS runner
 
 WORKDIR /app
@@ -55,7 +55,6 @@ COPY package*.json ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 # Copy built artifacts
-COPY --from=backend-builder /app/dist ./dist
 COPY --chown=cerefy:cerefy --from=backend-builder /app/dist ./dist
 
 # Create logs directory

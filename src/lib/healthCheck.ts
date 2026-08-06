@@ -21,6 +21,10 @@ interface ComponentHealth {
 
 const startTime = Date.now();
 
+function envConfigured(...keys: string[]): boolean {
+  return keys.every((key) => Boolean(process.env[key]));
+}
+
 async function checkDatabase(): Promise<ComponentHealth> {
   if (!process.env.DATABASE_URL) {
     return { status: 'down', message: 'DATABASE_URL not configured' };
@@ -84,6 +88,29 @@ async function checkNeo4j(): Promise<ComponentHealth> {
   }
 }
 
+function checkIntegrationPresence(): Record<string, ComponentHealth> {
+  return {
+    langsmith: envConfigured('LANGSMITH_API_KEY')
+      ? { status: 'up', message: 'LangSmith configured' }
+      : { status: 'unknown', message: 'LANGSMITH_API_KEY not configured' },
+    github: envConfigured('GITHUB_TOKEN')
+      ? { status: 'up', message: 'GitHub automation configured' }
+      : { status: 'unknown', message: 'GITHUB_TOKEN not configured' },
+    qdrant: envConfigured('QDRANT_URL')
+      ? { status: 'up', message: 'Qdrant configured' }
+      : { status: 'unknown', message: 'QDRANT_URL not configured' },
+    sentry: envConfigured('SENTRY_DSN')
+      ? { status: 'up', message: 'Sentry configured' }
+      : { status: 'unknown', message: 'SENTRY_DSN not configured' },
+    cloudflare: envConfigured('CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'CLOUDFLARE_ZONE_ID')
+      ? { status: 'up', message: 'Cloudflare configured' }
+      : { status: 'unknown', message: 'Cloudflare credentials not fully configured' },
+    temporal: envConfigured('TEMPORAL_ADDRESS', 'TEMPORAL_NAMESPACE', 'TEMPORAL_TASK_QUEUE')
+      ? { status: 'up', message: 'Temporal configured' }
+      : { status: 'unknown', message: 'Temporal not configured' },
+  };
+}
+
 /**
  * Liveness probe - used by Docker/K8s to know if the process is alive
  */
@@ -108,6 +135,7 @@ export async function readinessCheck(req: Request, res: Response): Promise<void>
   checks.neo4j = neo4j;
   checks.gemini = gemini;
   checks.firebase = firebase;
+  Object.assign(checks, checkIntegrationPresence());
 
   if (db.status === 'down' || neo4j.status === 'down') {
     overallStatus = 'degraded';
@@ -137,6 +165,14 @@ export async function simpleHealthCheck(req: Request, res: Response): Promise<vo
     status: 'ok',
     environment: process.env.NODE_ENV || 'development',
     geminiConfigured: !!process.env.GEMINI_API_KEY,
+    integrations: {
+      langsmithConfigured: !!process.env.LANGSMITH_API_KEY,
+      qdrantConfigured: !!process.env.QDRANT_URL,
+      temporalConfigured: envConfigured('TEMPORAL_ADDRESS', 'TEMPORAL_NAMESPACE', 'TEMPORAL_TASK_QUEUE'),
+      sentryConfigured: !!process.env.SENTRY_DSN,
+      cloudflareConfigured: envConfigured('CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'CLOUDFLARE_ZONE_ID'),
+      githubConfigured: !!process.env.GITHUB_TOKEN,
+    },
     timestamp: new Date().toISOString(),
     uptime: Math.floor((Date.now() - startTime) / 1000),
   });

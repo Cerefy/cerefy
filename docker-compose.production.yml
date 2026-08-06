@@ -16,11 +16,30 @@ services:
       - NEO4J_USER=${NEO4J_USER}
       - NEO4J_PASSWORD=${NEO4J_PASSWORD}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - QDRANT_URL=${QDRANT_URL}
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - LANGSMITH_API_KEY=${LANGSMITH_API_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+      - CLOUDFLARE_ZONE_ID=${CLOUDFLARE_ZONE_ID}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS}
+      - TEMPORAL_NAMESPACE=${TEMPORAL_NAMESPACE}
+      - TEMPORAL_TASK_QUEUE=${TEMPORAL_TASK_QUEUE}
     depends_on:
       cerefy-db:
         condition: service_healthy
       cerefy-graph:
         condition: service_healthy
+      cerefy-qdrant:
+        condition: service_started
+      cerefy-temporal:
+        condition: service_started
     networks:
       - cerefy-net
 
@@ -29,15 +48,15 @@ services:
     container_name: cerefy-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER:-cerefy}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-cerefy_password}
-      POSTGRES_DB: ${DB_NAME:-cerefy_production}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
       - cerefy-pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-cerefy}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -49,7 +68,7 @@ services:
     container_name: cerefy-graph
     restart: unless-stopped
     environment:
-      NEO4J_AUTH: ${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-cerefy_neo4j_pwd}
+      NEO4J_AUTH: ${NEO4J_USER}/${NEO4J_PASSWORD}
     ports:
       - "7474:7474"
       - "7687:7687"
@@ -60,6 +79,36 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - cerefy-net
+
+  cerefy-qdrant:
+    image: qdrant/qdrant:latest
+    container_name: cerefy-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - cerefy-qdrant-data:/qdrant/storage
+    networks:
+      - cerefy-net
+
+  cerefy-temporal:
+    image: temporalio/auto-setup:latest
+    container_name: cerefy-temporal
+    restart: unless-stopped
+    environment:
+      - DB=postgresql
+      - POSTGRES_SEEDS=cerefy-db
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PWD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "7233:7233"
+    depends_on:
+      cerefy-db:
+        condition: service_healthy
     networks:
       - cerefy-net
 
@@ -84,3 +133,4 @@ networks:
 volumes:
   cerefy-pgdata:
   cerefy-neodata:
+  cerefy-qdrant-data:

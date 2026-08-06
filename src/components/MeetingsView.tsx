@@ -1,17 +1,8 @@
-import React, { useState } from 'react';
+import { useState, type FC } from 'react';
 import { useAgentStore } from '../store/useAgentStore';
-import {
-  CalendarDays,
-  Clock,
-  UserCheck,
-  CheckCircle2,
-  FileText,
-  ListTodo,
-  Bot,
-  Sparkles,
-} from 'lucide-react';
+import { CalendarDays, ListTodo } from 'lucide-react';
 
-export const MeetingsView: React.FC = () => {
+export const MeetingsView: FC = () => {
   const { meetings } = useAgentStore();
   const [selectedMeetingId, setSelectedMeetingId] = useState(meetings[0]?.id || 'meet_1');
 

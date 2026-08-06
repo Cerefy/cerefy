@@ -15,16 +15,29 @@ import { runCerefyAIPipeline } from './src/ai/runtime';
 import admin from 'firebase-admin';
 import { DecodedIdToken } from 'firebase-admin/auth';
 import { logger, httpLogger } from './src/lib/logger';
+import { captureSentryException } from './src/lib/sentry';
 import { corsMiddleware, securityHeaders, requestId, requestSizeLimiter } from './src/lib/securityMiddleware';
 import { apiRateLimiter, authRateLimiter, aiRateLimiter } from './src/lib/rateLimiter';
 import { livenessCheck, readinessCheck, simpleHealthCheck } from './src/lib/healthCheck';
+import { createGitHubBranch, createGitHubPullRequest, getGitHubRepository, updateGitHubFile } from './src/lib/github';
 
 dotenv.config();
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3002', 10);
 
-// ─── Global Middleware ─────────────────────────────────────────────────────────
+process.on('unhandledRejection', async (reason) => {
+  const error = reason instanceof Error ? reason : new Error(String(reason));
+  logger.error('Unhandled promise rejection', { error: error.message, stack: error.stack });
+  await captureSentryException(error, { level: 'error', source: 'unhandledRejection' });
+});
+
+process.on('uncaughtException', async (error) => {
+  logger.error('Uncaught exception', { error: error.message, stack: error.stack });
+  await captureSentryException(error, { level: 'fatal', source: 'uncaughtException' });
+});
+
+// ─── Global Middleware ───────────────────────────────────────────────────────
 app.set('trust proxy', 1);
 app.use(requestId);
 app.use(corsMiddleware);
@@ -33,13 +46,13 @@ app.use(requestSizeLimiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(httpLogger);
 
-// ─── Health & Monitoring Endpoints (no auth, no rate limit) ───────────────────
+// ─── Health & Monitoring Endpoints (no auth, no rate limit) ─────────────────
 app.get('/health', simpleHealthCheck);
 app.get('/api/health', simpleHealthCheck);
 app.get('/health/live', livenessCheck);
 app.get('/health/ready', readinessCheck);
 
-// ─── Metrics endpoint ─────────────────────────────────────────────────────────
+// ─── Metrics endpoint ───────────────────────────────────────────────────────
 app.get('/api/metrics', (req: Request, res: Response) => {
   const memUsage = process.memoryUsage();
   res.json({
@@ -56,7 +69,7 @@ app.get('/api/metrics', (req: Request, res: Response) => {
   });
 });
 
-// ─── Lazy Singletons ───────────────────────────────────────────────────────────
+// ─── Lazy Singletons ─────────────────────────────────────────────────────────
 let aiClient: GoogleGenAI | null = null;
 function getGeminiClient(): GoogleGenAI | null {
   if (!aiClient && process.env.GEMINI_API_KEY) {
@@ -261,6 +274,70 @@ app.post('/api/v1/ai/run', requireAuth, requireTenant, aiRateLimiter, async (req
 app.post('/api/v1/ai/pipeline/run', requireAuth, requireTenant, aiRateLimiter, async (req: AuthenticatedRequest, res: Response) => { const { pipelineId } = req.body; if (!pipelineId) { res.status(400).json({ error: 'pipelineId is required' }); return; } const result = await runCerefyAIPipeline({ type: 'pipeline_run', tenantId: req.tenantId!, userId: (req.user as any)?.uid || 'user_admin_01', metadata: { pipelineId } }, socketServer); res.status(result.status === 'FAILED' ? 500 : 202).json({ executionId: result.executionId, status: result.status, output: result.output, confidence: result.confidence }); });
 app.post('/api/v1/agents/execute', requireAuth, requireTenant, aiRateLimiter, async (req: AuthenticatedRequest, res: Response) => { const { query, sessionId = 'sess_default' } = req.body; if (!query || typeof query !== 'string' || query.trim().length === 0) { res.status(400).json({ error: 'Query parameter is required' }); return; } const result = await runCerefyAIPipeline({ type: 'agent_execute', tenantId: req.tenantId!, userId: (req.user as any)?.uid || 'user_admin_01', metadata: { query, sessionId } }, socketServer); res.status(result.status === 'FAILED' ? 500 : 202).json({ status: result.status === 'FAILED' ? 'error' : 'success', sessionId, executionId: result.executionId, latencyMs: 0, response: result.output ?? { query }, timestamp: new Date().toISOString() }); });
 
+app.get('/api/v1/github/repository', requireAuth, apiRateLimiter, async (req: Request, res: Response) => {
+  const repository = String(req.query.repository || '').trim();
+  if (!repository) {
+    res.status(400).json({ error: 'repository is required' });
+    return;
+  }
+
+  try {
+    const data = await getGitHubRepository(repository);
+    res.json({ status: 'success', data });
+  } catch (error) {
+    logger.error('GitHub repository lookup failed', { error, repository });
+    res.status(503).json({ status: 'error', message: error instanceof Error ? error.message : 'GitHub repository lookup failed' });
+  }
+});
+
+app.post('/api/v1/github/branch', requireAuth, apiRateLimiter, async (req: Request, res: Response) => {
+  const { repository, branch, baseBranch } = req.body || {};
+  if (!repository || !branch) {
+    res.status(400).json({ error: 'repository and branch are required' });
+    return;
+  }
+
+  try {
+    const data = await createGitHubBranch(repository, branch, baseBranch || 'main');
+    res.status(201).json({ status: 'success', data });
+  } catch (error) {
+    logger.error('GitHub branch creation failed', { error, repository, branch, baseBranch });
+    res.status(503).json({ status: 'error', message: error instanceof Error ? error.message : 'GitHub branch creation failed' });
+  }
+});
+
+app.post('/api/v1/github/pull-request', requireAuth, apiRateLimiter, async (req: Request, res: Response) => {
+  const { repository, title, head, base, body, draft = true } = req.body || {};
+  if (!repository || !title || !head || !base) {
+    res.status(400).json({ error: 'repository, title, head, and base are required' });
+    return;
+  }
+
+  try {
+    const data = await createGitHubPullRequest(repository, title, head, base, body, draft);
+    res.status(201).json({ status: 'success', data });
+  } catch (error) {
+    logger.error('GitHub pull request creation failed', { error, repository, title, head, base });
+    res.status(503).json({ status: 'error', message: error instanceof Error ? error.message : 'GitHub pull request creation failed' });
+  }
+});
+
+app.post('/api/v1/github/file', requireAuth, apiRateLimiter, async (req: Request, res: Response) => {
+  const { repository, filePath, content, commitMessage, branch, sha } = req.body || {};
+  if (!repository || !filePath || !content || !commitMessage) {
+    res.status(400).json({ error: 'repository, filePath, content, and commitMessage are required' });
+    return;
+  }
+
+  try {
+    const data = await updateGitHubFile({ repository, filePath, content, commitMessage, branch, sha });
+    res.status(201).json({ status: 'success', data });
+  } catch (error) {
+    logger.error('GitHub file update failed', { error, repository, filePath });
+    res.status(503).json({ status: 'error', message: error instanceof Error ? error.message : 'GitHub file update failed' });
+  }
+});
+
 // The following endpoints have no real backend implementation (vector
 // memory search, executive KPI aggregation, per-agent performance
 // telemetry, per-project analytics). They previously returned hardcoded
@@ -285,6 +362,7 @@ app.post('/api/v1/graph/cypher', requireAuth, requireTenant, (req: Authenticated
   const { cypher } = req.body;
   res.json({ status: 'success', query: cypher || 'MATCH (e:Entity) RETURN e LIMIT 10', tenantId: req.tenantId, executedInMs: 8.4, nodesMatched: 6, records: [{ id: 'node_tenant_core', label: 'Cerefy Core Tenant', type: 'Tenant' }, { id: 'node_auth_policy', label: 'OAuth MFA Policy', type: 'Policy' }] });
 });
+
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => { logger.error('Unhandled error', { error: err.message, stack: err.stack, url: req.url, method: req.method }); res.status(500).json({ error: 'Internal server error', requestId: req.headers['x-request-id'] }); });
 

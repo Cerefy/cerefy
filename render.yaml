@@ -14,23 +14,43 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
-      - key: OPENAI_API_KEY
-        sync: false
       - key: NEO4J_URI
         sync: false
-      - key: NEO4J_USER
-        sync: false
       - key: NEO4J_PASSWORD
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: LANGSMITH_API_KEY
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: CLOUDFLARE_API_TOKEN
+        sync: false
+      - key: CLOUDFLARE_ACCOUNT_ID
+        sync: false
+      - key: CLOUDFLARE_ZONE_ID
         sync: false
       - key: JWT_SECRET
         sync: false
       - key: JWT_REFRESH_SECRET
         sync: false
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: TEMPORAL_ADDRESS
+        sync: false
+      - key: TEMPORAL_NAMESPACE
+        sync: false
+      - key: TEMPORAL_TASK_QUEUE
+        sync: false
       - key: VITE_API_URL
         sync: false
       - key: VITE_SOCKET_URL
-        sync: false
-      - key: GOOGLE_APPLICATION_CREDENTIALS
         sync: false
       - key: FRONTEND_URL
         sync: false
