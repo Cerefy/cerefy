@@ -12,8 +12,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/eyex-technologies.git
-cd eyex-technologies
+git clone https://github.com/Cerefy/cerefy.git
+cd cerefy
 
 # Install dependencies
 npm install
@@ -29,20 +29,25 @@ npm run dev
 ## Project Structure
 
 ```
-eyex-technologies/
+cerefy/
 ├── src/                    # Frontend application
 │   ├── components/         # UI components
 │   │   ├── layout/         # Shell, sidebar, header
 │   │   └── ui/             # Primitives
 │   ├── lib/                # Utilities
 │   │   └── supabase/       # Client, types, helpers
-│   ├── pages/              # 18 route pages
+│   ├── pages/              # Route pages
 │   ├── routes/             # Route definitions
-│   ├── services/           # Database service layer
+│   ├── services/           # Backend API service layer
 │   └── main.tsx            # Entry point
-├── packages/
-│   ├── agents/             # AI agent suite (8 agents)
-│   └── services/           # Backend services (12 modules)
+├── eyex-backend/           # Python FastAPI backend
+│   ├── app/
+│   │   ├── agents/         # 17 AI agents + LangGraph orchestration
+│   │   ├── api/            # API routes
+│   │   ├── cognitive_data_layer/  # Data import/parsing
+│   │   ├── memory/         # Vector memory service
+│   │   └── services/       # Business logic
+│   └── tests/              # 392+ tests
 ├── supabase/               # Database setup
 ├── docs/                   # Documentation
 └── .github/workflows/      # CI/CD

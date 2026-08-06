@@ -83,7 +83,7 @@
 | Staging        | —                                                | Not configured |
 
 **Cloudflare Account:** eyex@outlook.it (Account ID: 651d3213a1bc39f22afc83a1e86d633)
-**Worker Name:** eyex-technologies
+**Worker Name:** cerefy (migrated from eyex-technologies)
 
 ## Testing Status
 
