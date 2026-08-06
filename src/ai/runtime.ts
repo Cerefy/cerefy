@@ -352,7 +352,6 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       });
     }
 
-<<<<<<< Updated upstream
     if (input.documents?.length || input.type === 'document_analysis' || input.type === 'discovery') {
       currentState = await runStage({
         io,
@@ -372,27 +371,6 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
         tools: ['documentTool', 'vectorMemory', 'knowledgeGraph'],
       });
     }
-=======
-    const analystState = analystResult as typeof analystResult & { decisions?: CerefyGraphState['decisions'] };
-
-    const governanceState = buildParallelState({
-      ...parallelState,
-      documents: discoveryResult.documents || parallelState.documents,
-      requirements: analystResult.requirements || parallelState.requirements,
-      decisions: analystState.decisions || parallelState.decisions,
-      confidence: Math.max(memoryResult.output ? 55 : 0, discoveryResult.confidence || 0, analystResult.confidence || 0),
-      nextAgent: 'governance',
-      discoveryComplete: true,
-      analystComplete: true,
-      output: mergedOutput,
-      history: [
-        ...parallelState.history,
-        ...memoryResult.history.slice(-1),
-        ...discoveryResult.history.slice(-1),
-        ...analystResult.history.slice(-1),
-      ],
-    });
-  >>>>>>> Stashed changes
 
   if (isRequirementType(input.type)) {
       currentState = await runStage({
