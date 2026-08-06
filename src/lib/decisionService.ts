@@ -8,7 +8,7 @@ export const getAllDecisions = async (tenantId: string) => {
   });
 };
 
-export const createDecision = async (tenantId: string, decisionData: any) => {
+export const createDecision = async (tenantId: string, decisionData: Record<string, unknown>) => {
   return await withTenantContext(tenantId, async (tx) => {
     const [newDecision] = await tx.insert(decisions).values({
       ...decisionData,
@@ -18,7 +18,7 @@ export const createDecision = async (tenantId: string, decisionData: any) => {
   });
 };
 
-export const updateDecision = async (tenantId: string, decisionId: string, updateData: any) => {
+export const updateDecision = async (tenantId: string, decisionId: string, updateData: Record<string, unknown>) => {
   return await withTenantContext(tenantId, async (tx) => {
     const [updated] = await tx.update(decisions)
       .set(updateData)
