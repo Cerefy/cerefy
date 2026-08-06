@@ -13,10 +13,6 @@ function getQdrantConfig() {
   };
 }
 
-function isQdrantConfigured(): boolean {
-  return Boolean(getQdrantConfig().baseUrl);
-}
-
 function payloadMatchesQuery(payload: Record<string, unknown>, query: string, tenantId: string): boolean {
   if (payload.tenantId && String(payload.tenantId) !== tenantId) {
     return false;
@@ -55,14 +51,21 @@ export async function searchQdrantMemory(query: string, tenantId: string, limit 
   const data = await response.json() as { result?: Array<{ id: string; payload?: Record<string, unknown> }> };
   const seen = new Set<string>();
   return (data.result || [])
-    .filter((item) => item.id && !seen.has(String(item.id)) && payloadMatchesQuery(item.payload || {}, query, tenantId))
+    .filter((item) => {
+      const id = String(item.id);
+      if (!id || seen.has(id)) {
+        return false;
+      }
+      const matches = payloadMatchesQuery(item.payload || {}, query, tenantId);
+      if (matches) {
+        seen.add(id);
+      }
+      return matches;
+    })
     .slice(0, limit)
-    .map((item, index) => {
-      seen.add(String(item.id));
-      return {
-        id: item.id,
-        score: Math.max(0.5, 1 - index * 0.1),
-        payload: item.payload || {},
-      };
-    });
+    .map((item, index) => ({
+      id: item.id,
+      score: Math.max(0.5, 1 - index * 0.1),
+      payload: item.payload || {},
+    }));
 }
