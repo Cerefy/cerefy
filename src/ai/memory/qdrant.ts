@@ -1,5 +1,3 @@
-const QDRANT_API_BASE = process.env.QDRANT_URL;
-const QDRANT_API_KEY = process.env.QDRANT_API_KEY;
 const QDRANT_COLLECTION = process.env.QDRANT_COLLECTION || 'cerefy-memory';
 
 export interface QdrantMemoryMatch {
@@ -8,8 +6,15 @@ export interface QdrantMemoryMatch {
   payload: Record<string, unknown>;
 }
 
+function getQdrantConfig() {
+  return {
+    baseUrl: process.env.QDRANT_URL,
+    apiKey: process.env.QDRANT_API_KEY,
+  };
+}
+
 function isQdrantConfigured(): boolean {
-  return Boolean(QDRANT_API_BASE);
+  return Boolean(getQdrantConfig().baseUrl);
 }
 
 function payloadMatchesQuery(payload: Record<string, unknown>, query: string, tenantId: string): boolean {
@@ -25,15 +30,16 @@ function payloadMatchesQuery(payload: Record<string, unknown>, query: string, te
 }
 
 export async function searchQdrantMemory(query: string, tenantId: string, limit = 5): Promise<QdrantMemoryMatch[]> {
-  if (!isQdrantConfigured()) {
+  const { baseUrl, apiKey } = getQdrantConfig();
+  if (!baseUrl) {
     return [];
   }
 
-  const response = await fetch(`${QDRANT_API_BASE}/collections/${QDRANT_COLLECTION}/points/scroll`, {
+  const response = await fetch(`${baseUrl}/collections/${QDRANT_COLLECTION}/points/scroll`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(QDRANT_API_KEY ? { api-key: QDRANT_API_KEY } : {}),
+      ...(apiKey ? { 'api-key': apiKey } : {}),
     },
     body: JSON.stringify({
       limit: Math.max(limit * 3, 10),
@@ -47,12 +53,16 @@ export async function searchQdrantMemory(query: string, tenantId: string, limit 
   }
 
   const data = await response.json() as { result?: Array<{ id: string; payload?: Record<string, unknown> }> };
+  const seen = new Set<string>();
   return (data.result || [])
-    .filter((item) => payloadMatchesQuery(item.payload || {}, query, tenantId))
+    .filter((item) => item.id && !seen.has(String(item.id)) && payloadMatchesQuery(item.payload || {}, query, tenantId))
     .slice(0, limit)
-    .map((item, index) => ({
-      id: item.id,
-      score: Math.max(0.5, 1 - index * 0.1),
-      payload: item.payload || {},
-    }));
+    .map((item, index) => {
+      seen.add(String(item.id));
+      return {
+        id: item.id,
+        score: Math.max(0.5, 1 - index * 0.1),
+        payload: item.payload || {},
+      };
+    });
 }
