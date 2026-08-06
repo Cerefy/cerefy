@@ -15,15 +15,6 @@ import {
   getFirestore,
   doc,
   getDocFromServer,
-  collection,
-  getDocs,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-  onSnapshot,
-  query,
-  where,
-  addDoc,
 } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
