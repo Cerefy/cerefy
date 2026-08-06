@@ -8,11 +8,8 @@ import {
   Play,
   Sparkles,
   RefreshCw,
-  Terminal,
   Download,
   ShieldCheck,
-  Cpu,
-  Layers,
   ArrowRight,
 } from 'lucide-react';
 
@@ -25,7 +22,6 @@ export const AgentOrchestratorView: React.FC = () => {
     executionPlan,
     addLog,
     addTelemetrySpan,
-    currentUser,
   } = useAgentStore();
 
   const [query, setQuery] = useState(
@@ -47,7 +43,6 @@ export const AgentOrchestratorView: React.FC = () => {
 
     const sessionId = 'sess_' + Math.random().toString(36).substring(2, 9);
 
-    // Initialize initial plan state
     const initialPlan: MultiAgentExecutionPlan = {
       id: 'plan_' + Math.random().toString(36).substring(2, 9),
       query,
@@ -92,7 +87,6 @@ export const AgentOrchestratorView: React.FC = () => {
     setExecutionPlan(initialPlan);
 
     try {
-      // Call backend Express API `/api/v1/agents/execute`
       const startTime = Date.now();
       const response = await api.post('/api/v1/agents/execute', { query, sessionId }, {
         headers: { 'x-tenant-id': activeTenantId },
@@ -197,7 +191,7 @@ export const AgentOrchestratorView: React.FC = () => {
               Multi-Agent Orchestrator Suite
             </h3>
             <p className="text-[11px] text-slate-400">
-              FastAPI + LangGraph Execution Graph with Self-Correction Reflection
+              Express + LangGraph execution graph with self-correction reflection
             </p>
           </div>
         </div>
