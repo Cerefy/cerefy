@@ -276,7 +276,7 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
 
               <button
                 type="button"
-                onClick={handleGoogleSignIn}
+                onClick={() => setErrorMsg('GitHub OAuth is not configured yet.')}
                 disabled={loading}
                 className="py-2.5 px-3 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
               >
