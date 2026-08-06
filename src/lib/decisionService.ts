@@ -1,4 +1,4 @@
-import { db, withTenantContext } from '../db';
+import { withTenantContext } from '../db';
 import { decisions } from '../db/schema';
 import { eq, desc } from 'drizzle-orm';
 
