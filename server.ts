@@ -338,14 +338,6 @@ app.post('/api/v1/github/file', requireAuth, apiRateLimiter, async (req: Request
   }
 });
 
-app.get('/api/v1/memory/query', requireAuth, async (req: Request, res: Response) => { const query = String(req.query.query || req.body?.query || '').trim(); if (!query) { res.status(400).json({ error: 'Query parameter is required' }); return; } res.json({ data: getMemoryResults(query) }); });
-app.get('/api/v1/memory/documents', requireAuth, async (_req: AuthenticatedRequest, res: Response) => { res.json({ data: getMemoryDocuments() }); });
-app.get('/api/v1/analytics/executive-kpis', requireAuth, async (_req: AuthenticatedRequest, res: Response) => { res.json(getExecutiveKPIs()); });
-app.get('/api/v1/analytics/agent-performance', requireAuth, async (_req: AuthenticatedRequest, res: Response) => { res.json({ data: getAgentPerformance() }); });
-app.get('/api/v1/analytics/projects/:projectId', requireAuth, async (req: AuthenticatedRequest, res: Response) => { res.json(getAnalyticsForProject(req.params.projectId)); });
-app.post('/api/v1/ingestion/chunk', requireAuth, async (req: AuthenticatedRequest, res: Response) => { const tenantId = (req.headers['x-tenant-id'] as string) || 'tenant_acme_101'; const { content, chunkSize = 300, chunkOverlap = 40, title = 'Document' } = req.body; if (!content) { res.status(400).json({ error: 'Content string is required' }); return; } const aiClientInst = getGeminiClient(); if (!aiClientInst) { res.status(500).json({ error: 'AI Client not initialized. Check GEMINI_API_KEY.' }); return; } try { const result = await ingestionService.processDocument(tenantId, title, content, aiClientInst, chunkSize, chunkOverlap); res.json({ status: 'success', title, documentId: result.documentId, chunkCount: result.chunkCount }); } catch (error: any) { logger.error('Ingestion error', { error: error?.message, tenantId }); res.status(500).json({ error: 'Failed to process document' }); } });
-app.post('/api/v1/graph/cypher', requireAuth, (req: Request, res: Response) => { const { cypher, tenantId = 'tenant_acme_101' } = req.body; res.json({ status: 'success', query: cypher || 'MATCH (e:Entity) RETURN e LIMIT 10', tenantId, executedInMs: 8.4, nodesMatched: 6, records: [{ id: 'node_tenant_core', label: 'Cerefy Core Tenant', type: 'Tenant' }, { id: 'node_auth_policy', label: 'OAuth MFA Policy', type: 'Policy' }] }); });
-=======
 // The following endpoints have no real backend implementation (vector
 // memory search, executive KPI aggregation, per-agent performance
 // telemetry, per-project analytics). They previously returned hardcoded
