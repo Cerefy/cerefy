@@ -10,7 +10,7 @@ export const getAllProjects = async (tenantId: string) => {
   });
 };
 
-export const createProject = async (tenantId: string, projectData: any) => {
+export const createProject = async (tenantId: string, projectData: Record<string, unknown>) => {
   return await withTenantContext(tenantId, async (tx) => {
     const [newProject] = await tx.insert(projects).values({
       ...projectData,
@@ -20,7 +20,7 @@ export const createProject = async (tenantId: string, projectData: any) => {
   });
 };
 
-export const updateProject = async (tenantId: string, projectId: string, projectData: any) => {
+export const updateProject = async (tenantId: string, projectId: string, projectData: Record<string, unknown>) => {
   return await withTenantContext(tenantId, async (tx) => {
     const [updated] = await tx.update(projects)
       .set(projectData)
