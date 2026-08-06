@@ -93,6 +93,12 @@ export const AgentOrchestratorView: React.FC = () => {
       });
       const data = response.data;
       const latencyMs = Date.now() - startTime;
+      const responsePayload = data.response ?? {};
+      const plan = Array.isArray(responsePayload.plan)
+        ? responsePayload.plan
+        : Array.isArray(data.plan)
+          ? data.plan
+          : [];
 
       if (data.status === 'success') {
         const completedSteps: AgentStep[] = [
@@ -102,7 +108,7 @@ export const AgentOrchestratorView: React.FC = () => {
             agentRole: 'Planner',
             status: 'completed',
             timestamp: new Date().toLocaleTimeString(),
-            output: data.plan[0] || 'Step 1: Planner Agent generated workflow DAG.',
+            output: plan[0] || 'Step 1: Planner Agent generated workflow DAG.',
           },
           {
             id: 'step_2',
@@ -110,7 +116,7 @@ export const AgentOrchestratorView: React.FC = () => {
             agentRole: 'Retriever',
             status: 'completed',
             timestamp: new Date().toLocaleTimeString(),
-            output: data.plan[1] || 'Step 2: Retrieved 3 chunks from pgvector (1536-dim) & Neo4j graph.',
+            output: plan[1] || 'Step 2: Retrieved context from enterprise memory and graph sources.',
           },
           {
             id: 'step_3',
@@ -118,7 +124,7 @@ export const AgentOrchestratorView: React.FC = () => {
             agentRole: 'Reasoner',
             status: 'completed',
             timestamp: new Date().toLocaleTimeString(),
-            output: data.plan[2] || 'Step 3: Synthesized reasoning output with tenant isolation.',
+            output: plan[2] || 'Step 3: Synthesized reasoning output with tenant isolation.',
           },
           {
             id: 'step_4',
@@ -126,8 +132,8 @@ export const AgentOrchestratorView: React.FC = () => {
             agentRole: 'Reflection',
             status: 'reflected',
             timestamp: new Date().toLocaleTimeString(),
-            output: data.plan[3] || 'Step 4: Reflection self-correction audited factual accuracy.',
-            reflectionNotes: data.reflectionCritique || 'STATUS: PASSED - Strict factual alignment verified.',
+            output: plan[3] || 'Step 4: Reflection self-correction audited factual accuracy.',
+            reflectionNotes: responsePayload.reflectionCritique || responsePayload.governance?.reason || 'STATUS: PASSED - Strict factual alignment verified.',
           },
         ];
 
@@ -135,7 +141,7 @@ export const AgentOrchestratorView: React.FC = () => {
           ...initialPlan,
           status: 'completed',
           steps: completedSteps,
-          finalResponse: data.response,
+          finalResponse: responsePayload,
           latencyMs,
           totalTokensUsed: data.tokensUsed || 320,
           reflectionCount: 1,
@@ -147,7 +153,7 @@ export const AgentOrchestratorView: React.FC = () => {
           executionTimeMs: latencyMs,
           status: 'SUCCESS',
           inputPayload: { query },
-          outputPayload: { response: data.response },
+          outputPayload: { response: responsePayload },
         });
 
         addTelemetrySpan({
