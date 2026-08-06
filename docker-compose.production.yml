@@ -48,15 +48,15 @@ services:
     container_name: cerefy-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER:-cerefy}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-cerefy_password}
-      POSTGRES_DB: ${DB_NAME:-cerefy_production}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
       - cerefy-pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-cerefy}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -68,7 +68,7 @@ services:
     container_name: cerefy-graph
     restart: unless-stopped
     environment:
-      NEO4J_AUTH: ${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-cerefy_neo4j_pwd}
+      NEO4J_AUTH: ${NEO4J_USER}/${NEO4J_PASSWORD}
     ports:
       - "7474:7474"
       - "7687:7687"
@@ -101,9 +101,9 @@ services:
     environment:
       - DB=postgresql
       - POSTGRES_SEEDS=cerefy-db
-      - POSTGRES_USER=${DB_USER:-cerefy}
-      - POSTGRES_PWD=${DB_PASSWORD:-cerefy_password}
-      - POSTGRES_DB=${DB_NAME:-cerefy_production}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PWD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     ports:
       - "7233:7233"
     depends_on:
