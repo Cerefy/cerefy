@@ -1,5 +1,5 @@
 {
-  "name": "eyex-technologies",
+  "name": "cerefy",
   "main": ".output/server/index.mjs",
   "compatibility_date": "2025-07-18",
   "compatibility_flags": ["nodejs_compat"],

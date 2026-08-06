@@ -503,21 +503,3 @@ export const BackendApi = {
     return apiFetch(`/intelligence/report/${sessionId}`);
   },
 };
-
-/* Activity WebSocket */
-export async function createActivitySocket(
-  workspaceId: string,
-  onEvent: (event: Record<string, unknown>) => void,
-): Promise<WebSocket> {
-  const token = await getAuthToken();
-  const wsBase = BASE_URL.replace(/^http/, "ws");
-  const ws = new WebSocket(`${wsBase}/ws/activity/${workspaceId}?token=${token}`);
-  ws.onmessage = (msg) => {
-    try {
-      onEvent(JSON.parse(msg.data));
-    } catch {
-      /* ignore */
-    }
-  };
-  return ws;
-}

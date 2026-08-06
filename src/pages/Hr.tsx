@@ -106,12 +106,7 @@ export function HrPage() {
           label: "Attendance",
           render: () => (
             <Card title="Attendance — this week">
-              <BarChart
-                data={["Mon", "Tue", "Wed", "Thu", "Fri"].map((l) => ({
-                  label: l,
-                  value: 170 + Math.random() * 14,
-                }))}
-              />
+              <EmptyState message="Connect a data source to view attendance analytics" />
             </Card>
           ),
         },

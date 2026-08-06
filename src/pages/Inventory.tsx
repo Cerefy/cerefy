@@ -176,12 +176,7 @@ export function InventoryPage() {
           label: "Analytics",
           render: () => (
             <Card title="Turnover — 12w">
-              <BarChart
-                data={Array.from({ length: 12 }, (_, i) => ({
-                  label: `W${i + 1}`,
-                  value: 30 + Math.random() * 70,
-                }))}
-              />
+              <EmptyState message="Connect a data source to view inventory analytics" />
             </Card>
           ),
         },

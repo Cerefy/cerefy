@@ -1,6 +1,6 @@
 import type React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { BackendApi, type AdminStats, type SystemStatus } from "@/services/backend-api.service";
+import { BackendApi, type AdminStats } from "@/services/backend-api.service";
 import {
   Server,
   Activity,

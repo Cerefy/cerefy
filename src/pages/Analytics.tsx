@@ -1,22 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/layout/AppShell";
-import {
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Search,
-  Bell,
-  HelpCircle,
-  Calendar,
-  BarChart3,
-  Download,
-  ChevronDown,
-  FileText,
-  Settings,
-  LayoutDashboard,
-  MessageSquare,
-  Activity,
-} from "lucide-react";
+import { TrendingUp, TrendingDown, Calendar, BarChart3, Download, ChevronDown } from "lucide-react";
 import { FinanceService, CrmService, SalesService, HrService } from "@/services/data";
 
 function formatCurrency(value: number): string {

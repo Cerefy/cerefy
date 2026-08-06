@@ -205,12 +205,7 @@ export function ProjectsPage() {
           label: "Analytics",
           render: () => (
             <Card title="Velocity">
-              <BarChart
-                data={Array.from({ length: 8 }, (_, i) => ({
-                  label: `S${i + 1}`,
-                  value: 20 + Math.random() * 40,
-                }))}
-              />
+              <EmptyState message="Connect a data source to view project analytics" />
             </Card>
           ),
         },
