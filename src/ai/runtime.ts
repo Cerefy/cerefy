@@ -367,7 +367,7 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
           documentId: input.documentId || '',
           type: input.type,
         },
-        stageFn: discoveryAgent,
+        stageFn: discoveryAgent as unknown as (state: CerefyGraphState) => Promise<CerefyGraphState>,
         tools: ['documentTool', 'vectorMemory', 'knowledgeGraph'],
       });
     }
@@ -487,7 +487,7 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
           documentId: input.documentId || '',
           type: input.type,
         },
-        stageFn: analystAgent,
+        stageFn: analystAgent as unknown as (state: CerefyGraphState) => Promise<CerefyGraphState>,
         tools: ['reasoningPrompt', 'recommendationSynthesis'],
       });
     }

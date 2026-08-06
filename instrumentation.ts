@@ -9,6 +9,6 @@ const sdk = new NodeSDK({
   instrumentations: [getNodeAutoInstrumentations()],
 });
 
-sdk.start().catch(() => {
+Promise.resolve(sdk.start()).catch(() => {
   // OpenTelemetry is best-effort; never block startup.
 });
