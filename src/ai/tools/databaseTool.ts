@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { db } from '../../db';
 import { agentExecutions } from '../../db/schema';
 import type { CerefyExecutionInput } from '../graph/state';
@@ -28,6 +28,28 @@ export async function createAgentExecutionRecord(input: CerefyExecutionInput) {
     .returning();
 
   return execution;
+}
+
+export async function getAgentExecutionById(executionId: string) {
+  const [execution] = await db
+    .select()
+    .from(agentExecutions)
+    .where(eq(agentExecutions.id, executionId as any))
+    .limit(1);
+  return execution ?? null;
+}
+
+export async function listAgentExecutions(tenantId?: string, limit = 25) {
+  if (tenantId) {
+    return db
+      .select()
+      .from(agentExecutions)
+      .where(eq(agentExecutions.tenantId, tenantId))
+      .orderBy(desc(agentExecutions.createdAt))
+      .limit(limit);
+  }
+
+  return db.select().from(agentExecutions).orderBy(desc(agentExecutions.createdAt)).limit(limit);
 }
 
 export async function updateAgentExecutionRecord(
