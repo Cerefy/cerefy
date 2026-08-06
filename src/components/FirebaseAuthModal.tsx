@@ -16,17 +16,11 @@ import { LogoIcon } from './LogoIcon';
 import {
   AlertCircle,
   ArrowRight,
-  Building2,
   Check,
   CheckCircle2,
   Github,
-  Globe,
-  Key,
-  Lock,
-  Mail,
   ShieldCheck,
   Sparkles,
-  User,
 } from 'lucide-react';
 
 interface FirebaseAuthModalProps {
