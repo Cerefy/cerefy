@@ -27,6 +27,7 @@ async function githubRequest<T>(path: string, init: RequestInit = {}): Promise<T
     headers: {
       Accept: 'application/vnd.github+json',
       Authorization: `Bearer ${token}`,
+      'User-Agent': 'cerefy-enterprise-ai',
       'X-GitHub-Api-Version': '2022-11-28',
       'Content-Type': 'application/json',
       ...(init.headers || {}),
