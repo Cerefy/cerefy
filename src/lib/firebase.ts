@@ -69,29 +69,25 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
       emailVerified: auth.currentUser?.emailVerified,
       isAnonymous: auth.currentUser?.isAnonymous,
       tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData?.map(provider => ({
+      providerInfo: auth.currentUser?.providerData?.map((provider) => ({
         providerId: provider.providerId,
         email: provider.email,
-      })) || []
+      })) || [],
     },
     operationType,
-    path
+    path,
   };
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
   throw new Error(JSON.stringify(errInfo));
 }
 
 export async function testConnection() {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration.");
-    }
+    return true;
+  } catch {
+    return false;
   }
 }
-
-testConnection();
 
 export {
   signInWithPopup,
