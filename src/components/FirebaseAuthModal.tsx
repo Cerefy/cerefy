@@ -14,20 +14,19 @@ import { useAgentStore } from '../store/useAgentStore';
 import { useNavigate } from 'react-router-dom';
 import { LogoIcon } from './LogoIcon';
 import {
+  AlertCircle,
+  ArrowRight,
+  Building2,
+  Check,
+  CheckCircle2,
+  Github,
+  Globe,
+  Key,
   Lock,
   Mail,
-  Key,
-  
-  User,
   ShieldCheck,
-  Building2,
-  ArrowRight,
   Sparkles,
-  AlertCircle,
-  CheckCircle2,
-  Globe,
-  Github,
-  Check,
+  User,
 } from 'lucide-react';
 
 interface FirebaseAuthModalProps {
