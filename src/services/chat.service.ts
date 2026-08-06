@@ -1,3 +1,5 @@
+import { BackendApi } from "./backend-api.service";
+
 export interface CopilotStep {
   agent: string;
   duration: number;
@@ -18,24 +20,21 @@ export const ChatService = {
     history: { role: string; text: string }[],
   ): Promise<CopilotResult> {
     try {
-      const response = await fetch("http://localhost:8000/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, history }),
+      const response = await BackendApi.chat({
+        message,
+        stream: false,
       });
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      if (!data.success) {
-        throw new Error(data.error);
-      }
-
-      return data;
+      return {
+        success: true,
+        text: response.output,
+        steps: response.steps?.map((s) => ({
+          agent: s.node,
+          duration: s.duration_ms,
+          result: s.output,
+        })),
+      };
     } catch (error) {
-      console.error("Chat Error:", error);
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
