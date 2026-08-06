@@ -6,7 +6,7 @@ export const Route = createFileRoute("/enterprise-reports")({
   head: () => ({
     meta: [
       { title: "Business Intelligence Reports | Cerefy" },
-      { name: "description", content: "AI-generated executive reports and business intelligence" },
+      { name: "description", content: "Executive reports and business intelligence" },
     ],
   }),
   component: () => (

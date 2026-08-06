@@ -63,7 +63,7 @@ export function EnterpriseReportsPage() {
   const activeConfig = REPORT_TYPES.find((r) => r.key === activeReport);
 
   return (
-    <AppShell title="Business Intelligence Reports" subtitle="AI-generated executive reports">
+    <AppShell title="Business Intelligence Reports" subtitle="Executive reports">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sidebar */}
         <div className="space-y-2">

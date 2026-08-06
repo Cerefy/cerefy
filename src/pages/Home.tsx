@@ -155,7 +155,7 @@ export function HomePage() {
               Investor Ready
             </h4>
             <p className="font-body-md text-on-surface-variant opacity-70">
-              AI-generated pitch decks, financials, and roadmaps.
+              Pitch decks, financials, and roadmaps.
             </p>
             <div className="absolute -right-4 -bottom-4 text-9xl text-white/[0.03] font-mono-data font-bold group-hover:text-secondary-fixed-dim/10 transition-colors">
               $2.4M
