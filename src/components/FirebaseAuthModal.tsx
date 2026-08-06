@@ -56,8 +56,8 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
         },
         { merge: true }
       );
-    } catch (err: any) {
-      console.warn('Firestore User Sync Warning:', err);
+    } catch {
+      setErrorMsg('Unable to sync user profile.');
     }
   };
 
@@ -74,9 +74,8 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
           navigate('/workspace/command-center');
         }, 600);
       }
-    } catch (err: any) {
-      console.error('Google Auth Error:', err);
-      setErrorMsg(err.message || 'Failed to sign in with Google');
+    } catch {
+      setErrorMsg('Failed to sign in with Google');
     } finally {
       setLoading(false);
     }
@@ -114,9 +113,8 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
         if (onSuccess) onSuccess();
         navigate('/workspace/command-center');
       }, 600);
-    } catch (err: any) {
-      console.error('Email Auth Error:', err);
-      setErrorMsg(err.message || 'Authentication failed. Please check credentials.');
+    } catch {
+      setErrorMsg('Authentication failed. Please check credentials.');
     } finally {
       setLoading(false);
     }
@@ -133,9 +131,8 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
         if (onSuccess) onSuccess();
         navigate('/workspace/command-center');
       }, 600);
-    } catch (err: any) {
-      console.error('Demo Auth Error:', err);
-      setErrorMsg(err.message || 'Failed to initialize demo session');
+    } catch {
+      setErrorMsg('Failed to initialize demo session');
     } finally {
       setLoading(false);
     }
