@@ -84,7 +84,13 @@ export async function processDocument(
 
     const jsonMatch = entityRes.text?.match(/\[.*\]/s);
     if (jsonMatch) {
-      const entities = JSON.parse(jsonMatch[0]);
+      let entities: Array<{ name?: string; label?: string }> = [];
+      try {
+        entities = JSON.parse(jsonMatch[0]);
+      } catch {
+        entities = [];
+      }
+
       const neo4jDriver = getNeo4jDriver();
       const session = neo4jDriver.session();
 
