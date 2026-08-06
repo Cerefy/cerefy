@@ -6,3 +6,7 @@ pnpm-lock.yaml
 package-lock.json
 bun.lock
 routeTree.gen.ts
+eyex_desktop_*.tsx
+stitch_screen_*.json
+eyex-backend/
+

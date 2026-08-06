@@ -8,12 +8,15 @@ export interface CopilotResult {
   success: boolean;
   text?: string;
   steps?: CopilotStep[];
-  structured?: any;
+  structured?: Record<string, unknown>;
   error?: string;
 }
 
 export const ChatService = {
-  async sendMessage(message: string, history: { role: string; text: string }[]): Promise<CopilotResult> {
+  async sendMessage(
+    message: string,
+    history: { role: string; text: string }[],
+  ): Promise<CopilotResult> {
     try {
       const response = await fetch("http://localhost:8000/api/chat", {
         method: "POST",

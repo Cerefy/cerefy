@@ -4,10 +4,40 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Card, DataTable, Badge } from "@/components/common/primitives";
 import { UploadService } from "@/services/upload.service";
 import { DynamicDashboard, DashboardConfig } from "@/components/dashboard/DynamicDashboard";
-import { RefreshCw, Upload, Database, Globe, Package, Loader2, AlertCircle, CheckCircle, X } from "lucide-react";
+import {
+  RefreshCw,
+  Upload,
+  Database,
+  Globe,
+  Package,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
+  X,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { ImportWizard } from "@/components/data-sources/ImportWizard";
+
+interface ProcessingResult {
+  sheets?: Array<{
+    tables?: Array<{
+      row_count?: number;
+      columns?: Array<{ name: string }>;
+    }>;
+  }>;
+}
+
+interface DatasetRow {
+  id: string;
+  name: string;
+  original_filename: string | null;
+  status: string;
+  created_at: string;
+  file_size?: number;
+  file_type?: string;
+  processing_progress?: number;
+}
 
 interface DataSource {
   id: string;
@@ -25,7 +55,7 @@ export function DataSourcesPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [generatedDashboard, setGeneratedDashboard] = useState<DashboardConfig | null>(null);
-  const [processingResult, setProcessingResult] = useState<any>(null);
+  const [processingResult, setProcessingResult] = useState<ProcessingResult | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [currentDatasetId, setCurrentDatasetId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -40,15 +70,15 @@ export function DataSourcesPage() {
         .order("created_at", { ascending: false });
       if (error) throw error;
       // Map to DataSource shape (file_size and file_type may not exist in DB yet)
-      return (data ?? []).map((row) => ({
+      return (data ?? []).map((row: DatasetRow) => ({
         id: row.id,
         name: row.name,
         original_filename: row.original_filename ?? "",
         status: row.status,
-        file_size: (row as any).file_size ?? 0,
-        file_type: (row as any).file_type ?? "",
+        file_size: row.file_size ?? 0,
+        file_type: row.file_type ?? "",
         created_at: row.created_at,
-        processing_progress: (row as any).processing_progress,
+        processing_progress: row.processing_progress,
       })) as DataSource[];
     },
   });
@@ -70,11 +100,11 @@ export function DataSourcesPage() {
       } else {
         toast.success("File uploaded successfully");
         queryClient.invalidateQueries({ queryKey: ["data_sources"] });
-        
+
         // If processing results exist, show them
         if (result.processing) {
           setProcessingResult(result.processing);
-          setCurrentDatasetId(result.dataset.id);
+          setCurrentDatasetId((result.dataset as Record<string, unknown>)?.id as string);
         }
       }
       setUploading(false);
@@ -124,7 +154,7 @@ export function DataSourcesPage() {
     }
   };
 
-  const convertProcessingToDashboard = (processing: any): DashboardConfig => {
+  const convertProcessingToDashboard = (processing: ProcessingResult): DashboardConfig => {
     // Convert cognitive data pipeline results to dashboard config
     const rowCount = processing.sheets?.[0]?.tables?.[0]?.row_count || 0;
     const colCount = processing.sheets?.[0]?.tables?.[0]?.columns?.length || 0;
@@ -166,10 +196,7 @@ export function DataSourcesPage() {
             <p className="font-medium">Upload Error</p>
             <p className="text-sm opacity-80">{error}</p>
           </div>
-          <button 
-            onClick={() => setError(null)}
-            className="text-red-400 hover:text-red-300"
-          >
+          <button onClick={() => setError(null)} className="text-red-400 hover:text-red-300">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -187,7 +214,7 @@ export function DataSourcesPage() {
             </span>
           </div>
           <div className="w-full bg-secondary rounded-full h-2">
-            <div 
+            <div
               className="bg-primary-brand h-2 rounded-full transition-all duration-300"
               style={{ width: `${uploadProgress}%` }}
             />
@@ -197,15 +224,15 @@ export function DataSourcesPage() {
 
       {processingResult && selectedFile && currentDatasetId ? (
         <div className="mb-8">
-          <ImportWizard 
-            file={selectedFile} 
+          <ImportWizard
+            file={selectedFile}
             datasetId={currentDatasetId}
             initialProcessingResult={processingResult}
             onClose={() => {
               setProcessingResult(null);
               setSelectedFile(null);
               setCurrentDatasetId(null);
-            }} 
+            }}
           />
         </div>
       ) : generatedDashboard ? (
@@ -265,13 +292,13 @@ export function DataSourcesPage() {
         icon="hub"
         action={
           <div className="flex gap-2">
-            <button 
+            <button
               onClick={() => queryClient.invalidateQueries({ queryKey: ["data_sources"] })}
               className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-white"
             >
               Refresh
             </button>
-            <button 
+            <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
               className="bg-white text-black text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded disabled:opacity-50"
@@ -301,7 +328,15 @@ export function DataSourcesPage() {
                 key: "status",
                 label: "Status",
                 render: (r) => (
-                  <Badge tone={r.status === "processed" ? "success" : r.status === "processing" ? "warn" : "danger"}>
+                  <Badge
+                    tone={
+                      r.status === "processed"
+                        ? "success"
+                        : r.status === "processing"
+                          ? "warn"
+                          : "danger"
+                    }
+                  >
                     {r.status}
                   </Badge>
                 ),

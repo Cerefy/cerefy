@@ -1,136 +1,398 @@
 import { useQuery } from "@tanstack/react-query";
-import { BackendApi } from "@/services/backend-api.service";
+import { BackendApi, type DashboardStats } from "@/services/backend-api.service";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/components/providers/auth-provider";
+import {
+  TrendingUp,
+  Gauge,
+  AlertTriangle,
+  Target,
+  Gavel,
+  Cpu,
+  BarChart3,
+  MemoryStick,
+  Bot,
+} from "lucide-react";
+
+/* ── mock data (will wire to real API when endpoints exist) ── */
+const SWARM_AGENTS = [
+  {
+    name: "CEO-Agent Alpha",
+    icon: "person_check",
+    status: "PROCESSING",
+    statusColor: "text-[#00e5ff]",
+    barColor: "bg-[#00e5ff]",
+    barWidth: "78%",
+    desc: "Analyzing Q3 strategic acquisitions in EMEA region. Confidence score high.",
+    meta: ["Compute: 78%", "ETA: 2m 14s"],
+    glow: true,
+    alert: false,
+  },
+  {
+    name: "CFO-Agent Theta",
+    icon: "query_stats",
+    status: "IDLE",
+    statusColor: "text-muted-foreground",
+    barColor: "bg-muted-foreground/40",
+    barWidth: "100%",
+    desc: "Awaiting raw data sync from sub-ledger databases. Ready for deployment.",
+    meta: ["Compute: 0%", "Status: Standby"],
+    glow: false,
+    alert: false,
+  },
+  {
+    name: "CTO-Agent Nexus",
+    icon: "memory",
+    status: "ALERT",
+    statusColor: "text-rose-400",
+    barColor: "bg-rose-500",
+    barWidth: "45%",
+    desc: "Detecting anomaly in load balancer cluster US-EAST. Mitigating...",
+    meta: ["Intervention Req: Low", "Action: Auto-scaling"],
+    glow: false,
+    alert: true,
+  },
+];
+
+const MISSIONS = [
+  {
+    title: "Global Market Expansion - APAC",
+    pct: 64,
+    barColor: "bg-[#00e5ff]",
+    agents: 3,
+    target: "Q4 Completion",
+  },
+  {
+    title: "Infrastructure Sync Protocol",
+    pct: 89,
+    barColor: "bg-amber-400",
+    agents: 0,
+    target: "Imminent",
+    label: "Data Center Alignment",
+  },
+];
+
+const DECISIONS = [
+  {
+    title: "Reallocate Compute Resources",
+    desc: "AI recommends shifting 15% compute from R&D to Logistics forecasting due to emergent supply chain anomaly.",
+    confidence: "Confidence: 92.4% | Est. Impact: +$1.2M",
+    borderColor: "border-l-[#00e5ff]",
+    urgent: false,
+  },
+  {
+    title: "Liquidate Underperforming Asset X",
+    desc: "Market trend analysis indicates structural decline. Immediate divestiture minimizes projected loss.",
+    confidence: "Time Sensitive | Execute within 12hrs",
+    borderColor: "border-l-rose-500",
+    urgent: true,
+  },
+];
+
+/* ── Agent status icon helper ── */
+function AgentIcon({ name, alert }: { name: string; alert: boolean }) {
+  if (name.includes("CEO")) return <Bot size={18} className="text-white" />;
+  if (name.includes("CFO")) return <BarChart3 size={18} className="text-amber-400" />;
+  return <MemoryStick size={18} className={alert ? "text-rose-400" : "text-muted-foreground"} />;
+}
 
 export function DashboardPage() {
   const { user } = useAuth();
   const name = user?.user_metadata?.full_name ?? user?.email ?? "User";
 
-  const { data: stats } = useQuery({
+  const { data: stats } = useQuery<DashboardStats>({
     queryKey: ["dashboard-stats"],
     queryFn: () => BackendApi.getDashboardStats(),
     refetchInterval: 15000,
   });
 
   return (
-    <AppShell title={`Welcome, ${name}`} subtitle="CORE_VISION_DASHBOARD">
-      <div className="grid grid-cols-12 gap-6 pb-20">
-        {/* Left Side: Live Feed */}
-        <section className="col-span-12 xl:col-span-8 flex flex-col gap-6">
-          <div className="relative w-full aspect-video rounded overflow-hidden glass-panel group border border-white/10">
-            {/* Background Feed */}
-            <div className="absolute inset-0 z-0">
-              <img className="w-full h-full object-cover opacity-60" alt="Vision Feed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA73DLEcQ8ReVNMKWu1ZcRIxQ57HgSh60Xy5p8BKFHFcK8oG3MsT1NUaDo0xD6nCt4WX25XU6ZyeTG-X2WC5jTMW75Sbd94VtByCw8WXfA0fWHRUXJnxk3O9z_ylRFpp0SyIFxHDlKVSv-KV9v5aLO6CXt8BxQ_o-QpY17BuO8SnJtR2JSZrchCQh2JSmjOO502jyyhBc86kqu0GppmOgttXatGNrLMs53WkKopWJDLgf1bFGpLBREwAEB46QJtyWFJfgcEAZIg208B"/>
+    <AppShell title={`Welcome, ${name}`} subtitle="EXECUTIVE_COMMAND_CENTER">
+      <div className="space-y-6 pb-20">
+        {/* ═══ Global Swarm Status ═══ */}
+        <section className="glass-panel rounded-xl p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight text-white mb-1 flex items-center gap-2">
+                <Cpu size={20} className="text-[#00e5ff]" />
+                Global Swarm Status
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Real-time intelligence feed &amp; agent telemetry.
+              </p>
             </div>
-            {/* HUD Overlays */}
-            <div className="absolute inset-0 z-10 p-6 pointer-events-none flex flex-col justify-between">
-              <div className="flex justify-between items-start">
-                <div className="flex flex-col gap-2">
-                  <div className="font-mono-data text-[12px] bg-black/60 px-3 py-1 border-l-2 border-secondary-fixed-dim">CAM_01 // SEC_SECTOR_7G</div>
-                  <div className="font-mono-data text-[10px] text-on-surface-variant">UTC 2024-05-24 14:22:01.045</div>
-                </div>
-                <div className="flex gap-2">
-                  <span className="material-symbols-outlined text-secondary-fixed-dim text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>videocam</span>
-                  <span className="font-mono-data text-[12px] text-primary">RECORDING_HD</span>
-                </div>
-              </div>
-              {/* Bounding Boxes (Visual effects) */}
-              <div className="absolute top-[30%] left-[25%] w-32 h-48 border border-secondary-fixed-dim bg-secondary-fixed-dim/10">
-                <div className="bg-secondary-fixed-dim text-black font-mono-data text-[8px] px-1 inline-block">OBJECT_HUMAN_01: 99.4%</div>
-              </div>
-              <div className="absolute top-[50%] left-[60%] w-40 h-24 border border-secondary-fixed-dim bg-secondary-fixed-dim/10">
-                <div className="bg-secondary-fixed-dim text-black font-mono-data text-[8px] px-1 inline-block">ASSET_ROBOT_A4: 98.2%</div>
-              </div>
-              <div className="flex justify-between items-end">
-                <div className="flex flex-col gap-1">
-                  <div className="h-1 w-48 bg-white/10">
-                    <div className="h-full bg-secondary-fixed-dim w-3/4"></div>
-                  </div>
-                  <span className="font-mono-data text-[10px] text-on-surface-variant uppercase">Buffer Capacity</span>
-                </div>
-                <div className="flex gap-4">
-                  <button className="pointer-events-auto px-4 py-2 bg-white text-black font-label-caps text-label-caps rounded-sm hover:opacity-80 transition-all">ZOOM_OPTIC</button>
-                  <button className="pointer-events-auto px-4 py-2 border border-white/20 text-white font-label-caps text-label-caps rounded-sm hover:bg-white/5 transition-all">THERMAL_TOGGLE</button>
-                </div>
-              </div>
-            </div>
+            <span className="px-2.5 py-1 rounded bg-[#00e5ff]/10 text-[#00e5ff] text-[10px] font-mono font-semibold flex items-center gap-1.5 border border-[#00e5ff]/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00e5ff] animate-pulse" />
+              SYSTEM NOMINAL
+            </span>
           </div>
-          
-          {/* Bottom Section: System Performance */}
-          <div className="glass-panel p-6 rounded-lg flex flex-col gap-4 border border-white/10">
-            <div className="flex justify-between items-center">
-              <h3 className="font-label-caps text-label-caps text-primary tracking-widest flex items-center gap-2">
-                <span className="material-symbols-outlined text-sm">show_chart</span>
-                SYSTEM_PERFORMANCE
-              </h3>
-              <div className="flex gap-4 font-mono-data text-[10px] text-on-surface-variant">
-                <span className="flex items-center gap-1"><span className="w-2 h-2 bg-secondary-fixed-dim rounded-full"></span> GPU LOAD</span>
-                <span className="flex items-center gap-1"><span className="w-2 h-2 bg-white rounded-full"></span> INF_TPS</span>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {SWARM_AGENTS.map((agent) => (
+              <div
+                key={agent.name}
+                className={`bg-secondary/60 border rounded-lg p-4 relative overflow-hidden transition-all hover:border-white/20 ${
+                  agent.alert ? "border-rose-500/30" : "border-border"
+                } ${agent.glow ? "shadow-[0_0_10px_rgba(0,229,255,0.1)]" : ""}`}
+              >
+                {/* Top glow bar */}
+                {(agent.glow || agent.alert) && (
+                  <div
+                    className={`absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r ${
+                      agent.alert ? "from-rose-500 to-transparent" : "from-[#00e5ff] to-transparent"
+                    } opacity-60`}
+                  />
+                )}
+                <div className="flex justify-between items-center mb-3">
+                  <div className="flex items-center gap-2">
+                    <AgentIcon name={agent.name} alert={agent.alert} />
+                    <span className="text-xs font-mono font-bold text-white">{agent.name}</span>
+                  </div>
+                  <span
+                    className={`text-[10px] font-mono ${agent.statusColor} ${
+                      agent.alert ? "animate-pulse" : ""
+                    }`}
+                  >
+                    {agent.status}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">{agent.desc}</p>
+                <div className="w-full bg-background h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className={`${agent.barColor} h-full transition-all duration-1000`}
+                    style={{ width: agent.barWidth }}
+                  />
+                </div>
+                <div
+                  className={`mt-2 flex justify-between text-[10px] font-mono ${
+                    agent.alert ? "text-rose-400" : "text-muted-foreground"
+                  }`}
+                >
+                  {agent.meta.map((m) => (
+                    <span key={m}>{m}</span>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="h-48 w-full relative border border-white/10 bg-white/5">
-              <div className="absolute inset-0 grid grid-cols-6 grid-rows-4 pointer-events-none opacity-10">
-                {Array.from({ length: 24 }).map((_, i) => (
-                  <div key={i} className="border-r border-b border-white"></div>
-                ))}
-              </div>
-              <div className="absolute inset-0 flex items-end px-2 opacity-50">
-                 {/* Fake chart placeholder */}
-                 <div className="w-full h-1/2 bg-gradient-to-t from-secondary-fixed-dim/20 to-transparent border-t border-secondary-fixed-dim"></div>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* Right Side: KPIs and Alerts */}
-        <section className="col-span-12 xl:col-span-4 flex flex-col gap-6">
-          {/* KPI Cards */}
-          <div className="grid grid-cols-1 gap-4">
-            <div className="glass-panel p-5 rounded-lg border border-white/10">
-              <div className="font-label-caps text-[10px] text-on-surface-variant mb-1">TOTAL TASKS</div>
-              <div className="flex items-end justify-between">
-                <span className="font-mono-data text-4xl text-primary">{stats?.total_tasks ?? '—'}</span>
-                <span className="font-mono-data text-[12px] text-secondary-fixed-dim">+{stats?.tasks_today ?? 0}</span>
-              </div>
+        {/* ═══ KPI Widgets ═══ */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Revenue Velocity */}
+          <div className="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                GROSS REVENUE VELOCITY
+              </span>
+              <TrendingUp size={16} className="text-[#00e5ff]" />
             </div>
-            <div className="glass-panel p-5 rounded-lg border border-white/10">
-              <div className="font-label-caps text-[10px] text-on-surface-variant mb-1">SUCCESS RATE</div>
-              <div className="flex items-end justify-between">
-                <span className="font-mono-data text-4xl text-primary">{stats?.success_rate ?? '—'}%</span>
-                <span className="font-mono-data text-[12px] text-secondary-fixed-dim">STABLE</span>
+            <div>
+              <div className="text-3xl font-bold tracking-tight text-white">
+                $4.2M<span className="text-base text-muted-foreground">/hr</span>
               </div>
-            </div>
-            <div className="glass-panel p-5 rounded-lg border border-white/10">
-              <div className="font-label-caps text-[10px] text-on-surface-variant mb-1">ACTIVE AGENTS</div>
-              <div className="flex items-end justify-between">
-                <span className="font-mono-data text-4xl text-primary">{stats?.active_agents_count ?? '—'}</span>
-                <span className="font-mono-data text-[12px] text-secondary-fixed-dim">ONLINE</span>
+              <div className="text-[10px] font-mono text-[#00e5ff] flex items-center gap-1 mt-1">
+                <TrendingUp size={12} /> +12.4% vs prev cycle
               </div>
             </div>
           </div>
 
-          {/* Real-time Alerts List */}
-          <div className="glass-panel rounded-lg flex-1 flex flex-col overflow-hidden border border-white/10 min-h-[400px]">
-            <div className="p-4 border-b border-white/5 flex justify-between items-center bg-white/5">
-              <h3 className="font-label-caps text-label-caps text-primary">RECENT_TASKS</h3>
-              <span className="px-2 py-0.5 bg-secondary-fixed-dim text-[10px] font-mono-data rounded text-black">LOGS</span>
+          {/* System Efficiency */}
+          <div className="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                SYSTEM EFFICIENCY INDEX
+              </span>
+              <Gauge size={16} className="text-amber-400" />
             </div>
-            <div className="flex-1 overflow-y-auto">
-              {(stats?.recent_tasks ?? []).slice(0, 5).map((task: any) => (
-                <div key={task.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer group">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono-data text-[10px] text-secondary-fixed-dim">{task.status}</span>
-                    <span className="font-mono-data text-[10px] text-on-surface-variant">{task.created_at ? new Date(task.created_at).toLocaleTimeString() : '—'}</span>
+            <div>
+              <div className="text-3xl font-bold tracking-tight text-white">
+                94.8<span className="text-base text-muted-foreground">μs</span>
+              </div>
+              <div className="text-[10px] font-mono text-muted-foreground mt-1">
+                Optimal execution state
+              </div>
+            </div>
+          </div>
+
+          {/* Risk Exposure */}
+          <div className="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                RISK EXPOSURE VECTOR
+              </span>
+              <AlertTriangle size={16} className="text-rose-400" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold tracking-tight text-white">
+                0.03<span className="text-base text-muted-foreground">%</span>
+              </div>
+              <div className="text-[10px] font-mono text-muted-foreground mt-1">
+                Within acceptable variance
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ Missions & Decisions split ═══ */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Active Strategic Missions */}
+          <section className="glass-panel rounded-xl p-6">
+            <h3 className="text-lg font-semibold tracking-tight text-white mb-4 flex items-center gap-2">
+              <Target size={18} className="text-white" />
+              Active Strategic Missions
+            </h3>
+            <div className="space-y-4">
+              {MISSIONS.map((m) => (
+                <div
+                  key={m.title}
+                  className="p-4 bg-background/60 rounded-lg border border-border hover:border-white/20 transition-colors"
+                >
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="text-sm font-semibold text-white">{m.title}</h4>
+                    <span className="text-xs font-mono text-[#00e5ff]">{m.pct}%</span>
                   </div>
-                  <p className="font-body-md text-sm text-primary mb-1 truncate">{task.agent_role ?? "Task"}</p>
-                  <span className="font-label-caps text-[9px] text-on-surface-variant group-hover:text-secondary-fixed-dim">VIEW_DETAILS →</span>
+                  <div className="w-full bg-background h-2 rounded-full overflow-hidden mb-3">
+                    <div
+                      className={`${m.barColor} h-full transition-all duration-1000`}
+                      style={{ width: `${m.pct}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      {m.agents > 0 ? (
+                        <>
+                          <Bot size={12} /> {m.agents} Agents Deployed
+                        </>
+                      ) : (
+                        <span>{m.label}</span>
+                      )}
+                    </div>
+                    <span>Target: {m.target}</span>
+                  </div>
                 </div>
               ))}
-              {(!stats?.recent_tasks || stats.recent_tasks.length === 0) && (
-                <div className="p-8 text-center font-mono-data text-xs text-on-surface-variant">NO_TASKS_DETECTED</div>
-              )}
             </div>
+          </section>
+
+          {/* Council Decisions Required */}
+          <section className="glass-panel rounded-xl p-6">
+            <h3 className="text-lg font-semibold tracking-tight text-white mb-4 flex items-center gap-2">
+              <Gavel size={18} className="text-white" />
+              Council Decisions Required
+            </h3>
+            <div className="space-y-4">
+              {DECISIONS.map((d) => (
+                <div
+                  key={d.title}
+                  className={`p-4 bg-secondary/60 border-l-4 ${d.borderColor} rounded-r-lg relative`}
+                >
+                  <div className="absolute top-3 right-3 flex gap-1.5">
+                    <button
+                      className={`px-3 py-1 text-[10px] font-mono font-bold rounded transition-colors ${
+                        d.urgent
+                          ? "bg-rose-500 text-white hover:bg-rose-600"
+                          : "bg-[#00e5ff] text-black hover:bg-[#00e5ff]/80"
+                      }`}
+                    >
+                      Approve
+                    </button>
+                    <button className="px-3 py-1 border border-border text-white text-[10px] font-mono rounded hover:bg-white/5 transition-colors">
+                      Discuss
+                    </button>
+                  </div>
+                  <h4 className="text-sm font-semibold text-white pr-36 mb-1">{d.title}</h4>
+                  <p className="text-xs text-muted-foreground mb-2 pr-36 leading-relaxed">
+                    {d.desc}
+                  </p>
+                  <div
+                    className={`text-[10px] font-mono flex items-center gap-1 ${
+                      d.urgent ? "text-rose-400" : "text-[#00e5ff]"
+                    }`}
+                  >
+                    {d.urgent ? <AlertTriangle size={12} /> : <TrendingUp size={12} />}
+                    {d.confidence}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        {/* ═══ Live Stats from API (preserving existing data wiring) ═══ */}
+        {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                TOTAL TASKS
+              </span>
+              <div className="flex items-end justify-between">
+                <span className="text-3xl font-bold tracking-tight text-white">
+                  {stats.total_tasks ?? "—"}
+                </span>
+                <span className="text-[10px] font-mono text-[#00e5ff]">
+                  +{stats.tasks_today ?? 0} today
+                </span>
+              </div>
+            </div>
+            <div className="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                SUCCESS RATE
+              </span>
+              <div className="flex items-end justify-between">
+                <span className="text-3xl font-bold tracking-tight text-white">
+                  {stats.success_rate ?? "—"}%
+                </span>
+                <span className="text-[10px] font-mono text-emerald-400">STABLE</span>
+              </div>
+            </div>
+            <div className="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                ACTIVE AGENTS
+              </span>
+              <div className="flex items-end justify-between">
+                <span className="text-3xl font-bold tracking-tight text-white">
+                  {stats.active_agents_count ?? "—"}
+                </span>
+                <span className="text-[10px] font-mono text-[#00e5ff]">ONLINE</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ Recent Tasks Feed ═══ */}
+        <section className="glass-panel rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-border flex justify-between items-center bg-secondary/40">
+            <h3 className="text-xs font-mono font-semibold text-white uppercase tracking-wider">
+              RECENT_TASKS
+            </h3>
+            <span className="px-2 py-0.5 bg-[#00e5ff] text-[10px] font-mono rounded text-black font-bold">
+              LOGS
+            </span>
+          </div>
+          <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+            {(stats?.recent_tasks ?? []).slice(0, 8).map((task) => (
+              <div
+                key={task.id}
+                className="p-4 border-b border-border/50 hover:bg-white/[0.02] transition-colors cursor-pointer group"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] font-mono text-[#00e5ff]">{task.status}</span>
+                  <span className="text-[10px] font-mono text-muted-foreground">
+                    {task.created_at ? new Date(task.created_at).toLocaleTimeString() : "—"}
+                  </span>
+                </div>
+                <p className="text-sm text-white mb-1 truncate">{task.agent_role ?? "Task"}</p>
+                <span className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider group-hover:text-[#00e5ff] transition-colors">
+                  VIEW_DETAILS →
+                </span>
+              </div>
+            ))}
+            {(!stats?.recent_tasks || stats.recent_tasks.length === 0) && (
+              <div className="p-8 text-center text-xs font-mono text-muted-foreground">
+                NO_TASKS_DETECTED
+              </div>
+            )}
           </div>
         </section>
       </div>
