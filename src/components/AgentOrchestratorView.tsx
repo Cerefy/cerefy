@@ -9,7 +9,6 @@ import {
   Sparkles,
   RefreshCw,
   Download,
-  ShieldCheck,
   ArrowRight,
 } from 'lucide-react';
 
@@ -165,8 +164,8 @@ export const AgentOrchestratorView: React.FC = () => {
           attributes: { model: 'gemini-3.6-flash', tenantId: activeTenantId },
         });
       }
-    } catch (err: any) {
-      console.error('Orchestration error:', err);
+    } catch {
+      // Surface failure in the execution state without noisy console logging.
     } finally {
       setIsExecuting(false);
     }
