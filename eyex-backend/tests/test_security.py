@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import pytest
 
-from app.core.middleware import _get_client_ip
-from app.core.security import decode_token, create_access_token, create_refresh_token
-from app.agents.tools.file_tools import _resolve_path, _assert_safe_path
 from app.agents.tools.db_tools import _ALLOWED_DML_TABLES
+from app.agents.tools.file_tools import _assert_safe_path, _resolve_path
+from app.core.middleware import _get_client_ip
+from app.core.security import decode_token
 
 
 class TestSQLInjection:
@@ -28,7 +28,6 @@ class TestPathTraversal:
         assert str(p) == str(p.resolve())
 
     def test_assert_safe_path_allowed(self):
-        from pathlib import Path
         from app.agents.tools.file_tools import _BASE_DIR
         safe = _BASE_DIR / "__test_allowed__.tmp"
         try:
@@ -69,18 +68,21 @@ class TestClientIP:
 class TestInputValidation:
     def test_empty_input_rejected(self):
         from pydantic import ValidationError
+
         from app.schemas.agent import AgentRequest
         with pytest.raises(ValidationError):
             AgentRequest(input="")
 
     def test_oversized_input_rejected(self):
         from pydantic import ValidationError
+
         from app.schemas.agent import AgentRequest
         with pytest.raises(ValidationError):
             AgentRequest(input="x" * 100_001)
 
     def test_min_password_length(self):
         from pydantic import ValidationError
+
         from app.schemas.auth import RegisterRequest
         with pytest.raises(ValidationError):
             RegisterRequest(email="test@test.com", password="abc12")

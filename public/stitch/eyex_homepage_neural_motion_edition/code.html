@@ -1,0 +1,1271 @@
+<!doctype html>
+
+<html class="dark" lang="en" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EyeX Technologies - The Enterprise AI Operating System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed": "#00016d",
+              "secondary-fixed-dim": "#bec2ff",
+              "on-surface-variant": "#c6c5d9",
+              "tertiary-container": "#c83923",
+              "primary-container": "#4b56fe",
+              "on-tertiary-fixed-variant": "#900e00",
+              secondary: "#bec2ff",
+              "on-primary": "#0003aa",
+              "surface-dim": "#12131c",
+              "surface-container-high": "#292933",
+              error: "#ffb4ab",
+              "primary-fixed": "#e0e0ff",
+              "primary-fixed-dim": "#bec2ff",
+              surface: "#12131c",
+              "on-secondary": "#212772",
+              "surface-tint": "#bec2ff",
+              "tertiary-fixed": "#ffdad4",
+              "on-secondary-fixed-variant": "#393f8a",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "secondary-container": "#393f8a",
+              "outline-cyan": "rgba(0, 229, 255, 0.3)",
+              "surface-bright": "#383843",
+              "outline-variant": "#454556",
+              "inverse-surface": "#e3e1ef",
+              "on-error": "#690005",
+              "secondary-fixed": "#e0e0ff",
+              "on-surface": "#e3e1ef",
+              outline: "#8f8fa2",
+              "on-secondary-fixed": "#080c5e",
+              "surface-container-lowest": "#0d0d16",
+              "on-secondary-container": "#a9afff",
+              primary: "#bec2ff",
+              tertiary: "#ffb4a6",
+              "on-tertiary": "#660700",
+              "on-primary-container": "#f1efff",
+              "inverse-on-surface": "#302f3a",
+              "on-primary-fixed-variant": "#1820d9",
+              "on-tertiary-container": "#ffece9",
+              "surface-dark": "#05070A",
+              "inverse-primary": "#3a44ef",
+              "surface-container-low": "#1b1b24",
+              "error-container": "#93000a",
+              "on-error-container": "#ffdad6",
+              "on-background": "#e3e1ef",
+              "surface-variant": "#34343e",
+              "surface-container-highest": "#34343e",
+              "surface-container": "#1f1f28",
+              background: "#12131c",
+              "on-tertiary-fixed": "#3f0300",
+            },
+            borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" },
+            spacing: {
+              "grid-gutter": "1.5rem",
+              "stack-md": "1rem",
+              "grid-margin": "2rem",
+              "stack-sm": "0.5rem",
+              "stack-lg": "2rem",
+              "stack-xs": "0.25rem",
+            },
+            fontFamily: {
+              "headline-md-mobile": ["Geist"],
+              "headline-md": ["Geist"],
+              "display-lg": ["Geist"],
+              "body-lg": ["Geist"],
+              "label-caps": ["JetBrains Mono"],
+              "data-mono": ["JetBrains Mono"],
+              "body-sm": ["Geist"],
+              headline: ["Geist"],
+              display: ["Geist"],
+              body: ["Geist"],
+              label: ["Jetbrains Mono"],
+            },
+            fontSize: {
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #05070a;
+        color: #dae4ef;
+        overflow-x: hidden;
+      }
+
+      .page-fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        ::before,
+        ::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+        .reveal-up {
+          opacity: 1 !important;
+          transform: translateY(0) !important;
+          transition: none !important;
+        }
+      }
+
+      .glass-panel {
+        background: rgba(11, 20, 28, 0.5);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(0, 229, 255, 0.15);
+      }
+      .glass-panel:hover {
+        border: 1px solid rgba(0, 229, 255, 0.4);
+        box-shadow: 0px 0px 40px rgba(0, 229, 255, 0.15);
+      }
+      .text-glow {
+        text-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+      }
+
+      /* Premium Glow Button */
+      .btn-glow {
+        position: relative;
+      }
+      .btn-glow::before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #00e5ff, transparent, #00e5ff);
+        z-index: -1;
+        border-radius: inherit;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .btn-glow:hover::before {
+        opacity: 1;
+        animation: pulse-glow 2s linear infinite;
+      }
+      @keyframes pulse-glow {
+        0% {
+          filter: blur(8px);
+        }
+        50% {
+          filter: blur(12px);
+        }
+        100% {
+          filter: blur(8px);
+        }
+      }
+
+      /* Scroll Reveal Utility Classes */
+      .reveal-up {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .reveal-up.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Marquee Animation */
+      @keyframes marquee {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+      .animate-marquee {
+        animation: marquee 25s linear infinite;
+      }
+
+      /* Pulse dot */
+      @keyframes ping-slow {
+        75%,
+        100% {
+          transform: scale(2);
+          opacity: 0;
+        }
+      }
+      .animate-ping-slow {
+        animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+      }
+    </style>
+  </head>
+  <body class="font-body-sm bg-surface-dark min-h-screen flex flex-col antialiased page-fade-in">
+    <!-- TopNavBar -->
+    <nav
+      class="fixed top-0 w-full z-50 bg-surface-dark/60 backdrop-blur-xl border-b border-outline-cyan/10 transition-all duration-300 ease-out"
+      id="navbar"
+    >
+      <div class="flex justify-between items-center px-grid-margin py-4 max-w-[1440px] mx-auto">
+        <div class="flex items-center gap-4">
+          <img
+            alt="EyeX Technologies Logo"
+            class="h-12 w-auto object-contain"
+            src="https://lh3.googleusercontent.com/aida/AP1WRLs1qz4AaLkAH4Xn1ZBLnjwOzn1wjUTiRGqiiQL1m0Hvnk8B0-boRiHU619fZwDvtb6w43g5gm1WM9XUKu-FGBsz7czQNUz3s3ehwlNjuWZuxCnEnc2t-91RQ9Sy1sVJWlXzomH3aSW4rHKBxPC8P3YhmoDubRYhfcbaBNihFbU8axjV_MgfxtC7dnNmB504ZNrlqhxOVO-KUjIYa1Q_ktPCWexauZMYl9WNOh-9rK24H_lxxLyTctcQsnM"
+          />
+          <span
+            class="text-body-lg font-headline-md font-bold tracking-tight text-on-surface dark:text-on-background"
+            >EyeX Technologies</span
+          >
+        </div>
+        <div class="hidden md:flex items-center gap-8">
+          <!-- Platform (Active Intent for Homepage) -->
+          <a
+            class="text-primary dark:text-primary-fixed-dim border-b-2 border-primary pb-1 text-label-caps font-label-caps uppercase transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20"
+            href="#"
+            >Platform</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container text-label-caps font-label-caps uppercase transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20"
+            href="#"
+            >Solutions</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container text-label-caps font-label-caps uppercase transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20"
+            href="#"
+            >Resources</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container text-label-caps font-label-caps uppercase transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20"
+            href="#"
+            >Pricing</a
+          >
+        </div>
+        <div class="flex items-center gap-4">
+          <a
+            class="text-on-surface-variant hover:text-primary transition-colors text-label-caps font-label-caps uppercase hidden sm:block"
+            href="#"
+            >Login</a
+          >
+          <button
+            class="bg-primary-container text-on-primary-container px-6 py-2 rounded font-label-caps text-label-caps uppercase hover:bg-primary-fixed-dim hover:scale-[1.02] transition-transform duration-300 shadow-[0px_0px_15px_rgba(0,229,255,0.2)]"
+          >
+            Book Demo
+          </button>
+        </div>
+      </div>
+    </nav>
+    <!-- Main Content Canvas -->
+    <main class="flex-grow pt-24 relative">
+      <!-- Hero Section with Shader -->
+      <section
+        class="relative min-h-[972px] flex items-center justify-center overflow-hidden px-grid-margin py-20 parallax-hero reveal-up"
+      >
+        <div class="absolute inset-0 z-0">
+          <!-- STITCH_SHADER_START:ANIMATION_65 class="absolute inset-0 w-full h-full opacity-70" -->
+          <div class="absolute inset-0 w-full h-full opacity-70" style="display: block">
+            <canvas
+              id="shader-canvas-ANIMATION_65"
+              style="display: block; width: 100%; height: 100%"
+            ></canvas>
+            <script>
+              (function () {
+                const canvas = document.getElementById("shader-canvas-ANIMATION_65");
+
+                // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+                // This fires on initial layout and whenever the element is resized.
+                function syncSize() {
+                  const w = canvas.clientWidth || 1280;
+                  const h = canvas.clientHeight || 720;
+                  if (canvas.width !== w || canvas.height !== h) {
+                    canvas.width = w;
+                    canvas.height = h;
+                  }
+                }
+                if (typeof ResizeObserver !== "undefined") {
+                  new ResizeObserver(syncSize).observe(canvas);
+                }
+                syncSize();
+
+                const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+                if (!gl) return;
+                const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+                const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+varying vec2 v_texCoord;
+
+float hash(vec2 p) {
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+}
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+}
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 center = uv - 0.5;
+    center.x *= u_resolution.x / u_resolution.y;
+    
+    // Neural flow base
+    float n = noise(uv * 3.0 + u_time * 0.1);
+    n += noise(uv * 6.0 - u_time * 0.15) * 0.5;
+    
+    // Tech Cyan colors
+    vec3 color1 = vec3(0.0, 0.898, 1.0); // Primary Tech Cyan
+    vec3 color2 = vec3(0.043, 0.078, 0.11); // Deep Surface
+    
+    // Pulse effect
+    float pulse = sin(u_time * 0.5) * 0.5 + 0.5;
+    float dist = length(center);
+    float glow = 0.02 / (dist + 0.1);
+    
+    // Combine layers
+    vec3 finalColor = mix(color2, color1, n * 0.15);
+    finalColor += color1 * glow * pulse * 0.3;
+    
+    // Mouse interaction
+    vec2 mouseNorm = u_mouse / u_resolution;
+    float mDist = length(uv - mouseNorm);
+    finalColor += color1 * (0.05 / (mDist + 0.2));
+
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+                function cs(type, src) {
+                  const s = gl.createShader(type);
+                  gl.shaderSource(s, src);
+                  gl.compileShader(s);
+                  return s;
+                }
+                const prog = gl.createProgram();
+                gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+                gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+                gl.linkProgram(prog);
+                gl.useProgram(prog);
+                const buf = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+                gl.bufferData(
+                  gl.ARRAY_BUFFER,
+                  new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+                  gl.STATIC_DRAW,
+                );
+                const pos = gl.getAttribLocation(prog, "a_position");
+                gl.enableVertexAttribArray(pos);
+                gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+                const uTime = gl.getUniformLocation(prog, "u_time");
+                const uRes = gl.getUniformLocation(prog, "u_resolution");
+                const uMouse = gl.getUniformLocation(prog, "u_mouse");
+
+                // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+                // Shaders that need normalized coords should use: u_mouse / u_resolution.
+                let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+                window.addEventListener("mousemove", (event) => {
+                  const rect = canvas.getBoundingClientRect();
+                  if (rect.width && rect.height) {
+                    const nx = (event.clientX - rect.left) / rect.width;
+                    const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+                    mouse.x = nx * canvas.width;
+                    mouse.y = ny * canvas.height;
+                  }
+                });
+
+                function render(t) {
+                  if (typeof ResizeObserver === "undefined") syncSize();
+                  gl.viewport(0, 0, canvas.width, canvas.height);
+                  if (uTime) gl.uniform1f(uTime, t * 0.001);
+                  if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+                  if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+                  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                  requestAnimationFrame(render);
+                }
+                render(0);
+              })();
+            </script>
+          </div>
+          <!-- STITCH_SHADER_END:ANIMATION_65 -->
+          <!-- STITCH_THREEJS_START:ANIMATION_66 class="absolute inset-0 w-full h-full opacity-60 z-10 pointer-events-auto" -->
+          <div
+            class="absolute inset-0 w-full h-full opacity-60 z-10 pointer-events-auto"
+            style="display: block"
+          >
+            <script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+            <div id="threejs-container-ANIMATION_66" style="width: 100%; height: 100%"></div>
+            <script>
+              (function () {
+                const container = document.getElementById("threejs-container-ANIMATION_66");
+                const devicePixelRatio = window.devicePixelRatio || 1;
+                const width = container.clientWidth || window.innerWidth;
+                const height = container.clientHeight || window.innerHeight;
+
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+                renderer.setSize(width, height);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                container.appendChild(renderer.domElement);
+
+                // Create Neural Node Group
+                const nodes = new THREE.Group();
+                scene.add(nodes);
+
+                const geometry = new THREE.SphereGeometry(0.05, 16, 16);
+                const material = new THREE.MeshBasicMaterial({ color: 0x00e5ff });
+
+                const count = 50;
+                const points = [];
+
+                for (let i = 0; i < count; i++) {
+                  const mesh = new THREE.Mesh(geometry, material);
+                  const pos = new THREE.Vector3(
+                    (Math.random() - 0.5) * 10,
+                    (Math.random() - 0.5) * 10,
+                    (Math.random() - 0.5) * 10,
+                  );
+                  mesh.position.copy(pos);
+                  nodes.add(mesh);
+                  points.push(pos);
+                }
+
+                // Lines connecting nodes
+                const lineMaterial = new THREE.LineBasicMaterial({
+                  color: 0x00e5ff,
+                  transparent: true,
+                  opacity: 0.2,
+                });
+                const lineGeometry = new THREE.BufferGeometry();
+                const linePositions = new Float32Array(count * 3 * 2);
+                lineGeometry.setAttribute("position", new THREE.BufferAttribute(linePositions, 3));
+                const line = new THREE.LineSegments(lineGeometry, lineMaterial);
+                scene.add(line);
+
+                camera.position.z = 5;
+
+                let mouseX = 0;
+                let mouseY = 0;
+
+                window.addEventListener("mousemove", (e) => {
+                  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+                  mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
+                });
+
+                window.addEventListener("resize", () => {
+                  const w = container.clientWidth || window.innerWidth;
+                  const h = container.clientHeight || window.innerHeight;
+                  camera.aspect = w / h;
+                  camera.updateProjectionMatrix();
+                  renderer.setSize(w, h);
+                });
+
+                function animate() {
+                  requestAnimationFrame(animate);
+
+                  nodes.rotation.y += 0.002;
+                  nodes.rotation.x += 0.001;
+
+                  nodes.position.x += (mouseX * 0.5 - nodes.position.x) * 0.05;
+                  nodes.position.y += (mouseY * 0.5 - nodes.position.y) * 0.05;
+
+                  // Dynamic lines
+                  const positions = line.geometry.attributes.position.array;
+                  let idx = 0;
+                  for (let i = 0; i < nodes.children.length; i++) {
+                    for (let j = i + 1; j < nodes.children.length; j++) {
+                      const d = nodes.children[i].position.distanceTo(nodes.children[j].position);
+                      if (d < 3) {
+                        const p1 = nodes.children[i].position;
+                        const p2 = nodes.children[j].position;
+                        positions[idx++] = p1.x;
+                        positions[idx++] = p1.y;
+                        positions[idx++] = p1.z;
+                        positions[idx++] = p2.x;
+                        positions[idx++] = p2.y;
+                        positions[idx++] = p2.z;
+                      }
+                    }
+                  }
+                  line.geometry.attributes.position.needsUpdate = true;
+
+                  renderer.render(scene, camera);
+                }
+
+                animate();
+              })();
+            </script>
+          </div>
+          <!-- STITCH_THREEJS_END:ANIMATION_66 -->
+          <div
+            class="absolute inset-0 bg-gradient-to-b from-surface-dark/20 via-surface-dark/40 to-surface-dark z-10 pointer-events-none"
+          ></div>
+        </div>
+        <div
+          class="relative z-20 max-w-[1440px] mx-auto text-center flex flex-col items-center gap-6 reveal-up"
+        >
+          <div
+            class="glass-panel px-5 py-2 rounded-full mb-2 inline-flex items-center gap-3 hover:scale-[1.02] transition-transform duration-300"
+          >
+            <div class="relative flex h-2 w-2">
+              <span
+                class="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"
+              ></span>
+              <span
+                class="relative inline-flex rounded-full h-2 w-2 bg-primary-container shadow-[0_0_8px_#00e5ff]"
+              ></span>
+            </div>
+            <span
+              class="text-data-mono font-data-mono text-primary-container uppercase tracking-widest text-[10px] font-bold"
+              >V4.2 Intelligence Engine Deployed</span
+            >
+          </div>
+          <h1
+            class="text-display-lg font-display-lg font-bold text-on-background max-w-5xl tracking-tighter leading-[1.1] sm:leading-[1.05]"
+          >
+            The Enterprise AI <br />
+            <span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-primary-container via-blue-400 to-primary-container text-glow"
+              >Operating System</span
+            >
+          </h1>
+          <p
+            class="text-[20px] sm:text-[24px] font-headline-md-mobile text-on-surface-variant max-w-3xl font-normal leading-relaxed mt-4"
+          >
+            Orchestrate autonomous agents, analyze vast datasets, and deploy mission-critical AI
+            with unprecedented computational precision.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-6 mt-10">
+            <button
+              class="btn-glow bg-primary-container text-on-primary-container px-8 py-4 rounded font-label-caps text-label-caps uppercase transition-transform duration-300 hover:scale-[1.02] shadow-[0px_0px_20px_rgba(0,229,255,0.3)] flex items-center justify-center gap-2 relative z-10"
+            >
+              Book a Demo
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+            <button
+              class="glass-panel px-8 py-4 rounded font-label-caps text-label-caps uppercase text-on-background hover:text-primary-container hover:scale-[1.02] transition-transform duration-300 flex items-center justify-center gap-2"
+            >
+              View Architecture
+              <span class="material-symbols-outlined text-[18px]">account_tree</span>
+            </button>
+          </div>
+        </div>
+      </section>
+      <!-- Live Metrics Counter Bar -->
+      <section
+        class="border-y border-outline-cyan/10 bg-surface-dark/80 backdrop-blur-md relative z-30 -mt-10 reveal-up"
+      >
+        <div
+          class="max-w-[1440px] mx-auto px-grid-margin py-6 flex flex-wrap justify-center gap-12 sm:gap-24"
+        >
+          <div class="flex flex-col items-center">
+            <span
+              class="text-[32px] font-display-lg font-bold text-primary-container tracking-tight"
+              >12.5 TB/s</span
+            >
+            <span
+              class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px] tracking-widest"
+              >Data Ingested</span
+            >
+          </div>
+          <div class="flex flex-col items-center">
+            <span
+              class="text-[32px] font-display-lg font-bold text-primary-container tracking-tight"
+              >1.2M+</span
+            >
+            <span
+              class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px] tracking-widest"
+              >Active Agents</span
+            >
+          </div>
+          <div class="flex flex-col items-center hidden sm:flex">
+            <span
+              class="text-[32px] font-display-lg font-bold text-primary-container tracking-tight"
+              >99.999%</span
+            >
+            <span
+              class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px] tracking-widest"
+              >Uptime SLA</span
+            >
+          </div>
+        </div>
+      </section>
+      <!-- Customer Proof & Trust Marquee -->
+      <section
+        class="py-16 overflow-hidden bg-surface-dark relative z-20 border-b border-outline-cyan/5 reveal-up"
+      >
+        <p
+          class="text-center text-data-mono font-data-mono text-on-surface-variant uppercase text-[11px] tracking-[0.2em] mb-8"
+        >
+          Trusted by Global Enterprise
+        </p>
+        <div
+          class="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
+        >
+          <div
+            class="flex items-center justify-center md:justify-start [&amp;_img]:max-w-none gap-24 animate-marquee pr-24"
+          >
+            <!-- Repeated logos for infinite effect -->
+            <img
+              alt="NVIDIA"
+              class="h-6 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 filter brightness-200"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxBydywNa5L3QetcSCXnmE9YQdVnI44ZZfra_Rhma6Cf7G6Es1bW-wUmSaM8lkzzFqCPw6oSG3kdFXeWfr48Kb8WgNrOLBjiRzgPA4nHpevijp2k0F8l0Vg9AnQk2yuPKBikpVpQq9S1uttV791gJ7B6uLlnLFa7IrbqPeRAjX4iIX3yH-9iL6T27e7t3jIVZ4ur8a6JfmYWtEXG9_ABw82JxU-g3Iq69dg1FrtHcdLAAXVs5vC3Q6fJeQGTHcyj3JwYIo_tdZfow"
+            />
+            <img
+              alt="Microsoft"
+              class="h-7 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 filter brightness-200"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuALwuvK7UyjA8u3hYQHiNmEWEOu6ZdemDa7Ban-oeq-Nopt3X4V81GIWKQ1944JQFJ3ihsMKVfagvY-mo5LOqv1bxpxVWCBr1qtNLNJmSiEo3dLs6K7fTJlh5ikSR0sywxcY2SUjQ7ViXljqKkK1gkDug3qSUKxrm4431v6MW65U7jr9iM88rumapHpFTiiyaH6Fh7E-gxnHW_OyI3trfTvbP4bXL4N5SqSyJYXxQRWdCVmTpGhTO6hyervvtm701fiS6MU3odQDfc"
+            />
+            <img
+              alt="Palantir"
+              class="h-6 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 filter brightness-200"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnU-y0GDu1Jta_LulRMWSGiAIAntti05VntYa6xlXcA96OTodoJQBMrCW9pFx7qtZSEM-6olZvEZrakjBaYCFlvPowaWwRRtC_v0rk_KebF_wbEyxN5oHv-76Xx8Ux4U_MvR7Ptx_KkBbcV09J2uDS52fcWdkVqwny5dA4U2JJeEexnc_JLiIlksAkyX-12Cv796uBfSFTt-zrUTA6eC7wZvxanZdvuQTRyn-29ptGi0Rf_zGiIee2nY9biLHbglNrhiedZzsohzo"
+            />
+            <img
+              alt="Snowflake"
+              class="h-7 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 filter brightness-200"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBinXH7atwu34ohiob8_ixXOwckh2Wu_V0nQehZkNufGsVqynHIvvB3RTg4zau3b-hAzVJbelL_i3C4UB6zYf-itlhndHQtkT1D27bD7pJwDzNGZNV74vJH8w-SIe8E7OSUy4c4xKeDDAv8VR_FM-Ulo3ch2njo0TI3L6IiNb7VzSIalXGjK1_Nj9kd39cZ1RaDkdpqCA9NRz7WR7arLfx0Lz95N8KnOrb9sI2oiKHwnGjK_UHM3A1eK1FQGZItznTuLn2WIKzS7Vc"
+            />
+            <img
+              alt="NVIDIA"
+              class="h-6 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 filter brightness-200"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpYLPxL42CcW5Jb_X-PHXUS0Y7zcuqEYarh66XB6iTU5JZU6Xsu4kPSKZXVxoUeuZODmdEAfQRr7C2aS8LimhiSb_7XMYbv_BdpKtF7zLnxPldbCF_i6HI-WkerES7kaVCtLzA0L7hvwSUOHeEMoEs59ip94_sRbP2gKrp3AlwlIUha8Say4QA-YHdxeJ9yN3puV1eH7nugDDcXM5zrK8cW83H_oDJ-Ipl0RADfmNmzPLAbKoK-yYcX-hB57rxt0BfokFjVn5ji80"
+            />
+            <img
+              alt="Microsoft"
+              class="h-7 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 filter brightness-200"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBt1nj99FNn0_DTdm_ijtb1KLEKM3yDv55QqOKk3AJNa7XNbxquigPsZJnzntL-sxkonZosOS-j88SIefz5zEr0DrCTpTT9l703QU_cgB6_v9FPJ1EIWe2XijgcavbUKmFDjQ4_z6SCC-a9E-6sfZj-WPo2K1mbot_UNshJgPi-fk8G0282GuDsMpGpH414XI_GQij2fQWs962uGcms9EWEfP_P5B0sTpu9CCWA8TgEo2j87yJqVevze6HNcrSMXCxX7cHmZvQ_mFw"
+            />
+            <img
+              alt="Palantir"
+              class="h-6 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 filter brightness-200"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu1ggTZ016foxxgoNCo2_dT2PXp6v2C6B2uVEOpKAacu3RIxF5Z9tEzfq6Hw_HtP2Ls4zesr2_J_G3dzJEZqVd_-kYSRHv8jjGtVqTd2E1Zj_A2LtRGeFrwtZUZFimAVYl9SBePUm8Nv9u3-jnEATvqkPqxX_QU7rVt5fuAGEkFvV7kD34Z4P4LdvdnqWruiSMkLQWXKOUF3800GCRLZxvQ4LkgJr-Fr9-dLZb1B5dY_nFPUo360eSbD6wGj8PCbSZtL527V-dbOA"
+            />
+            <img
+              alt="Snowflake"
+              class="h-7 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 filter brightness-200"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2FSnsLk9FbdN28ccfSHOvqgxpqzAOZgmtpFB11HfPvGntq0AHWlGOHHqWQUcyPcEJnBG_nkvvfFyLCpGITK08g40btN478_93t-1V05PvMLh69yKbomts_biKVfLrmWFrxfRASw-1ZY-VlmKXYlpIYdf47wGwhOWJBkkggKuFH-UG8llI_ITpGmOwayCWEV9tzZx60MYAg2ktRfIl1RRJshcsOXTSXFZQ_KQKPwHsCHBrsw7vH0lmQMnf7pVkdSGcOr07zvAlMaE"
+            />
+          </div>
+        </div>
+      </section>
+      <!-- Interactive Product Preview (Command Center) -->
+      <section class="py-24 px-grid-margin max-w-[1440px] mx-auto relative z-20 reveal-up">
+        <div class="mb-12 text-center reveal-up">
+          <h2 class="text-[40px] font-display-lg text-on-background font-bold tracking-tight">
+            Command Center
+          </h2>
+          <p class="text-[18px] font-body-lg text-on-surface-variant mt-4 max-w-2xl mx-auto">
+            Real-time observability and control over your entire autonomous infrastructure.
+          </p>
+        </div>
+        <div
+          class="glass-panel rounded-2xl border border-outline-cyan/20 p-2 md:p-4 reveal-up shadow-2xl shadow-primary-container/10 hover:scale-[1.02] transition-transform duration-300"
+        >
+          <div
+            class="bg-surface rounded-xl overflow-hidden border border-outline-variant/30 relative flex flex-col h-[600px]"
+          >
+            <!-- Header bar -->
+            <div
+              class="h-12 border-b border-outline-variant/30 flex items-center px-4 justify-between bg-surface-bright/20"
+            >
+              <div class="flex gap-2">
+                <div class="w-3 h-3 rounded-full bg-outline-variant/50"></div>
+                <div class="w-3 h-3 rounded-full bg-outline-variant/50"></div>
+                <div class="w-3 h-3 rounded-full bg-outline-variant/50"></div>
+              </div>
+              <div
+                class="text-data-mono text-[11px] text-on-surface-variant flex items-center gap-2"
+              >
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                CLUSTER STATUS: HEALTHY
+              </div>
+            </div>
+            <!-- Dashboard Mockup -->
+            <div class="flex-grow flex flex-col md:flex-row">
+              <!-- Sidebar -->
+              <div
+                class="w-full md:w-64 border-r border-outline-variant/30 p-4 flex flex-col gap-4"
+              >
+                <div class="h-8 bg-surface-bright/40 rounded w-full"></div>
+                <div class="h-8 bg-surface-bright/20 rounded w-3/4"></div>
+                <div class="h-8 bg-surface-bright/20 rounded w-5/6"></div>
+                <div class="h-8 bg-surface-bright/20 rounded w-2/3"></div>
+              </div>
+              <!-- Main Area -->
+              <div class="flex-grow p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div
+                  class="border border-outline-cyan/20 rounded-lg p-4 bg-primary-container/5 relative overflow-hidden"
+                >
+                  <div class="text-data-mono text-[10px] text-primary-container mb-2">
+                    AGENT SWARM METRICS
+                  </div>
+                  <div class="flex items-end gap-2 h-32 mt-4">
+                    <!-- Bars -->
+                    <div class="w-1/6 bg-outline-cyan/30 h-[40%] rounded-t"></div>
+                    <div class="w-1/6 bg-outline-cyan/50 h-[60%] rounded-t"></div>
+                    <div class="w-1/6 bg-primary-container/80 h-[90%] rounded-t relative">
+                      <div
+                        class="absolute -top-6 left-1/2 -translate-x-1/2 text-data-mono text-[10px] text-primary-container"
+                      >
+                        PEAK
+                      </div>
+                    </div>
+                    <div class="w-1/6 bg-outline-cyan/60 h-[70%] rounded-t"></div>
+                    <div class="w-1/6 bg-outline-cyan/40 h-[50%] rounded-t"></div>
+                  </div>
+                </div>
+                <div
+                  class="border border-outline-variant/30 rounded-lg p-4 flex flex-col justify-between"
+                >
+                  <div class="text-data-mono text-[10px] text-on-surface-variant mb-2">
+                    LIVE TERMINAL
+                  </div>
+                  <div class="font-data-mono text-[11px] text-secondary space-y-2 opacity-80">
+                    <div class="">
+                      <span class="text-primary-container">&gt;</span> Executing distributed
+                      workload...
+                    </div>
+                    <div class="">
+                      <span class="text-primary-container">&gt;</span> Nodes assigned: 1,024
+                    </div>
+                    <div class="">
+                      <span class="text-primary-container">&gt;</span> Processing tensors [||||||||
+                      ] 80%
+                    </div>
+                    <div class="animate-pulse">_</div>
+                  </div>
+                </div>
+                <div
+                  class="md:col-span-2 border border-outline-variant/30 rounded-lg p-4 h-48 flex items-center justify-center relative overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMzYjQ5NGMiIGZpbGwtb3BhY2l0eT0iMC4yIi8+PC9zdmc+')]"
+                >
+                  <div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+                  <div class="relative z-10 flex items-center gap-12">
+                    <!-- Abstract Nodes -->
+                    <div class="flex flex-col items-center gap-2">
+                      <div
+                        class="w-12 h-12 rounded-full border-2 border-outline-cyan flex items-center justify-center bg-surface relative"
+                      >
+                        <span
+                          class="absolute w-full h-full rounded-full border border-primary-container animate-ping-slow"
+                        ></span>
+                        <span class="material-symbols-outlined text-primary-container text-[20px]"
+                          >database</span
+                        >
+                      </div>
+                    </div>
+                    <div class="w-24 h-[2px] bg-outline-cyan/50 relative overflow-hidden">
+                      <div
+                        class="absolute top-0 left-0 h-full w-1/3 bg-primary-container animate-[marquee_2s_linear_infinite]"
+                      ></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                      <div
+                        class="w-16 h-16 rounded-full border-2 border-primary-container shadow-[0_0_15px_rgba(0,229,255,0.3)] flex items-center justify-center bg-surface"
+                      >
+                        <span class="material-symbols-outlined text-primary-container text-[28px]"
+                          >memory</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Product Storytelling: Agentic Lifecycle -->
+      <section class="py-24 px-grid-margin max-w-[1440px] mx-auto relative z-20 reveal-up">
+        <div class="mb-16 text-center reveal-up">
+          <h2 class="text-[40px] font-display-lg text-on-background font-bold tracking-tight">
+            The Agentic Lifecycle
+          </h2>
+          <p class="text-[18px] font-body-lg text-on-surface-variant mt-4 max-w-2xl mx-auto">
+            Seamlessly move from raw data integration to fully autonomous operations.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Connect -->
+          <div
+            class="glass-panel rounded-2xl p-8 reveal-up hover:scale-[1.02] transition-transform duration-300"
+          >
+            <div
+              class="w-14 h-14 rounded-xl bg-surface-bright border border-outline-variant flex items-center justify-center mb-6"
+            >
+              <span class="material-symbols-outlined text-primary-container text-[28px]"
+                >cable</span
+              >
+            </div>
+            <h3 class="text-[24px] font-headline-md font-semibold text-on-background mb-3">
+              1. Connect
+            </h3>
+            <p class="text-body-lg text-on-surface-variant leading-relaxed">
+              Ingest structured and unstructured data from any enterprise source. Our dynamic
+              connectors instantly map and vectorize knowledge.
+            </p>
+          </div>
+          <!-- Orchestrate -->
+          <div
+            class="glass-panel rounded-2xl p-8 reveal-up hover:scale-[1.02] transition-transform duration-300 delay-100"
+          >
+            <div
+              class="w-14 h-14 rounded-xl bg-surface-bright border border-outline-variant flex items-center justify-center mb-6 relative"
+            >
+              <div class="absolute inset-0 bg-primary-container/20 blur-md rounded-xl"></div>
+              <span
+                class="material-symbols-outlined text-primary-container text-[28px] relative z-10"
+                >hub</span
+              >
+            </div>
+            <h3 class="text-[24px] font-headline-md font-semibold text-on-background mb-3">
+              2. Orchestrate
+            </h3>
+            <p class="text-body-lg text-on-surface-variant leading-relaxed">
+              Define multi-agent workflows. Allocate cognitive resources, set guardrails, and let
+              neural nodes collaborate to solve complex problems.
+            </p>
+          </div>
+          <!-- Automate -->
+          <div
+            class="glass-panel rounded-2xl p-8 reveal-up hover:scale-[1.02] transition-transform duration-300 delay-200 border-primary-container/30"
+          >
+            <div
+              class="w-14 h-14 rounded-xl bg-primary-container/10 border border-primary-container/50 flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(0,229,255,0.2)]"
+            >
+              <span class="material-symbols-outlined text-primary-container text-[28px]"
+                >smart_toy</span
+              >
+            </div>
+            <h3 class="text-[24px] font-headline-md font-semibold text-on-background mb-3">
+              3. Automate
+            </h3>
+            <p class="text-body-lg text-on-surface-variant leading-relaxed">
+              Deploy self-healing, autonomous agents into production. Monitor execution and scale
+              infinitely with zero-trust security.
+            </p>
+          </div>
+        </div>
+      </section>
+      <!-- Ecosystem Bento Grid -->
+      <section class="py-24 px-grid-margin max-w-[1440px] mx-auto relative z-20 reveal-up">
+        <div class="mb-16 reveal-up">
+          <h2 class="text-[32px] font-headline-md text-on-background font-bold">
+            Platform Capabilities
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-grid-gutter auto-rows-[240px]">
+          <!-- Card 1 -->
+          <div
+            class="glass-panel rounded-xl p-6 flex flex-col justify-between md:col-span-2 reveal-up relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300"
+          >
+            <div
+              class="absolute right-0 top-0 w-64 h-64 bg-primary-container/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 group-hover:bg-primary-container/10 transition-colors"
+            ></div>
+            <div>
+              <div class="flex items-center gap-2 mb-4">
+                <span
+                  class="material-symbols-outlined text-primary-container"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >analytics</span
+                >
+                <span
+                  class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px]"
+                  >Data Synthesizer</span
+                >
+              </div>
+              <h3
+                class="text-headline-md-mobile font-headline-md-mobile text-on-background font-semibold"
+              >
+                Real-time Ingestion Pipeline
+              </h3>
+            </div>
+            <div
+              class="h-24 w-full bg-gradient-to-r from-transparent via-primary-container/20 to-transparent flex items-center justify-center relative"
+            >
+              <!-- Abstract Data Vis Placeholder -->
+              <div class="w-full h-[1px] bg-outline-cyan absolute top-1/2"></div>
+              <div
+                class="w-2 h-2 rounded-full bg-primary-container absolute top-1/2 -mt-[3.5px] left-1/4 shadow-[0_0_10px_#00e5ff]"
+              ></div>
+              <div
+                class="w-2 h-2 rounded-full bg-primary-container absolute top-1/2 -mt-[3.5px] left-3/4 shadow-[0_0_10px_#00e5ff]"
+              ></div>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div
+            class="glass-panel rounded-xl p-6 flex flex-col justify-between reveal-up group delay-100 hover:scale-[1.02] transition-transform duration-300"
+          >
+            <div>
+              <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined text-primary-container">shield_locked</span>
+                <span
+                  class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px]"
+                  >Security Node</span
+                >
+              </div>
+              <h3 class="text-body-lg font-body-lg text-on-background font-semibold">
+                Zero-Trust Framework
+              </h3>
+            </div>
+            <div class="flex justify-between items-end">
+              <span
+                class="text-[48px] font-display-lg text-primary-container leading-none font-bold"
+                >99<span class="text-body-lg">%</span></span
+              >
+              <span class="text-data-mono font-data-mono text-on-surface-variant mb-1"
+                >THREAT MITIGATION</span
+              >
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div
+            class="glass-panel rounded-xl p-6 flex flex-col justify-between reveal-up group hover:scale-[1.02] transition-transform duration-300"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary-container">memory</span>
+                  <span
+                    class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px]"
+                    >Compute</span
+                  >
+                </div>
+                <span
+                  class="px-2 py-0.5 bg-primary-container/10 border border-outline-cyan rounded text-[9px] text-primary-container font-data-mono font-bold"
+                  >SCALING</span
+                >
+              </div>
+              <h3 class="text-body-lg font-body-lg text-on-background font-semibold">
+                Dynamic Allocation
+              </h3>
+            </div>
+            <div class="h-16 w-full flex items-end gap-1">
+              <div class="w-1/5 bg-outline-cyan h-1/4 rounded-t-sm"></div>
+              <div class="w-1/5 bg-outline-cyan h-2/4 rounded-t-sm"></div>
+              <div
+                class="w-1/5 bg-primary-container h-full rounded-t-sm shadow-[0_0_15px_rgba(0,229,255,0.4)]"
+              ></div>
+              <div class="w-1/5 bg-outline-cyan h-3/4 rounded-t-sm"></div>
+              <div class="w-1/5 bg-outline-cyan h-2/4 rounded-t-sm"></div>
+            </div>
+          </div>
+          <!-- Card 4 -->
+          <div
+            class="glass-panel rounded-xl p-6 flex flex-col justify-between md:col-span-2 reveal-up relative overflow-hidden group delay-100 hover:scale-[1.02] transition-transform duration-300"
+          >
+            <div
+              class="absolute left-0 bottom-0 w-full h-1/2 bg-gradient-to-t from-primary-container/10 to-transparent"
+            ></div>
+            <div class="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="material-symbols-outlined text-primary-container">terminal</span>
+                  <span
+                    class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px]"
+                    >Mission Orchestration</span
+                  >
+                </div>
+                <h3
+                  class="text-headline-md-mobile font-headline-md-mobile text-on-background font-semibold"
+                >
+                  Visual Node Editor
+                </h3>
+              </div>
+              <div
+                class="bg-surface-dark border border-outline-variant/30 rounded p-4 font-data-mono text-data-mono text-secondary mt-4"
+              >
+                <span class="text-primary-container">&gt;</span> INITIALIZING AGENT SWARM...<br />
+                <span class="text-primary-container">&gt;</span> CONNECTING TO KAFKA STREAM [OK]<br />
+                <span class="text-primary-container">&gt;</span> DEPLOYING NLP MODELS [RUNNING]
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Deepened Footer -->
+    <footer
+      class="w-full pt-20 pb-10 border-t border-outline-variant/20 bg-surface-dark mt-10 relative z-20 reveal-up"
+    >
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-8 px-grid-margin max-w-[1440px] mx-auto">
+        <div class="col-span-2 flex flex-col gap-6 pr-8">
+          <div class="flex items-center gap-3">
+            <img
+              alt="EyeX Technologies Logo"
+              class="h-12 w-auto object-contain"
+              src="https://lh3.googleusercontent.com/aida/AP1WRLuZfWQhNiNX82iOQixL9mEbc-NYRq9ncqXHKRWY0FpIp0UtYQF8CqwjkDaji_wptL4lx0mMvFRJ38N9ShoQY94ETz5gz4-KP7drGQvFUHDg2lu1PlBzSmSN0wEbkSXIvqnvGG6VrqTWZX2a07oXoZWqELawH1Aol2KKJGOCfp5cteVrPUPVWA55sg6WAqCa7LWfWpqYMO2LxOJaQr2HcHT0tUzxEzQz_ub0MIoe0ysmjJOWsWEJRvlihqE"
+            />
+            <span
+              class="text-headline-md font-headline-md text-on-surface dark:text-on-background text-[24px] font-bold tracking-tight"
+              >EyeX</span
+            >
+          </div>
+          <p
+            class="text-body-sm font-body-sm text-on-surface-variant max-w-sm mt-2 leading-relaxed"
+          >
+            Intelligence defined. Building the foundational layer for enterprise AI automation and
+            cognitive operations. Shaping the autonomous future.
+          </p>
+          <div class="flex gap-4 mt-4">
+            <a
+              class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-on-surface-variant hover:text-primary-container hover:scale-[1.02] transition-transform duration-300"
+              href="#"
+            >
+              <span class="material-symbols-outlined text-[20px]">link</span>
+            </a>
+            <a
+              class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-on-surface-variant hover:text-primary-container hover:scale-[1.02] transition-transform duration-300"
+              href="#"
+            >
+              <span class="material-symbols-outlined text-[20px]">code</span>
+            </a>
+          </div>
+        </div>
+        <div class="flex flex-col gap-4">
+          <span
+            class="text-label-caps font-label-caps uppercase text-on-background tracking-wider mb-2 font-bold"
+            >Product</span
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Platform Overview</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Command Center</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Agent Swarms</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Security Engine</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Pricing</a
+          >
+        </div>
+        <div class="flex flex-col gap-4">
+          <span
+            class="text-label-caps font-label-caps uppercase text-on-background tracking-wider mb-2 font-bold"
+            >Solutions</span
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Financial Services</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Healthcare</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Supply Chain</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Cybersecurity</a
+          >
+        </div>
+        <div class="flex flex-col gap-4">
+          <span
+            class="text-label-caps font-label-caps uppercase text-on-background tracking-wider mb-2 font-bold"
+            >Resources</span
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Documentation</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >API Reference</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Blog &amp; Updates</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Community</a
+          >
+        </div>
+        <div class="flex flex-col gap-4">
+          <span
+            class="text-label-caps font-label-caps uppercase text-on-background tracking-wider mb-2 font-bold"
+            >Company</span
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >About Us</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Careers</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Contact Sales</a
+          >
+          <a
+            class="text-[15px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Partners</a
+          >
+        </div>
+      </div>
+      <div
+        class="px-grid-margin max-w-[1440px] mx-auto mt-16 pt-8 border-t border-outline-variant/20 flex flex-col md:flex-row justify-between items-center gap-4"
+      >
+        <p class="text-data-mono font-data-mono text-on-surface-variant text-[11px] tracking-wider">
+          © 2024 EyeX Technologies. Intelligence defined.
+        </p>
+        <div class="flex gap-6">
+          <a
+            class="text-[13px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Privacy Policy</a
+          >
+          <a
+            class="text-[13px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Terms of Service</a
+          >
+          <a
+            class="text-[13px] font-body-sm text-on-surface-variant hover:text-primary-container transition-colors"
+            href="#"
+            >Trust &amp; Security</a
+          >
+        </div>
+      </div>
+    </footer>
+    <script>
+      // Intersection Observer for Scroll Reveals
+      document.addEventListener("DOMContentLoaded", () => {
+        const observerOptions = {
+          root: null,
+          rootMargin: "0px",
+          threshold: 0.1,
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("active");
+              // Optional: stop observing once revealed
+              // observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+
+        const reveals = document.querySelectorAll(".reveal-up");
+        reveals.forEach((el) => observer.observe(el));
+
+        // Subtle Mouse Parallax for Hero
+        const heroSection = document.querySelector(".parallax-hero");
+        const heroContent = heroSection.querySelector(".z-20");
+
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+        if (!prefersReducedMotion.matches) {
+          heroSection.addEventListener("mousemove", (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 50;
+            const y = (window.innerHeight / 2 - e.pageY) / 50;
+
+            heroContent.style.transform = `translate(${x}px, ${y}px)`;
+          });
+
+          heroSection.addEventListener("mouseleave", () => {
+            heroContent.style.transform = `translate(0px, 0px)`;
+            heroContent.style.transition = `transform 0.5s ease-out`;
+          });
+
+          heroSection.addEventListener("mouseenter", () => {
+            heroContent.style.transition = `none`;
+          });
+        }
+
+        // Navbar blur transition on scroll
+        const navbar = document.getElementById("navbar");
+        window.addEventListener("scroll", () => {
+          if (window.scrollY > 20) {
+            navbar.classList.add("bg-surface-dark/80", "shadow-lg");
+            navbar.classList.remove("bg-surface-dark/60");
+          } else {
+            navbar.classList.add("bg-surface-dark/60");
+            navbar.classList.remove("bg-surface-dark/80", "shadow-lg");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

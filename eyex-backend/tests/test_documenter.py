@@ -1,10 +1,14 @@
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.agents.documenter import DocumentationAgent, DocumentationOutput, DocFile, create_documentation_agent
+from app.agents.documenter import (
+    DocFile,
+    DocumentationOutput,
+    create_documentation_agent,
+)
 
 
 def test_documenter_schema():

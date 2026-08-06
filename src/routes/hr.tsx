@@ -5,12 +5,12 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 export const Route = createFileRoute("/hr")({
   head: () => ({
     meta: [
-      { title: "Human Resources | EyeX Technologies" },
+      { title: "Human Resources | Cerefy" },
       {
         name: "description",
         content: "Employee and HR management with intelligent workforce insights.",
       },
-      { property: "og:title", content: "Human Resources | EyeX Technologies" },
+      { property: "og:title", content: "Human Resources | Cerefy" },
       {
         property: "og:description",
         content: "Employee and HR management with intelligent workforce insights.",

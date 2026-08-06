@@ -5,7 +5,7 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 export const Route = createFileRoute("/agents")({
   head: () => ({
     meta: [
-      { title: "Agent Management | EyeX Technologies" },
+      { title: "Agent Management | Cerefy" },
       { name: "description", content: "Configure and monitor AI agents" },
     ],
   }),

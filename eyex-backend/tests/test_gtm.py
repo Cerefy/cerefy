@@ -5,8 +5,8 @@ import pytest
 from app.api.v1.gtm import gtm_router
 from app.models.gtm import IndustryVertical, LeadSource
 from app.services.gtm_industry import INDUSTRY_PLAYBOOKS
-from app.services.gtm_proof import ROICalculatorService, CaseStudyService
-from app.services.gtm_sales import LeadScoringEngine, DemoWorkflowService
+from app.services.gtm_proof import ROICalculatorService
+from app.services.gtm_sales import DemoWorkflowService, LeadScoringEngine
 
 
 class TestGTMRouterImport:

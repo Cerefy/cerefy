@@ -6,13 +6,13 @@ L'audit completo del progetto EyeX Technologies rivela un'architettura di base s
 
 L'applicazione frontend utilizza React 19 con Vite, affidandosi a TanStack Router per la navigazione e a TanStack Query per la gestione dello stato. Il design system è implementato utilizzando Tailwind CSS e componenti Radix UI tramite shadcn/ui. Tuttavia, il processo di compilazione fallisce a causa di 71 errori TypeScript critici.
 
-Il problema principale risiede nel componente `DataTable` situato in `src/components/common/primitives.tsx`. La definizione del tipo per la proprietà `render` non è compatibile con i dati passati dai vari componenti della pagina, causando errori a cascata in sezioni fondamentali come la fatturazione, la gestione delle attività e i report. Inoltre, le interfacce definite nel file `src/pages/DataSources.tsx` mancano di proprietà essenziali come `file_size` e `file_type`, che vengono invece richieste durante il rendering. 
+Il problema principale risiede nel componente `DataTable` situato in `src/components/common/primitives.tsx`. La definizione del tipo per la proprietà `render` non è compatibile con i dati passati dai vari componenti della pagina, causando errori a cascata in sezioni fondamentali come la fatturazione, la gestione delle attività e i report. Inoltre, le interfacce definite nel file `src/pages/DataSources.tsx` mancano di proprietà essenziali come `file_size` e `file_type`, che vengono invece richieste durante il rendering.
 
 Un'altra criticità riguarda l'integrazione con il backend. Il servizio `BackendApi` nel frontend richiama metodi, come `deleteConversation`, che non sono definiti o esposti correttamente. Analogamente, le chiamate RPC a Supabase, come `ensure_organization` nel componente delle impostazioni, generano errori di validazione dei tipi.
 
 ## Stato del Backend
 
-Il backend è strutturato in modo modulare utilizzando FastAPI, con SQLAlchemy per la gestione del database e Alembic per le migrazioni. L'architettura AI è basata su LangChain e LangGraph, progettata per orchestrare agenti multipli sotto la supervisione di un agente principale. 
+Il backend è strutturato in modo modulare utilizzando FastAPI, con SQLAlchemy per la gestione del database e Alembic per le migrazioni. L'architettura AI è basata su LangChain e LangGraph, progettata per orchestrare agenti multipli sotto la supervisione di un agente principale.
 
 Nonostante l'architettura sia ben delineata, vi è un evidente disallineamento tra gli endpoint esposti e le chiamate effettuate dal frontend. Ad esempio, le funzionalità di gestione delle conversazioni e di integrazione dei dati cognitivi ("Cognitive Data Layer") sono implementate a livello di logica di business, ma non sono completamente accessibili o testate attraverso l'interfaccia utente.
 
@@ -22,12 +22,12 @@ Il database Supabase ospita attualmente 31 tabelle che coprono diverse aree azie
 
 Un problema critico riguarda la sicurezza dei dati. Le policy di Row Level Security (RLS) attualmente implementate per molte tabelle (identificate con il nome `org_access`) sono configurate con la condizione `true`. Questo significa che non vi è alcuna restrizione effettiva sull'accesso ai dati, compromettendo l'isolamento necessario in un'architettura multi-tenant.
 
-| Area | Stato Attuale | Criticità Identificate |
-|------|---------------|------------------------|
-| **Frontend** | React 19, Vite, TanStack | 71 errori TypeScript, disallineamento tipi `DataTable` |
-| **Backend** | FastAPI, LangGraph | Endpoint API non allineati con il frontend |
-| **Database** | Supabase (31 tabelle) | RLS inefficaci, tabelle AI/Enterprise mancanti |
-| **Infrastruttura**| Cloudflare Workers | Errori di build bloccano il deployment |
+| Area               | Stato Attuale            | Criticità Identificate                                 |
+| ------------------ | ------------------------ | ------------------------------------------------------ |
+| **Frontend**       | React 19, Vite, TanStack | 71 errori TypeScript, disallineamento tipi `DataTable` |
+| **Backend**        | FastAPI, LangGraph       | Endpoint API non allineati con il frontend             |
+| **Database**       | Supabase (31 tabelle)    | RLS inefficaci, tabelle AI/Enterprise mancanti         |
+| **Infrastruttura** | Cloudflare Workers       | Errori di build bloccano il deployment                 |
 
 ## Stato dell'Infrastruttura
 

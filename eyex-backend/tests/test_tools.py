@@ -20,7 +20,7 @@ from app.agents.tools.file_tools import (
     write_file,
 )
 from app.agents.tools.github_tools import github_get_repo, github_list_issues, github_search_repos
-from app.agents.tools.registry import ToolRegistry, get_registry
+from app.agents.tools.registry import get_registry
 from app.agents.tools.web_tools import web_fetch, web_search
 
 
@@ -335,8 +335,9 @@ class TestDBTools:
 
 class TestAgentToolIntegration:
     async def test_planner_tools_from_agent(self):
-        from app.agents.planner import PlannerAgent
         from unittest.mock import MagicMock
+
+        from app.agents.planner import PlannerAgent
 
         agent = PlannerAgent(llm=MagicMock())
         tools = agent.tools
@@ -348,8 +349,9 @@ class TestAgentToolIntegration:
         assert "list_directory" in names
 
     async def test_coder_tools_from_agent(self):
-        from app.agents.coder import CodingAgent
         from unittest.mock import MagicMock
+
+        from app.agents.coder import CodingAgent
 
         agent = CodingAgent(llm=MagicMock())
         tools = agent.tools
@@ -360,8 +362,9 @@ class TestAgentToolIntegration:
         assert "edit_file" in names
 
     async def test_devops_tools_from_agent(self):
-        from app.agents.devops import DevOpsAgent
         from unittest.mock import MagicMock
+
+        from app.agents.devops import DevOpsAgent
 
         agent = DevOpsAgent(llm=MagicMock())
         tools = agent.tools
@@ -372,8 +375,9 @@ class TestAgentToolIntegration:
         assert "github_list_branches" in names
 
     async def test_agent_execute_no_tools(self):
+        from unittest.mock import MagicMock
+
         from app.agents.planner import PlannerAgent
-        from unittest.mock import MagicMock, AsyncMock
 
         agent = PlannerAgent(llm=MagicMock())
         result = await agent.execute("test", session_id=None)
@@ -381,8 +385,9 @@ class TestAgentToolIntegration:
         assert hasattr(result, "plan")
 
     async def test_base_execute_with_tools_calls_tool_loop(self):
+        from unittest.mock import MagicMock
+
         from app.agents.coder import CodingAgent
-        from unittest.mock import MagicMock, patch
 
         mock_llm = MagicMock()
         # Mock the LLM to return a response without tool calls
@@ -397,8 +402,9 @@ class TestAgentToolIntegration:
         assert result is not None
 
     async def test_tool_loop_with_tools_returns_context(self):
+        from unittest.mock import AsyncMock, MagicMock
+
         from app.agents.coder import CodingAgent
-        from unittest.mock import MagicMock, AsyncMock
 
         mock_llm = MagicMock()
         mock_response_with_tools = MagicMock()

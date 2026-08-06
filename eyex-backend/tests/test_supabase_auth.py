@@ -60,7 +60,7 @@ class TestIsSupabaseToken:
         assert is_supabase_token(token) is False
 
 
-class TestDecodeSupabaseTokenLegacySecret(object):
+class TestDecodeSupabaseTokenLegacySecret:
     def test_hs256_shared_secret_success(self, monkeypatch):
         settings = supabase_auth.get_settings()
         monkeypatch.setattr(settings, "supabase_jwks_url", "", raising=False)

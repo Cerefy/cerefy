@@ -1,0 +1,774 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EyeX AI Agents Platform — Digital Workforce Directory</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary": "#3e2e00",
+              "on-secondary-fixed-variant": "#1820d9",
+              "on-secondary-fixed": "#00016d",
+              "on-primary-fixed": "#001f24",
+              "surface-container-high": "#242b2d",
+              tertiary: "#ffeac0",
+              "on-error": "#690005",
+              "on-tertiary-container": "#6f5500",
+              "on-primary-container": "#00626e",
+              "surface-container-highest": "#2e3638",
+              error: "#ffb4ab",
+              "on-tertiary-fixed": "#251a00",
+              "on-primary-fixed-variant": "#004f58",
+              "surface-container-lowest": "#080f11",
+              "on-primary": "#00363d",
+              "secondary-fixed": "#e0e0ff",
+              "outline-variant": "#3b494c",
+              "inverse-surface": "#dce4e5",
+              "surface-dim": "#0d1516",
+              "surface-container-low": "#151d1e",
+              "on-error-container": "#ffdad6",
+              "on-background": "#dce4e5",
+              "inverse-on-surface": "#2a3233",
+              "tertiary-container": "#fec931",
+              secondary: "#bec2ff",
+              "on-secondary": "#0003aa",
+              "inverse-primary": "#006875",
+              surface: "#0d1516",
+              primary: "#c3f5ff",
+              "on-secondary-container": "#a9afff",
+              "primary-container": "#00e5ff",
+              "tertiary-fixed": "#ffdf96",
+              "secondary-fixed-dim": "#bec2ff",
+              "primary-fixed": "#9cf0ff",
+              "on-surface-variant": "#bac9cc",
+              "error-container": "#93000a",
+              "primary-fixed-dim": "#00daf3",
+              "surface-bright": "#333a3c",
+              "surface-container": "#192122",
+              "on-surface": "#dce4e5",
+              "surface-variant": "#2e3638",
+              "surface-tint": "#00daf3",
+              "on-tertiary-fixed-variant": "#594400",
+              "tertiary-fixed-dim": "#f3bf26",
+              background: "#0d1516",
+              "secondary-container": "#1820d9",
+              outline: "#849396",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              gutter: "16px",
+              unit: "4px",
+              "container-max": "1440px",
+              margin: "24px",
+            },
+            fontFamily: {
+              "mono-label": ["JetBrains Mono"],
+              "body-lg": ["Geist"],
+              "headline-md": ["Geist"],
+              "mono-data": ["JetBrains Mono"],
+              "body-sm": ["Geist"],
+              "display-lg": ["Geist"],
+              "display-lg-mobile": ["Geist"],
+            },
+            fontSize: {
+              "mono-label": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.05em",
+                  fontWeight: "500",
+                },
+              ],
+              "body-lg": [
+                "16px",
+                {
+                  lineHeight: "24px",
+                  fontWeight: "400",
+                },
+              ],
+              "headline-md": [
+                "24px",
+                {
+                  lineHeight: "32px",
+                  fontWeight: "600",
+                },
+              ],
+              "mono-data": [
+                "13px",
+                {
+                  lineHeight: "18px",
+                  fontWeight: "400",
+                },
+              ],
+              "body-sm": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  fontWeight: "400",
+                },
+              ],
+              "display-lg": [
+                "48px",
+                {
+                  lineHeight: "56px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "display-lg-mobile": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  fontWeight: "700",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #0d0d16;
+        color: #dce4e5;
+      }
+      .cubic-bezier-transition {
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 300ms;
+      }
+      .neon-glow {
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+      }
+      .neon-border-focus:focus-within {
+        border-color: #00e5ff;
+      }
+      .scroll-hidden::-webkit-scrollbar {
+        display: none;
+      }
+      .scroll-hidden {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+  <body
+    class="font-body-sm text-body-sm bg-surface-container-lowest text-on-surface antialiased overflow-hidden flex"
+  >
+    <!-- SideNavBar -->
+    <nav
+      class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest dark:bg-surface-container-lowest border-r border-outline-variant flex flex-col py-margin px-4 z-50"
+    >
+      <div class="mb-8 px-2 flex items-center space-x-3">
+        <span
+          class="material-symbols-outlined text-primary-container text-2xl"
+          style="font-variation-settings: &quot;FILL&quot; 1"
+          >neurology</span
+        >
+        <div>
+          <div class="font-headline-md text-headline-md font-bold text-primary">EyeX Neural OS</div>
+          <div class="font-mono-label text-mono-label text-on-surface-variant">
+            Neural Substrate v4.2
+          </div>
+        </div>
+      </div>
+      <div class="flex-grow space-y-1">
+        <a
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors cubic-bezier-transition group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined group-hover:scale-[0.98] transition-transform duration-200"
+            >business</span
+          >
+          <span>Organization</span>
+        </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors cubic-bezier-transition group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined group-hover:scale-[0.98] transition-transform duration-200"
+            >workspaces</span
+          >
+          <span>Workspace</span>
+        </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors cubic-bezier-transition group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined group-hover:scale-[0.98] transition-transform duration-200"
+            >rocket_launch</span
+          >
+          <span>Mission Center</span>
+        </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors cubic-bezier-transition group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined group-hover:scale-[0.98] transition-transform duration-200"
+            >groups</span
+          >
+          <span>Executive Council</span>
+        </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-primary font-bold border-r-2 border-primary bg-surface-container-high/20 cubic-bezier-transition group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined group-hover:scale-[0.98] transition-transform duration-200"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >psychology</span
+          >
+          <span>AI Agents</span>
+        </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors cubic-bezier-transition group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined group-hover:scale-[0.98] transition-transform duration-200"
+            >database</span
+          >
+          <span>Data Platform</span>
+        </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors cubic-bezier-transition group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined group-hover:scale-[0.98] transition-transform duration-200"
+            >security</span
+          >
+          <span>Security Center</span>
+        </a>
+        <a
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors cubic-bezier-transition group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined group-hover:scale-[0.98] transition-transform duration-200"
+            >settings</span
+          >
+          <span>Settings</span>
+        </a>
+      </div>
+      <div class="mt-auto pt-4">
+        <button
+          class="w-full bg-primary-container text-surface-dim font-headline-md text-sm py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:opacity-90 cubic-bezier-transition"
+        >
+          <span class="material-symbols-outlined text-sm">sync</span>
+          <span>Sync Neural Link</span>
+        </button>
+      </div>
+    </nav>
+    <!-- Main Content Area -->
+    <div class="flex-1 ml-64 flex flex-col h-screen relative bg-surface">
+      <!-- TopNavBar -->
+      <header
+        class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-surface-container-low dark:bg-surface-container-low border-b border-outline-variant flex justify-between items-center px-margin z-40"
+      >
+        <div class="flex items-center space-x-4">
+          <div class="font-headline-md text-headline-md font-extrabold text-primary">
+            EyeX Command
+          </div>
+          <div class="h-4 w-px bg-outline-variant mx-2"></div>
+          <div
+            class="text-on-surface-variant font-mono-label text-mono-label flex items-center space-x-2"
+          >
+            <span>Platform</span>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-primary border-b-2 border-primary pb-0.5">AI Agents</span>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="relative group neon-border-focus">
+            <span
+              class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary-container transition-colors"
+              >search</span
+            >
+            <input
+              class="bg-[#1b1b24] border border-white/10 rounded-lg pl-10 pr-4 py-1.5 font-mono-data text-mono-data text-on-surface focus:outline-none focus:border-primary-container w-64 cubic-bezier-transition"
+              placeholder="Query Matrix..."
+              type="text"
+            />
+          </div>
+          <button
+            class="text-on-surface-variant hover:text-primary transition-all cubic-bezier-transition"
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button
+            class="text-primary-container border border-primary-container/30 px-3 py-1 rounded-lg font-body-sm hover:bg-primary-container/10 cubic-bezier-transition flex items-center space-x-1"
+          >
+            <span class="material-symbols-outlined text-sm">terminal</span>
+            <span>AI Command</span>
+          </button>
+          <button
+            class="text-on-surface-variant hover:text-primary transition-all cubic-bezier-transition ml-2"
+          >
+            <span class="material-symbols-outlined text-2xl">account_circle</span>
+          </button>
+        </div>
+      </header>
+      <!-- Main Scrollable Canvas -->
+      <main
+        class="flex-1 mt-16 mb-12 overflow-y-auto overflow-x-hidden p-margin scroll-hidden flex space-x-6"
+      >
+        <!-- Agent Grid (Left Pane) -->
+        <div
+          class="flex-1 grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 auto-rows-max h-fit"
+        >
+          <!-- Section Header -->
+          <div class="col-span-full mb-2 flex justify-between items-end">
+            <div>
+              <h1 class="font-display-lg-mobile text-display-lg-mobile text-on-surface">
+                Digital Workforce
+              </h1>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                Active Neural Nodes: 42 / Total Capacity: 100
+              </p>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="bg-[#1b1b24] border border-white/10 px-3 py-1 rounded text-on-surface-variant font-mono-label flex items-center space-x-1 hover:border-primary-container/50 cubic-bezier-transition"
+              >
+                <span class="material-symbols-outlined text-sm">filter_list</span>
+                <span>Filter</span>
+              </button>
+              <button
+                class="bg-[#1b1b24] border border-white/10 px-3 py-1 rounded text-on-surface-variant font-mono-label flex items-center space-x-1 hover:border-primary-container/50 cubic-bezier-transition"
+              >
+                <span class="material-symbols-outlined text-sm">sort</span>
+                <span>Sort</span>
+              </button>
+            </div>
+          </div>
+          <!-- Agent Card 1 (Active CEO) -->
+          <div
+            class="bg-[#1b1b24] border border-white/10 rounded-xl overflow-hidden cursor-pointer hover:border-primary-container/50 hover:neon-glow cubic-bezier-transition relative group flex flex-col"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-transparent opacity-0 group-hover:opacity-100 cubic-bezier-transition pointer-events-none"
+            ></div>
+            <div class="p-4 flex-grow">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center space-x-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-surface-container-lowest border border-white/10 flex items-center justify-center relative overflow-hidden"
+                  >
+                    <img
+                      class="w-full h-full object-cover opacity-80 mix-blend-screen"
+                      data-alt="A highly detailed, futuristic glowing holographic portrait of an AI executive, stylized with geometric mesh lines and neon cyan highlights over a pure dark carbon background. Cybernetic and sleek."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdXcDowZvXBaz_ZfRdIFj8lbQsTRQCUgV1TEZtOQZykcPiElhYkCvvk_apE2hbKDi7jEOYP9XJMG4N1jqjoqbktoVrFtNzHw7CsTSj5OLI0KgItzr3wAPkK4flt4iMwWGXixEUDC_Gl7SS1uktKpvvn_Dbgi3Y9BdPKaG8PdsuAyif2trPNmRHyall8hTKJ6Y6r9M3A6cBr3M5YJJZfrZqo8LcfXmvQedwYw0ZYiaAOdodNKxMf6f8Qg4tb8kJsnrUBwEB1g7D42c"
+                    />
+                  </div>
+                  <div>
+                    <h3 class="font-headline-md text-sm font-bold text-on-surface">Nexus-Alpha</h3>
+                    <p class="font-mono-label text-xs text-primary-container">CEO-Agent</p>
+                  </div>
+                </div>
+                <span
+                  class="px-2 py-0.5 rounded text-[10px] font-mono-label bg-primary-container/20 text-primary-container border border-primary-container/30"
+                  >Active</span
+                >
+              </div>
+              <div class="space-y-3">
+                <div>
+                  <p
+                    class="font-mono-label text-[10px] text-on-surface-variant uppercase tracking-wider mb-1"
+                  >
+                    Core Focus
+                  </p>
+                  <p class="font-body-sm text-xs text-on-surface">
+                    Strategic Analysis &amp; Enterprise Resource Allocation
+                  </p>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="bg-surface-container-lowest p-2 rounded border border-white/5">
+                    <p class="font-mono-label text-[10px] text-on-surface-variant mb-1">
+                      Efficiency
+                    </p>
+                    <div class="flex items-end space-x-1">
+                      <span class="font-mono-data text-sm text-on-surface">99.8</span>
+                      <span class="font-mono-label text-[10px] text-primary-container mb-0.5"
+                        >%</span
+                      >
+                    </div>
+                  </div>
+                  <div class="bg-surface-container-lowest p-2 rounded border border-white/5">
+                    <p class="font-mono-label text-[10px] text-on-surface-variant mb-1">
+                      Decisions/hr
+                    </p>
+                    <div class="flex items-end space-x-1">
+                      <span class="font-mono-data text-sm text-on-surface">14K</span>
+                      <span
+                        class="material-symbols-outlined text-[10px] text-primary-container mb-0.5"
+                        >trending_up</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Agent Card 2 (Learning CFO) -->
+          <div
+            class="bg-[#1b1b24] border border-white/10 rounded-xl overflow-hidden cursor-pointer hover:border-primary-container/50 hover:neon-glow cubic-bezier-transition relative group flex flex-col"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-[#4b56fe]/5 to-transparent opacity-0 group-hover:opacity-100 cubic-bezier-transition pointer-events-none"
+            ></div>
+            <div class="p-4 flex-grow">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center space-x-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-surface-container-lowest border border-white/10 flex items-center justify-center relative overflow-hidden"
+                  >
+                    <img
+                      class="w-full h-full object-cover opacity-80 mix-blend-screen"
+                      data-alt="A highly detailed, analytical visualization of a financial AI construct, featuring cascading data streams and geometric grid patterns in deep blue and tech cyan over a dark void background."
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuATMs3XAjlDGvZvMgOd-dGsMRt2I5UTlvvJBZ6Le56Hwq4I4M64ot3CnIbRlunwk-IagWGnHHnj4oqLHmxdl7bRgyXnhdM-vj47LXuvJqx5C5zMEuta6ZG7U_4u0KqWPndBVt97AVJet4hbciXNrK6pQElEjROB4B7uRraC03hXiykLV6fN72kDF_BlJdVmzpeEVkwiaCaNOSrsIiK8-zLBpugZQ4w2GQXjTbLtSe3rpIG3kXloS4TFlRxgiIyeVF7_s115HpPd4fA"
+                    />
+                  </div>
+                  <div>
+                    <h3 class="font-headline-md text-sm font-bold text-on-surface">Aura-Fin</h3>
+                    <p class="font-mono-label text-xs text-[#a9afff]">CFO-Agent</p>
+                  </div>
+                </div>
+                <span
+                  class="px-2 py-0.5 rounded text-[10px] font-mono-label bg-[#4b56fe]/20 text-[#a9afff] border border-[#4b56fe]/30 flex items-center space-x-1"
+                >
+                  <span class="material-symbols-outlined text-[10px] animate-spin">sync</span>
+                  <span>Learning</span>
+                </span>
+              </div>
+              <div class="space-y-3">
+                <div>
+                  <p
+                    class="font-mono-label text-[10px] text-on-surface-variant uppercase tracking-wider mb-1"
+                  >
+                    Core Focus
+                  </p>
+                  <p class="font-body-sm text-xs text-on-surface">
+                    Risk Assessment &amp; Predictive Market Modeling
+                  </p>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="bg-surface-container-lowest p-2 rounded border border-white/5">
+                    <p class="font-mono-label text-[10px] text-on-surface-variant mb-1">Accuracy</p>
+                    <div class="flex items-end space-x-1">
+                      <span class="font-mono-data text-sm text-on-surface">94.2</span>
+                      <span class="font-mono-label text-[10px] text-on-surface-variant mb-0.5"
+                        >%</span
+                      >
+                    </div>
+                  </div>
+                  <div class="bg-surface-container-lowest p-2 rounded border border-white/5">
+                    <p class="font-mono-label text-[10px] text-on-surface-variant mb-1">
+                      Data Ingest
+                    </p>
+                    <div class="flex items-end space-x-1">
+                      <span class="font-mono-data text-sm text-on-surface">2.4</span>
+                      <span class="font-mono-label text-[10px] text-on-surface-variant mb-0.5"
+                        >PB/s</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Agent Card 3 (Idle SecOps) -->
+          <div
+            class="bg-[#1b1b24] border border-white/10 rounded-xl overflow-hidden cursor-pointer hover:border-primary-container/50 hover:neon-glow cubic-bezier-transition relative group flex flex-col"
+          >
+            <div class="p-4 flex-grow opacity-70 group-hover:opacity-100 transition-opacity">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center space-x-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-surface-container-lowest border border-white/10 flex items-center justify-center relative overflow-hidden grayscale"
+                  >
+                    <span class="material-symbols-outlined text-outline">shield</span>
+                  </div>
+                  <div>
+                    <h3 class="font-headline-md text-sm font-bold text-on-surface">Aegis-7</h3>
+                    <p class="font-mono-label text-xs text-outline">SecOps-Agent</p>
+                  </div>
+                </div>
+                <span
+                  class="px-2 py-0.5 rounded text-[10px] font-mono-label bg-surface-container-highest text-outline border border-outline-variant"
+                  >Idle</span
+                >
+              </div>
+              <div class="space-y-3">
+                <div>
+                  <p
+                    class="font-mono-label text-[10px] text-on-surface-variant uppercase tracking-wider mb-1"
+                  >
+                    Core Focus
+                  </p>
+                  <p class="font-body-sm text-xs text-on-surface">
+                    Threat Detection &amp; Perimeter Defense
+                  </p>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="bg-surface-container-lowest p-2 rounded border border-white/5">
+                    <p class="font-mono-label text-[10px] text-on-surface-variant mb-1">Uptime</p>
+                    <div class="flex items-end space-x-1">
+                      <span class="font-mono-data text-sm text-on-surface">99.99</span>
+                      <span class="font-mono-label text-[10px] text-outline mb-0.5">%</span>
+                    </div>
+                  </div>
+                  <div class="bg-surface-container-lowest p-2 rounded border border-white/5">
+                    <p class="font-mono-label text-[10px] text-on-surface-variant mb-1">
+                      Threats Mitigated
+                    </p>
+                    <div class="flex items-end space-x-1">
+                      <span class="font-mono-data text-sm text-on-surface">0</span>
+                      <span class="font-mono-label text-[10px] text-outline mb-0.5">/hr</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Detailed Profile Pane (Right Pane - Glassmorphism) -->
+        <div
+          class="w-96 flex-shrink-0 bg-[#1b1b24]/80 backdrop-blur-md border border-white/10 rounded-xl shadow-[0_0_15px_rgba(0,229,255,0.05)] flex flex-col overflow-hidden h-[calc(100vh-8rem)] sticky top-0"
+        >
+          <!-- Header -->
+          <div class="p-6 border-b border-white/10 relative overflow-hidden">
+            <div
+              class="absolute -right-10 -top-10 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl"
+            ></div>
+            <div class="flex justify-between items-start relative z-10">
+              <div
+                class="w-16 h-16 rounded-xl bg-surface border border-primary-container/30 flex items-center justify-center p-1 relative"
+              >
+                <img
+                  class="w-full h-full object-cover rounded-lg"
+                  data-alt="A highly detailed, futuristic glowing holographic portrait of an AI executive, stylized with geometric mesh lines and neon cyan highlights over a pure dark carbon background. Cybernetic and sleek."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUPBJPW36Rsfku2ZSrZB78KklLBQ1-r0f3CsgUAriISHXj_f2thSdzJcvt1m0sWZrhys8dwz1U9_boZ9qcpWRQunBiNVfnQpI6YPQHLml_S3EuTuCSaRICFNzRfzUnBxtj86HMvNsqIZf7Gmz2SVf8iPKzkB-w6KuL__FgBVNxM5aPeLHaeAIVP_1-RoXtCyJo4nN9yWdY0_8wziB0hM9ijw-NyHV3_AFOW6-5F6dn2Gd5KM9MfK_e2DfPqC5ISfqqMWdO42cgIkY"
+                />
+                <div
+                  class="absolute -bottom-1 -right-1 w-3 h-3 bg-primary-container rounded-full border-2 border-[#1b1b24]"
+                ></div>
+              </div>
+              <button
+                class="text-on-surface-variant hover:text-primary-container transition-colors"
+              >
+                <span class="material-symbols-outlined">more_vert</span>
+              </button>
+            </div>
+            <div class="mt-4 relative z-10">
+              <h2 class="font-display-lg-mobile text-2xl text-on-surface">Nexus-Alpha</h2>
+              <div class="flex items-center space-x-2 mt-1">
+                <span class="font-mono-label text-xs text-primary-container">CEO-Agent</span>
+                <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                <span class="font-mono-label text-xs text-on-surface-variant">ID: NX-001A</span>
+              </div>
+            </div>
+          </div>
+          <!-- Scrollable Details -->
+          <div class="flex-1 overflow-y-auto p-6 scroll-hidden space-y-6">
+            <!-- Status & Memory -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-surface-container-lowest/50 p-3 rounded-lg border border-white/5">
+                <p class="font-mono-label text-[10px] text-on-surface-variant uppercase mb-1">
+                  State
+                </p>
+                <div class="flex items-center space-x-2">
+                  <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+                  <span class="font-mono-data text-sm text-on-surface">Processing</span>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest/50 p-3 rounded-lg border border-white/5">
+                <p class="font-mono-label text-[10px] text-on-surface-variant uppercase mb-1">
+                  Memory Depth
+                </p>
+                <div class="flex items-center space-x-2">
+                  <span class="material-symbols-outlined text-[14px] text-on-surface-variant"
+                    >memory</span
+                  >
+                  <span class="font-mono-data text-sm text-on-surface">24.8 TB</span>
+                </div>
+              </div>
+            </div>
+            <!-- Toolsets -->
+            <div>
+              <h4
+                class="font-mono-label text-xs text-on-surface-variant uppercase tracking-wider mb-3 flex items-center"
+              >
+                <span class="material-symbols-outlined text-[14px] mr-2">build</span>
+                Integrated Toolsets
+              </h4>
+              <div class="flex flex-wrap gap-2">
+                <div
+                  class="px-2 py-1 bg-surface-container-lowest rounded border border-white/10 flex items-center space-x-1"
+                >
+                  <span class="material-symbols-outlined text-[12px] text-primary-container"
+                    >api</span
+                  >
+                  <span class="font-mono-data text-xs text-on-surface">Global ERP</span>
+                </div>
+                <div
+                  class="px-2 py-1 bg-surface-container-lowest rounded border border-white/10 flex items-center space-x-1"
+                >
+                  <span class="material-symbols-outlined text-[12px] text-primary-container"
+                    >lan</span
+                  >
+                  <span class="font-mono-data text-xs text-on-surface">Salesforce CRM</span>
+                </div>
+                <div
+                  class="px-2 py-1 bg-surface-container-lowest rounded border border-white/10 flex items-center space-x-1"
+                >
+                  <span class="material-symbols-outlined text-[12px] text-primary-container"
+                    >analytics</span
+                  >
+                  <span class="font-mono-data text-xs text-on-surface">Bloomberg Term.</span>
+                </div>
+                <div
+                  class="px-2 py-1 bg-surface-container-lowest rounded border border-white/10 border-dashed text-on-surface-variant flex items-center space-x-1 hover:text-primary-container hover:border-primary-container cursor-pointer transition-colors"
+                >
+                  <span class="material-symbols-outlined text-[12px]">add</span>
+                  <span class="font-mono-data text-xs">Auth Tool</span>
+                </div>
+              </div>
+            </div>
+            <!-- Recent Mission History -->
+            <div>
+              <h4
+                class="font-mono-label text-xs text-on-surface-variant uppercase tracking-wider mb-3 flex items-center"
+              >
+                <span class="material-symbols-outlined text-[14px] mr-2">history</span>
+                Recent Missions
+              </h4>
+              <div
+                class="space-y-3 relative before:absolute before:inset-y-0 before:left-2 before:w-px before:bg-white/10"
+              >
+                <!-- Log Entry 1 -->
+                <div class="relative pl-6">
+                  <div
+                    class="absolute left-[3px] top-1.5 w-1.5 h-1.5 rounded-full bg-primary-container ring-4 ring-[#1b1b24]"
+                  ></div>
+                  <div
+                    class="bg-surface-container-lowest/50 p-3 rounded-lg border border-primary-container/20"
+                  >
+                    <div class="flex justify-between items-start mb-1">
+                      <span class="font-mono-data text-xs text-primary-container">M-8492</span>
+                      <span class="font-mono-label text-[10px] text-on-surface-variant"
+                        >Just now</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-xs text-on-surface">
+                      Reallocated Q3 budget across marketing vectors based on real-time sentiment
+                      analysis.
+                    </p>
+                  </div>
+                </div>
+                <!-- Log Entry 2 -->
+                <div class="relative pl-6">
+                  <div
+                    class="absolute left-[3px] top-1.5 w-1.5 h-1.5 rounded-full bg-outline-variant ring-4 ring-[#1b1b24]"
+                  ></div>
+                  <div
+                    class="bg-surface-container-lowest/30 p-3 rounded-lg border border-white/5 opacity-80"
+                  >
+                    <div class="flex justify-between items-start mb-1">
+                      <span class="font-mono-data text-xs text-on-surface-variant">M-8491</span>
+                      <span class="font-mono-label text-[10px] text-on-surface-variant"
+                        >2h ago</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-xs text-on-surface-variant">
+                      Compiled executive summary on competitor acquisition target.
+                    </p>
+                  </div>
+                </div>
+                <!-- Log Entry 3 -->
+                <div class="relative pl-6">
+                  <div
+                    class="absolute left-[3px] top-1.5 w-1.5 h-1.5 rounded-full bg-outline-variant ring-4 ring-[#1b1b24]"
+                  ></div>
+                  <div
+                    class="bg-surface-container-lowest/30 p-3 rounded-lg border border-white/5 opacity-80"
+                  >
+                    <div class="flex justify-between items-start mb-1">
+                      <span class="font-mono-data text-xs text-on-surface-variant">M-8490</span>
+                      <span class="font-mono-label text-[10px] text-on-surface-variant"
+                        >5h ago</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-xs text-on-surface-variant">
+                      Synced global supply chain logistics parameters.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Profile Action -->
+          <div class="p-4 border-t border-white/10 bg-surface-container-low/50">
+            <button
+              class="w-full bg-primary-container text-surface-dim font-headline-md text-sm py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:opacity-90 cubic-bezier-transition"
+            >
+              <span class="material-symbols-outlined text-sm">chat</span>
+              <span>Interface with Agent</span>
+            </button>
+          </div>
+        </div>
+      </main>
+      <!-- Footer -->
+      <footer
+        class="fixed bottom-0 right-0 w-[calc(100%-16rem)] py-2 bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant flex justify-between items-center px-margin z-40"
+      >
+        <div class="font-mono-label text-mono-label text-primary">EyeX Neural OS v4.2-Stable</div>
+        <div class="flex space-x-6">
+          <a
+            class="font-mono-label text-mono-label text-on-surface-variant hover:text-primary transition-colors duration-200"
+            href="#"
+            >System Status</a
+          >
+          <a
+            class="font-mono-label text-mono-label text-on-surface-variant hover:text-primary transition-colors duration-200"
+            href="#"
+            >Documentation</a
+          >
+          <a
+            class="font-mono-label text-mono-label text-on-surface-variant hover:text-primary transition-colors duration-200"
+            href="#"
+            >Privacy Protocol</a
+          >
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

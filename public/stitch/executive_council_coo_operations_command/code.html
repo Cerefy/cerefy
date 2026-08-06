@@ -1,0 +1,641 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>COO Office Command Suite - EyeX Neural OS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#3a44ef",
+              "on-primary-container": "#f1efff",
+              "on-tertiary-fixed-variant": "#900e00",
+              "on-primary-fixed": "#00016d",
+              "surface-container-high": "#292933",
+              "on-tertiary-fixed": "#3f0300",
+              "surface-container-lowest": "#0d0d16",
+              "on-primary": "#0003aa",
+              "primary-fixed-dim": "#bec2ff",
+              "primary-container": "#4b56fe",
+              "primary-fixed": "#e0e0ff",
+              "tertiary-container": "#c83923",
+              "on-secondary-container": "#a9afff",
+              outline: "#8f8fa2",
+              "on-secondary": "#212772",
+              "inverse-on-surface": "#302f3a",
+              "inverse-surface": "#e3e1ef",
+              "surface-container": "#1f1f28",
+              error: "#ffb4ab",
+              "surface-bright": "#383843",
+              "on-primary-fixed-variant": "#1820d9",
+              "secondary-fixed": "#e0e0ff",
+              "on-background": "#e3e1ef",
+              "error-container": "#93000a",
+              tertiary: "#ffb4a6",
+              "outline-variant": "#454556",
+              "on-secondary-fixed": "#080c5e",
+              "on-secondary-fixed-variant": "#393f8a",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "tertiary-fixed": "#ffdad4",
+              "secondary-container": "#393f8a",
+              "secondary-fixed-dim": "#bec2ff",
+              secondary: "#bec2ff",
+              surface: "#12131c",
+              "surface-tint": "#bec2ff",
+              primary: "#bec2ff",
+              "on-surface": "#e3e1ef",
+              "on-tertiary": "#660700",
+              "surface-variant": "#34343e",
+              "on-tertiary-container": "#ffece9",
+              "surface-dim": "#12131c",
+              "on-surface-variant": "#c6c5d9",
+              "on-error": "#690005",
+              "on-error-container": "#ffdad6",
+              "surface-container-low": "#1b1b24",
+              background: "#12131c",
+              "surface-container-highest": "#34343e",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "stack-xs": "0.25rem",
+              "stack-md": "1rem",
+              "grid-margin": "2rem",
+              "stack-lg": "2rem",
+              "stack-sm": "0.5rem",
+              "grid-gutter": "1.5rem",
+            },
+            fontFamily: {
+              "data-mono": ["JetBrains Mono"],
+              "headline-md": ["Geist"],
+              "display-lg": ["Geist"],
+              "body-lg": ["Geist"],
+              "label-caps": ["JetBrains Mono"],
+              "headline-md-mobile": ["Geist"],
+              "body-sm": ["Geist"],
+            },
+            fontSize: {
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        @apply bg-background text-on-surface antialiased overflow-x-hidden;
+      }
+      .glass-panel {
+        @apply bg-surface/80 backdrop-blur-md border border-outline-variant;
+      }
+      .tech-border {
+        position: relative;
+      }
+      .tech-border::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 30%;
+        height: 2px;
+        @apply bg-primary;
+      }
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <!-- SideNavBar (Hidden on MD, placeholder for shell structure) -->
+    <aside
+      class="hidden md:flex h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant bg-surface-container flex-col py-grid-margin z-50"
+    >
+      <div class="px-6 mb-8">
+        <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tighter">
+          EyeX Neural OS
+        </h1>
+        <p class="font-data-mono text-data-mono text-on-surface-variant mt-1">v4.0 Neural Carbon</p>
+      </div>
+      <nav class="flex-1 flex flex-col gap-1 px-4 font-body-sm text-body-sm">
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+          ><span class="material-symbols-outlined">corporate_fare</span> Organization</a
+        >
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+          ><span class="material-symbols-outlined">grid_view</span> Workspace</a
+        >
+        <a
+          class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg border-l-4 border-primary scale-95 duration-100 ease-in-out"
+          href="#"
+          ><span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >target</span
+          >
+          Mission Center</a
+        >
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+          ><span class="material-symbols-outlined">diversity_3</span> Executive Council</a
+        >
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+          ><span class="material-symbols-outlined">smart_toy</span> AI Agents</a
+        >
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+          ><span class="material-symbols-outlined">database</span> Data Platform</a
+        >
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+          ><span class="material-symbols-outlined">verified_user</span> Security Center</a
+        >
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+          ><span class="material-symbols-outlined">settings</span> Settings</a
+        >
+      </nav>
+      <div class="px-6 mt-auto">
+        <button
+          class="w-full bg-primary-container text-on-primary-container py-2 rounded font-label-caps text-label-caps hover:bg-primary-fixed-dim transition-colors flex items-center justify-center gap-2"
+        >
+          <span class="material-symbols-outlined text-sm">add</span> New Mission
+        </button>
+      </div>
+    </aside>
+    <!-- Main Content Area -->
+    <main class="md:ml-64 flex-1 flex flex-col pt-16">
+      <!-- TopNavBar -->
+      <header
+        class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex justify-between items-center h-16 px-grid-margin font-body-lg text-body-lg font-data-mono text-data-mono"
+      >
+        <div class="flex items-center gap-6">
+          <span class="font-headline-md text-headline-md font-black text-primary md:hidden"
+            >EyeX OS</span
+          >
+          <nav class="hidden md:flex gap-6">
+            <a
+              class="text-primary font-bold border-b-2 border-primary pb-1 opacity-80 transition-all"
+              href="#"
+              >Dashboard</a
+            >
+            <a class="text-on-surface-variant hover:text-primary transition-opacity" href="#"
+              >Analytics</a
+            >
+            <a class="text-on-surface-variant hover:text-primary transition-opacity" href="#"
+              >Logs</a
+            >
+          </nav>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="hidden lg:flex items-center gap-2 mr-4">
+            <button
+              class="bg-primary text-on-primary px-4 py-1.5 rounded-sm font-label-caps text-label-caps hover:bg-primary-fixed-dim transition-colors"
+            >
+              Deploy Agent
+            </button>
+            <button
+              class="border border-error text-error px-4 py-1.5 rounded-sm font-label-caps text-label-caps hover:bg-error-container transition-colors"
+            >
+              Emergency Stop
+            </button>
+          </div>
+          <button class="text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">terminal</span>
+          </button>
+          <button class="text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">help_outline</span>
+          </button>
+          <div
+            class="h-8 w-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden ml-2"
+          >
+            <img
+              alt="Administrator Profile"
+              class="w-full h-full object-cover"
+              data-alt="A macro photography shot of a sleek, highly detailed metallic orb glowing with a soft, pulsing blue light, floating in a dark, minimalist tech environment. The lighting is dramatic and precise, evoking advanced artificial intelligence and high-end enterprise hardware. Neural Carbon aesthetic."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqRIfAb6Klqz5hdWK2rjY2Y8rqj8MvrM8g1mosSGYIOkDt7yeEyjO4kIaszYcJFFDfDZtn2pR2eryaxiF8yUa_cb3UgXqT1gfwMbVWlAd8C_V66W8iRsXDvwcB0VT_XbSbw_8hHoryXlikpL7ns9syt-cYMO525YFwMSMyr5oryjfGIcuWG7dqtIng9gGiYmf6dBqBfCHU9lDVGVmRvXTkBb9WO65sXjUzRyEWNsoAzOT_tb6ZO5Bbu8Y35ril176vqK7ktWKcPc8"
+            />
+          </div>
+        </div>
+      </header>
+      <!-- Dashboard Content -->
+      <div
+        class="flex-1 p-grid-margin grid grid-cols-1 md:grid-cols-12 gap-grid-gutter overflow-y-auto pb-24"
+      >
+        <!-- Header Section -->
+        <div class="col-span-1 md:col-span-12 mb-4">
+          <h2 class="font-headline-md text-headline-md text-on-surface">COO Command Suite</h2>
+          <p
+            class="font-data-mono text-data-mono text-on-surface-variant mt-1 flex items-center gap-2"
+          >
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> SYSTEM NOMINAL |
+            LAST SYNC: 0.02ms AGO
+          </p>
+        </div>
+        <!-- Operational Efficiency Index (OEI) & Strategic Alignment -->
+        <div class="col-span-1 md:col-span-8 flex flex-col gap-grid-gutter">
+          <div class="glass-panel rounded-xl p-6 flex flex-col relative overflow-hidden">
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"
+            ></div>
+            <div class="flex justify-between items-start mb-6">
+              <h3 class="font-body-lg text-body-lg font-bold text-on-surface tech-border pb-2">
+                Operational Efficiency Index (OEI)
+              </h3>
+              <span
+                class="bg-surface-container px-2 py-1 rounded text-primary font-data-mono text-data-mono text-[10px] border border-primary/30"
+                >LIVE METRICS</span
+              >
+            </div>
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+              <div class="relative w-48 h-48 flex items-center justify-center">
+                <!-- Circular Progress Placeholder SVG -->
+                <svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+                  <circle
+                    class="text-surface-container-highest"
+                    cx="50"
+                    cy="50"
+                    fill="transparent"
+                    r="45"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  ></circle>
+                  <circle
+                    class="text-primary"
+                    cx="50"
+                    cy="50"
+                    fill="transparent"
+                    r="45"
+                    stroke="currentColor"
+                    stroke-dasharray="282.7"
+                    stroke-dashoffset="33.9"
+                    stroke-width="4"
+                  ></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="font-display-lg text-display-lg text-primary leading-none">88</span>
+                  <span class="font-data-mono text-data-mono text-on-surface-variant text-[10px]"
+                    >SCORE</span
+                  >
+                </div>
+              </div>
+              <div class="flex-1 grid grid-cols-2 gap-4 w-full">
+                <div
+                  class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/50"
+                >
+                  <span
+                    class="font-data-mono text-data-mono text-on-surface-variant text-[10px] block mb-1"
+                    >RESOURCE UTILIZATION</span
+                  >
+                  <div class="flex items-end gap-2">
+                    <span class="font-headline-md text-headline-md text-on-surface">92.4%</span>
+                    <span
+                      class="text-primary text-xs mb-1 material-symbols-outlined"
+                      style="font-size: 14px"
+                      >trending_up</span
+                    >
+                  </div>
+                </div>
+                <div
+                  class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/50"
+                >
+                  <span
+                    class="font-data-mono text-data-mono text-on-surface-variant text-[10px] block mb-1"
+                    >PROCESS LATENCY</span
+                  >
+                  <div class="flex items-end gap-2">
+                    <span class="font-headline-md text-headline-md text-on-surface">14ms</span>
+                    <span
+                      class="text-tertiary text-xs mb-1 material-symbols-outlined"
+                      style="font-size: 14px"
+                      >trending_down</span
+                    >
+                  </div>
+                </div>
+                <div
+                  class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/50"
+                >
+                  <span
+                    class="font-data-mono text-data-mono text-on-surface-variant text-[10px] block mb-1"
+                    >THROUGHPUT YIELD</span
+                  >
+                  <div class="flex items-end gap-2">
+                    <span class="font-headline-md text-headline-md text-on-surface">99.9%</span>
+                    <span
+                      class="text-outline text-xs mb-1 material-symbols-outlined"
+                      style="font-size: 14px"
+                      >horizontal_rule</span
+                    >
+                  </div>
+                </div>
+                <div
+                  class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/50"
+                >
+                  <span
+                    class="font-data-mono text-data-mono text-on-surface-variant text-[10px] block mb-1"
+                    >ENERGY EFFICIENCY</span
+                  >
+                  <div class="flex items-end gap-2">
+                    <span class="font-headline-md text-headline-md text-on-surface">Opt.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Process Automation Pipeline -->
+          <div class="glass-panel rounded-xl p-6 flex flex-col flex-1">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="font-body-lg text-body-lg font-bold text-on-surface tech-border pb-2">
+                Process Automation Pipeline
+              </h3>
+              <div class="flex gap-2">
+                <span
+                  class="px-2 py-1 rounded bg-surface-container-high text-on-surface font-label-caps text-label-caps text-[9px]"
+                  >ACTIVE: 1,402</span
+                >
+                <span
+                  class="px-2 py-1 rounded bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps text-[9px]"
+                  >PENDING: 84</span
+                >
+              </div>
+            </div>
+            <div class="flex-1 flex flex-col gap-3">
+              <!-- Pipeline Row -->
+              <div
+                class="flex items-center gap-4 bg-surface-container-lowest p-3 rounded border border-outline-variant/30 hover:border-primary/50 transition-colors"
+              >
+                <div
+                  class="w-8 h-8 rounded bg-primary-container/20 flex items-center justify-center text-primary"
+                >
+                  <span class="material-symbols-outlined" style="font-size: 18px"
+                    >precision_manufacturing</span
+                  >
+                </div>
+                <div class="flex-1">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="font-data-mono text-data-mono text-on-surface text-xs"
+                      >SUPPLY_CHAIN_OPT_V2</span
+                    >
+                    <span class="font-data-mono text-data-mono text-primary text-[10px]"
+                      >RUNNING</span
+                    >
+                  </div>
+                  <div class="h-1 w-full bg-surface-container-high rounded overflow-hidden">
+                    <div class="h-full bg-primary w-3/4"></div>
+                  </div>
+                </div>
+              </div>
+              <!-- Pipeline Row -->
+              <div
+                class="flex items-center gap-4 bg-surface-container-lowest p-3 rounded border border-outline-variant/30 hover:border-primary/50 transition-colors"
+              >
+                <div
+                  class="w-8 h-8 rounded bg-tertiary-container/20 flex items-center justify-center text-tertiary"
+                >
+                  <span class="material-symbols-outlined" style="font-size: 18px">psychology</span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="font-data-mono text-data-mono text-on-surface text-xs"
+                      >PREDICTIVE_MAINT_AI</span
+                    >
+                    <span class="font-data-mono text-data-mono text-tertiary text-[10px]"
+                      >HALTED</span
+                    >
+                  </div>
+                  <div class="h-1 w-full bg-surface-container-high rounded overflow-hidden">
+                    <div class="h-full bg-tertiary w-1/3"></div>
+                  </div>
+                </div>
+              </div>
+              <!-- Pipeline Row -->
+              <div
+                class="flex items-center gap-4 bg-surface-container-lowest p-3 rounded border border-outline-variant/30 hover:border-primary/50 transition-colors opacity-70"
+              >
+                <div
+                  class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-outline"
+                >
+                  <span class="material-symbols-outlined" style="font-size: 18px">schedule</span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="font-data-mono text-data-mono text-on-surface-variant text-xs"
+                      >Q3_LOGISTICS_RECALC</span
+                    >
+                    <span class="font-data-mono text-data-mono text-outline text-[10px]"
+                      >PENDING</span
+                    >
+                  </div>
+                  <div class="h-1 w-full bg-surface-container-high rounded overflow-hidden">
+                    <div class="h-full bg-outline w-0"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Side Column: Logistics & Resources -->
+        <div class="col-span-1 md:col-span-4 flex flex-col gap-grid-gutter">
+          <!-- Supply Chain Logistics Map -->
+          <div class="glass-panel rounded-xl flex flex-col h-64 overflow-hidden relative group">
+            <div class="absolute inset-0 z-0">
+              <!-- Placeholder for a map graphic -->
+              <div
+                class="w-full h-full bg-surface-container-lowest border-b border-outline-variant/30 relative"
+                style="
+                  background-image: radial-gradient(#34343e 1px, transparent 1px);
+                  background-size: 16px 16px;
+                  background-position: 0 0;
+                "
+              >
+                <!-- Node 1 -->
+                <div
+                  class="absolute top-1/4 left-1/4 w-2 h-2 bg-primary rounded-full animate-ping"
+                ></div>
+                <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-primary rounded-full"></div>
+                <!-- Node 2 -->
+                <div class="absolute top-1/2 right-1/4 w-2 h-2 bg-tertiary rounded-full"></div>
+                <!-- Connecting Line -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1">
+                  <path
+                    class="text-primary/30"
+                    d="M 25% 25% Q 50% 10% 75% 50%"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-dasharray="4 4"
+                    stroke-width="1"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div
+              class="relative z-10 p-4 bg-gradient-to-b from-surface/90 to-transparent pointer-events-none"
+            >
+              <h3 class="font-body-lg text-body-lg font-bold text-on-surface">Logistics Network</h3>
+              <span class="font-data-mono text-data-mono text-primary text-[10px]"
+                >GLOBAL SCOPE: ACTIVE</span
+              >
+            </div>
+            <div
+              class="relative z-10 mt-auto p-4 bg-surface/80 backdrop-blur-sm border-t border-outline-variant/30 flex justify-between items-center"
+            >
+              <div class="flex flex-col">
+                <span class="font-data-mono text-data-mono text-on-surface-variant text-[10px]"
+                  >ACTIVE NODES</span
+                >
+                <span class="font-body-sm text-body-sm text-on-surface">1,402</span>
+              </div>
+              <div class="flex flex-col text-right">
+                <span class="font-data-mono text-data-mono text-on-surface-variant text-[10px]"
+                  >IN TRANSIT</span
+                >
+                <span class="font-body-sm text-body-sm text-primary">84.2K</span>
+              </div>
+            </div>
+          </div>
+          <!-- Resource Allocation -->
+          <div class="glass-panel rounded-xl p-6 flex flex-col">
+            <h3 class="font-body-lg text-body-lg font-bold text-on-surface tech-border pb-2 mb-4">
+              Resource Allocation
+            </h3>
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-col gap-1">
+                <div class="flex justify-between font-data-mono text-data-mono text-xs">
+                  <span class="text-on-surface-variant">AI Agents</span>
+                  <span class="text-primary">78%</span>
+                </div>
+                <div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-primary w-[78%]"></div>
+                </div>
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="flex justify-between font-data-mono text-data-mono text-xs">
+                  <span class="text-on-surface-variant">Human Personnel</span>
+                  <span class="text-on-surface">22%</span>
+                </div>
+                <div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-outline-variant w-[22%]"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Incidents Feed -->
+          <div class="glass-panel rounded-xl p-4 flex flex-col flex-1">
+            <h3
+              class="font-body-sm text-body-sm font-bold text-on-surface mb-3 flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-tertiary" style="font-size: 16px"
+                >warning</span
+              >
+              Active Incidents
+            </h3>
+            <div class="flex flex-col gap-2 overflow-y-auto max-h-48 pr-2 custom-scrollbar">
+              <div class="bg-surface-container-low p-2 rounded border-l-2 border-tertiary text-xs">
+                <span class="font-data-mono text-[9px] text-tertiary block mb-1">SYS_WARN_041</span>
+                <span class="font-body-sm text-on-surface leading-tight"
+                  >Supply chain bottleneck detected in Node Alpha-7. Routing optimized.</span
+                >
+              </div>
+              <div
+                class="bg-surface-container-low p-2 rounded border-l-2 border-outline-variant text-xs"
+              >
+                <span class="font-data-mono text-[9px] text-outline block mb-1">LOG_INFO_892</span>
+                <span class="font-body-sm text-on-surface leading-tight"
+                  >Routine maintenance scheduled for Storage Cluster B.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Footer -->
+    <footer
+      class="fixed bottom-0 right-0 w-full md:w-[calc(100%-16rem)] border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center px-grid-margin py-2 text-[10px] z-40 font-data-mono text-data-mono"
+    >
+      <span class="text-outline font-label-caps text-label-caps"
+        >© 2024 EyeX Neural Systems. Status: OPTIMAL</span
+      >
+      <div class="flex gap-4">
+        <a
+          class="text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+          href="#"
+          >Documentation</a
+        >
+        <a
+          class="text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+          href="#"
+          >Support</a
+        >
+        <a
+          class="text-tertiary underline hover:text-tertiary-fixed-dim transition-colors duration-200"
+          href="#"
+          >System Health</a
+        >
+      </div>
+    </footer>
+    <style>
+      /* Custom scrollbar for high-density tech look */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #454556;
+        border-radius: 2px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #8f8fa2;
+      }
+    </style>
+  </body>
+</html>

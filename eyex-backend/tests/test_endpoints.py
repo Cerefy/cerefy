@@ -119,8 +119,8 @@ async def test_chat_delete_conversation(client: AsyncClient, mock_memory):
 @pytest.mark.asyncio
 async def test_chat_post_send_message(client: AsyncClient, mock_memory):
     app.dependency_overrides[get_memory_service] = lambda: mock_memory
-    from app.services.agent_service import AgentOrchestratorService
     from app.schemas.agent import AgentStep, WorkflowResult
+    from app.services.agent_service import AgentOrchestratorService
 
     with patch.object(AgentOrchestratorService, "execute") as mock_exec:
         mock_exec.return_value = WorkflowResult(
@@ -145,8 +145,8 @@ async def test_chat_post_send_message(client: AsyncClient, mock_memory):
 @pytest.mark.asyncio
 async def test_chat_post_without_session(client: AsyncClient, mock_memory):
     app.dependency_overrides[get_memory_service] = lambda: mock_memory
-    from app.services.agent_service import AgentOrchestratorService
     from app.schemas.agent import WorkflowResult
+    from app.services.agent_service import AgentOrchestratorService
 
     with patch.object(AgentOrchestratorService, "execute") as mock_exec:
         mock_exec.return_value = WorkflowResult(

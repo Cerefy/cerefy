@@ -42,6 +42,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as StitchRouteImport } from './routes/stitch'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -208,6 +209,11 @@ const TasksRoute = TasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StitchRoute = StitchRouteImport.update({
+  id: '/stitch',
+  path: '/stitch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -243,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tasks': typeof TasksRoute
+  '/stitch': typeof StitchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -278,6 +285,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tasks': typeof TasksRoute
+  '/stitch': typeof StitchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -457,6 +465,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TasksRoute: typeof TasksRoute
+  StitchRoute: typeof StitchRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -729,6 +738,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TasksRoute: TasksRoute,
+  StitchRoute: StitchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -4,12 +4,11 @@ from __future__ import annotations
 import tempfile
 import time
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from app.agents.tools.file_tools import grep_files, read_file, search_files, write_file
-from app.agents.tools.registry import ToolRegistry, get_registry
+from app.agents.tools.registry import get_registry
 
 
 class TestFileToolBenchmarks:
@@ -93,7 +92,6 @@ class TestSearchGrepBenchmark:
 
 class TestRegistryLookupBenchmark:
     def test_registry_lookup_speed(self):
-        from app.agents.tools.registry import get_registry
 
         reg = get_registry()
         times = []
@@ -110,7 +108,6 @@ class TestRegistryLookupBenchmark:
         assert avg < 1, f"Registry lookup avg {avg:.4f}ms exceeded 1ms"
 
     def test_registry_list_all_tools_speed(self):
-        from app.agents.tools.registry import get_registry
 
         reg = get_registry()
         times = []

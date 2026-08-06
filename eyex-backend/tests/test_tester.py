@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.agents.tester import TestingAgent, TestingOutput, TestFile, create_testing_agent
+from app.agents.tester import TestFile, TestingOutput, create_testing_agent
 
 
 def test_tester_schema():

@@ -1,0 +1,455 @@
+<!doctype html>
+
+<html class="dark" lang="en" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EyeX - Industry Verticals</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline-variant": "#454556",
+              error: "#ffb4ab",
+              "on-tertiary-fixed-variant": "#900e00",
+              "on-error": "#690005",
+              "inverse-on-surface": "#302f3a",
+              "on-primary-fixed": "#00016d",
+              "surface-dim": "#12131c",
+              "on-primary-fixed-variant": "#1820d9",
+              "on-surface": "#e3e1ef",
+              "secondary-fixed": "#e0e0ff",
+              "surface-dark": "#05070A",
+              "tertiary-fixed": "#ffdad4",
+              "primary-fixed-dim": "#bec2ff",
+              "on-error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "tertiary-container": "#c83923",
+              "primary-fixed": "#e0e0ff",
+              "surface-bright": "#383843",
+              "on-surface-variant": "#c6c5d9",
+              "inverse-surface": "#e3e1ef",
+              "surface-container": "#1f1f28",
+              "on-tertiary-fixed": "#3f0300",
+              "on-tertiary": "#660700",
+              "inverse-primary": "#3a44ef",
+              "surface-container-highest": "#34343e",
+              "on-secondary": "#212772",
+              "surface-tint": "#bec2ff",
+              "on-background": "#e3e1ef",
+              "surface-container-high": "#292933",
+              "surface-variant": "#34343e",
+              surface: "#12131c",
+              outline: "#8f8fa2",
+              "on-tertiary-container": "#ffece9",
+              "on-primary": "#0003aa",
+              "primary-container": "#4b56fe",
+              "secondary-container": "#393f8a",
+              background: "#12131c",
+              "on-secondary-fixed": "#080c5e",
+              "surface-container-lowest": "#0d0d16",
+              "on-secondary-container": "#a9afff",
+              primary: "#bec2ff",
+              secondary: "#bec2ff",
+              "surface-container-low": "#1b1b24",
+              "on-primary-container": "#f1efff",
+              "on-secondary-fixed-variant": "#393f8a",
+              tertiary: "#ffb4a6",
+              "outline-cyan": "rgba(0, 229, 255, 0.3)",
+              "secondary-fixed-dim": "#bec2ff",
+              "error-container": "#93000a",
+            },
+            borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" },
+            spacing: {
+              "stack-xs": "0.25rem",
+              "stack-sm": "0.5rem",
+              "grid-margin": "2rem",
+              "grid-gutter": "1.5rem",
+              "stack-md": "1rem",
+              "stack-lg": "2rem",
+            },
+            fontFamily: {
+              "headline-md-mobile": ["Geist"],
+              "label-caps": ["JetBrains Mono"],
+              "body-lg": ["Geist"],
+              "headline-md": ["Geist"],
+              "display-lg": ["Geist"],
+              "data-mono": ["JetBrains Mono"],
+              "body-sm": ["Geist"],
+              headline: ["Geist"],
+              display: ["Geist"],
+              body: ["Geist"],
+              label: ["Jetbrains Mono"],
+            },
+            fontSize: {
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .glass-panel {
+        background-color: rgba(11, 20, 28, 0.4);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 229, 255, 0.1);
+      }
+      .glass-panel:hover {
+        border-color: rgba(0, 229, 255, 0.3);
+        box-shadow: 0px 0px 30px rgba(0, 229, 255, 0.15);
+      }
+      .text-glow {
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body class="bg-surface-dark text-on-surface min-h-screen overflow-x-hidden antialiased">
+    <!-- Top Navigation -->
+    <nav
+      class="fixed top-0 w-full z-50 bg-surface/40 dark:bg-surface-dark/40 backdrop-blur-xl border-b border-outline-cyan/10 shadow-[0px_0px_30px_rgba(0,229,255,0.05)] transition-all duration-150 ease-out"
+    >
+      <div class="flex justify-between items-center px-grid-margin py-4 max-w-[1440px] mx-auto">
+        <div class="flex items-center gap-4">
+          <img
+            alt="EyeX Technologies Logo"
+            class="h-12 w-12 object-contain"
+            src="https://lh3.googleusercontent.com/aida/AP1WRLs1qz4AaLkAH4Xn1ZBLnjwOzn1wjUTiRGqiiQL1m0Hvnk8B0-boRiHU619fZwDvtb6w43g5gm1WM9XUKu-FGBsz7czQNUz3s3ehwlNjuWZuxCnEnc2t-91RQ9Sy1sVJWlXzomH3aSW4rHKBxPC8P3YhmoDubRYhfcbaBNihFbU8axjV_MgfxtC7dnNmB504ZNrlqhxOVO-KUjIYa1Q_ktPCWexauZMYl9WNOh-9rK24H_lxxLyTctcQsnM"
+          />
+          <span
+            class="text-body-lg font-headline-md font-bold tracking-tight text-on-surface dark:text-on-background hidden sm:block"
+            >EyeX Technologies</span
+          >
+        </div>
+        <!-- Desktop Nav -->
+        <ul class="hidden md:flex gap-8">
+          <li class="">
+            <a
+              class="text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim text-label-caps font-label-caps"
+              href="#"
+              >Platform</a
+            >
+          </li>
+          <li class="">
+            <a
+              class="text-primary dark:text-primary-fixed-dim border-b-2 border-primary pb-1 text-label-caps font-label-caps"
+              href="#"
+              >Solutions</a
+            >
+          </li>
+          <li class="">
+            <a
+              class="text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim text-label-caps font-label-caps"
+              href="#"
+              >Resources</a
+            >
+          </li>
+          <li class="">
+            <a
+              class="text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim text-label-caps font-label-caps"
+              href="#"
+              >Pricing</a
+            >
+          </li>
+        </ul>
+        <div class="flex items-center gap-4">
+          <a
+            class="hidden sm:block text-label-caps font-label-caps text-on-surface-variant hover:text-primary transition-colors"
+            href="#"
+            >Login</a
+          >
+          <button
+            class="bg-primary-container text-on-primary-container px-6 py-2 rounded text-label-caps font-label-caps hover:bg-primary transition-colors duration-150 font-bold"
+          >
+            Book Demo
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main class="pt-32 pb-24 px-grid-margin max-w-[1440px] mx-auto">
+      <!-- Hero Section -->
+      <section class="mb-32 text-center reveal active">
+        <h1 class="text-display-lg font-display-lg text-on-surface mb-stack-md text-glow">
+          Industry Precision. <br /><span class="text-primary-fixed-dim">Infinite Scale.</span>
+        </h1>
+        <p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mx-auto mb-stack-lg">
+          EyeX OS is meticulously architected to adapt to the specialized computational demands of
+          global enterprise verticals. Experience high-fidelity intelligence.
+        </p>
+      </section>
+      <!-- Vertical Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter mb-32">
+        <!-- Financial Services -->
+        <div
+          class="glass-panel p-stack-lg rounded-xl reveal flex flex-col justify-between group cursor-pointer h-full active"
+        >
+          <div>
+            <div class="flex items-center gap-4 mb-stack-md">
+              <div
+                class="p-3 bg-surface rounded-lg border border-outline-cyan/20 group-hover:border-primary-fixed-dim transition-colors"
+              >
+                <span
+                  class="material-symbols-outlined text-primary-fixed-dim text-3xl"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >account_balance</span
+                >
+              </div>
+              <h2 class="text-headline-md font-headline-md text-on-surface">Financial Services</h2>
+            </div>
+            <p class="text-body-sm font-body-sm text-on-surface-variant mb-stack-lg">
+              Algorithmic risk assessment and ultra-low latency transaction analysis.
+            </p>
+          </div>
+          <div class="grid grid-cols-2 gap-4 border-t border-outline-cyan/10 pt-stack-md mt-auto">
+            <div>
+              <span class="block text-label-caps font-label-caps text-on-surface-variant mb-1"
+                >Processing Speed</span
+              >
+              <span class="text-data-mono font-data-mono text-primary-fixed-dim"
+                >Sub-millisecond</span
+              >
+            </div>
+            <div>
+              <span class="block text-label-caps font-label-caps text-on-surface-variant mb-1"
+                >Compliance</span
+              >
+              <span class="text-data-mono font-data-mono text-primary-fixed-dim"
+                >SOC 2 Type II</span
+              >
+            </div>
+          </div>
+        </div>
+        <!-- Healthcare -->
+        <div
+          class="glass-panel p-stack-lg rounded-xl reveal flex flex-col justify-between group cursor-pointer h-full active"
+          style="transition-delay: 100ms"
+        >
+          <div>
+            <div class="flex items-center gap-4 mb-stack-md">
+              <div
+                class="p-3 bg-surface rounded-lg border border-outline-cyan/20 group-hover:border-primary-fixed-dim transition-colors"
+              >
+                <span
+                  class="material-symbols-outlined text-primary-fixed-dim text-3xl"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >monitor_heart</span
+                >
+              </div>
+              <h2 class="text-headline-md font-headline-md text-on-surface">Healthcare</h2>
+            </div>
+            <p class="text-body-sm font-body-sm text-on-surface-variant mb-stack-lg">
+              Predictive diagnostics and secure, federated genomic data processing.
+            </p>
+          </div>
+          <div class="grid grid-cols-2 gap-4 border-t border-outline-cyan/10 pt-stack-md mt-auto">
+            <div>
+              <span class="block text-label-caps font-label-caps text-on-surface-variant mb-1"
+                >Data Privacy</span
+              >
+              <span class="text-data-mono font-data-mono text-primary-fixed-dim"
+                >HIPAA Compliant</span
+              >
+            </div>
+            <div>
+              <span class="block text-label-caps font-label-caps text-on-surface-variant mb-1"
+                >Model Accuracy</span
+              >
+              <span class="text-data-mono font-data-mono text-primary-fixed-dim"
+                >99.9% Validation</span
+              >
+            </div>
+          </div>
+        </div>
+        <!-- Manufacturing -->
+        <div
+          class="glass-panel p-stack-lg rounded-xl reveal flex flex-col justify-between group cursor-pointer h-full active"
+          style="transition-delay: 200ms"
+        >
+          <div>
+            <div class="flex items-center gap-4 mb-stack-md">
+              <div
+                class="p-3 bg-surface rounded-lg border border-outline-cyan/20 group-hover:border-primary-fixed-dim transition-colors"
+              >
+                <span
+                  class="material-symbols-outlined text-primary-fixed-dim text-3xl"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >precision_manufacturing</span
+                >
+              </div>
+              <h2 class="text-headline-md font-headline-md text-on-surface">Manufacturing</h2>
+            </div>
+            <p class="text-body-sm font-body-sm text-on-surface-variant mb-stack-lg">
+              Autonomous robotics orchestration and predictive maintenance AI.
+            </p>
+          </div>
+          <div class="grid grid-cols-2 gap-4 border-t border-outline-cyan/10 pt-stack-md mt-auto">
+            <div>
+              <span class="block text-label-caps font-label-caps text-on-surface-variant mb-1"
+                >IoT Integration</span
+              >
+              <span class="text-data-mono font-data-mono text-primary-fixed-dim">Native MQTT</span>
+            </div>
+            <div>
+              <span class="block text-label-caps font-label-caps text-on-surface-variant mb-1"
+                >Downtime Reduction</span
+              >
+              <span class="text-data-mono font-data-mono text-primary-fixed-dim">-45% Avg</span>
+            </div>
+          </div>
+        </div>
+        <!-- Logistics -->
+        <div
+          class="glass-panel p-stack-lg rounded-xl reveal flex flex-col justify-between group cursor-pointer h-full active"
+          style="transition-delay: 300ms"
+        >
+          <div>
+            <div class="flex items-center gap-4 mb-stack-md">
+              <div
+                class="p-3 bg-surface rounded-lg border border-outline-cyan/20 group-hover:border-primary-fixed-dim transition-colors"
+              >
+                <span
+                  class="material-symbols-outlined text-primary-fixed-dim text-3xl"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >local_shipping</span
+                >
+              </div>
+              <h2 class="text-headline-md font-headline-md text-on-surface">Logistics</h2>
+            </div>
+            <p class="text-body-sm font-body-sm text-on-surface-variant mb-stack-lg">
+              Dynamic supply chain optimization and global fleet telemetry.
+            </p>
+          </div>
+          <div class="grid grid-cols-2 gap-4 border-t border-outline-cyan/10 pt-stack-md mt-auto">
+            <div>
+              <span class="block text-label-caps font-label-caps text-on-surface-variant mb-1"
+                >Routing Engine</span
+              >
+              <span class="text-data-mono font-data-mono text-primary-fixed-dim"
+                >Real-time Graph</span
+              >
+            </div>
+            <div>
+              <span class="block text-label-caps font-label-caps text-on-surface-variant mb-1"
+                >Nodes Managed</span
+              >
+              <span class="text-data-mono font-data-mono text-primary-fixed-dim"
+                >10M+ Concurrent</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Footer -->
+    <footer
+      class="w-full py-stack-lg border-t border-outline-variant/20 bg-surface-dark dark:bg-surface-dark transition-all duration-200 ease-out"
+    >
+      <div
+        class="grid grid-cols-2 md:grid-cols-4 gap-grid-gutter px-grid-margin max-w-[1440px] mx-auto"
+      >
+        <div class="col-span-2 md:col-span-1 flex flex-col gap-4">
+          <img
+            alt="EyeX Logo"
+            class="h-12 w-12 object-contain mb-2"
+            src="https://lh3.googleusercontent.com/aida/AP1WRLs1qz4AaLkAH4Xn1ZBLnjwOzn1wjUTiRGqiiQL1m0Hvnk8B0-boRiHU619fZwDvtb6w43g5gm1WM9XUKu-FGBsz7czQNUz3s3ehwlNjuWZuxCnEnc2t-91RQ9Sy1sVJWlXzomH3aSW4rHKBxPC8P3YhmoDubRYhfcbaBNihFbU8axjV_MgfxtC7dnNmB504ZNrlqhxOVO-KUjIYa1Q_ktPCWexauZMYl9WNOh-9rK24H_lxxLyTctcQsnM"
+          /><span class="text-headline-md font-headline-md text-on-surface dark:text-on-background"
+            >EyeX</span
+          >
+          <p
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container"
+          >
+            © 2024 EyeX Technologies. Intelligence defined.
+          </p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors text-label-caps font-label-caps"
+            href="#"
+            >Product</a
+          >
+        </div>
+        <div class="flex flex-col gap-2">
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors text-label-caps font-label-caps"
+            href="#"
+            >Company</a
+          >
+        </div>
+        <div class="flex flex-col gap-2">
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors text-label-caps font-label-caps"
+            href="#"
+            >Legal</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors text-label-caps font-label-caps"
+            href="#"
+            >Social</a
+          >
+        </div>
+      </div>
+    </footer>
+    <script>
+      // Intersection Observer for scroll reveal animations
+      document.addEventListener("DOMContentLoaded", function () {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("active");
+              }
+            });
+          },
+          { threshold: 0.1 },
+        );
+
+        document.querySelectorAll(".reveal").forEach((el) => {
+          observer.observe(el);
+        });
+      });
+    </script>
+  </body>
+</html>

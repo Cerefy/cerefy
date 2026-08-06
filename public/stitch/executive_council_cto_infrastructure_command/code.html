@@ -1,0 +1,846 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EyeX Neural OS - CTO Office Command Suite</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&amp;family=Geist:wght@400;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#3a44ef",
+              "on-primary-container": "#f1efff",
+              "on-tertiary-fixed-variant": "#900e00",
+              "on-primary-fixed": "#00016d",
+              "surface-container-high": "#292933",
+              "on-tertiary-fixed": "#3f0300",
+              "surface-container-lowest": "#0d0d16",
+              "on-primary": "#0003aa",
+              "primary-fixed-dim": "#bec2ff",
+              "primary-container": "#4b56fe",
+              "primary-fixed": "#e0e0ff",
+              "tertiary-container": "#c83923",
+              "on-secondary-container": "#a9afff",
+              outline: "#8f8fa2",
+              "on-secondary": "#212772",
+              "inverse-on-surface": "#302f3a",
+              "inverse-surface": "#e3e1ef",
+              "surface-container": "#1f1f28",
+              error: "#ffb4ab",
+              "surface-bright": "#383843",
+              "on-primary-fixed-variant": "#1820d9",
+              "secondary-fixed": "#e0e0ff",
+              "on-background": "#e3e1ef",
+              "error-container": "#93000a",
+              tertiary: "#ffb4a6",
+              "outline-variant": "#454556",
+              "on-secondary-fixed": "#080c5e",
+              "on-secondary-fixed-variant": "#393f8a",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "tertiary-fixed": "#ffdad4",
+              "secondary-container": "#393f8a",
+              "secondary-fixed-dim": "#bec2ff",
+              secondary: "#bec2ff",
+              surface: "#12131c",
+              "surface-tint": "#bec2ff",
+              primary: "#bec2ff",
+              "on-surface": "#e3e1ef",
+              "on-tertiary": "#660700",
+              "surface-variant": "#34343e",
+              "on-tertiary-container": "#ffece9",
+              "surface-dim": "#12131c",
+              "on-surface-variant": "#c6c5d9",
+              "on-error": "#690005",
+              "on-error-container": "#ffdad6",
+              "surface-container-low": "#1b1b24",
+              background: "#12131c",
+              "surface-container-highest": "#34343e",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "stack-xs": "0.25rem",
+              "stack-md": "1rem",
+              "grid-margin": "2rem",
+              "stack-lg": "2rem",
+              "stack-sm": "0.5rem",
+              "grid-gutter": "1.5rem",
+            },
+            fontFamily: {
+              "data-mono": ["JetBrains Mono"],
+              "headline-md": ["Geist"],
+              "display-lg": ["Geist"],
+              "body-lg": ["Geist"],
+              "label-caps": ["JetBrains Mono"],
+              "headline-md-mobile": ["Geist"],
+              "body-sm": ["Geist"],
+            },
+            fontSize: {
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: theme("colors.background");
+        color: theme("colors.on-background");
+      }
+      .glass-panel {
+        background: rgba(41, 41, 51, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid theme("colors.outline-variant");
+      }
+      .data-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      /* Custom scrollbar for high-tech feel */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: theme("colors.surface-container-lowest");
+      }
+      ::-webkit-scrollbar-thumb {
+        background: theme("colors.outline-variant");
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: theme("colors.primary");
+      }
+
+      /* Utility for chart lines */
+      .chart-line-primary {
+        stroke: theme("colors.primary");
+        stroke-width: 2;
+        fill: none;
+      }
+      .chart-line-secondary {
+        stroke: theme("colors.secondary");
+        stroke-width: 2;
+        fill: none;
+      }
+      .chart-area-primary {
+        fill: url(#primary-gradient);
+        opacity: 0.2;
+      }
+    </style>
+  </head>
+  <body class="antialiased min-h-screen flex font-body-sm">
+    <!-- SideNavBar (Shared Component) -->
+    <nav
+      class="h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant bg-surface-container flex flex-col py-grid-margin z-50 transition-transform md:translate-x-0 -translate-x-full"
+      id="sideNav"
+    >
+      <div class="px-6 mb-8 flex items-center justify-between">
+        <div>
+          <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tighter">
+            EyeX Neural OS
+          </h1>
+          <p class="font-data-mono text-data-mono text-on-surface-variant mt-1">
+            v4.0 Neural Carbon
+          </p>
+        </div>
+        <button
+          class="md:hidden text-on-surface hover:text-primary"
+          onclick="document.getElementById('sideNav').classList.toggle('-translate-x-full')"
+        >
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="px-4 mb-6">
+        <button
+          class="w-full bg-primary-container text-on-primary-container font-label-caps text-label-caps py-3 rounded hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2 border border-primary/30"
+        >
+          <span class="material-symbols-outlined" style="font-size: 16px">add</span> New Mission
+        </button>
+      </div>
+      <ul class="flex flex-col gap-1 px-2 flex-grow">
+        <li>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high duration-150"
+            href="#"
+            ><span class="material-symbols-outlined">corporate_fare</span>
+            <span class="font-label-caps text-label-caps">Organization</span></a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high duration-150"
+            href="#"
+            ><span class="material-symbols-outlined">grid_view</span>
+            <span class="font-label-caps text-label-caps">Workspace</span></a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high duration-150"
+            href="#"
+            ><span class="material-symbols-outlined">target</span>
+            <span class="font-label-caps text-label-caps">Mission Center</span></a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg border-l-4 border-primary hover:bg-surface-container-high transition-all duration-150"
+            href="#"
+            ><span class="material-symbols-outlined">diversity_3</span>
+            <span class="font-label-caps text-label-caps">Executive Council</span></a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high duration-150"
+            href="#"
+            ><span class="material-symbols-outlined">smart_toy</span>
+            <span class="font-label-caps text-label-caps">AI Agents</span></a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high duration-150"
+            href="#"
+            ><span class="material-symbols-outlined">database</span>
+            <span class="font-label-caps text-label-caps">Data Platform</span></a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high duration-150"
+            href="#"
+            ><span class="material-symbols-outlined">verified_user</span>
+            <span class="font-label-caps text-label-caps">Security Center</span></a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high duration-150"
+            href="#"
+            ><span class="material-symbols-outlined">settings</span>
+            <span class="font-label-caps text-label-caps">Settings</span></a
+          >
+        </li>
+      </ul>
+      <div class="px-6 mt-auto pt-4 border-t border-outline-variant/30 flex items-center gap-3">
+        <div
+          class="w-8 h-8 rounded bg-surface-container-highest border border-outline flex items-center justify-center overflow-hidden"
+        >
+          <img
+            class="w-full h-full object-cover"
+            data-alt="A futuristic, highly detailed close-up of a digital avatar for an administrator profile. The style is cyberpunk minimalism, with glowing tech-cyan circuitry patterns overlaid on a dark silhouette against a deep midnight background. High tech aesthetic, sharp focus, vibrant contrast."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAO4iTfBPxf4omR_s5b3LWLEgZDfln95b2t9UPSYPxsVUs5H0Gwa5BS-6TcZDagssheNSJEM8Yulgy90kw4eSX5absbRcVDEGl1zJoFtQ3gr-jAvNeTqmtIw1LRPWqI4F-jrGmsBcCeIzyozBWPxFzQxCbTy9n9P9gIsRZXl51nJYajTCmijvc7iMMahJb1wz96C8vihvMrF4WHcNzZKKbBvxa4gDWnOEPX1bKLP_-X-3REdJjxf2k2Fpe7bWrJYDgusw0yhQPWCM"
+          />
+        </div>
+        <div>
+          <p class="font-data-mono text-data-mono text-on-surface text-[10px]">ADMINISTRATOR</p>
+          <p class="font-data-mono text-[10px] text-primary flex items-center gap-1">
+            <span
+              class="w-1.5 h-1.5 rounded-full bg-primary block shadow-[0_0_4px_theme('colors.primary')]"
+            ></span>
+            ONLINE
+          </p>
+        </div>
+      </div>
+    </nav>
+    <!-- Main Content Area -->
+    <div class="md:ml-64 flex-1 flex flex-col min-h-screen relative">
+      <!-- TopNavBar (Shared Component) -->
+      <header
+        class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex justify-between items-center h-16 px-grid-margin"
+      >
+        <div class="flex items-center gap-4">
+          <button
+            class="md:hidden text-on-surface"
+            onclick="document.getElementById('sideNav').classList.toggle('-translate-x-full')"
+          >
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <div class="hidden lg:flex gap-6 font-data-mono text-data-mono">
+            <a
+              class="text-primary font-bold border-b-2 border-primary pb-1 opacity-80 transition-all"
+              href="#"
+              >Dashboard</a
+            >
+            <a class="text-on-surface-variant hover:text-primary transition-opacity" href="#"
+              >Analytics</a
+            >
+            <a class="text-on-surface-variant hover:text-primary transition-opacity" href="#"
+              >Logs</a
+            >
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="relative hidden sm:block">
+            <span
+              class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant"
+              style="font-size: 16px"
+              >search</span
+            >
+            <input
+              class="bg-surface-container border border-outline-variant text-on-surface font-data-mono text-[12px] pl-8 pr-3 py-1.5 rounded focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none w-48 transition-all"
+              placeholder="Search operations..."
+              type="text"
+            />
+          </div>
+          <div
+            class="flex items-center gap-2 text-on-surface-variant border-l border-outline-variant pl-4 ml-2"
+          >
+            <button
+              class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high hover:text-primary transition-colors relative"
+            >
+              <span class="material-symbols-outlined" style="font-size: 20px">notifications</span>
+              <span class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-error"></span>
+            </button>
+            <button
+              class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high hover:text-primary transition-colors"
+            >
+              <span class="material-symbols-outlined" style="font-size: 20px">terminal</span>
+            </button>
+            <button
+              class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high hover:text-primary transition-colors"
+            >
+              <span class="material-symbols-outlined" style="font-size: 20px">help_outline</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 ml-2">
+            <button
+              class="hidden lg:flex items-center gap-2 px-3 py-1.5 border border-error text-error hover:bg-error/10 font-label-caps text-label-caps rounded transition-colors"
+            >
+              <span class="material-symbols-outlined" style="font-size: 14px">warning</span>
+              Emergency Stop
+            </button>
+            <button
+              class="flex items-center gap-2 px-4 py-1.5 bg-primary text-on-primary font-label-caps text-label-caps rounded hover:bg-primary-fixed transition-colors"
+            >
+              <span class="material-symbols-outlined" style="font-size: 14px">rocket_launch</span>
+              Deploy Agent
+            </button>
+          </div>
+        </div>
+      </header>
+      <!-- Canvas -->
+      <main class="flex-1 pt-24 pb-20 px-4 md:px-grid-margin overflow-x-hidden">
+        <!-- Page Header -->
+        <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h2 class="font-display-lg text-headline-md md:text-display-lg text-on-surface">
+              CTO Command Suite
+            </h2>
+            <p
+              class="font-data-mono text-data-mono text-on-surface-variant mt-2 flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-primary" style="font-size: 14px"
+                >my_location</span
+              >
+              GLOBAL OVERVIEW / REAL-TIME TELEMETRY
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <span
+              class="px-2 py-1 bg-surface-container border border-outline-variant rounded font-data-mono text-[10px] text-on-surface-variant flex items-center gap-1"
+            >
+              <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> LIVE
+            </span>
+            <span
+              class="px-2 py-1 bg-surface-container border border-outline-variant rounded font-data-mono text-[10px] text-on-surface-variant flex items-center gap-1"
+            >
+              <span class="material-symbols-outlined" style="font-size: 12px">update</span> LAST
+              SYNC: JUST NOW
+            </span>
+          </div>
+        </div>
+        <!-- Dashboard Grid (Bento Style) -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-12 gap-4 auto-rows-[minmax(120px,_auto)]"
+        >
+          <!-- System Health Summary (Span 3) -->
+          <div
+            class="glass-panel rounded-lg p-5 col-span-1 md:col-span-4 xl:col-span-3 flex flex-col justify-between"
+          >
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="font-label-caps text-label-caps text-on-surface-variant">System Uptime</h3>
+              <span class="material-symbols-outlined text-primary">dns</span>
+            </div>
+            <div>
+              <div class="data-value text-primary">99.998%</div>
+              <p class="font-data-mono text-[10px] text-on-surface-variant mt-1">
+                +0.001% vs last month
+              </p>
+            </div>
+            <div class="mt-4 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+              <div
+                class="h-full bg-primary w-[99.9%]"
+                style="box-shadow: 0 0 8px theme(&quot;colors.primary&quot;)"
+              ></div>
+            </div>
+          </div>
+          <!-- Global Latency (Span 3) -->
+          <div
+            class="glass-panel rounded-lg p-5 col-span-1 md:col-span-2 xl:col-span-3 flex flex-col justify-between"
+          >
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="font-label-caps text-label-caps text-on-surface-variant">
+                Global Latency (P99)
+              </h3>
+              <span class="material-symbols-outlined text-secondary">speed</span>
+            </div>
+            <div>
+              <div class="data-value text-on-surface flex items-baseline gap-1">
+                42<span class="text-sm font-normal text-on-surface-variant">ms</span>
+              </div>
+            </div>
+            <!-- Mini Sparkline -->
+            <div class="h-10 mt-2">
+              <svg class="w-full h-full preserve-aspect-ratio-none" viewbox="0 0 100 30">
+                <path
+                  d="M0,25 L10,22 L20,26 L30,15 L40,18 L50,12 L60,20 L70,8 L80,15 L90,5 L100,10"
+                  fill="none"
+                  opacity="0.8"
+                  stroke="theme('colors.secondary')"
+                  stroke-width="1.5"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <!-- Active AI Nodes (Span 3) -->
+          <div
+            class="glass-panel rounded-lg p-5 col-span-1 md:col-span-2 xl:col-span-3 flex flex-col justify-between relative overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"
+            ></div>
+            <div class="flex justify-between items-start mb-4 relative z-10">
+              <h3 class="font-label-caps text-label-caps text-on-surface-variant">
+                Active AI Nodes
+              </h3>
+              <span class="material-symbols-outlined text-on-surface">memory</span>
+            </div>
+            <div class="relative z-10">
+              <div class="data-value text-on-surface">1,024</div>
+              <div class="flex gap-2 mt-2">
+                <span
+                  class="px-1.5 py-0.5 bg-primary/20 text-primary border border-primary/30 rounded font-data-mono text-[9px]"
+                  >412 INFER</span
+                >
+                <span
+                  class="px-1.5 py-0.5 bg-secondary/20 text-secondary border border-secondary/30 rounded font-data-mono text-[9px]"
+                  >612 TRAIN</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Security Alerts (Span 3) -->
+          <div
+            class="glass-panel rounded-lg p-5 col-span-1 md:col-span-4 xl:col-span-3 border-error/30 bg-error/5 flex flex-col justify-between"
+          >
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="font-label-caps text-label-caps text-error">Security Alerts</h3>
+              <span class="material-symbols-outlined text-error">security</span>
+            </div>
+            <div>
+              <div class="data-value text-error">
+                3 <span class="text-sm font-normal text-error/70">CRITICAL</span>
+              </div>
+              <ul class="mt-2 space-y-1">
+                <li class="font-data-mono text-[10px] text-on-surface flex items-center gap-1">
+                  <span class="w-1 h-1 rounded-full bg-error"></span> Node EU-West unauthorized
+                  access attempt
+                </li>
+                <li class="font-data-mono text-[10px] text-on-surface flex items-center gap-1">
+                  <span class="w-1 h-1 rounded-full bg-error"></span> Key rotation overdue (Prod-DB)
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- Infrastructure Map (Span 8) -->
+          <div
+            class="glass-panel rounded-lg col-span-1 md:col-span-4 xl:col-span-8 row-span-2 flex flex-col relative overflow-hidden"
+          >
+            <div
+              class="p-4 border-b border-outline-variant/50 flex justify-between items-center z-10 bg-surface/50 backdrop-blur-sm"
+            >
+              <h3 class="font-label-caps text-label-caps text-on-surface">
+                Global Infrastructure Topology
+              </h3>
+              <div class="flex gap-2">
+                <button
+                  class="px-2 py-1 text-[10px] font-data-mono border border-outline-variant rounded hover:bg-surface-container"
+                >
+                  AWS
+                </button>
+                <button
+                  class="px-2 py-1 text-[10px] font-data-mono border border-outline-variant rounded hover:bg-surface-container"
+                >
+                  GCP
+                </button>
+                <button
+                  class="px-2 py-1 text-[10px] font-data-mono border border-primary text-primary bg-primary/10 rounded"
+                >
+                  ON-PREM
+                </button>
+              </div>
+            </div>
+            <div class="flex-1 relative bg-[#0a0a0f] flex items-center justify-center p-4">
+              <!-- Abstract Map Representation -->
+              <div
+                class="absolute inset-0 bg-cover bg-center opacity-60"
+                data-alt="A highly stylized, abstract digital map of the world rendered in a dark mode cyberpunk aesthetic. The continents are formed by tiny, glowing blue and cyan geometric dots against a deep void background. High-tech nodes connected by glowing lines indicate data center locations. Sharp focus, intricate detail, sophisticated data visualization style."
+                style="
+                  background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuAP9x9PVgah45ejxHMkIZWdKIWPWo21QQz7HjJ1nmvFc9yg9atKMu5HkoSAmaR1wK8aeP_hDFFnbHdu92JzYt02Nx3yRS_ahjSa2FehSM2tv_hJXlz5aWrJ43UpaXo2v4pBBfBEIwLsv_yVRWorX35lQSC_1UWG9hgadVqGl58d_sokt5N0DHL7mjrX9a22hFrTAGsh3oDZljBuemRISqKrBhGuimr7wHNdxRwIzrlut8fo7s-pGD7eCGIx6PVA58dOMmIPLdL2Rqk&quot;);
+                "
+              ></div>
+              <!-- Overlay Nodes -->
+              <div class="absolute inset-0 z-10">
+                <!-- Node 1 (Healthy) -->
+                <div class="absolute top-[30%] left-[20%] group">
+                  <div
+                    class="w-3 h-3 rounded-full bg-primary shadow-[0_0_10px_theme('colors.primary')] animate-pulse"
+                  ></div>
+                  <div
+                    class="hidden group-hover:block absolute top-4 left-4 bg-surface-container border border-outline p-2 rounded text-[10px] font-data-mono whitespace-nowrap z-20"
+                  >
+                    <div class="text-primary font-bold">US-WEST-1 (CORE)</div>
+                    <div>Load: 78%</div>
+                    <div>Status: OPTIMAL</div>
+                  </div>
+                </div>
+                <!-- Node 2 (Warning) -->
+                <div class="absolute top-[40%] left-[70%] group">
+                  <div
+                    class="w-3 h-3 rounded-full bg-tertiary shadow-[0_0_10px_theme('colors.tertiary')]"
+                  ></div>
+                  <div
+                    class="hidden group-hover:block absolute top-4 left-4 bg-surface-container border border-outline p-2 rounded text-[10px] font-data-mono whitespace-nowrap z-20"
+                  >
+                    <div class="text-tertiary font-bold">EU-CENTRAL-1 (EDGE)</div>
+                    <div>Load: 94%</div>
+                    <div>Status: DEGRADED</div>
+                  </div>
+                </div>
+                <!-- Node 3 (Healthy) -->
+                <div class="absolute top-[60%] left-[85%] group">
+                  <div
+                    class="w-3 h-3 rounded-full bg-primary shadow-[0_0_10px_theme('colors.primary')] animate-pulse"
+                    style="animation-delay: 500ms"
+                  ></div>
+                  <div
+                    class="hidden group-hover:block absolute top-4 left-4 bg-surface-container border border-outline p-2 rounded text-[10px] font-data-mono whitespace-nowrap z-20"
+                  >
+                    <div class="text-primary font-bold">AP-SOUTH-1 (DB)</div>
+                    <div>Load: 42%</div>
+                    <div>Status: OPTIMAL</div>
+                  </div>
+                </div>
+                <!-- Connection Lines -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none">
+                  <path
+                    d="M 20% 30% Q 45% 10% 70% 40%"
+                    fill="none"
+                    opacity="0.3"
+                    stroke="theme('colors.primary')"
+                    stroke-dasharray="4 4"
+                    stroke-width="1"
+                  ></path>
+                  <path
+                    d="M 70% 40% Q 80% 60% 85% 60%"
+                    fill="none"
+                    opacity="0.3"
+                    stroke="theme('colors.primary')"
+                    stroke-dasharray="4 4"
+                    stroke-width="1"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <!-- Model Performance Monitor (Span 4) -->
+          <div
+            class="glass-panel rounded-lg col-span-1 md:col-span-4 xl:col-span-4 row-span-2 flex flex-col p-5"
+          >
+            <h3 class="font-label-caps text-label-caps text-on-surface mb-4">
+              Model Performance: Neural-X 4.0
+            </h3>
+            <div class="space-y-6 flex-1 flex flex-col justify-center">
+              <!-- Metric 1 -->
+              <div>
+                <div class="flex justify-between items-end mb-1">
+                  <span class="font-data-mono text-[11px] text-on-surface-variant"
+                    >Inference Latency (avg)</span
+                  >
+                  <span class="font-data-mono text-sm text-primary">124ms</span>
+                </div>
+                <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+                  <div class="h-full bg-primary w-[30%]"></div>
+                </div>
+              </div>
+              <!-- Metric 2 -->
+              <div>
+                <div class="flex justify-between items-end mb-1">
+                  <span class="font-data-mono text-[11px] text-on-surface-variant"
+                    >Token Throughput</span
+                  >
+                  <span class="font-data-mono text-sm text-secondary">4.2k/s</span>
+                </div>
+                <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+                  <div class="h-full bg-secondary w-[85%]"></div>
+                </div>
+              </div>
+              <!-- Metric 3 -->
+              <div>
+                <div class="flex justify-between items-end mb-1">
+                  <span class="font-data-mono text-[11px] text-on-surface-variant"
+                    >Accuracy Score (Eval)</span
+                  >
+                  <span class="font-data-mono text-sm text-on-surface">98.4%</span>
+                </div>
+                <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+                  <div class="h-full bg-outline w-[98%]"></div>
+                </div>
+              </div>
+              <!-- Chart mini -->
+              <div class="mt-4 pt-4 border-t border-outline-variant/30">
+                <span class="font-data-mono text-[10px] text-on-surface-variant mb-2 block"
+                  >Tokens Processed (24h)</span
+                >
+                <div class="h-16 w-full relative">
+                  <!-- Dummy Bar Chart -->
+                  <div
+                    class="absolute bottom-0 w-full flex items-end justify-between gap-1 h-full opacity-60"
+                  >
+                    <div
+                      class="w-full bg-primary/40 hover:bg-primary transition-colors h-[40%] rounded-t-sm"
+                    ></div>
+                    <div
+                      class="w-full bg-primary/40 hover:bg-primary transition-colors h-[60%] rounded-t-sm"
+                    ></div>
+                    <div
+                      class="w-full bg-primary/40 hover:bg-primary transition-colors h-[50%] rounded-t-sm"
+                    ></div>
+                    <div
+                      class="w-full bg-primary/40 hover:bg-primary transition-colors h-[80%] rounded-t-sm"
+                    ></div>
+                    <div
+                      class="w-full bg-primary/40 hover:bg-primary transition-colors h-[70%] rounded-t-sm"
+                    ></div>
+                    <div
+                      class="w-full bg-primary/40 hover:bg-primary transition-colors h-[90%] rounded-t-sm"
+                    ></div>
+                    <div
+                      class="w-full bg-primary/40 hover:bg-primary transition-colors h-[100%] rounded-t-sm"
+                    ></div>
+                    <div
+                      class="w-full bg-primary/40 hover:bg-primary transition-colors h-[85%] rounded-t-sm"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Deployment Queue (Span 6) -->
+          <div
+            class="glass-panel rounded-lg col-span-1 md:col-span-4 xl:col-span-6 p-5 flex flex-col"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="font-label-caps text-label-caps text-on-surface">Deployment Queue</h3>
+              <button class="text-[10px] font-data-mono text-primary hover:underline">
+                VIEW ALL
+              </button>
+            </div>
+            <div class="overflow-x-auto flex-1">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-outline-variant/50">
+                    <th class="font-data-mono text-[10px] text-on-surface-variant py-2 font-normal">
+                      TASK ID
+                    </th>
+                    <th class="font-data-mono text-[10px] text-on-surface-variant py-2 font-normal">
+                      TARGET
+                    </th>
+                    <th class="font-data-mono text-[10px] text-on-surface-variant py-2 font-normal">
+                      STATUS
+                    </th>
+                    <th
+                      class="font-data-mono text-[10px] text-on-surface-variant py-2 font-normal text-right"
+                    >
+                      TIME
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="font-data-mono text-[11px] text-on-surface">
+                  <tr
+                    class="border-b border-outline-variant/20 hover:bg-surface-container-high transition-colors"
+                  >
+                    <td class="py-3">#DEP-8992</td>
+                    <td class="py-3">Node-Agent-Alpha</td>
+                    <td class="py-3">
+                      <span
+                        class="px-1.5 py-0.5 bg-primary/20 text-primary border border-primary/30 rounded"
+                        >DEPLOYING</span
+                      >
+                    </td>
+                    <td class="py-3 text-right text-on-surface-variant">00:02:14</td>
+                  </tr>
+                  <tr
+                    class="border-b border-outline-variant/20 hover:bg-surface-container-high transition-colors"
+                  >
+                    <td class="py-3">#DEP-8991</td>
+                    <td class="py-3">DB-Migration-V4</td>
+                    <td class="py-3">
+                      <span
+                        class="px-1.5 py-0.5 bg-surface-container text-on-surface border border-outline rounded"
+                        >QUEUED</span
+                      >
+                    </td>
+                    <td class="py-3 text-right text-on-surface-variant">--:--:--</td>
+                  </tr>
+                  <tr class="hover:bg-surface-container-high transition-colors">
+                    <td class="py-3">#DEP-8990</td>
+                    <td class="py-3">Security-Patch-KB99</td>
+                    <td class="py-3">
+                      <span
+                        class="px-1.5 py-0.5 bg-secondary/20 text-secondary border border-secondary/30 rounded"
+                        >COMPLETED</span
+                      >
+                    </td>
+                    <td class="py-3 text-right text-on-surface-variant">14m ago</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Tech Stack Integrity (Span 6) -->
+          <div
+            class="glass-panel rounded-lg col-span-1 md:col-span-4 xl:col-span-6 p-5 flex flex-col"
+          >
+            <h3 class="font-label-caps text-label-caps text-on-surface mb-4">Stack Integrity</h3>
+            <div class="grid grid-cols-2 gap-4 flex-1">
+              <!-- Service Block -->
+              <div
+                class="p-3 border border-outline-variant/50 rounded bg-surface/30 flex items-center gap-3"
+              >
+                <div
+                  class="w-8 h-8 rounded bg-primary/10 border border-primary/30 flex items-center justify-center text-primary"
+                >
+                  <span class="material-symbols-outlined" style="font-size: 16px">storage</span>
+                </div>
+                <div>
+                  <div class="font-data-mono text-[12px] text-on-surface">Data Lake</div>
+                  <div class="font-data-mono text-[10px] text-primary">SYNCED</div>
+                </div>
+              </div>
+              <!-- Service Block -->
+              <div
+                class="p-3 border border-outline-variant/50 rounded bg-surface/30 flex items-center gap-3"
+              >
+                <div
+                  class="w-8 h-8 rounded bg-primary/10 border border-primary/30 flex items-center justify-center text-primary"
+                >
+                  <span class="material-symbols-outlined" style="font-size: 16px">api</span>
+                </div>
+                <div>
+                  <div class="font-data-mono text-[12px] text-on-surface">Gateway API</div>
+                  <div class="font-data-mono text-[10px] text-primary">99.9% OK</div>
+                </div>
+              </div>
+              <!-- Service Block -->
+              <div class="p-3 border border-error/30 rounded bg-error/5 flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded bg-error/10 border border-error/30 flex items-center justify-center text-error"
+                >
+                  <span class="material-symbols-outlined" style="font-size: 16px">router</span>
+                </div>
+                <div>
+                  <div class="font-data-mono text-[12px] text-on-surface">Edge Routers</div>
+                  <div class="font-data-mono text-[10px] text-error animate-pulse">WARNING</div>
+                </div>
+              </div>
+              <!-- Service Block -->
+              <div
+                class="p-3 border border-outline-variant/50 rounded bg-surface/30 flex items-center gap-3"
+              >
+                <div
+                  class="w-8 h-8 rounded bg-outline/10 border border-outline/30 flex items-center justify-center text-on-surface-variant"
+                >
+                  <span class="material-symbols-outlined" style="font-size: 16px">memory</span>
+                </div>
+                <div>
+                  <div class="font-data-mono text-[12px] text-on-surface">GPU Cluster B</div>
+                  <div class="font-data-mono text-[10px] text-on-surface-variant">MAINTENANCE</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!-- Footer (Shared Component) -->
+      <footer
+        class="fixed bottom-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center px-grid-margin py-2 text-[10px] font-data-mono text-data-mono text-tertiary"
+      >
+        <div>
+          <span class="font-label-caps text-label-caps text-outline"
+            >© 2024 EyeX Neural Systems. Status: OPTIMAL</span
+          >
+        </div>
+        <div class="flex gap-4">
+          <a
+            class="text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >Documentation</a
+          >
+          <a
+            class="text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >Support</a
+          >
+          <a class="text-tertiary underline transition-colors duration-200" href="#"
+            >System Health</a
+          >
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

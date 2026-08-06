@@ -24,7 +24,7 @@ interface IntelligenceDocument {
 export function IntelligenceHubPage() {
   const [query, setQuery] = useState("");
   const [context, setContext] = useState("");
-  const [sessionId, setSessionId] = useState("demo-" + Date.now());
+  const [sessionId, setSessionId] = useState(() => `session-${crypto.randomUUID()}`);
   const [result, setResult] = useState<string | null>(null);
   const [steps, setSteps] = useState<Step[]>([]);
   const [knowledgeKey, setKnowledgeKey] = useState("");
@@ -35,16 +35,8 @@ export function IntelligenceHubPage() {
 
   const analyzeMutation = useMutation({
     mutationFn: async (data: { query: string; context?: string; session_id: string }) => {
-      const formData = new FormData();
-      formData.append("query", data.query);
-      if (data.context) formData.append("context", data.context);
-      formData.append("session_id", data.session_id);
-      const resp = await fetch("http://eyex-api:8000/api/v1/intelligence/analyze", {
-        method: "POST",
-        body: formData,
-      });
-      if (!resp.ok) throw new Error(`Analysis failed: ${resp.status}`);
-      return resp.json();
+      const response = await BackendApi.analyzeBusiness(data.query, data.context, data.session_id);
+      return response;
     },
     onSuccess: (data) => {
       setResult(data.output);
@@ -56,16 +48,8 @@ export function IntelligenceHubPage() {
   });
 
   const knowledgeMutation = useMutation({
-    mutationFn: (data: { key: string; value: string }) => {
-      const formData = new FormData();
-      formData.append("key", data.key);
-      formData.append("value", data.value);
-      formData.append("session_id", sessionId);
-      return fetch("http://eyex-api:8000/api/v1/intelligence/knowledge", {
-        method: "POST",
-        body: formData,
-      });
-    },
+    mutationFn: (data: { key: string; value: string }) =>
+      BackendApi.storeKnowledge(data.key, data.value, sessionId),
     onSuccess: () => {
       toast.success("Knowledge stored");
       setKnowledgeKey("");
@@ -76,13 +60,15 @@ export function IntelligenceHubPage() {
 
   const { data: knowledge } = useQuery<{ records?: KnowledgeRecord[] }>({
     queryKey: ["knowledge", sessionId],
-    queryFn: () => BackendApi.getKnowledgeData(sessionId) as Promise<{ records?: KnowledgeRecord[] }>,
+    queryFn: () =>
+      BackendApi.getKnowledgeData(sessionId) as Promise<{ records?: KnowledgeRecord[] }>,
     enabled: activeTab === "knowledge",
   });
 
   const { data: documents } = useQuery<{ documents?: IntelligenceDocument[] }>({
     queryKey: ["documents", sessionId],
-    queryFn: () => BackendApi.listDocuments(sessionId) as Promise<{ documents?: IntelligenceDocument[] }>,
+    queryFn: () =>
+      BackendApi.listDocuments(sessionId) as Promise<{ documents?: IntelligenceDocument[] }>,
     enabled: activeTab === "documents",
   });
 
@@ -98,7 +84,7 @@ export function IntelligenceHubPage() {
     formData.append("file", file);
     formData.append("session_id", sessionId);
     try {
-      const resp = await fetch("http://eyex-api:8000/api/v1/intelligence/documents/upload", {
+      const resp = await fetch("http://Cerefy-api:8000/api/v1/intelligence/documents/upload", {
         method: "POST",
         body: formData,
       });
@@ -300,7 +286,9 @@ export function IntelligenceHubPage() {
                   <div key={i} className="px-5 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <FileText size={14} className="text-muted-foreground" />
-                      <span className="text-xs text-white">{d.filename ?? d.name ?? "Document"}</span>
+                      <span className="text-xs text-white">
+                        {d.filename ?? d.name ?? "Document"}
+                      </span>
                     </div>
                     <Badge tone="neutral">{d.chunks ?? 0} chunks</Badge>
                   </div>

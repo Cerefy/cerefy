@@ -19,7 +19,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-const STORAGE_KEY = "qorx_api_keys";
+const STORAGE_KEY = "Cerefy_api_keys";
 
 interface ApiKeyRecord {
   id: string;
@@ -32,7 +32,7 @@ interface ApiKeyRecord {
 
 function generateApiKey(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let key = "eyex_live_";
+  let key = "Cerefy_live_";
   for (let i = 0; i < 48; i++) {
     key += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -240,7 +240,7 @@ export function ApiPage() {
                 <Key className="w-12 h-12 text-eye-text mx-auto mb-4 opacity-40" />
                 <p className="text-sm text-white font-bold mb-2">No API keys yet</p>
                 <p className="text-xs text-eye-text mb-6">
-                  Generate your first key to start integrating with the QORX API.
+                  Generate your first key to start integrating with the Cerefy API.
                 </p>
                 <button
                   onClick={() => setShowNewKeyModal(true)}
@@ -390,7 +390,7 @@ export function ApiPage() {
                   header with every request:
                 </p>
                 <div className="mt-3 bg-eye-bg rounded border border-eye-border p-4 font-mono text-xs text-white/80">
-                  <span className="text-primary-brand">Authorization</span>: Bearer eyex_live_***
+                  <span className="text-primary-brand">Authorization</span>: Bearer Cerefy_live_***
                 </div>
               </div>
               <div>
@@ -407,7 +407,7 @@ export function ApiPage() {
               <div>
                 <h4 className="text-sm font-bold text-white mb-2">Base URL</h4>
                 <div className="mt-2 bg-eye-bg rounded border border-eye-border p-4 font-mono text-xs text-white/80">
-                  https://api.qorx.io/v1
+                  https://api.Cerefy.io/v1
                 </div>
               </div>
             </div>
@@ -428,7 +428,7 @@ export function ApiPage() {
               </div>
             </div>
             <div className="text-[10px] text-eye-text flex items-center gap-2">
-              <span>&copy; 2024 EYEX TECHNOLOGIES INC.</span>
+              <span>&copy; 2024 Cerefy INC.</span>
               <span className="h-1 w-1 bg-eye-text rounded-full" />
               <a className="hover:text-primary-brand" href="#">
                 TERMS OF SERVICE

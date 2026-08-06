@@ -1,0 +1,644 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EyeX Neural OS - AI Intelligence Chat</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "tertiary-container": "#fec931",
+              "surface-tint": "#00daf3",
+              "surface-container-highest": "#2e3638",
+              "surface-container-high": "#242b2d",
+              "surface-bright": "#333a3c",
+              tertiary: "#ffeac0",
+              "on-tertiary-container": "#6f5500",
+              "on-surface": "#dce4e5",
+              "on-secondary-container": "#a9afff",
+              background: "#0d1516",
+              "on-primary-fixed-variant": "#004f58",
+              "primary-container": "#00e5ff",
+              "tertiary-fixed": "#ffdf96",
+              primary: "#c3f5ff",
+              "secondary-fixed-dim": "#bec2ff",
+              "on-primary-fixed": "#001f24",
+              "on-primary": "#00363d",
+              "inverse-surface": "#dce4e5",
+              "surface-variant": "#2e3638",
+              surface: "#0d1516",
+              "on-tertiary-fixed-variant": "#594400",
+              outline: "#849396",
+              "error-container": "#93000a",
+              "on-secondary-fixed-variant": "#1820d9",
+              "on-secondary-fixed": "#00016d",
+              "on-primary-container": "#00626e",
+              "on-tertiary": "#3e2e00",
+              "on-surface-variant": "#bac9cc",
+              "secondary-fixed": "#e0e0ff",
+              "surface-dim": "#0d1516",
+              "on-error": "#690005",
+              "inverse-primary": "#006875",
+              "on-background": "#dce4e5",
+              secondary: "#bec2ff",
+              "outline-variant": "#3b494c",
+              "inverse-on-surface": "#2a3233",
+              "primary-fixed": "#9cf0ff",
+              "on-secondary": "#0003aa",
+              "secondary-container": "#1820d9",
+              "surface-container": "#192122",
+              error: "#ffb4ab",
+              "on-tertiary-fixed": "#251a00",
+              "primary-fixed-dim": "#00daf3",
+              "surface-container-lowest": "#080f11",
+              "tertiary-fixed-dim": "#f3bf26",
+              "surface-container-low": "#151d1e",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              gutter: "16px",
+              "container-max": "1440px",
+              unit: "4px",
+              margin: "24px",
+            },
+            fontFamily: {
+              "body-lg": ["Geist"],
+              "headline-md": ["Geist"],
+              "body-sm": ["Geist"],
+              "display-lg-mobile": ["Geist"],
+              "display-lg": ["Geist"],
+              "mono-label": ["JetBrains Mono"],
+              "mono-data": ["JetBrains Mono"],
+            },
+            fontSize: {
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "display-lg-mobile": ["32px", { lineHeight: "40px", fontWeight: "700" }],
+              "display-lg": [
+                "48px",
+                { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" },
+              ],
+              "mono-label": [
+                "12px",
+                { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "500" },
+              ],
+              "mono-data": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #0d1516;
+        color: #dce4e5;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 1;
+      }
+      /* Custom scrollbar for high-density UI */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #3b494c;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #00e5ff;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-background h-screen overflow-hidden flex font-body-sm text-body-sm"
+  >
+    <!-- Global Background Shader -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none opacity-20">{{DATA:SCREEN:SCREEN_7}}</div>
+    <!-- SideNavBar Component -->
+    <nav
+      class="bg-surface dark:bg-surface text-primary dark:text-primary font-body-sm text-body-sm h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant hidden md:flex flex-col py-margin px-4 z-50"
+    >
+      <div class="mb-8 flex items-center gap-3 mt-2">
+        <div
+          class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center shrink-0"
+        >
+          <span class="material-symbols-outlined text-primary-container text-xl">psychology</span>
+        </div>
+        <div>
+          <h1
+            class="font-headline-md text-headline-md font-bold text-primary dark:text-primary text-base"
+          >
+            EyeX Neural OS
+          </h1>
+          <p class="font-mono-label text-mono-label text-on-surface-variant">Enterprise Tier</p>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto pr-2 space-y-1">
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-xl">domain</span>
+          <span>Organization</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-xl">grid_view</span>
+          <span>Workspace</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-xl">rocket_launch</span>
+          <span>Mission Center</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-xl">groups</span>
+          <span>Executive Council</span>
+        </a>
+        <!-- Active Tab -->
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-primary font-bold border-r-2 border-primary bg-surface-container-high hover:bg-surface-container-high transition-all duration-200 transform scale-95"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-xl text-primary-container">psychology</span>
+          <span>AI Agents</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-xl">database</span>
+          <span>Data Platform</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-xl">shield_lock</span>
+          <span>Security Center</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-xl">settings</span>
+          <span>Settings</span>
+        </a>
+      </div>
+      <div class="mt-auto pt-6 border-t border-outline-variant">
+        <button
+          class="w-full bg-primary-container text-on-primary-fixed py-2 rounded-lg font-body-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+        >
+          <span class="material-symbols-outlined text-sm">power_settings_new</span>
+          Initialize Node
+        </button>
+      </div>
+    </nav>
+    <!-- TopNavBar Component -->
+    <header
+      class="bg-surface dark:bg-surface text-primary dark:text-primary font-body-lg text-body-lg fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-16 border-b border-outline-variant dark:border-outline-variant flex items-center justify-between px-margin z-40 transition-colors duration-300"
+    >
+      <div class="flex items-center gap-4 flex-1">
+        <!-- Mobile Menu Toggle -->
+        <button class="md:hidden text-on-surface-variant hover:text-primary transition-colors">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="relative w-full max-w-md hidden sm:block">
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm"
+            >search</span
+          >
+          <input
+            class="w-full bg-surface-container-high border border-outline-variant rounded-lg pl-9 pr-4 py-1.5 text-sm text-on-surface focus:border-primary-container focus:ring-0 transition-colors placeholder:text-on-surface-variant font-mono-data"
+            placeholder="Query Neural DB..."
+            type="text"
+          />
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors relative group"
+        >
+          <span class="material-symbols-outlined text-xl">terminal</span>
+          <span
+            class="absolute -bottom-8 bg-surface-container-highest text-on-surface px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 whitespace-nowrap border border-outline-variant font-mono-label"
+            >Console</span
+          >
+        </button>
+        <button
+          class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors relative group"
+        >
+          <span class="material-symbols-outlined text-xl">notifications</span>
+          <span
+            class="absolute top-2 right-2 w-2 h-2 bg-primary-container rounded-full animate-pulse"
+          ></span>
+        </button>
+        <button
+          class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
+        >
+          <span class="material-symbols-outlined text-xl">account_circle</span>
+        </button>
+      </div>
+    </header>
+    <!-- Main Content Area -->
+    <main class="flex-1 flex pt-16 md:ml-64 h-full relative">
+      <!-- Center Chat Panel -->
+      <div
+        class="flex-1 flex flex-col min-w-0 border-r border-outline-variant bg-[#0d1516]/80 backdrop-blur-sm"
+      >
+        <!-- Chat Header -->
+        <div
+          class="px-6 py-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-lowest/50"
+        >
+          <div class="flex items-center gap-3">
+            <div class="flex -space-x-2">
+              <div
+                class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center z-20"
+                title="CEO-Agent Alpha"
+              >
+                <span class="material-symbols-outlined text-sm text-primary-container"
+                  >admin_panel_settings</span
+                >
+              </div>
+              <div
+                class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center z-10"
+                title="Risk-Agent Delta"
+              >
+                <span class="material-symbols-outlined text-sm text-tertiary-container"
+                  >warning</span
+                >
+              </div>
+            </div>
+            <div>
+              <h2 class="font-headline-md text-base text-primary">
+                Strategic Acquisition Analysis
+              </h2>
+              <div class="flex items-center gap-2 text-xs font-mono-label text-on-surface-variant">
+                <span class="flex items-center gap-1"
+                  ><span class="w-1.5 h-1.5 rounded-full bg-[#00e5ff] animate-pulse"></span> Active
+                  Session</span
+                >
+                <span>|</span>
+                <span>Thread ID: NX-9942</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              class="px-3 py-1.5 rounded border border-outline-variant text-on-surface-variant text-xs font-mono-label hover:text-primary hover:border-primary-container transition-colors flex items-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[14px]">tune</span> Adjust Directives
+            </button>
+          </div>
+        </div>
+        <!-- Chat Stream -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+          <!-- System Message -->
+          <div class="flex justify-center">
+            <div
+              class="bg-surface-container border border-outline-variant rounded-full px-4 py-1 text-xs font-mono-label text-on-surface-variant flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-[14px]">memory</span> Context parameters
+              loaded from Knowledge Graph
+            </div>
+          </div>
+          <!-- Agent Message: CEO Alpha -->
+          <div class="flex gap-4 max-w-4xl">
+            <div
+              class="w-8 h-8 rounded-full bg-[#1b1b24] border border-[#00e5ff]/30 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(0,229,255,0.1)]"
+            >
+              <span class="material-symbols-outlined text-sm text-[#00e5ff]"
+                >admin_panel_settings</span
+              >
+            </div>
+            <div class="flex-1 space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-[#00e5ff] text-sm">CEO-Agent Alpha</span>
+                <span class="text-xs font-mono-data text-on-surface-variant">10:42:05 UTC</span>
+                <span
+                  class="px-1.5 py-0.5 rounded bg-[#1b1b24] border border-outline-variant text-[10px] font-mono-label text-[#00e5ff]"
+                  >CONFIDENCE: 98%</span
+                >
+              </div>
+              <div
+                class="bg-[#1b1b24] border border-outline-variant rounded-lg rounded-tl-none p-4 text-on-surface text-sm font-body-sm leading-relaxed shadow-sm"
+              >
+                <p>
+                  Initial analysis of Target Co's Q3 financials indicates a 15% deviation from
+                  projected EBITDA. I've initiated a cross-reference with our internal market
+                  models. Requesting Risk-Agent Delta to evaluate potential regulatory hurdles in
+                  the EMEA region if acquisition proceeds.
+                </p>
+                <div class="mt-3 flex gap-2">
+                  <span
+                    class="inline-flex items-center gap-1 bg-surface-container px-2 py-1 rounded text-xs font-mono-label border border-outline-variant"
+                  >
+                    <span class="material-symbols-outlined text-[12px]">insert_chart</span>
+                    Q3_Financials.csv
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Agent Message: Risk Delta -->
+          <div class="flex gap-4 max-w-4xl">
+            <div
+              class="w-8 h-8 rounded-full bg-[#1b1b24] border border-tertiary-container/30 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(254,201,49,0.1)]"
+            >
+              <span class="material-symbols-outlined text-sm text-tertiary-container">warning</span>
+            </div>
+            <div class="flex-1 space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-tertiary-container text-sm">Risk-Agent Delta</span>
+                <span class="text-xs font-mono-data text-on-surface-variant">10:42:12 UTC</span>
+                <span
+                  class="px-1.5 py-0.5 rounded bg-[#1b1b24] border border-outline-variant text-[10px] font-mono-label text-tertiary-container"
+                  >CONFIDENCE: 87%</span
+                >
+              </div>
+              <div
+                class="bg-[#1b1b24] border border-outline-variant rounded-lg rounded-tl-none p-4 text-on-surface text-sm font-body-sm leading-relaxed shadow-sm relative overflow-hidden"
+              >
+                <!-- Subtle Processing Gradient Background -->
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-tertiary-container/5 to-transparent pointer-events-none"
+                ></div>
+                <p>
+                  Processing regulatory frameworks (EU-Antitrust Dir. 2023). Probability of extended
+                  review phase: High (68%). The primary risk vector is overlap in their cloud
+                  infrastructure division.
+                </p>
+                <div
+                  class="mt-3 p-3 bg-surface-container rounded border border-outline-variant font-mono-data text-xs space-y-1 text-on-surface-variant"
+                >
+                  <div>
+                    <span class="text-tertiary-container">&gt;</span> ANALYZING MARKET SHARE
+                    OVERLAP...
+                  </div>
+                  <div>
+                    <span class="text-tertiary-container">&gt;</span> EU REGION: 34% (Threshold:
+                    30%)
+                  </div>
+                  <div class="text-[#00e5ff]">
+                    <span class="text-tertiary-container">&gt;</span> RECOMMENDATION: Divestiture
+                    strategy required.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Agent Streaming Response -->
+          <div class="flex gap-4 max-w-4xl">
+            <div
+              class="w-8 h-8 rounded-full bg-[#1b1b24] border border-[#00e5ff]/30 flex items-center justify-center shrink-0"
+            >
+              <span class="material-symbols-outlined text-sm text-[#00e5ff] animate-spin"
+                >data_usage</span
+              >
+            </div>
+            <div class="flex-1 space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-[#00e5ff] text-sm">Data-Agent Sigma</span>
+                <span class="text-xs font-mono-data text-on-surface-variant">Processing...</span>
+                <span
+                  class="px-1.5 py-0.5 rounded bg-surface-container border border-outline-variant text-[10px] font-mono-label text-[#4b56fe]"
+                  >AGENT-PROCESSING</span
+                >
+              </div>
+              <div
+                class="bg-[#1b1b24] border border-[#00e5ff]/30 rounded-lg rounded-tl-none p-4 text-on-surface text-sm font-body-sm shadow-[0_0_15px_rgba(0,229,255,0.05)]"
+              >
+                <p class="inline-block relative">
+                  Generating divestiture scenarios based on historical FTC rulings...
+                  <span
+                    class="absolute -right-2 top-0 bottom-0 w-1 bg-[#00e5ff] animate-pulse"
+                  ></span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Command Input Area -->
+        <div
+          class="p-4 border-t border-outline-variant bg-surface-container-lowest/80 backdrop-blur-md"
+        >
+          <div class="max-w-5xl mx-auto flex flex-col gap-2">
+            <!-- Context/Action Chips -->
+            <div class="flex items-center gap-2 px-1 overflow-x-auto pb-2 scrollbar-hide">
+              <button
+                class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-outline-variant bg-[#1b1b24] hover:border-[#00e5ff] hover:text-[#00e5ff] transition-colors text-xs font-mono-label text-on-surface-variant group"
+              >
+                <span class="material-symbols-outlined text-[14px]">add</span> Add Agent
+              </button>
+              <button
+                class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-outline-variant bg-[#1b1b24] hover:border-[#00e5ff] hover:text-[#00e5ff] transition-colors text-xs font-mono-label text-on-surface-variant"
+              >
+                <span class="material-symbols-outlined text-[14px]">attach_file</span> Attach
+                Context
+              </button>
+              <div class="w-px h-4 bg-outline-variant mx-1"></div>
+              <button
+                class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-outline-variant bg-surface-container-high text-xs font-mono-label text-on-surface-variant"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-[#00e5ff]"></span> Target Co Dossier
+              </button>
+            </div>
+            <!-- Input Field -->
+            <div
+              class="relative bg-[#1b1b24] rounded-xl border border-outline-variant focus-within:border-[#00e5ff] focus-within:shadow-[0_0_10px_rgba(0,229,255,0.1)] transition-all duration-300"
+            >
+              <textarea
+                class="w-full bg-transparent border-none rounded-xl pl-4 pr-32 py-3 text-sm text-on-surface focus:ring-0 resize-none font-mono-data placeholder:text-on-surface-variant/50"
+                placeholder="Input command or query to Neural Swarm..."
+                rows="2"
+              ></textarea>
+              <div class="absolute bottom-2 right-2 flex items-center gap-1">
+                <button
+                  class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
+                  title="Voice Input"
+                >
+                  <span class="material-symbols-outlined text-[18px]">mic</span>
+                </button>
+                <button
+                  class="px-4 h-8 rounded-lg bg-[#00e5ff] text-[#0d0d16] font-bold font-mono-label flex items-center gap-1 hover:opacity-90 transition-opacity"
+                >
+                  EXECUTE <span class="material-symbols-outlined text-[16px]">send</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Right Sidebar: Context & Memory (Hidden on smaller screens) -->
+      <div
+        class="w-80 bg-surface border-l border-outline-variant hidden lg:flex flex-col flex-shrink-0 z-10"
+      >
+        <div
+          class="px-4 py-3 border-b border-outline-variant flex items-center justify-between bg-surface-container-low"
+        >
+          <h3 class="font-headline-md text-sm text-primary font-semibold flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">hub</span> Context &amp; Memory
+          </h3>
+          <button class="text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined text-[18px]">more_horiz</span>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-6">
+          <!-- Mission Data -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-mono-label text-on-surface-variant tracking-wider uppercase">
+              Active Mission Data
+            </h4>
+            <div class="bg-[#1b1b24] border border-outline-variant rounded-lg p-3 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-medium text-on-surface">Target_Acq_Project_X</span>
+                <span class="text-[#00e5ff] font-mono-data">92% Relevance</span>
+              </div>
+              <div class="w-full bg-surface-container-highest rounded-full h-1.5">
+                <div class="bg-[#00e5ff] h-1.5 rounded-full" style="width: 92%"></div>
+              </div>
+              <p class="text-[11px] text-on-surface-variant leading-tight pt-1">
+                Evaluating Q3 financials and regulatory compliance for potential merger.
+              </p>
+            </div>
+          </div>
+          <!-- Knowledge Graph Nodes -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-mono-label text-on-surface-variant tracking-wider uppercase">
+              Linked Nodes
+            </h4>
+            <div class="flex flex-wrap gap-2">
+              <span
+                class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container border border-outline-variant text-[11px] font-mono-label text-on-surface hover:border-[#00e5ff] cursor-pointer transition-colors"
+              >
+                <span class="material-symbols-outlined text-[12px] text-tertiary-container"
+                  >policy</span
+                >
+                EU-Antitrust
+              </span>
+              <span
+                class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container border border-outline-variant text-[11px] font-mono-label text-on-surface hover:border-[#00e5ff] cursor-pointer transition-colors"
+              >
+                <span class="material-symbols-outlined text-[12px] text-secondary">domain</span>
+                Target Co.
+              </span>
+              <span
+                class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container border border-outline-variant text-[11px] font-mono-label text-on-surface hover:border-[#00e5ff] cursor-pointer transition-colors"
+              >
+                <span class="material-symbols-outlined text-[12px] text-error">trending_down</span>
+                Q3_Variance
+              </span>
+            </div>
+          </div>
+          <!-- Referenced Documents -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-mono-label text-on-surface-variant tracking-wider uppercase">
+              Documents
+            </h4>
+            <div class="space-y-2">
+              <a
+                class="flex items-start gap-3 p-2 rounded hover:bg-surface-container transition-colors group"
+                href="#"
+              >
+                <div class="mt-0.5">
+                  <span
+                    class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:text-[#00e5ff] transition-colors"
+                    >description</span
+                  >
+                </div>
+                <div>
+                  <p
+                    class="text-xs font-medium text-on-surface group-hover:text-primary transition-colors"
+                  >
+                    Q3_Financials_Draft.pdf
+                  </p>
+                  <p class="text-[10px] font-mono-data text-on-surface-variant">
+                    Added by User • 10m ago
+                  </p>
+                </div>
+              </a>
+              <a
+                class="flex items-start gap-3 p-2 rounded hover:bg-surface-container transition-colors group"
+                href="#"
+              >
+                <div class="mt-0.5">
+                  <span
+                    class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:text-[#00e5ff] transition-colors"
+                    >table</span
+                  >
+                </div>
+                <div>
+                  <p
+                    class="text-xs font-medium text-on-surface group-hover:text-primary transition-colors"
+                  >
+                    Market_Share_EU.xlsx
+                  </p>
+                  <p class="text-[10px] font-mono-data text-on-surface-variant">
+                    Auto-pulled by Agent Sigma
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Context Visualizer Mini-map (Aesthetic) -->
+        <div
+          class="h-32 border-t border-outline-variant bg-[#080f11] relative overflow-hidden flex items-center justify-center"
+        >
+          <div class="absolute inset-0 opacity-30 flex items-center justify-center">
+            <!-- Simplified node visualizer for context -->
+            <div class="w-1 h-1 bg-[#00e5ff] rounded-full absolute shadow-[0_0_10px_#00e5ff]"></div>
+            <div
+              class="w-0.5 h-16 bg-outline-variant absolute top-1/2 -translate-y-1/2 rotate-45"
+            ></div>
+            <div
+              class="w-0.5 h-12 bg-outline-variant absolute top-1/2 -translate-y-1/2 -rotate-45 ml-10"
+            ></div>
+            <div
+              class="w-1.5 h-1.5 bg-tertiary-container rounded-full absolute -top-4 right-10 shadow-[0_0_5px_#fec931]"
+            ></div>
+            <div class="w-1 h-1 bg-secondary rounded-full absolute bottom-4 left-10"></div>
+          </div>
+          <span
+            class="text-[10px] font-mono-label text-on-surface-variant absolute bottom-2 right-2 bg-surface-container/80 px-1 rounded"
+            >Topology Map</span
+          >
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,693 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Trust &amp; Governance — Immutable Audit Logs | EyeX OS</title>
+    <!-- Material Symbols Outlined -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Config injected from instructions -->
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-container": "#f1efff",
+              "inverse-on-surface": "#302f3a",
+              "surface-variant": "#34343e",
+              "secondary-fixed": "#e0e0ff",
+              "inverse-primary": "#3a44ef",
+              tertiary: "#ffb4a6",
+              "on-primary-fixed": "#00016d",
+              "tertiary-container": "#c83923",
+              "on-tertiary-container": "#ffece9",
+              "on-error-container": "#ffdad6",
+              "surface-container-lowest": "#0d0d16",
+              "on-primary": "#0003aa",
+              "surface-tint": "#bec2ff",
+              "primary-container": "#4b56fe",
+              "secondary-fixed-dim": "#bec2ff",
+              "error-container": "#93000a",
+              "surface-container-highest": "#34343e",
+              error: "#ffb4ab",
+              "outline-variant": "#454556",
+              "on-primary-fixed-variant": "#1820d9",
+              "on-secondary-fixed-variant": "#393f8a",
+              "tertiary-fixed": "#ffdad4",
+              "on-tertiary": "#660700",
+              "surface-bright": "#383843",
+              "on-surface": "#e3e1ef",
+              "on-secondary": "#212772",
+              "on-tertiary-fixed-variant": "#900e00",
+              "surface-container": "#1f1f28",
+              primary: "#bec2ff",
+              "surface-container-high": "#292933",
+              secondary: "#bec2ff",
+              "inverse-surface": "#e3e1ef",
+              "on-tertiary-fixed": "#3f0300",
+              "secondary-container": "#393f8a",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "on-error": "#690005",
+              "on-secondary-fixed": "#080c5e",
+              "surface-container-low": "#1b1b24",
+              "primary-fixed": "#e0e0ff",
+              "on-secondary-container": "#a9afff",
+              background: "#12131c",
+              surface: "#12131c",
+              "primary-fixed-dim": "#bec2ff",
+              outline: "#8f8fa2",
+              "on-background": "#e3e1ef",
+              "surface-dim": "#12131c",
+              "on-surface-variant": "#c6c5d9",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "stack-lg": "2rem",
+              "grid-margin": "2rem",
+              "stack-sm": "0.5rem",
+              "stack-xs": "0.25rem",
+              "stack-md": "1rem",
+              "grid-gutter": "1.5rem",
+            },
+            fontFamily: {
+              "label-caps": ["JetBrains Mono"],
+              "headline-md": ["Geist"],
+              "data-mono": ["JetBrains Mono"],
+              "display-lg": ["Geist"],
+              "headline-md-mobile": ["Geist"],
+              "body-sm": ["Geist"],
+              "body-lg": ["Geist"],
+            },
+            fontSize: {
+              "label-caps": [
+                "11px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.1em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-md": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "data-mono": [
+                "13px",
+                {
+                  lineHeight: "18px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "500",
+                },
+              ],
+              "display-lg": [
+                "64px",
+                {
+                  lineHeight: "72px",
+                  letterSpacing: "-0.04em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-md-mobile": [
+                "24px",
+                {
+                  lineHeight: "32px",
+                  fontWeight: "600",
+                },
+              ],
+              "body-sm": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  fontWeight: "400",
+                },
+              ],
+              "body-lg": [
+                "16px",
+                {
+                  lineHeight: "24px",
+                  fontWeight: "400",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <!-- Import Fonts -->
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Geist:wght@400;600;700&display=swap");
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-background antialiased flex h-screen overflow-hidden selection:bg-primary-container selection:text-on-primary-container"
+  >
+    <!-- SideNavBar (from JSON) -->
+    <!-- active item: "Governance" based on prompt -->
+    <aside
+      class="bg-surface-container docked h-full left-0 w-64 border-r border-outline-variant flat no shadows flex flex-col py-stack-md px-stack-sm flex-shrink-0 relative z-10 hidden md:flex"
+    >
+      <!-- Header -->
+      <div class="mb-stack-lg px-2 pt-2">
+        <div class="flex items-center gap-3 mb-4">
+          <div
+            class="w-8 h-8 rounded bg-primary-container flex items-center justify-center border border-primary/30"
+          >
+            <img
+              class="w-6 h-6 object-contain"
+              data-alt="A highly detailed, ultra-modern abstract geometric logo for a neural OS, glowing indigo and deep blues in a pitch-black minimalist environment, representing computing power and AI precision."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2Wxk3HXdZ-MllhwBTdSi0hgCjPR_EPuld3VEvRYkkxzTjiWmUGOI5xGBFWyHZzHctitNhvJ9-IamlakfyqwCDdVdRXolBbQdYkJeKGSso9Z1eOw1unhQzhklzjW0lvW1mcVKex_pCnnYS2qKzXz-LHeJXZ3HMq1vIngrNzSQz9gGbS1JMHRO40JKOd50QX7BLduRbmwfZpVgiIGCTIoiTA7fnqZT0zVO2dRZ_2temV3HE8HrJ7juvpmaya4n7xZQRMdsw42jx7bQ"
+            />
+          </div>
+          <div>
+            <h1
+              class="font-headline-md text-headline-md text-primary text-[20px] leading-tight tracking-tighter"
+            >
+              Neural Carbon
+            </h1>
+            <p class="font-label-caps text-label-caps text-on-surface-variant text-[9px]">
+              v4.0.2 Stable
+            </p>
+          </div>
+        </div>
+        <button
+          class="w-full bg-primary text-on-primary font-label-caps text-label-caps py-2 rounded flex items-center justify-center gap-2 hover:brightness-110 active:scale-98 transform duration-100 transition-all shadow-[0_0_10px_rgba(190,194,255,0.2)]"
+        >
+          <span class="material-symbols-outlined text-[16px]">add</span>
+          Deploy Agent
+        </button>
+      </div>
+      <!-- Navigation Tabs -->
+      <nav class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-2 space-y-1">
+        <!-- Neural Core -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-caps text-label-caps rounded-lg transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors"
+            >psychology</span
+          >
+          Neural Core
+        </a>
+        <!-- Agent Grid -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-caps text-label-caps rounded-lg transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors"
+            >smart_toy</span
+          >
+          Agent Grid
+        </a>
+        <!-- Governance (ACTIVE) -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container rounded-lg font-bold font-label-caps text-label-caps transition-all duration-150 active:scale-98 transform duration-100 relative overflow-hidden"
+          href="#"
+        >
+          <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+          <span class="material-symbols-outlined text-[18px]">gavel</span>
+          Governance
+        </a>
+        <!-- Data Flow -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-caps text-label-caps rounded-lg transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors"
+            >hub</span
+          >
+          Data Flow
+        </a>
+        <!-- Security -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-caps text-label-caps rounded-lg transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors"
+            >security</span
+          >
+          Security
+        </a>
+        <!-- Resources -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-caps text-label-caps rounded-lg transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors"
+            >inventory_2</span
+          >
+          Resources
+        </a>
+        <!-- Compute -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-caps text-label-caps rounded-lg transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors"
+            >memory</span
+          >
+          Compute
+        </a>
+        <!-- Logs -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-caps text-label-caps rounded-lg transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors"
+            >terminal</span
+          >
+          Logs
+        </a>
+      </nav>
+      <!-- Footer Tabs -->
+      <div class="mt-auto pt-4 border-t border-outline-variant px-2 space-y-1">
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-caps text-label-caps rounded-lg transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors"
+            >description</span
+          >
+          Docs
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-caps text-label-caps rounded-lg transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors"
+            >contact_support</span
+          >
+          Support
+        </a>
+      </div>
+    </aside>
+    <!-- Main Content Canvas -->
+    <main class="flex-1 flex flex-col relative w-full bg-surface">
+      <!-- Custom Top Header for this specific screen -->
+      <header
+        class="h-16 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex items-center justify-between px-grid-margin z-20 sticky top-0 flex-shrink-0"
+      >
+        <!-- Mobile Menu Toggle (Visible only on md screens) -->
+        <button class="md:hidden text-on-surface-variant p-2 mr-2">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="flex flex-col">
+          <h2
+            class="font-headline-md text-headline-md-mobile md:text-headline-md text-primary tracking-tight leading-none"
+          >
+            System Audit Protocol
+          </h2>
+          <p class="font-label-caps text-label-caps text-on-surface-variant mt-1">
+            Immutable Forensic Trace
+          </p>
+        </div>
+        <div class="flex items-center gap-4">
+          <!-- Live Integrity Hash Indicator -->
+          <div
+            class="hidden lg:flex items-center gap-2 bg-surface-container-high px-3 py-1.5 rounded border border-outline-variant/50"
+          >
+            <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+            <span class="font-data-mono text-data-mono text-primary text-[11px]"
+              >HASH: 0x9f8b...3a2c [VERIFIED]</span
+            >
+          </div>
+          <!-- Export Actions -->
+          <button
+            class="hidden md:flex bg-surface-container border border-primary text-primary font-label-caps text-label-caps px-4 py-2 rounded hover:bg-primary-container hover:text-on-primary-container transition-colors items-center gap-2"
+          >
+            <span class="material-symbols-outlined text-[16px]">download</span>
+            Export for SOC2
+          </button>
+          <button
+            class="hidden md:flex bg-surface-container border border-outline-variant text-on-surface font-label-caps text-label-caps px-4 py-2 rounded hover:bg-surface-variant transition-colors items-center gap-2"
+          >
+            <span class="material-symbols-outlined text-[16px]">shield</span>
+            HIPAA Pack
+          </button>
+          <!-- Mobile Actions Menu -->
+          <button class="md:hidden text-on-surface-variant p-2">
+            <span class="material-symbols-outlined">more_vert</span>
+          </button>
+        </div>
+      </header>
+      <!-- Scrollable Content Area -->
+      <div class="flex-1 overflow-y-auto p-grid-margin relative">
+        <!-- Filter Bar -->
+        <div
+          class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-surface-container-low p-4 rounded-lg border border-outline-variant"
+        >
+          <div class="flex items-center gap-4">
+            <div class="relative">
+              <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]"
+                >search</span
+              >
+              <input
+                class="bg-surface border border-outline-variant rounded pl-10 pr-4 py-1.5 text-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary w-64 placeholder-on-surface-variant/50 transition-all font-data-mono"
+                placeholder="Search Trace IDs or Agents..."
+                type="text"
+              />
+            </div>
+            <div class="h-6 w-px bg-outline-variant mx-2"></div>
+            <div class="flex gap-2">
+              <span
+                class="px-3 py-1 bg-surface-variant text-on-surface rounded font-label-caps text-label-caps border border-outline-variant cursor-pointer hover:bg-surface-bright transition-colors"
+                >ALL</span
+              >
+              <span
+                class="px-3 py-1 bg-surface text-on-surface-variant rounded font-label-caps text-label-caps border border-outline-variant cursor-pointer hover:text-on-surface transition-colors flex items-center gap-1"
+              >
+                <span class="material-symbols-outlined text-[14px]">warning</span> FLAGGED
+              </span>
+              <span
+                class="px-3 py-1 bg-surface text-on-surface-variant rounded font-label-caps text-label-caps border border-outline-variant cursor-pointer hover:text-on-surface transition-colors"
+                >EXECUTIVE DECISIONS</span
+              >
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-3 text-on-surface-variant font-label-caps text-label-caps"
+          >
+            <span>TIME RANGE:</span>
+            <select
+              class="bg-surface border border-outline-variant rounded px-2 py-1 text-on-surface font-data-mono text-[11px] focus:border-primary focus:ring-0"
+            >
+              <option>LAST 24 HOURS</option>
+              <option>LAST 7 DAYS</option>
+              <option>LAST 30 DAYS</option>
+            </select>
+          </div>
+        </div>
+        <!-- High-Density Log Table -->
+        <div class="bg-surface-container rounded-lg border border-outline-variant overflow-hidden">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr
+                class="bg-surface-container-high border-b border-outline-variant font-label-caps text-label-caps text-on-surface-variant"
+              >
+                <th class="py-3 px-4 w-48">Timestamp (UTC)</th>
+                <th class="py-3 px-4">Origin Agent/User</th>
+                <th class="py-3 px-4">Neural Trace ID</th>
+                <th class="py-3 px-4">Action Type</th>
+                <th class="py-3 px-4 text-right">Compliance Status</th>
+              </tr>
+            </thead>
+            <tbody
+              class="font-data-mono text-data-mono text-on-surface divide-y divide-outline-variant/50"
+            >
+              <!-- Log Entry 1 (Expandable) -->
+              <tr
+                class="hover:bg-surface-variant/50 cursor-pointer transition-colors group"
+                onclick="toggleTrace('trace-1')"
+              >
+                <td class="py-3 px-4 text-on-surface-variant text-[12px]">
+                  2023-10-27 14:32:01.442
+                </td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px] text-primary"
+                      >smart_toy</span
+                    >
+                    <span>Agent-X9-Finance</span>
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-primary group-hover:underline">TRC-8892-A1B4</td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded text-[10px] border border-secondary/30"
+                    >Executive Decision</span
+                  >
+                </td>
+                <td class="py-3 px-4 text-right">
+                  <div class="flex items-center justify-end gap-2 text-primary">
+                    <span class="material-symbols-outlined text-[16px]">verified</span>
+                    <span>Verified</span>
+                  </div>
+                </td>
+              </tr>
+              <!-- Neural Reasoning Chain Visualizer (Hidden by default) -->
+              <tr class="hidden bg-surface-container-lowest border-b-2 border-primary" id="trace-1">
+                <td class="p-6" colspan="5">
+                  <div class="flex flex-col gap-4">
+                    <div
+                      class="flex items-center justify-between border-b border-outline-variant pb-2"
+                    >
+                      <h4
+                        class="font-label-caps text-label-caps text-primary flex items-center gap-2"
+                      >
+                        <span class="material-symbols-outlined text-[16px]">account_tree</span>
+                        Neural Reasoning Chain: TRC-8892-A1B4
+                      </h4>
+                      <button class="text-on-surface-variant hover:text-on-surface">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                      </button>
+                    </div>
+                    <!-- Visualizer Canvas -->
+                    <div
+                      class="relative w-full h-48 bg-surface-container rounded border border-outline-variant/50 overflow-hidden flex items-center justify-center"
+                    >
+                      <!-- Placeholder for complex WebGL/SVG reasoning graph -->
+                      <div
+                        class="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-surface to-surface"
+                      ></div>
+                      <!-- Simplified DOM representation of reasoning -->
+                      <div
+                        class="flex items-center gap-6 relative z-10 w-full px-8 justify-between"
+                      >
+                        <!-- Node 1 -->
+                        <div class="flex flex-col items-center gap-2">
+                          <div
+                            class="w-10 h-10 rounded-full bg-surface border border-outline-variant flex items-center justify-center z-10 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+                          >
+                            <span
+                              class="material-symbols-outlined text-[18px] text-on-surface-variant"
+                              >input</span
+                            >
+                          </div>
+                          <span
+                            class="font-label-caps text-[9px] text-on-surface-variant text-center"
+                            >Market Data<br />Ingress</span
+                          >
+                        </div>
+                        <div class="flex-1 h-px bg-outline-variant relative">
+                          <div
+                            class="absolute inset-y-0 left-0 bg-primary w-full animate-[pulse_2s_ease-in-out_infinite] opacity-50"
+                          ></div>
+                        </div>
+                        <!-- Node 2 -->
+                        <div class="flex flex-col items-center gap-2">
+                          <div
+                            class="w-12 h-12 rounded bg-surface border border-primary flex items-center justify-center z-10 shadow-[0_0_20px_rgba(75,86,254,0.15)] relative"
+                          >
+                            <div
+                              class="absolute inset-0 border border-primary/50 rounded animate-ping opacity-20"
+                            ></div>
+                            <span class="material-symbols-outlined text-[20px] text-primary"
+                              >psychology</span
+                            >
+                          </div>
+                          <span class="font-label-caps text-[9px] text-primary text-center"
+                            >Risk Assessment<br />Model v4</span
+                          >
+                        </div>
+                        <div class="flex-1 h-px bg-outline-variant"></div>
+                        <!-- Node 3 -->
+                        <div class="flex flex-col items-center gap-2">
+                          <div
+                            class="w-10 h-10 rounded-full bg-surface border border-outline-variant flex items-center justify-center z-10 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+                          >
+                            <span
+                              class="material-symbols-outlined text-[18px] text-on-surface-variant"
+                              >balance</span
+                            >
+                          </div>
+                          <span
+                            class="font-label-caps text-[9px] text-on-surface-variant text-center"
+                            >Policy Check<br />P-772</span
+                          >
+                        </div>
+                        <div class="flex-1 h-px bg-outline-variant relative">
+                          <div
+                            class="absolute inset-y-0 left-0 bg-primary w-full animate-[pulse_2s_ease-in-out_infinite_0.5s] opacity-50"
+                          ></div>
+                        </div>
+                        <!-- Output -->
+                        <div class="flex flex-col items-center gap-2">
+                          <div
+                            class="w-10 h-10 rounded-full bg-primary/20 border border-primary flex items-center justify-center z-10 shadow-[0_0_15px_rgba(75,86,254,0.3)]"
+                          >
+                            <span class="material-symbols-outlined text-[18px] text-primary"
+                              >task_alt</span
+                            >
+                          </div>
+                          <span class="font-label-caps text-[9px] text-primary text-center"
+                            >Action<br />Authorized</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-2">
+                      <div class="text-[11px] font-data-mono text-on-surface-variant">
+                        Confidence Score: <span class="text-primary font-bold">99.4%</span> |
+                        Latency: 12ms
+                      </div>
+                      <button class="text-primary text-[11px] font-label-caps hover:underline">
+                        View Raw JSON Payload
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- Log Entry 2 -->
+              <tr class="hover:bg-surface-variant/50 cursor-pointer transition-colors group">
+                <td class="py-3 px-4 text-on-surface-variant text-[12px]">
+                  2023-10-27 14:31:45.102
+                </td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px] text-on-surface"
+                      >person</span
+                    >
+                    <span>Admin_JSmith</span>
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-primary group-hover:underline">TRC-8891-C2D5</td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2 py-0.5 bg-surface-bright text-on-surface rounded text-[10px] border border-outline-variant"
+                    >Model Weight Update</span
+                  >
+                </td>
+                <td class="py-3 px-4 text-right">
+                  <div class="flex items-center justify-end gap-2 text-primary">
+                    <span class="material-symbols-outlined text-[16px]">verified</span>
+                    <span>Verified</span>
+                  </div>
+                </td>
+              </tr>
+              <!-- Log Entry 3 (Flagged) -->
+              <tr
+                class="hover:bg-surface-variant/50 cursor-pointer transition-colors group bg-error-container/5"
+              >
+                <td class="py-3 px-4 text-on-surface-variant text-[12px]">
+                  2023-10-27 14:28:11.005
+                </td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px] text-error">smart_toy</span>
+                    <span class="text-error">Agent-Z1-External</span>
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-error group-hover:underline">TRC-8890-F9A1</td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2 py-0.5 bg-surface-bright text-on-surface rounded text-[10px] border border-outline-variant"
+                    >Data Ingress</span
+                  >
+                </td>
+                <td class="py-3 px-4 text-right">
+                  <div class="flex items-center justify-end gap-2 text-error">
+                    <span class="material-symbols-outlined text-[16px]">warning</span>
+                    <span class="font-bold">Flagged: Schema Mismatch</span>
+                  </div>
+                </td>
+              </tr>
+              <!-- Log Entry 4 -->
+              <tr class="hover:bg-surface-variant/50 cursor-pointer transition-colors group">
+                <td class="py-3 px-4 text-on-surface-variant text-[12px]">
+                  2023-10-27 14:25:33.771
+                </td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px] text-primary"
+                      >smart_toy</span
+                    >
+                    <span>Agent-X9-Finance</span>
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-primary group-hover:underline">TRC-8889-E5F2</td>
+                <td class="py-3 px-4">
+                  <span
+                    class="px-2 py-0.5 bg-surface-bright text-on-surface rounded text-[10px] border border-outline-variant"
+                    >Data Request</span
+                  >
+                </td>
+                <td class="py-3 px-4 text-right">
+                  <div class="flex items-center justify-end gap-2 text-primary">
+                    <span class="material-symbols-outlined text-[16px]">verified</span>
+                    <span>Verified</span>
+                  </div>
+                </td>
+              </tr>
+              <!-- More entries omitted for brevity, but UI feels full -->
+            </tbody>
+          </table>
+          <!-- Pagination -->
+          <div
+            class="p-4 border-t border-outline-variant flex items-center justify-between bg-surface-container-high"
+          >
+            <span class="font-data-mono text-data-mono text-on-surface-variant text-[11px]"
+              >Showing 1-25 of 14,209 records</span
+            >
+            <div class="flex gap-1">
+              <button
+                class="p-1 rounded bg-surface border border-outline-variant text-on-surface-variant hover:text-primary transition-colors disabled:opacity-50"
+              >
+                <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+              </button>
+              <button
+                class="p-1 rounded bg-surface border border-outline-variant text-on-surface-variant hover:text-primary transition-colors"
+              >
+                <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      function toggleTrace(id) {
+        const el = document.getElementById(id);
+        if (el.classList.contains("hidden")) {
+          // Close all others first if desired, simplified here
+          el.classList.remove("hidden");
+        } else {
+          el.classList.add("hidden");
+        }
+      }
+
+      // Open the first one by default for demonstration
+      setTimeout(() => {
+        toggleTrace("trace-1");
+      }, 500);
+    </script>
+  </body>
+</html>

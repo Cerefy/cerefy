@@ -14,13 +14,22 @@ export default defineConfig({
           if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/")) {
             return "vendor-react";
           }
-          if (id.includes("node_modules/@tanstack/react-router") || id.includes("node_modules/@tanstack/react-query") || id.includes("node_modules/@tanstack/router-core") || id.includes("node_modules/@tanstack/history")) {
+          if (
+            id.includes("node_modules/@tanstack/react-router") ||
+            id.includes("node_modules/@tanstack/react-query") ||
+            id.includes("node_modules/@tanstack/router-core") ||
+            id.includes("node_modules/@tanstack/history")
+          ) {
             return "vendor-tanstack";
           }
           if (id.includes("node_modules/@supabase/")) {
             return "vendor-supabase";
           }
-          if (id.includes("node_modules/recharts") || id.includes("node_modules/d3-") || id.includes("node_modules/victory-")) {
+          if (
+            id.includes("node_modules/recharts") ||
+            id.includes("node_modules/d3-") ||
+            id.includes("node_modules/victory-")
+          ) {
             return "vendor-recharts";
           }
           if (id.includes("node_modules/@radix-ui/")) {

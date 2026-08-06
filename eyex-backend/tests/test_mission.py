@@ -10,22 +10,20 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+from app.agents.base import NodeAgent
 from app.agents.graph import (
     AgentGraph,
     AgentWorkflowState,
-    route_from_supervisor,
-    route_from_planner,
-    route_from_researcher,
-    route_from_coder,
-    route_from_quality_gate,
-    route_from_documenter,
-    route_from_devops,
-    _supervisor_node,
     _quality_gate_node,
     _responder_node,
     _run_agent_node,
+    _supervisor_node,
+    route_from_coder,
+    route_from_devops,
+    route_from_documenter,
+    route_from_quality_gate,
+    route_from_supervisor,
 )
-from app.agents.base import NodeAgent
 from app.agents.supervisor import SupervisorAgent
 
 
@@ -539,7 +537,6 @@ class TestMissionReporting:
 
     def test_final_report_contains_all_agent_sections(self):
         """The responder should compile a report with sections from all agents."""
-        from app.agents.graph import _responder_node
 
         state = _make_state({
             "classification": {"category": "coding", "reasoning": "Building an app"},

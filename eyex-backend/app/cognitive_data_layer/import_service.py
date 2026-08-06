@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import json
 import logging
 import time
 import uuid
-from pathlib import Path
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,7 +36,7 @@ class ImportService:
         failed_rows = 0
         skipped_rows = 0
         error_summary: dict[str, int] = {}
-        
+
         all_records = []
 
         if not sheets:
@@ -60,7 +58,7 @@ class ImportService:
                 if not target_col:
                     # If column is unmapped, we can either skip it or keep it with original name
                     target_col = orig_col
-                
+
                 # Basic validation based on target_col
                 if val is None or str(val).strip() == "":
                     # Depending on strictness, we might flag empty values
@@ -69,7 +67,7 @@ class ImportService:
                     is_valid = False
                     validation_errors.append({"column": orig_col, "error": "Invalid email format"})
                     error_summary["invalid_email"] = error_summary.get("invalid_email", 0) + 1
-                
+
                 mapped_data[target_col] = val
 
             if is_valid:

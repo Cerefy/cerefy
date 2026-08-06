@@ -1,0 +1,659 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EyeX Technologies - The Enterprise AI Operating System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#302f3a",
+              "surface-dark": "#05070A",
+              "on-primary-fixed-variant": "#1820d9",
+              "tertiary-fixed": "#ffdad4",
+              "surface-bright": "#383843",
+              "primary-fixed": "#e0e0ff",
+              "tertiary-container": "#c83923",
+              "outline-variant": "#454556",
+              "on-background": "#e3e1ef",
+              "on-tertiary": "#660700",
+              outline: "#8f8fa2",
+              secondary: "#bec2ff",
+              "on-surface": "#e3e1ef",
+              "on-primary-container": "#f1efff",
+              "primary-fixed-dim": "#bec2ff",
+              "primary-container": "#4b56fe",
+              "on-tertiary-fixed": "#3f0300",
+              "surface-container-highest": "#34343e",
+              error: "#ffb4ab",
+              primary: "#bec2ff",
+              "inverse-primary": "#3a44ef",
+              "on-secondary": "#212772",
+              "outline-cyan": "rgba(0, 229, 255, 0.3)",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "secondary-container": "#393f8a",
+              "on-error-container": "#ffdad6",
+              "on-surface-variant": "#c6c5d9",
+              "surface-variant": "#34343e",
+              tertiary: "#ffb4a6",
+              "secondary-fixed": "#e0e0ff",
+              "on-secondary-container": "#a9afff",
+              "error-container": "#93000a",
+              "surface-container": "#1f1f28",
+              "on-secondary-fixed-variant": "#393f8a",
+              "on-secondary-fixed": "#080c5e",
+              "surface-dim": "#12131c",
+              "on-primary-fixed": "#00016d",
+              "inverse-surface": "#e3e1ef",
+              "surface-container-low": "#1b1b24",
+              background: "#12131c",
+              "secondary-fixed-dim": "#bec2ff",
+              "surface-tint": "#bec2ff",
+              "on-tertiary-container": "#ffece9",
+              "on-tertiary-fixed-variant": "#900e00",
+              "on-error": "#690005",
+              surface: "#12131c",
+              "on-primary": "#0003aa",
+              "surface-container-high": "#292933",
+              "surface-container-lowest": "#0d0d16",
+            },
+            borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" },
+            spacing: {
+              "grid-gutter": "1.5rem",
+              "stack-xs": "0.25rem",
+              "stack-lg": "2rem",
+              "grid-margin": "2rem",
+              "stack-md": "1rem",
+              "stack-sm": "0.5rem",
+            },
+            fontFamily: {
+              "headline-md": ["Geist"],
+              "body-sm": ["Geist"],
+              "body-lg": ["Geist"],
+              "headline-md-mobile": ["Geist"],
+              "label-caps": ["JetBrains Mono"],
+              "data-mono": ["JetBrains Mono"],
+              "display-lg": ["Geist"],
+              headline: ["Geist"],
+              display: ["Geist"],
+              body: ["Geist"],
+              label: ["Jetbrains Mono"],
+            },
+            fontSize: {
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #05070a;
+        color: #dae4ef;
+        overflow-x: hidden;
+      }
+      .glass-panel {
+        background: rgba(11, 20, 28, 0.4);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 229, 255, 0.1);
+      }
+      .glass-panel:hover {
+        border: 1px solid rgba(0, 229, 255, 0.3);
+        box-shadow: 0px 0px 30px rgba(0, 229, 255, 0.15);
+      }
+      .text-glow {
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+      }
+
+      /* Scroll Reveal Utility Classes */
+      .reveal-up {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .reveal-up.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body class="font-body-sm bg-surface-dark min-h-screen flex flex-col antialiased">
+    <!-- TopNavBar -->
+    <nav
+      class="fixed top-0 w-full z-50 bg-surface/40 dark:bg-surface-dark/40 backdrop-blur-xl border-b border-outline-cyan/10 shadow-[0px_0px_30px_rgba(0,229,255,0.05)] transition-all duration-150 ease-out"
+    >
+      <div class="flex justify-between items-center px-grid-margin py-4 max-w-[1440px] mx-auto">
+        <div class="flex items-center gap-4">
+          <img
+            alt="EyeX Atomic Logo"
+            class="h-8 w-8 object-contain"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPDII3K5gt7t28rYa8-wHwDBjLTnPhncCP7RkKd_nKLE2-BhzSgYL2c61cqX5Vd_pu0NPgHrJfD5P-Kkf0P9ha9KmzMPcjiZprr_vmoYKtxrrlneZTONRaYye47taEOdd9YW6M1HHTZaTJI9J_jLq7EE855up_lLL_jAaFlNF_gav_LprByq2CGUxOVSOI9weMMRK4c8aPAbooQREgPZ8dms-gW493VjY3Yzge0RpEVmFC4vJRrGA9DmMgBsGxLlZqkJ1CZB3cZl4"
+          />
+          <span
+            class="text-body-lg font-headline-md font-bold tracking-tight text-on-surface dark:text-on-background"
+            >EyeX Technologies</span
+          >
+        </div>
+        <div class="hidden md:flex items-center gap-8">
+          <!-- Platform (Active Intent for Homepage) -->
+          <a
+            class="text-primary dark:text-primary-fixed-dim border-b-2 border-primary pb-1 text-label-caps font-label-caps uppercase transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20"
+            href="#"
+            >Platform</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container text-label-caps font-label-caps uppercase transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20"
+            href="#"
+            >Solutions</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container text-label-caps font-label-caps uppercase transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20"
+            href="#"
+            >Resources</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container text-label-caps font-label-caps uppercase transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20"
+            href="#"
+            >Pricing</a
+          >
+        </div>
+        <div class="flex items-center gap-4">
+          <a
+            class="text-on-surface-variant hover:text-primary transition-colors text-label-caps font-label-caps uppercase hidden sm:block"
+            href="#"
+            >Login</a
+          >
+          <button
+            class="bg-primary-container text-on-primary-container px-6 py-2 rounded font-label-caps text-label-caps uppercase hover:bg-primary-fixed-dim transition-colors shadow-[0px_0px_15px_rgba(0,229,255,0.2)]"
+          >
+            Book Demo
+          </button>
+        </div>
+      </div>
+    </nav>
+    <!-- Main Content Canvas -->
+    <main class="flex-grow pt-24 relative">
+      <!-- Hero Section with Shader -->
+      <section
+        class="relative min-h-[921px] flex items-center justify-center overflow-hidden px-grid-margin py-20"
+      >
+        <div class="absolute inset-0 z-0">
+          <!-- STITCH_SHADER_START:ANIMATION_43 class="absolute inset-0 w-full h-full opacity-60" -->
+          <div class="absolute inset-0 w-full h-full opacity-60" style="display: block">
+            <canvas
+              height="921"
+              id="shader-canvas-ANIMATION_43"
+              style="display: block; width: 100%; height: 100%"
+              width="1280"
+            ></canvas>
+            <script>
+              (function () {
+                const canvas = document.getElementById("shader-canvas-ANIMATION_43");
+
+                // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+                // This fires on initial layout and whenever the element is resized.
+                function syncSize() {
+                  const w = canvas.clientWidth || 1280;
+                  const h = canvas.clientHeight || 720;
+                  if (canvas.width !== w || canvas.height !== h) {
+                    canvas.width = w;
+                    canvas.height = h;
+                  }
+                }
+                if (typeof ResizeObserver !== "undefined") {
+                  new ResizeObserver(syncSize).observe(canvas);
+                }
+                syncSize();
+
+                const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+                if (!gl) return;
+                const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+                const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+varying vec2 v_texCoord;
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 mouse = u_mouse / u_resolution;
+    
+    // Deep carbon background matching #05070A
+    vec3 color = vec3(0.0196, 0.0275, 0.0392); 
+    
+    // Tech Cyan pulses #00E5FF
+    vec3 cyan = vec3(0.0, 0.898, 1.0);
+    
+    float t = u_time * 0.4;
+    
+    // Neural web effect
+    float neural = 0.0;
+    for(float i = 1.0; i < 4.0; i++) {
+        uv.x += sin(uv.y * 10.0 + t) * 0.1 / i;
+        uv.y += cos(uv.x * 10.0 + t) * 0.1 / i;
+        neural += abs(0.01 / sin(uv.y + uv.x + t));
+    }
+    
+    // Interaction
+    float dist = length(v_texCoord - mouse);
+    float glow = smoothstep(0.4, 0.0, dist) * 0.2;
+    
+    color += cyan * (neural * 0.05 + glow);
+    
+    // Subtle grid flicker
+    float grid = sin(v_texCoord.x * 150.0) * sin(v_texCoord.y * 150.0);
+    color += cyan * step(0.995, grid) * 0.03 * (sin(u_time) * 0.5 + 0.5);
+    
+    gl_FragColor = vec4(color, 1.0);
+}`;
+                function cs(type, src) {
+                  const s = gl.createShader(type);
+                  gl.shaderSource(s, src);
+                  gl.compileShader(s);
+                  return s;
+                }
+                const prog = gl.createProgram();
+                gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+                gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+                gl.linkProgram(prog);
+                gl.useProgram(prog);
+                const buf = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+                gl.bufferData(
+                  gl.ARRAY_BUFFER,
+                  new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+                  gl.STATIC_DRAW,
+                );
+                const pos = gl.getAttribLocation(prog, "a_position");
+                gl.enableVertexAttribArray(pos);
+                gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+                const uTime = gl.getUniformLocation(prog, "u_time");
+                const uRes = gl.getUniformLocation(prog, "u_resolution");
+                const uMouse = gl.getUniformLocation(prog, "u_mouse");
+
+                // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+                // Shaders that need normalized coords should use: u_mouse / u_resolution.
+                let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+                window.addEventListener("mousemove", (event) => {
+                  const rect = canvas.getBoundingClientRect();
+                  if (rect.width && rect.height) {
+                    const nx = (event.clientX - rect.left) / rect.width;
+                    const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+                    mouse.x = nx * canvas.width;
+                    mouse.y = ny * canvas.height;
+                  }
+                });
+
+                function render(t) {
+                  if (typeof ResizeObserver === "undefined") syncSize();
+                  gl.viewport(0, 0, canvas.width, canvas.height);
+                  if (uTime) gl.uniform1f(uTime, t * 0.001);
+                  if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+                  if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+                  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                  requestAnimationFrame(render);
+                }
+                render(0);
+              })();
+            </script>
+          </div>
+          <!-- STITCH_SHADER_END:ANIMATION_43 -->
+          <div
+            class="absolute inset-0 bg-gradient-to-b from-surface-dark/40 via-transparent to-surface-dark z-10"
+          ></div>
+        </div>
+        <div
+          class="relative z-20 max-w-[1440px] mx-auto text-center flex flex-col items-center gap-stack-lg reveal-up active"
+        >
+          <div class="glass-panel px-4 py-1 rounded-full mb-4 inline-flex items-center gap-2">
+            <span
+              class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#00e5ff]"
+            ></span>
+            <span
+              class="text-data-mono font-data-mono text-primary-container uppercase tracking-widest text-[10px]"
+              >System Online v2.4.1</span
+            >
+          </div>
+          <h1
+            class="text-display-lg font-display-lg font-bold text-on-background max-w-4xl tracking-tight leading-tight"
+          >
+            The Enterprise AI <br />
+            <span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-primary-container to-blue-500 text-glow"
+              >Operating System</span
+            >
+          </h1>
+          <p
+            class="text-headline-md-mobile font-headline-md-mobile text-on-surface-variant max-w-2xl font-normal"
+          >
+            Orchestrate autonomous agents, analyze vast datasets, and deploy mission-critical AI
+            with unprecedented computational precision.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 mt-8">
+            <button
+              class="bg-primary-container text-on-primary-container px-8 py-4 rounded font-label-caps text-label-caps uppercase hover:bg-primary-fixed-dim transition-all shadow-[0px_0px_20px_rgba(0,229,255,0.4)] hover:shadow-[0px_0px_30px_rgba(0,229,255,0.6)] flex items-center justify-center gap-2"
+            >
+              Book a Demo
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+            <button
+              class="glass-panel px-8 py-4 rounded font-label-caps text-label-caps uppercase text-on-background hover:text-primary-container transition-all flex items-center justify-center gap-2"
+            >
+              View Architecture
+              <span class="material-symbols-outlined text-[18px]">account_tree</span>
+            </button>
+          </div>
+        </div>
+      </section>
+      <!-- Ecosystem Bento Grid -->
+      <section class="py-32 px-grid-margin max-w-[1440px] mx-auto relative z-20">
+        <div class="mb-16 reveal-up active">
+          <h2 class="text-headline-md font-headline-md text-on-background">AI Agent Ecosystem</h2>
+          <p class="text-body-lg font-body-lg text-on-surface-variant mt-2 max-w-xl">
+            Deploy specialized neural nodes that communicate, adapt, and execute complex workflows
+            autonomously.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-grid-gutter auto-rows-[240px]">
+          <!-- Card 1 -->
+          <div
+            class="glass-panel rounded-xl p-6 flex flex-col justify-between md:col-span-2 reveal-up relative overflow-hidden group active"
+          >
+            <div
+              class="absolute right-0 top-0 w-64 h-64 bg-primary-container/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 group-hover:bg-primary-container/10 transition-colors"
+            ></div>
+            <div>
+              <div class="flex items-center gap-2 mb-4">
+                <span
+                  class="material-symbols-outlined text-primary-container"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >analytics</span
+                >
+                <span
+                  class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px]"
+                  >Data Synthesizer</span
+                >
+              </div>
+              <h3 class="text-headline-md-mobile font-headline-md-mobile text-on-background">
+                Real-time Ingestion Pipeline
+              </h3>
+            </div>
+            <div
+              class="h-24 w-full bg-gradient-to-r from-transparent via-primary-container/20 to-transparent flex items-center justify-center relative"
+            >
+              <!-- Abstract Data Vis Placeholder -->
+              <div class="w-full h-[1px] bg-outline-cyan absolute top-1/2"></div>
+              <div
+                class="w-2 h-2 rounded-full bg-primary-container absolute top-1/2 -mt-[3.5px] left-1/4 shadow-[0_0_10px_#00e5ff]"
+              ></div>
+              <div
+                class="w-2 h-2 rounded-full bg-primary-container absolute top-1/2 -mt-[3.5px] left-3/4 shadow-[0_0_10px_#00e5ff]"
+              ></div>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div
+            class="glass-panel rounded-xl p-6 flex flex-col justify-between reveal-up group active"
+          >
+            <div>
+              <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined text-primary-container">shield_locked</span>
+                <span
+                  class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px]"
+                  >Security Node</span
+                >
+              </div>
+              <h3 class="text-body-lg font-body-lg text-on-background font-semibold">
+                Zero-Trust Framework
+              </h3>
+            </div>
+            <div class="flex justify-between items-end">
+              <span class="text-display-lg font-display-lg text-primary-container leading-none"
+                >99<span class="text-body-lg">%</span></span
+              >
+              <span class="text-data-mono font-data-mono text-on-surface-variant mb-1"
+                >THREAT MITIGATION</span
+              >
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div
+            class="glass-panel rounded-xl p-6 flex flex-col justify-between reveal-up group active"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary-container">memory</span>
+                  <span
+                    class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px]"
+                    >Compute</span
+                  >
+                </div>
+                <span
+                  class="px-2 py-0.5 bg-primary-container/10 border border-outline-cyan rounded text-[9px] text-primary-container font-data-mono"
+                  >SCALING</span
+                >
+              </div>
+              <h3 class="text-body-lg font-body-lg text-on-background font-semibold">
+                Dynamic Allocation
+              </h3>
+            </div>
+            <div class="h-16 w-full flex items-end gap-1">
+              <div class="w-1/5 bg-outline-cyan h-1/4 rounded-t-sm"></div>
+              <div class="w-1/5 bg-outline-cyan h-2/4 rounded-t-sm"></div>
+              <div
+                class="w-1/5 bg-primary-container h-full rounded-t-sm shadow-[0_0_15px_rgba(0,229,255,0.4)]"
+              ></div>
+              <div class="w-1/5 bg-outline-cyan h-3/4 rounded-t-sm"></div>
+              <div class="w-1/5 bg-outline-cyan h-2/4 rounded-t-sm"></div>
+            </div>
+          </div>
+          <!-- Card 4 -->
+          <div
+            class="glass-panel rounded-xl p-6 flex flex-col justify-between md:col-span-2 reveal-up relative overflow-hidden group active"
+          >
+            <div
+              class="absolute left-0 bottom-0 w-full h-1/2 bg-gradient-to-t from-primary-container/10 to-transparent"
+            ></div>
+            <div class="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="material-symbols-outlined text-primary-container">terminal</span>
+                  <span
+                    class="text-data-mono font-data-mono text-on-surface-variant uppercase text-[10px]"
+                    >Mission Orchestration</span
+                  >
+                </div>
+                <h3 class="text-headline-md-mobile font-headline-md-mobile text-on-background">
+                  Visual Node Editor
+                </h3>
+              </div>
+              <div
+                class="bg-surface-dark border border-outline-variant/30 rounded p-4 font-data-mono text-data-mono text-secondary mt-4"
+              >
+                <span class="text-primary-container">&gt;</span> INITIALIZING AGENT SWARM...<br />
+                <span class="text-primary-container">&gt;</span> CONNECTING TO KAFKA STREAM [OK]<br />
+                <span class="text-primary-container">&gt;</span> DEPLOYING NLP MODELS [RUNNING]
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Footer -->
+    <footer
+      class="w-full py-stack-lg border-t border-outline-variant/20 bg-surface-dark dark:bg-surface-dark mt-20 relative z-20"
+    >
+      <div
+        class="grid grid-cols-2 md:grid-cols-4 gap-grid-gutter px-grid-margin max-w-[1440px] mx-auto"
+      >
+        <div class="col-span-2 md:col-span-1 flex flex-col gap-4">
+          <div class="flex items-center gap-3">
+            <img
+              alt="EyeX Atomic Logo"
+              class="h-6 w-6 object-contain"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPDII3K5gt7t28rYa8-wHwDBjLTnPhncCP7RkKd_nKLE2-BhzSgYL2c61cqX5Vd_pu0NPgHrJfD5P-Kkf0P9ha9KmzMPcjiZprr_vmoYKtxrrlneZTONRaYye47taEOdd9YW6M1HHTZaTJI9J_jLq7EE855up_lLL_jAaFlNF_gav_LprByq2CGUxOVSOI9weMMRK4c8aPAbooQREgPZ8dms-gW493VjY3Yzge0RpEVmFC4vJRrGA9DmMgBsGxLlZqkJ1CZB3cZl4"
+            />
+            <span
+              class="text-headline-md font-headline-md text-on-surface dark:text-on-background text-[20px] font-bold"
+              >EyeX</span
+            >
+          </div>
+          <p class="text-body-sm font-body-sm text-on-surface-variant max-w-xs mt-2">
+            Intelligence defined. Building the foundational layer for enterprise AI automation and
+            cognitive operations.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3">
+          <span
+            class="text-label-caps font-label-caps uppercase text-on-surface tracking-wider mb-2"
+            >Product</span
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >Platform</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >Agents</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >Integrations</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >Pricing</a
+          >
+        </div>
+        <div class="flex flex-col gap-3">
+          <span
+            class="text-label-caps font-label-caps uppercase text-on-surface tracking-wider mb-2"
+            >Company</span
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >About Us</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >Careers</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >Blog</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >Contact</a
+          >
+        </div>
+        <div class="flex flex-col gap-3">
+          <span
+            class="text-label-caps font-label-caps uppercase text-on-surface tracking-wider mb-2"
+            >Legal</span
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >Privacy Policy</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >Terms of Service</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors linear-out-mechanical easing 200ms"
+            href="#"
+            >Security</a
+          >
+        </div>
+      </div>
+      <div
+        class="px-grid-margin max-w-[1440px] mx-auto mt-12 pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-4"
+      >
+        <p class="text-data-mono font-data-mono text-on-surface-variant text-[11px]">
+          © 2024 EyeX Technologies. Intelligence defined.
+        </p>
+        <div class="flex gap-4">
+          <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"
+            ><span class="material-symbols-outlined text-[20px]">share</span></a
+          >
+          <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"
+            ><span class="material-symbols-outlined text-[20px]">mail</span></a
+          >
+        </div>
+      </div>
+    </footer>
+    <script>
+      // Simple Scroll Reveal Logic
+      document.addEventListener("DOMContentLoaded", () => {
+        const reveals = document.querySelectorAll(".reveal-up");
+
+        const revealOnScroll = () => {
+          const windowHeight = window.innerHeight;
+          const elementVisible = 100;
+
+          reveals.forEach((reveal) => {
+            const elementTop = reveal.getBoundingClientRect().top;
+            if (elementTop < windowHeight - elementVisible) {
+              reveal.classList.add("active");
+            }
+          });
+        };
+
+        window.addEventListener("scroll", revealOnScroll);
+        revealOnScroll(); // Trigger on load
+      });
+    </script>
+  </body>
+</html>

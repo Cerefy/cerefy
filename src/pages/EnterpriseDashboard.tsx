@@ -15,7 +15,7 @@ import {
   FileText,
 } from "lucide-react";
 
-const BASE = "http://eyex-api:8000/api/v1/enterprise";
+const BASE = "http://Cerefy-api:8000/api/v1/enterprise";
 
 interface Insight {
   title: string;
@@ -249,7 +249,6 @@ export function EnterpriseDashboardPage() {
         <Card title="Enterprise Actions">
           <div className="p-5 space-y-3">
             {[
-              { label: "Run Executive Team", path: "/enterprise-demo", icon: Building2 },
               { label: "View Reports", path: "/enterprise-reports", icon: TrendingUp },
               { label: "Connect Data Sources", path: "/data-sources", icon: Database },
             ].map((action) => (

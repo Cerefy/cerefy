@@ -1,0 +1,577 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EyeX Neural OS - Mission Center</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "tertiary-container": "#fec931",
+              "surface-tint": "#00daf3",
+              "surface-container-highest": "#2e3638",
+              "surface-container-high": "#242b2d",
+              "surface-bright": "#333a3c",
+              tertiary: "#ffeac0",
+              "on-tertiary-container": "#6f5500",
+              "on-surface": "#dce4e5",
+              "on-secondary-container": "#a9afff",
+              background: "#0d1516",
+              "on-primary-fixed-variant": "#004f58",
+              "primary-container": "#00e5ff",
+              "tertiary-fixed": "#ffdf96",
+              primary: "#c3f5ff",
+              "secondary-fixed-dim": "#bec2ff",
+              "on-primary-fixed": "#001f24",
+              "on-primary": "#00363d",
+              "inverse-surface": "#dce4e5",
+              "surface-variant": "#2e3638",
+              surface: "#0d1516",
+              "on-tertiary-fixed-variant": "#594400",
+              outline: "#849396",
+              "error-container": "#93000a",
+              "on-secondary-fixed-variant": "#1820d9",
+              "on-secondary-fixed": "#00016d",
+              "on-primary-container": "#00626e",
+              "on-tertiary": "#3e2e00",
+              "on-surface-variant": "#bac9cc",
+              "secondary-fixed": "#e0e0ff",
+              "surface-dim": "#0d1516",
+              "on-error": "#690005",
+              "inverse-primary": "#006875",
+              "on-background": "#dce4e5",
+              secondary: "#bec2ff",
+              "outline-variant": "#3b494c",
+              "inverse-on-surface": "#2a3233",
+              "primary-fixed": "#9cf0ff",
+              "on-secondary": "#0003aa",
+              "secondary-container": "#1820d9",
+              "surface-container": "#192122",
+              error: "#ffb4ab",
+              "on-tertiary-fixed": "#251a00",
+              "primary-fixed-dim": "#00daf3",
+              "surface-container-lowest": "#080f11",
+              "tertiary-fixed-dim": "#f3bf26",
+              "surface-container-low": "#151d1e",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              gutter: "16px",
+              "container-max": "1440px",
+              unit: "4px",
+              margin: "24px",
+            },
+            fontFamily: {
+              "body-lg": ["Geist"],
+              "headline-md": ["Geist"],
+              "body-sm": ["Geist"],
+              "display-lg-mobile": ["Geist"],
+              "display-lg": ["Geist"],
+              "mono-label": ["JetBrains Mono"],
+              "mono-data": ["JetBrains Mono"],
+            },
+            fontSize: {
+              "body-lg": [
+                "16px",
+                {
+                  lineHeight: "24px",
+                  fontWeight: "400",
+                },
+              ],
+              "headline-md": [
+                "24px",
+                {
+                  lineHeight: "32px",
+                  fontWeight: "600",
+                },
+              ],
+              "body-sm": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  fontWeight: "400",
+                },
+              ],
+              "display-lg-mobile": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  fontWeight: "700",
+                },
+              ],
+              "display-lg": [
+                "48px",
+                {
+                  lineHeight: "56px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "mono-label": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.05em",
+                  fontWeight: "500",
+                },
+              ],
+              "mono-data": [
+                "13px",
+                {
+                  lineHeight: "18px",
+                  fontWeight: "400",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #0d1516;
+        color: #dce4e5;
+        font-family: "Geist", sans-serif;
+      }
+      .transition-flow {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .glass-panel {
+        background-color: #1b1b24;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .glow-hover:hover {
+        border-color: rgba(0, 229, 255, 0.5);
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.1);
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-background h-screen overflow-hidden flex">
+    <!-- SideNavBar -->
+    <nav
+      class="bg-surface dark:bg-surface h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col h-full py-margin px-4 z-50"
+    >
+      <div class="mb-8 mt-4 px-2">
+        <h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary">
+          EyeX Neural OS
+        </h1>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Enterprise Tier</p>
+      </div>
+      <div class="flex-1 space-y-1">
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-outline group-hover:text-primary transition-flow"
+            >domain</span
+          >
+          <span class="font-body-sm text-body-sm">Organization</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-outline group-hover:text-primary transition-flow"
+            >grid_view</span
+          >
+          <span class="font-body-sm text-body-sm">Workspace</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-primary font-bold border-r-2 border-primary bg-surface-container-low transition-all duration-200 group"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-primary">rocket_launch</span>
+          <span class="font-body-sm text-body-sm">Mission Center</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-outline group-hover:text-primary transition-flow"
+            >groups</span
+          >
+          <span class="font-body-sm text-body-sm">Executive Council</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-outline group-hover:text-primary transition-flow"
+            >psychology</span
+          >
+          <span class="font-body-sm text-body-sm">AI Agents</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-outline group-hover:text-primary transition-flow"
+            >database</span
+          >
+          <span class="font-body-sm text-body-sm">Data Platform</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-outline group-hover:text-primary transition-flow"
+            >shield_lock</span
+          >
+          <span class="font-body-sm text-body-sm">Security Center</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-all duration-200 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-outline group-hover:text-primary transition-flow"
+            >settings</span
+          >
+          <span class="font-body-sm text-body-sm">Settings</span>
+        </a>
+      </div>
+      <div class="mt-auto pt-4">
+        <button
+          class="w-full bg-primary-container text-on-primary-container font-body-sm text-body-sm font-bold py-3 rounded-lg hover:bg-primary transition-flow"
+        >
+          Initialize Node
+        </button>
+      </div>
+    </nav>
+    <!-- Main Content Area -->
+    <div class="ml-64 flex-1 flex flex-col h-screen relative">
+      <!-- TopNavBar -->
+      <header
+        class="bg-surface dark:bg-surface fixed top-0 right-0 w-[calc(100%-16rem)] h-16 border-b border-outline-variant dark:border-outline-variant flex items-center justify-between px-margin z-40"
+      >
+        <div class="flex-1 flex items-center max-w-md relative">
+          <span class="material-symbols-outlined absolute left-3 text-outline">search</span>
+          <input
+            class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2 pl-10 pr-4 text-body-sm font-body-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-flow"
+            placeholder="Query Neural Net..."
+            type="text"
+          />
+        </div>
+        <div class="flex items-center gap-4">
+          <button class="text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">terminal</span>
+          </button>
+          <button class="text-on-surface-variant hover:text-primary transition-colors relative">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-0 right-0 w-2 h-2 bg-primary-container rounded-full"></span>
+          </button>
+          <button class="text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">account_circle</span>
+          </button>
+        </div>
+      </header>
+      <!-- Canvas -->
+      <main class="mt-16 flex-1 overflow-y-auto p-gutter grid grid-cols-12 gap-gutter relative">
+        <div
+          class="absolute inset-0 opacity-10 pointer-events-none"
+          style="
+            background-image: radial-gradient(circle at 50% 50%, #00e5ff 1px, transparent 1px);
+            background-size: 24px 24px;
+          "
+        ></div>
+        <!-- Left Column: Orchestration Hub (8 col) -->
+        <div class="col-span-8 flex flex-col gap-gutter z-10">
+          <!-- Mission Overview Header -->
+          <div class="flex justify-between items-end mb-2">
+            <div>
+              <h2 class="font-headline-md text-headline-md text-primary">Mission Orchestration</h2>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">
+                Active Agentic Workflows &amp; Strategic Goals
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <span
+                class="px-2 py-1 bg-[#1b1b24] border border-outline-variant rounded text-mono-label font-mono-label text-primary"
+                >SYS_LOAD: 42%</span
+              >
+              <span
+                class="px-2 py-1 bg-[#1b1b24] border border-outline-variant rounded text-mono-label font-mono-label text-tertiary-container"
+                >AGENTS_ACTIVE: 12</span
+              >
+            </div>
+          </div>
+          <!-- Timeline / Graph Canvas (Bento Box Main) -->
+          <div class="glass-panel rounded-xl p-4 flex flex-col h-96 relative overflow-hidden group">
+            <div
+              class="absolute inset-0 opacity-20 bg-gradient-to-br from-primary-container/10 to-transparent"
+            ></div>
+            <div class="flex justify-between items-center mb-4 relative z-10">
+              <h3
+                class="font-body-lg text-body-lg font-bold text-on-surface flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-primary text-sm">account_tree</span>
+                Global Market Expansion Topology
+              </h3>
+              <button
+                class="text-xs font-mono-label text-outline hover:text-primary transition-flow border border-outline-variant rounded px-2 py-1"
+              >
+                FOCUS VIEW
+              </button>
+            </div>
+            <!-- Placeholder for Graph -->
+            <div
+              class="flex-1 flex items-center justify-center relative border border-outline-variant/30 rounded bg-surface-container-lowest/50"
+              data-alt="A dark, abstract representation of a network graph. Glowing tech cyan nodes connected by fine lines against a deep black background. Small data labels hover near nodes. The aesthetic is minimal, clinical, and futuristic, resembling a neural network visualization or complex project dependency map."
+              style="
+                background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuAx5PDmVhHu3WONpt3CQM2V0uUifEV2PVly1Nr4tZyJHIg4-6-m072FnEz_eVr1uOd30KK0hq5gq86k65dE-Yq9sNdEjTkbycBBPQq2_D05-1Els6bbx-AYoru3GUhtxdDHPWQ3NGh0yIjeMQ2MqFZWi4Qi6vLt-OywHqPa3FLkEh8CL9gNBTLSVZ0nux3qtsTR4U88DNGFf12-8sj3ytdJxTQWO-SdRZtSzohrJpUJ944oSvL0av_GiYENEx9HuUZqUYeM5H10w_w&quot;);
+              "
+            >
+              <p
+                class="text-outline font-mono-data text-mono-data opacity-50 absolute bottom-4 right-4"
+              >
+                RENDER_CANVAS_ACTIVE
+              </p>
+              <!-- Simulated Nodes -->
+              <div
+                class="absolute top-1/4 left-1/4 w-3 h-3 bg-primary rounded-full shadow-[0_0_8px_#00e5ff] animate-pulse"
+              ></div>
+              <div
+                class="absolute top-1/2 left-1/2 w-4 h-4 bg-tertiary-container rounded-full shadow-[0_0_10px_#fec931]"
+              ></div>
+              <div
+                class="absolute bottom-1/3 right-1/3 w-3 h-3 bg-secondary-container rounded-full"
+              ></div>
+              <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-30">
+                <line
+                  stroke="#00e5ff"
+                  stroke-dasharray="4"
+                  stroke-width="1"
+                  x1="25%"
+                  x2="50%"
+                  y1="25%"
+                  y2="50%"
+                ></line>
+                <line stroke="#849396" stroke-width="1" x1="50%" x2="66%" y1="50%" y2="66%"></line>
+              </svg>
+            </div>
+          </div>
+          <!-- Active Missions Grid -->
+          <div class="grid grid-cols-2 gap-gutter">
+            <!-- Mission Card 1 -->
+            <div
+              class="glass-panel rounded-xl p-4 flex flex-col gap-3 hover:border-primary/50 transition-flow"
+            >
+              <div class="flex justify-between items-start">
+                <div>
+                  <h4 class="font-body-lg text-body-lg font-bold text-on-surface">
+                    Alpha Strike: APAC
+                  </h4>
+                  <p class="font-mono-label text-mono-label text-on-surface-variant">
+                    ID: M-8892-AP
+                  </p>
+                </div>
+                <span
+                  class="bg-primary-container text-on-primary-fixed px-2 py-0.5 rounded text-xs font-mono-label font-bold"
+                  >ACTIVE</span
+                >
+              </div>
+              <div class="mt-2">
+                <div class="flex justify-between text-xs font-mono-data text-outline mb-1">
+                  <span>Progress</span>
+                  <span class="text-primary">78%</span>
+                </div>
+                <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-primary h-full w-[78%]"></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 mt-auto pt-2 border-t border-outline-variant/50">
+                <span class="material-symbols-outlined text-outline text-sm">smart_toy</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant text-xs"
+                  >Agents: 3 Active</span
+                >
+                <span class="ml-auto font-mono-data text-mono-data text-xs text-outline"
+                  >ETA: 4h 12m</span
+                >
+              </div>
+            </div>
+            <!-- Mission Card 2 -->
+            <div
+              class="glass-panel rounded-xl p-4 flex flex-col gap-3 hover:border-tertiary-container/50 transition-flow relative overflow-hidden"
+            >
+              <div
+                class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-tertiary-container/20 to-transparent"
+              ></div>
+              <div class="flex justify-between items-start">
+                <div>
+                  <h4 class="font-body-lg text-body-lg font-bold text-on-surface">
+                    Data Sync: Core DB
+                  </h4>
+                  <p class="font-mono-label text-mono-label text-on-surface-variant">
+                    ID: M-1104-DB
+                  </p>
+                </div>
+                <span
+                  class="bg-[#242b2d] border border-tertiary-container text-tertiary-container px-2 py-0.5 rounded text-xs font-mono-label"
+                  >AGENT-WAIT</span
+                >
+              </div>
+              <div class="mt-2">
+                <div class="flex justify-between text-xs font-mono-data text-outline mb-1">
+                  <span>Progress</span>
+                  <span class="text-tertiary-container">45%</span>
+                </div>
+                <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-tertiary-container h-full w-[45%] opacity-70"></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 mt-auto pt-2 border-t border-outline-variant/50">
+                <span class="material-symbols-outlined text-outline text-sm">database</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant text-xs"
+                  >Task: Schema Validation</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Right Column: Sidebar (4 col) -->
+        <div class="col-span-4 flex flex-col gap-gutter z-10">
+          <!-- Human-in-the-Loop Actions -->
+          <div class="glass-panel rounded-xl p-4 border-l-2 border-l-error">
+            <h3 class="font-body-lg text-body-lg font-bold text-error flex items-center gap-2 mb-3">
+              <span class="material-symbols-outlined">warning</span>
+              Human-in-the-Loop Required
+            </h3>
+            <div
+              class="bg-surface-container-low border border-outline-variant p-3 rounded-lg flex flex-col gap-2"
+            >
+              <div class="flex justify-between items-start">
+                <span class="font-mono-label text-mono-label text-on-surface">BUDGET_OVERRIDE</span>
+                <span class="text-xs text-outline">2m ago</span>
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant text-sm">
+                Agent 'Nexus-Financial' requires approval to exceed $50k ad spend threshold for APAC
+                mission.
+              </p>
+              <div class="flex gap-2 mt-2">
+                <button
+                  class="flex-1 bg-surface-container-high border border-outline-variant hover:border-primary text-primary font-mono-label py-1.5 rounded transition-flow text-xs"
+                >
+                  APPROVE
+                </button>
+                <button
+                  class="flex-1 bg-surface-container-high border border-outline-variant hover:border-error text-error font-mono-label py-1.5 rounded transition-flow text-xs"
+                >
+                  REJECT
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Available Agents -->
+          <div class="glass-panel rounded-xl p-4 flex-1">
+            <h3
+              class="font-body-lg text-body-lg font-bold text-on-surface flex items-center gap-2 mb-4"
+            >
+              <span class="material-symbols-outlined text-primary">psychology</span>
+              Available Agents
+            </h3>
+            <div class="space-y-2">
+              <div
+                class="flex items-center justify-between p-2 rounded hover:bg-surface-container-high transition-flow group cursor-pointer border border-transparent hover:border-outline-variant/50"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded bg-[#1b1b24] border border-primary/30 flex items-center justify-center text-primary"
+                  >
+                    <span class="material-symbols-outlined text-sm">code</span>
+                  </div>
+                  <div>
+                    <p
+                      class="font-mono-label text-mono-label text-on-surface group-hover:text-primary transition-flow"
+                    >
+                      Codex-v4
+                    </p>
+                    <p class="text-[10px] text-outline font-mono-data">Status: IDLE</p>
+                  </div>
+                </div>
+                <button
+                  class="opacity-0 group-hover:opacity-100 text-xs font-mono-label text-primary border border-primary/50 px-2 py-1 rounded transition-flow"
+                >
+                  DEPLOY
+                </button>
+              </div>
+              <div
+                class="flex items-center justify-between p-2 rounded hover:bg-surface-container-high transition-flow group cursor-pointer border border-transparent hover:border-outline-variant/50"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded bg-[#1b1b24] border border-tertiary-container/30 flex items-center justify-center text-tertiary-container"
+                  >
+                    <span class="material-symbols-outlined text-sm">analytics</span>
+                  </div>
+                  <div>
+                    <p
+                      class="font-mono-label text-mono-label text-on-surface group-hover:text-tertiary-container transition-flow"
+                    >
+                      Analytica-X
+                    </p>
+                    <p class="text-[10px] text-outline font-mono-data">Status: IDLE</p>
+                  </div>
+                </div>
+                <button
+                  class="opacity-0 group-hover:opacity-100 text-xs font-mono-label text-primary border border-primary/50 px-2 py-1 rounded transition-flow"
+                >
+                  DEPLOY
+                </button>
+              </div>
+            </div>
+            <!-- Mission Templates Quick Deploy -->
+            <h3
+              class="font-body-lg text-body-lg font-bold text-on-surface flex items-center gap-2 mb-3 mt-6 pt-4 border-t border-outline-variant/50"
+            >
+              <span class="material-symbols-outlined text-primary">file_copy</span>
+              Templates
+            </h3>
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                class="bg-[#1b1b24] border border-outline-variant hover:border-primary/50 p-2 rounded text-left transition-flow"
+              >
+                <span class="block text-xs font-mono-label text-on-surface mb-1">Data Scrape</span>
+                <span class="block text-[10px] text-outline">Deploy 2 agents</span>
+              </button>
+              <button
+                class="bg-[#1b1b24] border border-outline-variant hover:border-primary/50 p-2 rounded text-left transition-flow"
+              >
+                <span class="block text-xs font-mono-label text-on-surface mb-1">A/B Testing</span>
+                <span class="block text-[10px] text-outline">Deploy 1 agent</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

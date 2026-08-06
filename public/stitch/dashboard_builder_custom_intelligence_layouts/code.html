@@ -1,0 +1,694 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Dashboard Builder - EyeX Neural OS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-container": "#a9afff",
+              primary: "#bec2ff",
+              "inverse-surface": "#e3e1ef",
+              "secondary-fixed-dim": "#bec2ff",
+              "on-tertiary-fixed-variant": "#900e00",
+              "error-container": "#93000a",
+              "on-tertiary": "#660700",
+              "on-tertiary-fixed": "#3f0300",
+              "on-secondary-fixed": "#080c5e",
+              error: "#ffb4ab",
+              "surface-container-low": "#1b1b24",
+              "inverse-primary": "#3a44ef",
+              background: "#12131c",
+              "secondary-container": "#393f8a",
+              outline: "#8f8fa2",
+              tertiary: "#ffb4a6",
+              "surface-dim": "#12131c",
+              "primary-fixed": "#e0e0ff",
+              "on-surface": "#e3e1ef",
+              surface: "#12131c",
+              "inverse-on-surface": "#302f3a",
+              "surface-container-high": "#292933",
+              "secondary-fixed": "#e0e0ff",
+              "on-error-container": "#ffdad6",
+              "on-primary-container": "#f1efff",
+              "on-background": "#e3e1ef",
+              "on-primary-fixed-variant": "#1820d9",
+              "surface-bright": "#383843",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "on-secondary-fixed-variant": "#393f8a",
+              "on-primary-fixed": "#00016d",
+              "outline-variant": "#454556",
+              "surface-container-highest": "#34343e",
+              "on-surface-variant": "#c6c5d9",
+              "on-secondary": "#212772",
+              "primary-fixed-dim": "#bec2ff",
+              "tertiary-fixed": "#ffdad4",
+              "surface-variant": "#34343e",
+              "primary-container": "#4b56fe",
+              "on-tertiary-container": "#ffece9",
+              "surface-container-lowest": "#0d0d16",
+              "tertiary-container": "#c83923",
+              secondary: "#bec2ff",
+              "surface-tint": "#bec2ff",
+              "on-error": "#690005",
+              "surface-container": "#1f1f28",
+              "on-primary": "#0003aa",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "stack-sm": "0.5rem",
+              "grid-gutter": "1.5rem",
+              "stack-xs": "0.25rem",
+              "stack-md": "1rem",
+              "grid-margin": "2rem",
+              "stack-lg": "2rem",
+            },
+            fontFamily: {
+              "headline-md": ["Geist"],
+              "label-caps": ["JetBrains Mono"],
+              "display-lg": ["Geist"],
+              "data-mono": ["JetBrains Mono"],
+              "headline-md-mobile": ["Geist"],
+              "body-sm": ["Geist"],
+              "body-lg": ["Geist"],
+            },
+            fontSize: {
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom scrollbar for webkit */
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #454556;
+        border-radius: 2px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #8f8fa2;
+      }
+      .glass-panel {
+        background: rgba(31, 31, 40, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .widget-placeholder {
+        border: 1px dashed #454556;
+        background: rgba(41, 41, 51, 0.3);
+        transition: all 0.2s ease-in-out;
+      }
+      .widget-placeholder:hover {
+        border-color: #bec2ff;
+        background: rgba(190, 194, 255, 0.05);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-surface h-screen w-screen overflow-hidden flex font-body-sm selection:bg-primary-container selection:text-on-primary-container"
+  >
+    <!-- SideNavBar (Shared Component) -->
+    <nav
+      class="h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant bg-surface-container dark:bg-surface-container flex flex-col h-full py-grid-margin z-50"
+    >
+      <!-- Brand -->
+      <div class="px-6 mb-8">
+        <h1
+          class="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-tighter"
+        >
+          EyeX Neural OS
+        </h1>
+        <p class="font-data-mono text-data-mono text-on-surface-variant mt-1 text-xs opacity-70">
+          v4.0 Neural Carbon
+        </p>
+      </div>
+      <!-- Navigation Links -->
+      <div class="flex-1 px-3 space-y-1">
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >corporate_fare</span
+          >
+          <span class="font-body-sm text-body-sm">Organization</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg border-l-4 border-primary scale-95 duration-100 ease-in-out"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >grid_view</span
+          >
+          <span class="font-body-sm text-body-sm font-bold">Workspace</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >target</span
+          >
+          <span class="font-body-sm text-body-sm">Mission Center</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >diversity_3</span
+          >
+          <span class="font-body-sm text-body-sm">Executive Council</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >smart_toy</span
+          >
+          <span class="font-body-sm text-body-sm">AI Agents</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >database</span
+          >
+          <span class="font-body-sm text-body-sm">Data Platform</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >verified_user</span
+          >
+          <span class="font-body-sm text-body-sm">Security Center</span>
+        </a>
+      </div>
+      <!-- CTA & Settings -->
+      <div class="px-6 mt-auto space-y-4 pt-4 border-t border-outline-variant/30">
+        <button
+          class="w-full bg-primary text-on-primary font-label-caps text-label-caps py-3 rounded-DEFAULT hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2"
+        >
+          <span class="material-symbols-outlined text-sm">add</span>
+          New Mission
+        </button>
+        <a
+          class="flex items-center gap-3 px-0 py-2 text-on-surface-variant hover:text-on-surface transition-colors"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >settings</span
+          >
+          <span class="font-body-sm text-body-sm">Settings</span>
+        </a>
+      </div>
+    </nav>
+    <!-- Main Content Area -->
+    <div class="ml-64 flex-1 flex flex-col relative w-[calc(100%-16rem)]">
+      <!-- TopNavBar (Shared Component) -->
+      <header
+        class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex justify-between items-center h-16 px-grid-margin"
+      >
+        <!-- Navigation Links -->
+        <div class="flex items-center gap-6">
+          <span
+            class="font-headline-md text-headline-md font-black text-primary mr-4 hidden xl:block"
+            >EyeX OS</span
+          >
+          <a
+            class="text-on-surface-variant font-data-mono text-data-mono hover:text-primary transition-opacity hover:opacity-80"
+            href="#"
+            >Dashboard</a
+          >
+          <a
+            class="text-primary font-bold border-b-2 border-primary pb-1 font-data-mono text-data-mono opacity-80"
+            href="#"
+            >Analytics</a
+          >
+          <a
+            class="text-on-surface-variant font-data-mono text-data-mono hover:text-primary transition-opacity hover:opacity-80"
+            href="#"
+            >Logs</a
+          >
+        </div>
+        <!-- Actions & Profile -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2 mr-4 border-r border-outline-variant pr-4">
+            <button class="text-on-surface-variant hover:text-primary transition-colors p-1">
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="text-on-surface-variant hover:text-primary transition-colors p-1">
+              <span class="material-symbols-outlined">terminal</span>
+            </button>
+            <button class="text-on-surface-variant hover:text-primary transition-colors p-1">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <button
+            class="text-error font-label-caps text-label-caps border border-error/50 px-3 py-1.5 rounded-DEFAULT hover:bg-error/10 transition-colors"
+          >
+            Emergency Stop
+          </button>
+          <button
+            class="bg-primary text-on-primary font-label-caps text-label-caps px-4 py-1.5 rounded-DEFAULT hover:bg-primary-fixed transition-colors"
+          >
+            Deploy Agent
+          </button>
+          <div
+            class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden ml-2 flex items-center justify-center"
+          >
+            <img
+              alt="Administrator Profile"
+              class="w-full h-full object-cover"
+              data-alt="A highly detailed, hyper-realistic profile portrait of a stern, corporate technology executive in a dark, minimalist server room setting. High-contrast lighting with subtle cyan reflections on the face. Shot on 35mm lens, cinematic grading, professional corporate headshot style, 8k resolution."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRFLuoNtIHxvoBzMKn2qUX0j9dSg0EIIRqszkEcURPMxzYTjVeR5QddmQxeyMz9SJBymi_wadJRHaiPDO2whTb5sbm6x_uUn3BzyGEhSiDXeXMi4YdMsfGUksfhpQ0Os9kuvSG3XTZqIgm3K4FKT4Guf8WExmq0CNtYXTq5uzpg_TmcxW1UhnS8iwRtP95_zo7JrnNTWLFkUqgA5xNnZ7UeRl-5UohEcIf3m3NUhrwfh2BYMrFDPF_3ewyDEl10T15fHoaWareBIg"
+            />
+          </div>
+        </div>
+      </header>
+      <!-- Builder Interface -->
+      <main class="flex-1 mt-16 flex overflow-hidden">
+        <!-- Widget Library Sidebar -->
+        <aside
+          class="w-72 bg-surface-container border-r border-outline-variant flex flex-col h-full z-10 shrink-0"
+        >
+          <div
+            class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-high"
+          >
+            <h2 class="font-body-lg text-body-lg font-bold text-on-surface">Widget Library</h2>
+            <span
+              class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer hover:text-primary"
+              >search</span
+            >
+          </div>
+          <div class="flex-1 overflow-y-auto p-4 space-y-6">
+            <!-- Category: Neural Metrics -->
+            <div>
+              <h3
+                class="font-label-caps text-label-caps text-on-surface-variant mb-3 flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-[14px]">psychology</span>
+                NEURAL METRICS
+              </h3>
+              <div class="space-y-2">
+                <div
+                  class="bg-surface border border-outline-variant rounded-lg p-3 cursor-grab hover:border-primary hover:bg-surface-container-high transition-colors flex items-center gap-3"
+                >
+                  <div
+                    class="w-8 h-8 bg-surface-container-highest rounded flex items-center justify-center text-primary"
+                  >
+                    <span class="material-symbols-outlined text-lg">ssid_chart</span>
+                  </div>
+                  <div>
+                    <div class="font-body-sm text-body-sm text-on-surface">Synapse Load</div>
+                    <div class="font-data-mono text-[10px] text-on-surface-variant">
+                      Real-time Line Chart
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-surface border border-outline-variant rounded-lg p-3 cursor-grab hover:border-primary hover:bg-surface-container-high transition-colors flex items-center gap-3"
+                >
+                  <div
+                    class="w-8 h-8 bg-surface-container-highest rounded flex items-center justify-center text-tertiary"
+                  >
+                    <span class="material-symbols-outlined text-lg">radar</span>
+                  </div>
+                  <div>
+                    <div class="font-body-sm text-body-sm text-on-surface">Cognitive Drift</div>
+                    <div class="font-data-mono text-[10px] text-on-surface-variant">
+                      Radial Gauge
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Category: Financial KPIs -->
+            <div>
+              <h3
+                class="font-label-caps text-label-caps text-on-surface-variant mb-3 flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-[14px]">payments</span>
+                FINANCIAL KPIs
+              </h3>
+              <div class="space-y-2">
+                <div
+                  class="bg-surface border border-outline-variant rounded-lg p-3 cursor-grab hover:border-primary hover:bg-surface-container-high transition-colors flex items-center gap-3"
+                >
+                  <div
+                    class="w-8 h-8 bg-surface-container-highest rounded flex items-center justify-center text-secondary"
+                  >
+                    <span class="material-symbols-outlined text-lg">bar_chart</span>
+                  </div>
+                  <div>
+                    <div class="font-body-sm text-body-sm text-on-surface">Revenue Velocity</div>
+                    <div class="font-data-mono text-[10px] text-on-surface-variant">Bar Series</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+        <!-- Dashboard Canvas -->
+        <div class="flex-1 bg-background relative overflow-y-auto p-grid-margin">
+          <!-- Grid Background Pattern -->
+          <div
+            class="absolute inset-0 pointer-events-none opacity-5"
+            style="
+              background-image: radial-gradient(circle at 2px 2px, #8f8fa2 1px, transparent 0);
+              background-size: 32px 32px;
+            "
+          ></div>
+          <!-- Canvas Header -->
+          <div class="flex justify-between items-center mb-6 relative z-10">
+            <div>
+              <input
+                class="bg-transparent border-none font-headline-md text-headline-md font-bold text-on-surface focus:ring-0 p-0 m-0 w-96"
+                type="text"
+                value="Executive Alpha View"
+              />
+              <div
+                class="font-data-mono text-data-mono text-on-surface-variant mt-1 flex items-center gap-2"
+              >
+                <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                LIVE EDIT MODE
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <button
+                class="bg-surface-container-high border border-outline-variant text-on-surface font-label-caps text-label-caps px-4 py-2 rounded-DEFAULT hover:bg-surface-container-highest transition-colors"
+              >
+                Discard
+              </button>
+              <button
+                class="bg-primary text-on-primary font-label-caps text-label-caps px-6 py-2 rounded-DEFAULT hover:bg-primary-fixed transition-colors shadow-[0_0_15px_rgba(190,194,255,0.3)]"
+              >
+                Save Layout
+              </button>
+            </div>
+          </div>
+          <!-- Responsive Grid Canvas -->
+          <div class="grid grid-cols-12 gap-4 relative z-10">
+            <!-- Widget 1: Large Chart -->
+            <div
+              class="col-span-8 glass-panel border border-outline-variant rounded-xl p-4 flex flex-col h-80 relative group"
+            >
+              <div
+                class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <button
+                  class="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant hover:text-primary"
+                >
+                  <span class="material-symbols-outlined text-[14px]">settings</span>
+                </button>
+                <button
+                  class="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant hover:text-error"
+                >
+                  <span class="material-symbols-outlined text-[14px]">close</span>
+                </button>
+              </div>
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <h3 class="font-body-lg text-body-lg font-semibold text-on-surface">
+                    Global Inference Traffic
+                  </h3>
+                  <p class="font-data-mono text-[11px] text-on-surface-variant">
+                    Source: cluster_omega_9
+                  </p>
+                </div>
+                <span
+                  class="font-data-mono text-[10px] px-2 py-1 bg-surface-container-high text-primary rounded border border-primary/20"
+                  >LIVE 1s</span
+                >
+              </div>
+              <div class="flex-1 w-full relative">
+                <!-- Placeholder for a chart visualization -->
+                <div class="absolute inset-0 flex items-end">
+                  <div class="w-full h-full border-l border-b border-outline-variant/30 relative">
+                    <!-- Simulated tech lines -->
+                    <svg
+                      class="absolute inset-0 w-full h-full"
+                      preserveaspectratio="none"
+                      viewbox="0 0 100 100"
+                    >
+                      <path
+                        d="M0,80 Q20,70 40,90 T80,40 T100,20"
+                        fill="none"
+                        stroke="#bec2ff"
+                        stroke-width="1.5"
+                        vector-effect="non-scaling-stroke"
+                      ></path>
+                      <path
+                        d="M0,90 Q20,80 40,85 T80,60 T100,50"
+                        fill="none"
+                        stroke="#393f8a"
+                        stroke-dasharray="2 2"
+                        stroke-width="1"
+                        vector-effect="non-scaling-stroke"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Widget 2: Stat Block -->
+            <div
+              class="col-span-4 glass-panel border border-outline-variant rounded-xl p-4 flex flex-col h-80 relative group"
+            >
+              <div
+                class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <button
+                  class="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant hover:text-primary"
+                >
+                  <span class="material-symbols-outlined text-[14px]">settings</span>
+                </button>
+                <button
+                  class="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant hover:text-error"
+                >
+                  <span class="material-symbols-outlined text-[14px]">close</span>
+                </button>
+              </div>
+              <h3 class="font-body-lg text-body-lg font-semibold text-on-surface mb-2">
+                Agent Efficiency
+              </h3>
+              <div class="flex-1 flex flex-col justify-center items-center">
+                <div class="relative w-32 h-32 flex items-center justify-center">
+                  <svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+                    <circle
+                      cx="50"
+                      cy="50"
+                      fill="none"
+                      r="45"
+                      stroke="#292933"
+                      stroke-width="8"
+                    ></circle>
+                    <circle
+                      cx="50"
+                      cy="50"
+                      fill="none"
+                      r="45"
+                      stroke="#bec2ff"
+                      stroke-dasharray="283"
+                      stroke-dashoffset="60"
+                      stroke-linecap="round"
+                      stroke-width="8"
+                    ></circle>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="font-display-lg text-[32px] font-bold text-on-surface leading-none"
+                      >78<span class="text-lg text-on-surface-variant">%</span></span
+                    >
+                  </div>
+                </div>
+                <div class="mt-4 flex items-center gap-2 text-tertiary">
+                  <span class="material-symbols-outlined text-sm">trending_down</span>
+                  <span class="font-data-mono text-data-mono">-2.4% vs 1h</span>
+                </div>
+              </div>
+            </div>
+            <!-- Widget Placeholder / Drop Zone -->
+            <div
+              class="col-span-12 widget-placeholder rounded-xl p-8 flex flex-col items-center justify-center h-32 cursor-pointer mt-2"
+            >
+              <span class="material-symbols-outlined text-on-surface-variant mb-2 text-2xl"
+                >add_circle</span
+              >
+              <p class="font-data-mono text-data-mono text-on-surface-variant">
+                Drag widget here or click to add
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Widget Configuration Panel (Slide-out, currently visible for demo) -->
+        <aside
+          class="w-80 bg-surface-container-highest border-l border-outline-variant flex flex-col h-full z-20 shrink-0 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]"
+        >
+          <div class="p-4 border-b border-outline-variant flex justify-between items-center">
+            <h2 class="font-body-lg text-body-lg font-bold text-on-surface">Configure Widget</h2>
+            <span
+              class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer hover:text-on-surface"
+              >close</span
+            >
+          </div>
+          <div class="flex-1 overflow-y-auto p-5 space-y-6">
+            <!-- Source Selection -->
+            <div>
+              <label class="block font-label-caps text-label-caps text-on-surface-variant mb-2"
+                >Data Source</label
+              >
+              <select
+                class="w-full bg-surface border border-outline-variant rounded text-on-surface font-data-mono text-data-mono p-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+              >
+                <option>cluster_omega_9</option>
+                <option>finance_db_prod</option>
+                <option>agent_mesh_stream</option>
+              </select>
+            </div>
+            <!-- Visual Settings -->
+            <div>
+              <label class="block font-label-caps text-label-caps text-on-surface-variant mb-2"
+                >Chart Type</label
+              >
+              <div class="grid grid-cols-3 gap-2">
+                <button
+                  class="bg-primary-container text-on-primary-container border border-primary p-2 rounded flex justify-center"
+                >
+                  <span class="material-symbols-outlined">show_chart</span>
+                </button>
+                <button
+                  class="bg-surface border border-outline-variant text-on-surface-variant hover:text-on-surface p-2 rounded flex justify-center"
+                >
+                  <span class="material-symbols-outlined">bar_chart</span>
+                </button>
+                <button
+                  class="bg-surface border border-outline-variant text-on-surface-variant hover:text-on-surface p-2 rounded flex justify-center"
+                >
+                  <span class="material-symbols-outlined">pie_chart</span>
+                </button>
+              </div>
+            </div>
+            <!-- Refresh Rate -->
+            <div>
+              <label class="block font-label-caps text-label-caps text-on-surface-variant mb-2"
+                >Refresh Interval</label
+              >
+              <div class="flex items-center gap-3">
+                <input
+                  class="flex-1 h-1 bg-outline-variant rounded-lg appearance-none cursor-pointer accent-primary"
+                  max="60"
+                  min="1"
+                  type="range"
+                  value="1"
+                />
+                <span class="font-data-mono text-data-mono text-on-surface w-8 text-right">1s</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-4 border-t border-outline-variant bg-surface-container">
+            <button
+              class="w-full bg-surface-container-highest border border-outline-variant text-on-surface font-label-caps text-label-caps py-2 rounded-DEFAULT hover:border-error hover:text-error transition-colors"
+            >
+              Remove Widget
+            </button>
+          </div>
+        </aside>
+      </main>
+      <!-- Footer (Shared Component) -->
+      <footer
+        class="fixed bottom-0 right-0 w-[calc(100%-16rem)] border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center px-grid-margin py-2 text-[10px] z-40"
+      >
+        <div class="font-label-caps text-label-caps text-outline">
+          © 2024 EyeX Neural Systems. Status: OPTIMAL
+        </div>
+        <div class="flex gap-4 font-data-mono text-data-mono">
+          <a
+            class="text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >Documentation</a
+          >
+          <a
+            class="text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >Support</a
+          >
+          <a
+            class="text-tertiary underline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >System Health</a
+          >
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

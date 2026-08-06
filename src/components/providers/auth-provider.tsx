@@ -7,7 +7,11 @@ interface AuthContextValue {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: string; success?: boolean }>;
-  signUp: (email: string, password: string, fullName?: string) => Promise<{ error?: string; success?: boolean; needsEmailVerification?: boolean }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName?: string,
+  ) => Promise<{ error?: string; success?: boolean; needsEmailVerification?: boolean }>;
   signOut: () => Promise<{ error?: string }>;
   resetPassword: (email: string) => Promise<{ error?: string; success?: boolean }>;
   refreshSession: () => Promise<void>;
@@ -20,7 +24,7 @@ function buildOrganizationName(authUser: User): string {
     (authUser.user_metadata?.full_name as string | undefined)?.trim() ||
     (authUser.user_metadata?.company_name as string | undefined)?.trim() ||
     authUser.email?.split("@")[0] ||
-    "EyeX Organization"
+    "Cerefy"
   );
 }
 
@@ -30,7 +34,7 @@ function buildOrganizationSlug(name: string): string {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
-      .slice(0, 48) || "eyex-org"
+      .slice(0, 48) || "cerefy"
   );
 }
 
@@ -56,10 +60,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
-    
+
     const initializeAuth = async () => {
       try {
-        const { data: { session: s }, error } = await supabase.auth.getSession();
+        const {
+          data: { session: s },
+          error,
+        } = await supabase.auth.getSession();
         if (error) {
           console.error("Auth initialization error:", error);
         }
@@ -103,7 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: "Email and password are required" };
       }
 
-      if (!email.includes('@')) {
+      if (!email.includes("@")) {
         return { error: "Please enter a valid email address" };
       }
 
@@ -111,17 +118,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: "Password must be at least 6 characters" };
       }
 
-      const { data, error } = await supabase.auth.signInWithPassword({ 
-        email: email.toLowerCase().trim(), 
-        password 
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase().trim(),
+        password,
       });
 
       if (error) {
         // Handle specific error cases
-        if (error.message.includes('Invalid login credentials')) {
+        if (error.message.includes("Invalid login credentials")) {
           return { error: "Invalid email or password" };
         }
-        if (error.message.includes('Email not confirmed')) {
+        if (error.message.includes("Email not confirmed")) {
           return { error: "Please verify your email address" };
         }
         return { error: error.message };
@@ -142,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: "Email and password are required" };
       }
 
-      if (!email.includes('@') || !email.includes('.')) {
+      if (!email.includes("@") || !email.includes(".")) {
         return { error: "Please enter a valid email address" };
       }
 
@@ -161,16 +168,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signUp({
         email: email.toLowerCase().trim(),
         password,
-        options: { 
-          data: { 
-            full_name: fullName?.trim() || email.split('@')[0]
+        options: {
+          data: {
+            full_name: fullName?.trim() || email.split("@")[0],
           },
-          emailRedirectTo: `${window.location.origin}/dashboard`
+          emailRedirectTo: `${window.location.origin}/dashboard`,
         },
       });
 
       if (error) {
-        if (error.message.includes('User already registered')) {
+        if (error.message.includes("User already registered")) {
           return { error: "An account with this email already exists" };
         }
         return { error: error.message };
@@ -179,9 +186,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await ensureOrganizationForUser(data.session?.user ?? null);
 
       // Check if email verification is required
-      return { 
-        success: true, 
-        needsEmailVerification: !data.session 
+      return {
+        success: true,
+        needsEmailVerification: !data.session,
       };
     } catch (error) {
       console.error("Sign up error:", error);
@@ -205,7 +212,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resetPassword = async (email: string) => {
     try {
-      if (!email || !email.includes('@')) {
+      if (!email || !email.includes("@")) {
         return { error: "Please enter a valid email address" };
       }
 
@@ -226,7 +233,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshSession = async () => {
     try {
-      const { data: { session: s } } = await supabase.auth.refreshSession();
+      const {
+        data: { session: s },
+      } = await supabase.auth.refreshSession();
       setSession(s);
       setUser(s?.user ?? null);
     } catch (error) {

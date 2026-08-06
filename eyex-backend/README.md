@@ -8,7 +8,8 @@
 - **FastAPI** — async REST framework
 - **LangGraph** — multi-agent DAG orchestration
 - **LangChain** — LLM integration
-- **OpenAI** — LLM provider
+- **πX AI Control Plane** — model-independent provider adapter layer
+- **OpenAI / Anthropic / Gemini / Ollama** — supported LLM providers
 - **PostgreSQL 16** — primary database (async via asyncpg)
 - **Redis 7** — caching and checkpoint storage
 - **Docker Compose** — local development
@@ -39,24 +40,33 @@ open http://localhost:8000/docs
 ```
 eyex-backend/
 ├── app/
-│   ├── agents/          # LangGraph agent nodes
-│   ├── api/             # REST endpoints (v1)
-│   ├── core/            # Security, exceptions, middleware
-│   ├── db/              # Database session & migrations
-│   ├── models/          # SQLAlchemy ORM models
-│   ├── schemas/         # Pydantic request/response schemas
-│   ├── services/        # Business logic layer
-│   ├── config.py        # Settings via pydantic-settings
-│   ├── database.py      # Async engine & session factory
-│   ├── dependencies.py  # FastAPI dependency injection
-│   └── main.py          # FastAPI application factory
-├── tests/               # pytest test suite
-├── scripts/             # Database init & seed scripts
-├── alembic/             # Database migrations
+│   ├── agents/              # LangGraph agent nodes
+│   ├── ai_control_plane/    # πX AI Control Plane provider adapters
+│   ├── api/                 # REST endpoints (v1)
+│   ├── core/                # Security, exceptions, middleware
+│   ├── db/                  # Database session & migrations
+│   ├── models/              # SQLAlchemy ORM models
+│   ├── schemas/             # Pydantic request/response schemas
+│   ├── services/            # Business logic layer
+│   ├── config.py            # Settings via pydantic-settings
+│   ├── database.py          # Async engine & session factory
+│   ├── dependencies.py      # FastAPI dependency injection
+│   └── main.py              # FastAPI application factory
+├── tests/                   # pytest test suite
+├── scripts/                 # Database init & seed scripts
+├── alembic/                 # Database migrations
 ├── Dockerfile
 ├── docker-compose.yml
 └── pyproject.toml
 ```
+
+## AI Control Plane
+
+The πX AI Control Plane lives in `app/ai_control_plane/` and provides a
+provider-agnostic adapter layer for OpenAI, Anthropic, Gemini, Ollama, and any
+future OpenAI-compatible endpoint.
+
+See `docs/AI_CONTROL_PLANE.md` for architecture and usage details.
 
 ## API Endpoints
 

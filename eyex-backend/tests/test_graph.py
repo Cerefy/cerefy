@@ -6,14 +6,14 @@ import pytest
 
 from app.agents.graph import (
     AgentGraph,
-    route_from_supervisor,
-    route_from_planner,
-    route_from_coder,
-    route_from_quality_gate,
     route_from_ceo,
     route_from_cfo,
+    route_from_coder,
     route_from_coo,
+    route_from_planner,
+    route_from_quality_gate,
     route_from_risk,
+    route_from_supervisor,
 )
 
 

@@ -559,7 +559,7 @@ class AgentGraph:
             )
             logger.info("[%s] Graph completed: status=%s, nodes=%d", run_id, final.get("status"), len(final.get("nodes_executed", [])))
             return final
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("[%s] Graph execution timed out after %s seconds", run_id, timeout)
             return {
                 **initial,

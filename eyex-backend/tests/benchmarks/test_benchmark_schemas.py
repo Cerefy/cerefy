@@ -2,9 +2,7 @@
 from __future__ import annotations
 
 import time
-from datetime import datetime, timezone
-
-import pytest
+from datetime import UTC, datetime
 
 from app.schemas.agent import AgentRequest, AgentResponse, AgentStep, WorkflowResult
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
@@ -52,7 +50,6 @@ class TestAgentSchemaBenchmark:
         assert avg < 1, f"AgentStep avg {avg:.4f}ms exceeded 1ms"
 
     def test_agent_response_creation(self):
-        from app.schemas.agent import AgentResponse
 
         wr = WorkflowResult(success=True, output="Done", thread_id="t1")
         times = []
@@ -264,9 +261,8 @@ class TestUserSchemaBenchmark:
         assert avg < 1, f"UserUpdate avg {avg:.4f}ms exceeded 1ms"
 
     def test_user_read_creation(self):
-        from datetime import datetime, timezone
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         times = []
         for _ in range(1000):
             start = time.perf_counter()

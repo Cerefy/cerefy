@@ -229,7 +229,7 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
       const errorData = await response.json();
       errorMessage = errorData.detail || errorData.message || JSON.stringify(errorData);
     } catch {
-      errorMessage = await response.text() || errorMessage;
+      errorMessage = (await response.text()) || errorMessage;
     }
     throw new Error(errorMessage);
   }
@@ -251,7 +251,7 @@ export const BackendApi = {
     }
 
     const enhancedMessage = ragContext ? `${body.message}${ragContext}` : body.message;
-    
+
     return apiFetch("/chat", {
       method: "POST",
       body: JSON.stringify({ ...body, message: enhancedMessage }),
@@ -478,6 +478,21 @@ export const BackendApi = {
 
   async getKnowledgeData(sessionId = "default") {
     return apiFetch(`/intelligence/knowledge?session_id=${sessionId}`);
+  },
+
+  async storeKnowledge(key: string, value: string, sessionId = "default") {
+    const formData = new FormData();
+    formData.append("key", key);
+    formData.append("value", value);
+    formData.append("session_id", sessionId);
+    const token = await getAuthToken();
+    const headers: Record<string, string> = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    return fetch(`${BASE_URL}/intelligence/knowledge`, {
+      method: "POST",
+      body: formData,
+      headers,
+    });
   },
 
   async listDocuments(sessionId = "default") {

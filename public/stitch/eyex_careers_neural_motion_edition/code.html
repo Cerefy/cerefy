@@ -1,0 +1,599 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Careers - EyeX Technologies</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap");
+
+      @font-face {
+        font-family: "Geist";
+        src: url("https://cdn.jsdelivr.net/fontsource/fonts/geist-sans@latest/latin-400-normal.woff2")
+          format("woff2");
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Geist";
+        src: url("https://cdn.jsdelivr.net/fontsource/fonts/geist-sans@latest/latin-600-normal.woff2")
+          format("woff2");
+        font-weight: 600;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Geist";
+        src: url("https://cdn.jsdelivr.net/fontsource/fonts/geist-sans@latest/latin-700-normal.woff2")
+          format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      body {
+        background-color: #05070a; /* surface-dark */
+        color: #dae4ef; /* on-surface */
+        overflow-x: hidden;
+      }
+
+      .glass-panel {
+        background-color: rgba(11, 20, 28, 0.4); /* surface/40 */
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 229, 255, 0.1);
+      }
+
+      .glass-card {
+        background-color: rgba(11, 20, 28, 0.4);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 229, 255, 0.1);
+        transition: all 200ms cubic-bezier(0.4, 0, 1, 1);
+      }
+
+      .glass-card:hover {
+        border-color: rgba(0, 229, 255, 0.3);
+        box-shadow: 0px 0px 30px rgba(0, 229, 255, 0.15);
+        background-color: rgba(11, 20, 28, 0.6);
+      }
+
+      .text-glow {
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+      }
+
+      .btn-primary {
+        background-color: #00e5ff;
+        color: #001f24;
+        transition: all 150ms cubic-bezier(0.4, 0, 1, 1);
+      }
+      .btn-primary:hover {
+        background-color: #00daf3;
+        box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+      }
+
+      .btn-ghost {
+        border: 1px solid #00e5ff;
+        color: #00e5ff;
+        transition: all 150ms cubic-bezier(0.4, 0, 1, 1);
+      }
+      .btn-ghost:hover {
+        background-color: rgba(0, 229, 255, 0.1);
+        box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+      }
+
+      /* Animations */
+      .reveal-up {
+        opacity: 0;
+        transform: translateY(30px);
+        transition:
+          opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+          transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .reveal-up.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .role-row {
+        border-bottom: 1px solid rgba(59, 73, 76, 0.2);
+        transition: background-color 150ms linear;
+      }
+      .role-row:hover {
+        background-color: rgba(0, 229, 255, 0.05);
+      }
+      .role-row:last-child {
+        border-bottom: none;
+      }
+
+      .grid-bg {
+        background-image:
+          linear-gradient(to right, rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+        background-position: center center;
+        opacity: 0.5;
+      }
+
+      .gradient-text {
+        background: linear-gradient(90deg, #c3f5ff, #00e5ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    </style>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-dim": "#12131c",
+              "surface-bright": "#383843",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "on-secondary-fixed": "#080c5e",
+              "on-tertiary-fixed-variant": "#900e00",
+              "tertiary-fixed": "#ffdad4",
+              "on-background": "#e3e1ef",
+              outline: "#8f8fa2",
+              "on-error-container": "#ffdad6",
+              "on-primary-container": "#f1efff",
+              "surface-container-low": "#1b1b24",
+              "surface-dark": "#05070A",
+              "on-surface": "#e3e1ef",
+              error: "#ffb4ab",
+              "on-tertiary-container": "#ffece9",
+              "on-tertiary-fixed": "#3f0300",
+              surface: "#12131c",
+              "on-primary-fixed": "#00016d",
+              "on-secondary-fixed-variant": "#393f8a",
+              "surface-container-highest": "#34343e",
+              "surface-container": "#1f1f28",
+              "inverse-on-surface": "#302f3a",
+              "on-error": "#690005",
+              "tertiary-container": "#c83923",
+              "secondary-fixed-dim": "#bec2ff",
+              "outline-variant": "#454556",
+              "on-tertiary": "#660700",
+              "outline-cyan": "rgba(0, 229, 255, 0.3)",
+              "on-secondary-container": "#a9afff",
+              secondary: "#bec2ff",
+              "on-primary-fixed-variant": "#1820d9",
+              "secondary-fixed": "#e0e0ff",
+              "error-container": "#93000a",
+              "on-secondary": "#212772",
+              "surface-container-high": "#292933",
+              background: "#12131c",
+              "on-surface-variant": "#c6c5d9",
+              "surface-variant": "#34343e",
+              "primary-container": "#4b56fe",
+              "primary-fixed-dim": "#bec2ff",
+              "on-primary": "#0003aa",
+              tertiary: "#ffb4a6",
+              "surface-container-lowest": "#0d0d16",
+              "surface-tint": "#bec2ff",
+              "inverse-primary": "#3a44ef",
+              primary: "#bec2ff",
+              "inverse-surface": "#e3e1ef",
+              "primary-fixed": "#e0e0ff",
+              "secondary-container": "#393f8a",
+            },
+            borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" },
+            spacing: {
+              "stack-xs": "0.25rem",
+              "stack-md": "1rem",
+              "grid-gutter": "1.5rem",
+              "stack-lg": "2rem",
+              "stack-sm": "0.5rem",
+              "grid-margin": "2rem",
+            },
+            fontFamily: {
+              "headline-md": ["Geist"],
+              "body-lg": ["Geist"],
+              "body-sm": ["Geist"],
+              "label-caps": ["JetBrains Mono"],
+              "headline-md-mobile": ["Geist"],
+              "display-lg": ["Geist"],
+              "data-mono": ["JetBrains Mono"],
+              headline: ["Geist"],
+              display: ["Geist"],
+              body: ["Geist"],
+              label: ["Jetbrains Mono"],
+            },
+            fontSize: {
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="antialiased bg-surface-dark text-on-surface">
+    <!-- TopNavBar Component -->
+    <nav
+      class="bg-surface/40 dark:bg-surface-dark/40 backdrop-blur-xl text-primary dark:text-primary-fixed-dim fixed top-0 w-full z-50 border-b border-outline-cyan/10 shadow-[0px_0px_30px_rgba(0,229,255,0.05)] transition-all duration-150 ease-out"
+    >
+      <div class="flex justify-between items-center px-grid-margin py-4 max-w-[1440px] mx-auto">
+        <div class="flex items-center gap-4">
+          <img
+            alt="EyeX Atomic Logo"
+            class="h-8 w-8 object-contain"
+            src="https://lh3.googleusercontent.com/aida/AP1WRLsqxHOHMkLuCPZB4-VZlzk65flnJb0sMuPqADd3fPlyEOcJWIRvswCZ8xmagpJ32L3HWfKNmpHUy70AYWiejZhcNBfr9XsptYX7xdC4JCMRa-Q7zTuNIjIHb9oNOZsujPWzkGM22SSKki3wY_LMk7AMbwWWlRh7dtjKQLGvxffISjDrRZ-3hFy16Hx0zQvhFFDMg7d7_xJtAUW-BTq_b09KFoGe0-AjQQqjet4L5O7huddozmx571_xVIM"
+          />
+          <span
+            class="text-body-lg font-headline-md font-bold tracking-tight text-on-surface dark:text-on-background uppercase hidden sm:block"
+            >EyeX Technologies</span
+          >
+        </div>
+        <div class="hidden md:flex items-center gap-8">
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20 px-3 py-2 rounded-DEFAULT text-label-caps font-label-caps"
+            href="#"
+            >Platform</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20 px-3 py-2 rounded-DEFAULT text-label-caps font-label-caps"
+            href="#"
+            >Solutions</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20 px-3 py-2 rounded-DEFAULT text-label-caps font-label-caps"
+            href="#"
+            >Resources</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20 px-3 py-2 rounded-DEFAULT text-label-caps font-label-caps"
+            href="#"
+            >Pricing</a
+          >
+          <!-- Explicit active state not shown as 'Careers' is not in standard nav -->
+        </div>
+        <div class="flex items-center gap-4">
+          <button
+            class="btn-ghost px-4 py-2 rounded-DEFAULT text-label-caps font-label-caps hidden sm:block"
+          >
+            Login
+          </button>
+          <button
+            class="btn-primary px-4 py-2 rounded-DEFAULT text-label-caps font-label-caps font-bold"
+          >
+            Book Demo
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main class="pt-24 pb-32">
+      <!-- Hero Section -->
+      <section
+        class="relative min-h-[819px] flex items-center justify-center overflow-hidden px-grid-margin"
+      >
+        <div class="absolute inset-0 grid-bg z-0 pointer-events-none"></div>
+        <!-- Abstract Glows -->
+        <div
+          class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-container rounded-full mix-blend-screen filter blur-[120px] opacity-20 pointer-events-none"
+        ></div>
+        <div
+          class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary rounded-full mix-blend-screen filter blur-[150px] opacity-10 pointer-events-none"
+        ></div>
+        <div class="relative z-10 max-w-[1440px] w-full mx-auto text-center reveal-up">
+          <span
+            class="inline-block border border-outline-cyan/30 bg-surface/50 text-primary px-3 py-1 rounded-full text-label-caps font-label-caps mb-6 backdrop-blur-md"
+          >
+            <span
+              class="material-symbols-outlined text-[14px] align-middle mr-1"
+              data-weight="fill"
+              style="font-variation-settings: &quot;FILL&quot; 1"
+              >terminal</span
+            >
+            EYEX CAREERS
+          </span>
+          <h1 class="text-display-lg font-display-lg text-on-surface mb-6 tracking-tight">
+            Join the <span class="gradient-text">Intelligence</span> Revolution
+          </h1>
+          <p
+            class="text-headline-md font-headline-md text-on-surface-variant max-w-3xl mx-auto mb-10 font-normal"
+          >
+            We are building the Enterprise AI Operating System of the future. Engineer precision.
+            Design clarity. Compute power.
+          </p>
+          <div class="flex justify-center gap-4">
+            <a
+              class="btn-primary px-8 py-4 rounded-DEFAULT text-label-caps font-label-caps flex items-center gap-2"
+              href="#open-roles"
+            >
+              VIEW OPEN ROLES
+              <span class="material-symbols-outlined" style="font-size: 16px">arrow_downward</span>
+            </a>
+          </div>
+        </div>
+      </section>
+      <!-- Metrics / Why EyeX -->
+      <section
+        class="py-24 px-grid-margin border-y border-outline-variant/20 bg-surface-container-lowest/50 relative"
+      >
+        <div class="max-w-[1440px] mx-auto reveal-up">
+          <div
+            class="grid grid-cols-1 md:grid-cols-4 gap-px bg-outline-cyan/10 rounded-lg overflow-hidden border border-outline-cyan/20"
+          >
+            <div class="bg-surface-dark p-8 flex flex-col items-center justify-center text-center">
+              <div class="text-display-lg font-display-lg text-primary mb-2 text-glow">&gt;10x</div>
+              <div class="text-label-caps font-label-caps text-on-surface-variant">
+                COMPUTATIONAL EFFICIENCY
+              </div>
+            </div>
+            <div class="bg-surface-dark p-8 flex flex-col items-center justify-center text-center">
+              <div class="text-display-lg font-display-lg text-primary mb-2 text-glow">0ms</div>
+              <div class="text-label-caps font-label-caps text-on-surface-variant">
+                PERCEIVED LATENCY
+              </div>
+            </div>
+            <div class="bg-surface-dark p-8 flex flex-col items-center justify-center text-center">
+              <div class="text-display-lg font-display-lg text-primary mb-2 text-glow">99.9%</div>
+              <div class="text-label-caps font-label-caps text-on-surface-variant">
+                UPTIME PRECISION
+              </div>
+            </div>
+            <div class="bg-surface-dark p-8 flex flex-col items-center justify-center text-center">
+              <div class="text-display-lg font-display-lg text-primary mb-2 text-glow">Glob</div>
+              <div class="text-label-caps font-label-caps text-on-surface-variant">
+                DISTRIBUTED WORKFORCE
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Open Roles Section -->
+      <section class="py-32 px-grid-margin max-w-[1440px] mx-auto relative z-10" id="open-roles">
+        <div
+          class="mb-16 reveal-up flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-outline-variant/20 pb-8"
+        >
+          <div>
+            <h2 class="text-headline-md font-headline-md text-on-surface mb-2">Open Positions</h2>
+            <p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl">
+              Discover opportunities across our engineering, research, and product teams. Build
+              high-density environments.
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <button
+              class="bg-surface-bright/20 border border-outline-cyan/20 text-primary px-4 py-2 rounded-DEFAULT text-data-mono font-data-mono hover:bg-surface-bright/40 transition-colors"
+            >
+              ALL
+            </button>
+            <button
+              class="bg-transparent border border-outline-variant/20 text-on-surface-variant px-4 py-2 rounded-DEFAULT text-data-mono font-data-mono hover:text-on-surface hover:border-outline-variant transition-colors"
+            >
+              ENGINEERING
+            </button>
+            <button
+              class="bg-transparent border border-outline-variant/20 text-on-surface-variant px-4 py-2 rounded-DEFAULT text-data-mono font-data-mono hover:text-on-surface hover:border-outline-variant transition-colors"
+            >
+              RESEARCH
+            </button>
+          </div>
+        </div>
+        <!-- List Layout for Roles (High Density) -->
+        <div class="glass-panel rounded-lg overflow-hidden reveal-up">
+          <div
+            class="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-outline-cyan/20 bg-surface-container-low text-label-caps font-label-caps text-on-surface-variant"
+          >
+            <div class="col-span-5">ROLE</div>
+            <div class="col-span-3">DEPARTMENT</div>
+            <div class="col-span-2">LOCATION</div>
+            <div class="col-span-2 text-right">ACTION</div>
+          </div>
+          <!-- Role Item -->
+          <a
+            class="role-row flex flex-col md:grid md:grid-cols-12 gap-4 px-6 py-6 group items-center relative overflow-hidden"
+            href="#"
+          >
+            <div class="col-span-5 w-full">
+              <h3
+                class="text-body-lg font-headline-md text-on-surface group-hover:text-primary transition-colors font-semibold"
+              >
+                Senior Machine Learning Engineer
+              </h3>
+            </div>
+            <div
+              class="col-span-3 w-full text-data-mono font-data-mono text-on-surface-variant flex items-center gap-2"
+            >
+              <span class="w-2 h-2 rounded-full bg-primary-container inline-block"></span>
+              ENGINEERING
+            </div>
+            <div class="col-span-2 w-full text-data-mono font-data-mono text-on-surface-variant">
+              REMOTE
+            </div>
+            <div
+              class="col-span-2 w-full text-right md:opacity-0 group-hover:opacity-100 transition-opacity flex justify-end items-center"
+            >
+              <span class="material-symbols-outlined text-primary">arrow_forward</span>
+            </div>
+          </a>
+          <!-- Role Item -->
+          <a
+            class="role-row flex flex-col md:grid md:grid-cols-12 gap-4 px-6 py-6 group items-center relative overflow-hidden"
+            href="#"
+          >
+            <div class="col-span-5 w-full">
+              <h3
+                class="text-body-lg font-headline-md text-on-surface group-hover:text-primary transition-colors font-semibold"
+              >
+                Staff Frontend Architect (UI Systems)
+              </h3>
+            </div>
+            <div
+              class="col-span-3 w-full text-data-mono font-data-mono text-on-surface-variant flex items-center gap-2"
+            >
+              <span class="w-2 h-2 rounded-full bg-tertiary-container inline-block"></span>
+              PRODUCT
+            </div>
+            <div class="col-span-2 w-full text-data-mono font-data-mono text-on-surface-variant">
+              SAN FRANCISCO / REMOTE
+            </div>
+            <div
+              class="col-span-2 w-full text-right md:opacity-0 group-hover:opacity-100 transition-opacity flex justify-end items-center"
+            >
+              <span class="material-symbols-outlined text-primary">arrow_forward</span>
+            </div>
+          </a>
+          <!-- Role Item -->
+          <a
+            class="role-row flex flex-col md:grid md:grid-cols-12 gap-4 px-6 py-6 group items-center relative overflow-hidden"
+            href="#"
+          >
+            <div class="col-span-5 w-full">
+              <h3
+                class="text-body-lg font-headline-md text-on-surface group-hover:text-primary transition-colors font-semibold"
+              >
+                AI Research Scientist
+              </h3>
+            </div>
+            <div
+              class="col-span-3 w-full text-data-mono font-data-mono text-on-surface-variant flex items-center gap-2"
+            >
+              <span class="w-2 h-2 rounded-full bg-error inline-block"></span>
+              RESEARCH
+            </div>
+            <div class="col-span-2 w-full text-data-mono font-data-mono text-on-surface-variant">
+              LONDON
+            </div>
+            <div
+              class="col-span-2 w-full text-right md:opacity-0 group-hover:opacity-100 transition-opacity flex justify-end items-center"
+            >
+              <span class="material-symbols-outlined text-primary">arrow_forward</span>
+            </div>
+          </a>
+        </div>
+      </section>
+    </main>
+    <!-- Footer Component -->
+    <footer
+      class="bg-surface-dark dark:bg-surface-dark text-on-surface dark:text-on-background w-full py-stack-lg border-t border-outline-variant/20 linear-out-mechanical easing 200ms"
+    >
+      <div
+        class="grid grid-cols-2 md:grid-cols-4 gap-grid-gutter px-grid-margin max-w-[1440px] mx-auto"
+      >
+        <div class="col-span-2 md:col-span-1 flex flex-col gap-4">
+          <div class="flex items-center gap-3">
+            <img
+              alt="EyeX Logo"
+              class="w-6 h-6 object-contain"
+              src="https://lh3.googleusercontent.com/aida/AP1WRLsqxHOHMkLuCPZB4-VZlzk65flnJb0sMuPqADd3fPlyEOcJWIRvswCZ8xmagpJ32L3HWfKNmpHUy70AYWiejZhcNBfr9XsptYX7xdC4JCMRa-Q7zTuNIjIHb9oNOZsujPWzkGM22SSKki3wY_LMk7AMbwWWlRh7dtjKQLGvxffISjDrRZ-3hFy16Hx0zQvhFFDMg7d7_xJtAUW-BTq_b09KFoGe0-AjQQqjet4L5O7huddozmx571_xVIM"
+            />
+            <span
+              class="text-headline-md font-headline-md text-on-surface dark:text-on-background uppercase text-[18px] leading-tight font-bold"
+              >EyeX</span
+            >
+          </div>
+          <p class="text-body-sm font-body-sm text-on-surface-variant mt-2 max-w-[200px]">
+            Intelligence defined. Enterprise AI OS.
+          </p>
+          <p class="text-data-mono font-data-mono text-on-surface-variant/50 mt-4">
+            © 2024 EyeX Technologies. Intelligence defined.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3">
+          <span class="text-label-caps font-label-caps text-on-surface mb-2">Product</span>
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+            href="#"
+            >Platform Overview</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+            href="#"
+            >Security Architecture</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+            href="#"
+            >Integration API</a
+          >
+        </div>
+        <div class="flex flex-col gap-3">
+          <span class="text-label-caps font-label-caps text-on-surface mb-2">Company</span>
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+            href="#"
+            >About Us</a
+          >
+          <a class="text-body-sm font-body-sm text-primary transition-colors" href="#"
+            >Careers
+            <span class="bg-primary/10 text-primary text-[9px] px-1 ml-1 rounded"
+              >WE'RE HIRING</span
+            ></a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+            href="#"
+            >Newsroom</a
+          >
+        </div>
+        <div class="flex flex-col gap-3">
+          <span class="text-label-caps font-label-caps text-on-surface mb-2">Legal</span>
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+            href="#"
+            >Privacy Policy</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+            href="#"
+            >Terms of Service</a
+          >
+          <a
+            class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+            href="#"
+            >Trust Center</a
+          >
+        </div>
+      </div>
+    </footer>
+    <script>
+      // Simple Intersection Observer for scroll animations
+      document.addEventListener("DOMContentLoaded", () => {
+        const observerOptions = {
+          root: null,
+          rootMargin: "0px",
+          threshold: 0.1,
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("active");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+
+        document.querySelectorAll(".reveal-up").forEach((el) => {
+          observer.observe(el);
+        });
+      });
+    </script>
+  </body>
+</html>

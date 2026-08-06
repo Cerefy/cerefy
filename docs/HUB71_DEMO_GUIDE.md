@@ -71,9 +71,9 @@ See `docs/HUB71_DEMO_SCRIPT.md` for the 5-minute investor script.
 
 ## Troubleshooting
 
-| Symptom | Fix |
-| ------- | --- |
-| `401 Unauthorized` | Ensure the user is logged in and Supabase token is valid. |
-| `429 Daily limit reached` | Increase `CHAT_DAILY_MESSAGE_LIMIT` or use a fresh demo user. |
-| Empty executive output | Backend fallback data should still render; check backend logs for LLM errors. |
-| Demo step hangs | The backend has 45s timeouts on the agent graph; fallback will return after timeout. |
+| Symptom                   | Fix                                                                                  |
+| ------------------------- | ------------------------------------------------------------------------------------ |
+| `401 Unauthorized`        | Ensure the user is logged in and Supabase token is valid.                            |
+| `429 Daily limit reached` | Increase `CHAT_DAILY_MESSAGE_LIMIT` or use a fresh demo user.                        |
+| Empty executive output    | Backend fallback data should still render; check backend logs for LLM errors.        |
+| Demo step hangs           | The backend has 45s timeouts on the agent graph; fallback will return after timeout. |

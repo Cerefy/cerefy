@@ -1,0 +1,627 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Permission Management - EyeX Neural OS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-container": "#a9afff",
+              primary: "#bec2ff",
+              "inverse-surface": "#e3e1ef",
+              "secondary-fixed-dim": "#bec2ff",
+              "on-tertiary-fixed-variant": "#900e00",
+              "error-container": "#93000a",
+              "on-tertiary": "#660700",
+              "on-tertiary-fixed": "#3f0300",
+              "on-secondary-fixed": "#080c5e",
+              error: "#ffb4ab",
+              "surface-container-low": "#1b1b24",
+              "inverse-primary": "#3a44ef",
+              background: "#12131c",
+              "secondary-container": "#393f8a",
+              outline: "#8f8fa2",
+              tertiary: "#ffb4a6",
+              "surface-dim": "#12131c",
+              "primary-fixed": "#e0e0ff",
+              "on-surface": "#e3e1ef",
+              surface: "#12131c",
+              "inverse-on-surface": "#302f3a",
+              "surface-container-high": "#292933",
+              "secondary-fixed": "#e0e0ff",
+              "on-error-container": "#ffdad6",
+              "on-primary-container": "#f1efff",
+              "on-background": "#e3e1ef",
+              "on-primary-fixed-variant": "#1820d9",
+              "surface-bright": "#383843",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "on-secondary-fixed-variant": "#393f8a",
+              "on-primary-fixed": "#00016d",
+              "outline-variant": "#454556",
+              "surface-container-highest": "#34343e",
+              "on-surface-variant": "#c6c5d9",
+              "on-secondary": "#212772",
+              "primary-fixed-dim": "#bec2ff",
+              "tertiary-fixed": "#ffdad4",
+              "surface-variant": "#34343e",
+              "primary-container": "#4b56fe",
+              "on-tertiary-container": "#ffece9",
+              "surface-container-lowest": "#0d0d16",
+              "tertiary-container": "#c83923",
+              secondary: "#bec2ff",
+              "surface-tint": "#bec2ff",
+              "on-error": "#690005",
+              "surface-container": "#1f1f28",
+              "on-primary": "#0003aa",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "stack-sm": "0.5rem",
+              "grid-gutter": "1.5rem",
+              "stack-xs": "0.25rem",
+              "stack-md": "1rem",
+              "grid-margin": "2rem",
+              "stack-lg": "2rem",
+            },
+            fontFamily: {
+              "headline-md": ["Geist", "sans-serif"],
+              "label-caps": ["JetBrains Mono", "monospace"],
+              "display-lg": ["Geist", "sans-serif"],
+              "data-mono": ["JetBrains Mono", "monospace"],
+              "headline-md-mobile": ["Geist", "sans-serif"],
+              "body-sm": ["Geist", "sans-serif"],
+              "body-lg": ["Geist", "sans-serif"],
+            },
+            fontSize: {
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #454556;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #8f8fa2;
+      }
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-background min-h-screen flex custom-scrollbar font-body-sm text-body-sm overflow-hidden"
+  >
+    <!-- SideNavBar (Shared Component) -->
+    <aside
+      class="h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant bg-surface-container flex flex-col h-full py-grid-margin z-50"
+    >
+      <div class="px-6 mb-8">
+        <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tighter">
+          EyeX Neural OS
+        </h1>
+        <p class="font-data-mono text-data-mono text-on-surface-variant mt-1">v4.0 Neural Carbon</p>
+      </div>
+      <div class="px-4 mb-6">
+        <button
+          class="w-full flex items-center justify-center gap-2 bg-primary-container text-on-primary-container hover:bg-inverse-primary hover:text-on-primary py-2 px-4 rounded-DEFAULT transition-all duration-150 active:scale-95 ease-in-out"
+        >
+          <span class="material-symbols-outlined text-[18px]">add</span>
+          <span class="font-label-caps text-label-caps">New Mission</span>
+        </button>
+      </div>
+      <nav class="flex-1 px-3 space-y-1">
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-[20px]">corporate_fare</span>
+          <span>Organization</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-[20px]">grid_view</span>
+          <span>Workspace</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-[20px]">target</span>
+          <span>Mission Center</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-[20px]">diversity_3</span>
+          <span>Executive Council</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+          <span>AI Agents</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-[20px]">database</span>
+          <span>Data Platform</span>
+        </a>
+        <!-- Active State: Security Center -> Maps to Permission Management intent -->
+        <a
+          class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg border-l-4 border-primary active:scale-95 duration-100 ease-in-out"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined text-[20px]"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >verified_user</span
+          >
+          <span class="font-bold">Security Center</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined text-[20px]">settings</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </aside>
+    <!-- TopNavBar (Shared Component) -->
+    <header
+      class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex justify-between items-center h-16 px-grid-margin"
+    >
+      <div class="flex items-center gap-6">
+        <h2 class="font-headline-md text-[20px] leading-[28px] font-black text-primary">EyeX OS</h2>
+        <nav class="hidden md:flex gap-4">
+          <a
+            class="text-on-surface-variant hover:text-primary transition-opacity font-data-mono text-data-mono"
+            href="#"
+            >Dashboard</a
+          >
+          <a
+            class="text-on-surface-variant hover:text-primary transition-opacity font-data-mono text-data-mono"
+            href="#"
+            >Analytics</a
+          >
+          <a
+            class="text-on-surface-variant hover:text-primary transition-opacity font-data-mono text-data-mono"
+            href="#"
+            >Logs</a
+          >
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 border-r border-outline-variant pr-4 mr-2">
+          <button
+            class="text-on-surface-variant hover:text-primary transition-opacity p-2 rounded-full hover:bg-surface-container"
+          >
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+          </button>
+          <button
+            class="text-on-surface-variant hover:text-primary transition-opacity p-2 rounded-full hover:bg-surface-container"
+          >
+            <span class="material-symbols-outlined text-[20px]">terminal</span>
+          </button>
+          <button
+            class="text-on-surface-variant hover:text-primary transition-opacity p-2 rounded-full hover:bg-surface-container"
+          >
+            <span class="material-symbols-outlined text-[20px]">help_outline</span>
+          </button>
+        </div>
+        <button
+          class="px-4 py-1.5 border border-primary text-primary hover:bg-primary/10 rounded-DEFAULT font-label-caps text-label-caps transition-colors"
+        >
+          Deploy Agent
+        </button>
+        <button
+          class="px-4 py-1.5 bg-error-container text-on-error-container hover:bg-error/90 rounded-DEFAULT font-label-caps text-label-caps transition-colors flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined text-[16px]">stop_circle</span>
+          Emergency Stop
+        </button>
+        <img
+          alt="Administrator Profile"
+          class="w-8 h-8 rounded-full border border-outline ml-2 object-cover"
+          data-alt="A macro shot of a glowing blue fiber optic node against a deep black background, representing a digital administrator profile picture in a high-tech interface. The lighting is sharp, cool, and precise."
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqLQT_xD57bSOaTzJLBF7d1SWaZVudzW0KmtBlIrwKz3Axql5ZH0Xh8pZEe-BferHgGJJSlIgyQfh1SX_gHAdJnMy3bewdfdzINh3VbF8ZeZlpE2W05v_kW9YSo5vI0i3lcUsmCnJDAHKGC4wPTcIxnT9UMQZInUytmBGSvxD-7saCm5YO_evvkS_Q-wOvaeGGVxaJEHaC1-YZxEfq4IDJnxWoW91dlODjXRmp9iFZ9C7hhikabMHFY3n0kFSouJajoN5drB5ztq0"
+        />
+      </div>
+    </header>
+    <!-- Main Content Canvas -->
+    <main
+      class="ml-64 mt-16 w-[calc(100%-16rem)] h-[calc(100vh-4rem-2.5rem)] overflow-y-auto custom-scrollbar p-grid-margin relative"
+    >
+      <!-- Background Ambient Element (Subtle) -->
+      <div
+        class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none -z-10"
+      ></div>
+      <!-- Page Header -->
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-primary text-[24px]">policy</span>
+            <h1 class="font-headline-md text-headline-md text-on-background">
+              Permission Management
+            </h1>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant max-w-2xl">
+            Enterprise-grade governance hub. Manage access scopes, strict role definitions, and
+            autonomous agent execution boundaries.
+          </p>
+        </div>
+        <div class="flex gap-3">
+          <button
+            class="px-4 py-2 border border-outline-variant text-on-surface hover:border-primary hover:text-primary transition-colors rounded-DEFAULT font-label-caps text-label-caps"
+          >
+            Export Matrix
+          </button>
+          <button
+            class="px-4 py-2 bg-primary text-on-primary hover:bg-primary-fixed transition-colors rounded-DEFAULT font-label-caps text-label-caps"
+          >
+            Apply New Policy
+          </button>
+        </div>
+      </div>
+      <!-- High-Density Bento Grid Layout -->
+      <div class="grid grid-cols-12 gap-grid-gutter">
+        <!-- Roles List (Col span 4) -->
+        <section class="col-span-12 xl:col-span-4 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-data-mono text-data-mono text-primary flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px]">group</span>
+              Active Roles Registry
+            </h3>
+            <button class="text-on-surface-variant hover:text-primary">
+              <span class="material-symbols-outlined text-[18px]">add_circle</span>
+            </button>
+          </div>
+          <div
+            class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden flex-1 flex flex-col"
+          >
+            <div
+              class="p-3 border-b border-outline-variant bg-surface-container flex items-center justify-between"
+            >
+              <span class="font-label-caps text-label-caps text-on-surface-variant">Role Name</span>
+              <span class="font-label-caps text-label-caps text-on-surface-variant">Class</span>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
+              <!-- Role Item 1 -->
+              <div
+                class="flex items-center justify-between p-3 rounded-lg bg-surface-container hover:bg-surface-container-high border border-transparent hover:border-outline-variant transition-all cursor-pointer group"
+              >
+                <div>
+                  <div
+                    class="font-body-sm text-on-background group-hover:text-primary transition-colors"
+                  >
+                    Executive Council
+                  </div>
+                  <div class="font-data-mono text-[10px] text-on-surface-variant mt-1">
+                    ID: ROL-99X-ADM
+                  </div>
+                </div>
+                <span
+                  class="px-2 py-0.5 bg-tertiary-container/20 border border-tertiary-container text-tertiary font-label-caps text-[9px] rounded"
+                  >L0-ADMIN</span
+                >
+              </div>
+              <!-- Role Item 2 -->
+              <div
+                class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container border border-transparent transition-all cursor-pointer group"
+              >
+                <div>
+                  <div
+                    class="font-body-sm text-on-background group-hover:text-primary transition-colors"
+                  >
+                    Senior Data Scientist
+                  </div>
+                  <div class="font-data-mono text-[10px] text-on-surface-variant mt-1">
+                    ID: ROL-42A-SCI
+                  </div>
+                </div>
+                <span
+                  class="px-2 py-0.5 bg-primary/10 border border-primary/30 text-primary font-label-caps text-[9px] rounded"
+                  >L2-WRITE</span
+                >
+              </div>
+              <!-- Role Item 3 -->
+              <div
+                class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container border border-transparent transition-all cursor-pointer group"
+              >
+                <div>
+                  <div
+                    class="font-body-sm text-on-background group-hover:text-primary transition-colors"
+                  >
+                    AI Agent - Finance
+                  </div>
+                  <div class="font-data-mono text-[10px] text-on-surface-variant mt-1">
+                    ID: AGT-FIN-01
+                  </div>
+                </div>
+                <span
+                  class="px-2 py-0.5 bg-secondary-container border border-secondary text-secondary-fixed font-label-caps text-[9px] rounded"
+                  >AUTONOMOUS</span
+                >
+              </div>
+              <!-- Role Item 4 -->
+              <div
+                class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container border border-transparent transition-all cursor-pointer group"
+              >
+                <div>
+                  <div
+                    class="font-body-sm text-on-background group-hover:text-primary transition-colors"
+                  >
+                    Auditor / Compliance
+                  </div>
+                  <div class="font-data-mono text-[10px] text-on-surface-variant mt-1">
+                    ID: ROL-11C-AUD
+                  </div>
+                </div>
+                <span
+                  class="px-2 py-0.5 bg-surface-bright border border-outline text-on-surface font-label-caps text-[9px] rounded"
+                  >L3-READ</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Access Matrix (Col span 8) -->
+        <section class="col-span-12 xl:col-span-8 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-data-mono text-data-mono text-primary flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px]">grid_on</span>
+              Global Access Matrix
+            </h3>
+            <div class="flex gap-2">
+              <span
+                class="flex items-center gap-1 font-label-caps text-[10px] text-on-surface-variant"
+                ><span class="w-2 h-2 rounded-full bg-primary block"></span> Full</span
+              >
+              <span
+                class="flex items-center gap-1 font-label-caps text-[10px] text-on-surface-variant ml-2"
+                ><span
+                  class="w-2 h-2 rounded-full bg-outline block border border-outline-variant"
+                ></span>
+                Read</span
+              >
+              <span
+                class="flex items-center gap-1 font-label-caps text-[10px] text-on-surface-variant ml-2"
+                ><span class="material-symbols-outlined text-[14px] text-error">close</span>
+                None</span
+              >
+            </div>
+          </div>
+          <div
+            class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden flex-1 relative"
+          >
+            <!-- Glass reflection overlay -->
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none opacity-50"
+            ></div>
+            <div class="overflow-x-auto w-full custom-scrollbar">
+              <table class="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                  <tr class="bg-surface-container border-b border-outline-variant">
+                    <th class="p-4 font-label-caps text-label-caps text-on-surface-variant w-1/3">
+                      System Module
+                    </th>
+                    <th
+                      class="p-4 font-label-caps text-label-caps text-center text-on-surface-variant"
+                    >
+                      Exec Council
+                    </th>
+                    <th
+                      class="p-4 font-label-caps text-label-caps text-center text-on-surface-variant"
+                    >
+                      Data Sci
+                    </th>
+                    <th
+                      class="p-4 font-label-caps text-label-caps text-center text-on-surface-variant"
+                    >
+                      AI-Finance
+                    </th>
+                    <th
+                      class="p-4 font-label-caps text-label-caps text-center text-on-surface-variant"
+                    >
+                      Auditor
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="font-data-mono text-[12px]">
+                  <tr
+                    class="border-b border-outline-variant/50 hover:bg-surface-container/50 transition-colors"
+                  >
+                    <td class="p-4 text-on-background flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[16px] text-primary">target</span>
+                      Mission Center
+                    </td>
+                    <td class="p-4 text-center">
+                      <span
+                        class="w-3 h-3 rounded-full bg-primary inline-block shadow-[0_0_8px_rgba(190,194,255,0.4)]"
+                      ></span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span
+                        class="w-3 h-3 rounded-full bg-transparent border border-outline inline-block"
+                      ></span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span class="material-symbols-outlined text-[16px] text-outline-variant"
+                        >remove</span
+                      >
+                    </td>
+                    <td class="p-4 text-center">
+                      <span
+                        class="w-3 h-3 rounded-full bg-transparent border border-outline inline-block"
+                      ></span>
+                    </td>
+                  </tr>
+                  <tr
+                    class="border-b border-outline-variant/50 hover:bg-surface-container/50 transition-colors"
+                  >
+                    <td class="p-4 text-on-background flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[16px] text-primary"
+                        >account_balance</span
+                      >
+                      CFO Office
+                    </td>
+                    <td class="p-4 text-center">
+                      <span class="w-3 h-3 rounded-full bg-primary inline-block"></span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span class="material-symbols-outlined text-[16px] text-error">close</span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span class="w-3 h-3 rounded-full bg-primary inline-block"></span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span
+                        class="w-3 h-3 rounded-full bg-transparent border border-outline inline-block"
+                      ></span>
+                    </td>
+                  </tr>
+                  <tr
+                    class="border-b border-outline-variant/50 hover:bg-surface-container/50 transition-colors"
+                  >
+                    <td class="p-4 text-on-background flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[16px] text-primary"
+                        >database</span
+                      >
+                      Core Data Lake
+                    </td>
+                    <td class="p-4 text-center">
+                      <span
+                        class="w-3 h-3 rounded-full bg-transparent border border-outline inline-block"
+                      ></span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span class="w-3 h-3 rounded-full bg-primary inline-block"></span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span
+                        class="w-3 h-3 rounded-full bg-transparent border border-outline inline-block"
+                      ></span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span
+                        class="w-3 h-3 rounded-full bg-transparent border border-outline inline-block"
+                      ></span>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-surface-container/50 transition-colors">
+                    <td class="p-4 text-on-background flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[16px] text-primary"
+                        >smart_toy</span
+                      >
+                      Agent Deployment
+                    </td>
+                    <td class="p-4 text-center">
+                      <span class="w-3 h-3 rounded-full bg-primary inline-block"></span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span class="material-symbols-outlined text-[16px] text-outline-variant"
+                        >remove</span
+                      >
+                    </td>
+                    <td class="p-4 text-center">
+                      <span class="material-symbols-outlined text-[16px] text-error">close</span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span class="material-symbols-outlined text-[16px] text-error">close</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <!-- Footer (Shared Component) -->
+    <footer
+      class="fixed bottom-0 right-0 w-[calc(100%-16rem)] border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center px-grid-margin py-2 text-[10px] z-40"
+    >
+      <div class="font-data-mono text-data-mono text-outline">
+        © 2024 EyeX Neural Systems. Status: <span class="text-primary font-bold">OPTIMAL</span>
+      </div>
+      <div class="flex gap-4">
+        <a
+          class="font-data-mono text-data-mono text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+          href="#"
+          >Documentation</a
+        >
+        <a
+          class="font-data-mono text-data-mono text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+          href="#"
+          >Support</a
+        >
+        <a
+          class="font-data-mono text-data-mono text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+          href="#"
+          >System Health</a
+        >
+      </div>
+    </footer>
+  </body>
+</html>

@@ -39,7 +39,7 @@ export function AiChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
   const [threadTitle, setThreadTitle] = useState("");
-  const [ragContexts, setRagContexts] = useState<Array<{key: string, value: string}>>([]);
+  const [ragContexts, setRagContexts] = useState<Array<{ key: string; value: string }>>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -47,11 +47,14 @@ export function AiChatPage() {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     toast.info(`Chunking and vectorizing ${file.name}...`);
     // Simulating RAG document chunking to vector memory
     setTimeout(() => {
-      setRagContexts(prev => [...prev, { key: file.name, value: `Vectorized contents of ${file.name} (14 chunks)` }]);
+      setRagContexts((prev) => [
+        ...prev,
+        { key: file.name, value: `Vectorized contents of ${file.name} (14 chunks)` },
+      ]);
       toast.success(`${file.name} added to vector memory`);
     }, 1500);
   };
@@ -63,13 +66,15 @@ export function AiChatPage() {
       try {
         const conversations = await BackendApi.getConversation(currentThreadId || "default");
         // Convert to thread format
-        return [{
-          id: currentThreadId || "default",
-          title: threadTitle || "New Analysis",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          message_count: messages.length,
-        }];
+        return [
+          {
+            id: currentThreadId || "default",
+            title: threadTitle || "New Analysis",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            message_count: messages.length,
+          },
+        ];
       } catch (error) {
         console.error("Failed to fetch threads:", error);
         return [];
@@ -107,7 +112,7 @@ export function AiChatPage() {
           await BackendApi.storeLongTermMemory(
             effectiveThreadId,
             "entities",
-            JSON.stringify(entities)
+            JSON.stringify(entities),
           );
         }
       } catch (error) {
@@ -151,14 +156,14 @@ export function AiChatPage() {
       /\$\d+[\d,]*/g, // Money
       /\d+%/g, // Percentages
     ];
-    
-    patterns.forEach(pattern => {
+
+    patterns.forEach((pattern) => {
       const matches = text.match(pattern);
       if (matches) {
         entities.push(...matches);
       }
     });
-    
+
     return [...new Set(entities)];
   };
 
@@ -172,14 +177,19 @@ export function AiChatPage() {
 
   const loadThread = async (threadId: string) => {
     try {
-      const conversation = await BackendApi.getConversation(threadId) as { messages: Array<{ role: string; content: string; created_at: string }> };
+      const conversation = (await BackendApi.getConversation(threadId)) as {
+        messages: Array<{ role: string; content: string; created_at: string }>;
+      };
       const loadedMessages: ChatMessage[] = conversation.messages.map((msg) => ({
         role: msg.role as "user" | "assistant",
         text: msg.content,
-        timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        timestamp: new Date(msg.created_at).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
         source: "python-backend",
       }));
-      
+
       setMessages(loadedMessages);
       setCurrentThreadId(threadId);
       setThreadTitle(loadedMessages[0]?.text.substring(0, 50) + "..." || "Thread");
@@ -188,7 +198,10 @@ export function AiChatPage() {
       try {
         const memorySummary = await BackendApi.getMemorySummary(threadId);
         if (memorySummary.long_term && Object.keys(memorySummary.long_term).length > 0) {
-          const contexts = Object.entries(memorySummary.long_term).map(([k, v]) => ({ key: k, value: v as string }));
+          const contexts = Object.entries(memorySummary.long_term).map(([k, v]) => ({
+            key: k,
+            value: v as string,
+          }));
           setRagContexts(contexts);
         } else {
           setRagContexts([]);
@@ -264,7 +277,7 @@ export function AiChatPage() {
             <Terminal className="text-eye-bg text-xl w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-[18px] font-bold tracking-tight text-white">QORX</h1>
+            <h1 className="text-[18px] font-bold tracking-tight text-white">Cerefy</h1>
             <p className="text-[10px] text-eye-text uppercase tracking-[0.2em] font-mono">
               Analytic Core
             </p>
@@ -295,7 +308,7 @@ export function AiChatPage() {
               Recent Threads
             </span>
           </div>
-          
+
           {threadsLoading ? (
             <div className="px-4 py-3 text-xs text-muted-foreground">Loading threads...</div>
           ) : threads.length === 0 ? (
@@ -326,7 +339,10 @@ export function AiChatPage() {
                   </button>
                 </div>
                 <span className="text-[10px] text-primary-brand mt-1 font-mono">
-                  {new Date(thread.updated_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {new Date(thread.updated_at).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                   &bull; {thread.message_count} messages
                 </span>
               </div>
@@ -394,7 +410,7 @@ export function AiChatPage() {
               <div className="w-16 h-16 bg-primary-brand/10 rounded-full flex items-center justify-center mb-6">
                 <Terminal className="text-primary-brand w-8 h-8" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">QORX Analytic Core</h3>
+              <h3 className="text-lg font-bold text-white mb-2">Cerefy Analytic Core</h3>
               <p className="text-sm text-eye-text max-w-md">
                 Issue a command to begin analysis. The orchestrator will route your request to the
                 appropriate specialist agent.
@@ -411,7 +427,7 @@ export function AiChatPage() {
               <div className="flex items-center gap-2">
                 {msg.role === "assistant" && (
                   <span className="text-[10px] text-primary-brand uppercase tracking-widest font-mono">
-                    QORX ANALYTIC
+                    Cerefy ANALYTIC
                   </span>
                 )}
                 <span className="text-[10px] text-eye-text/40 font-mono">{msg.timestamp}</span>
@@ -447,8 +463,8 @@ export function AiChatPage() {
           {chatMutation.isPending && (
             <div className="flex flex-col gap-3" data-fade-up>
               <div className="flex items-center gap-2">
-                 <span className="text-[10px] text-primary-brand uppercase tracking-widest font-mono">
-                  QORX ANALYTIC
+                <span className="text-[10px] text-primary-brand uppercase tracking-widest font-mono">
+                  Cerefy ANALYTIC
                 </span>
               </div>
               <div className="flex items-center gap-4 bg-eye-surface/40 border border-primary-brand/10 rounded-full px-5 py-3 w-fit backdrop-blur-md">
@@ -481,13 +497,18 @@ export function AiChatPage() {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2 px-3 py-1 border-b border-eye-border/50">
                   <select className="bg-transparent border-none text-[10px] font-mono text-eye-text focus:ring-0 cursor-pointer hover:text-white transition-colors p-0 pr-6">
-                    <option>AGENT: QORX-CORE</option>
+                    <option>AGENT: Cerefy-CORE</option>
                     <option>AGENT: VISION-PRO</option>
                     <option>AGENT: INFRA-V3</option>
                   </select>
                   <div className="h-3 w-[1px] bg-eye-border" />
-                  <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
-                  <button 
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    onChange={handleFileUpload}
+                  />
+                  <button
                     onClick={() => fileInputRef.current?.click()}
                     className="flex items-center gap-1.5 text-[10px] font-mono text-eye-text hover:text-white transition-colors"
                   >
@@ -527,7 +548,7 @@ export function AiChatPage() {
             </div>
             <div className="text-center mt-3">
               <p className="text-[9px] text-eye-text/30 uppercase tracking-[0.3em] font-mono">
-                EyeX Technologies Unified Intelligence Interface &bull; Authorized Personnel Only
+                Cerefy Unified Intelligence Interface &bull; Authorized Personnel Only
               </p>
             </div>
           </div>
@@ -591,10 +612,15 @@ export function AiChatPage() {
                 </div>
               ) : (
                 ragContexts.map((ctx, idx) => (
-                  <div key={idx} className="p-3 bg-eye-surface border border-eye-border rounded-md group hover:border-primary-brand/40 transition-colors">
+                  <div
+                    key={idx}
+                    className="p-3 bg-eye-surface border border-eye-border rounded-md group hover:border-primary-brand/40 transition-colors"
+                  >
                     <div className="flex items-center gap-2 mb-1">
                       <FileText className="text-primary-brand text-sm w-4 h-4" />
-                      <span className="text-xs font-medium text-white truncate max-w-[200px]">{ctx.key}</span>
+                      <span className="text-xs font-medium text-white truncate max-w-[200px]">
+                        {ctx.key}
+                      </span>
                     </div>
                     <p className="text-[10px] text-eye-text leading-relaxed line-clamp-2">
                       {ctx.value}

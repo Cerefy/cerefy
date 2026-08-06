@@ -4,17 +4,16 @@ import { HomePage } from "@/pages/Home";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "EyeX Technologies — Intelligence, Architected" },
+      { title: "Cerefy — AI Startup Builder Platform" },
       {
         name: "description",
         content:
-          "Foundational intelligence infrastructure for the next generation of global enterprise. Secured by design, engineered for scale.",
+          "Build startups with AI founding agents. Cerefy is the AI Startup Builder Platform where founders deploy CEO, CTO, Product, CFO, Marketing, and Investor agents to accelerate company creation.",
       },
-      { property: "og:title", content: "EyeX Technologies — Intelligence, Architected" },
+      { property: "og:title", content: "Cerefy — AI Startup Builder Platform" },
       {
         property: "og:description",
-        content:
-          "Foundational intelligence infrastructure for the next generation of global enterprise. Secured by design, engineered for scale.",
+        content: "Build startups with AI founding agents. Deploy your AI team and build faster.",
       },
       { property: "og:type", content: "website" },
     ],

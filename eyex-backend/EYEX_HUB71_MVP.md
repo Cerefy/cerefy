@@ -73,14 +73,14 @@ EyeX Technologies delivers an **AI-powered business decision intelligence platfo
 
 ## Tech Stack
 
-| Layer         | Technology                                                              |
-| ------------- | ----------------------------------------------------------------------- |
-| **Backend**   | Python 3.12, FastAPI, LangGraph, SQLAlchemy, PostgreSQL, Redis          |
-| **AI Agents** | LangGraph AgentExecutor, structured Pydantic outputs                    |
-| **Memory**    | PostgreSQL persistent memory + Redis short-term cache + vector memory   |
-| **Frontend**  | React 19, TypeScript, TanStack Router, Vite, Tailwind CSS, shadcn/ui    |
-| **Design**    | Glass-morphism, dark theme, responsive                                  |
-| **DevOps**    | Docker, GitHub Actions CI/CD, Cloudflare Pages                          |
+| Layer         | Technology                                                            |
+| ------------- | --------------------------------------------------------------------- |
+| **Backend**   | Python 3.12, FastAPI, LangGraph, SQLAlchemy, PostgreSQL, Redis        |
+| **AI Agents** | LangGraph AgentExecutor, structured Pydantic outputs                  |
+| **Memory**    | PostgreSQL persistent memory + Redis short-term cache + vector memory |
+| **Frontend**  | React 19, TypeScript, TanStack Router, Vite, Tailwind CSS, shadcn/ui  |
+| **Design**    | Glass-morphism, dark theme, responsive                                |
+| **DevOps**    | Docker, GitHub Actions CI/CD, Cloudflare Pages                        |
 
 ---
 

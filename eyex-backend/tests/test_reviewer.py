@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.agents.reviewer import ReviewerAgent, ReviewOutput, ReviewIssue, create_reviewer_agent
+from app.agents.reviewer import ReviewIssue, ReviewOutput, create_reviewer_agent
 
 
 def test_reviewer_schema():

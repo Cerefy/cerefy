@@ -1,0 +1,619 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Integrations Hub | EyeX Neural OS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#3a44ef",
+              "on-primary-container": "#f1efff",
+              "on-tertiary-fixed-variant": "#900e00",
+              "on-primary-fixed": "#00016d",
+              "surface-container-high": "#292933",
+              "on-tertiary-fixed": "#3f0300",
+              "surface-container-lowest": "#0d0d16",
+              "on-primary": "#0003aa",
+              "primary-fixed-dim": "#bec2ff",
+              "primary-container": "#4b56fe",
+              "primary-fixed": "#e0e0ff",
+              "tertiary-container": "#c83923",
+              "on-secondary-container": "#a9afff",
+              outline: "#8f8fa2",
+              "on-secondary": "#212772",
+              "inverse-on-surface": "#302f3a",
+              "inverse-surface": "#e3e1ef",
+              "surface-container": "#1f1f28",
+              error: "#ffb4ab",
+              "surface-bright": "#383843",
+              "on-primary-fixed-variant": "#1820d9",
+              "secondary-fixed": "#e0e0ff",
+              "on-background": "#e3e1ef",
+              "error-container": "#93000a",
+              tertiary: "#ffb4a6",
+              "outline-variant": "#454556",
+              "on-secondary-fixed": "#080c5e",
+              "on-secondary-fixed-variant": "#393f8a",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "tertiary-fixed": "#ffdad4",
+              "secondary-container": "#393f8a",
+              "secondary-fixed-dim": "#bec2ff",
+              secondary: "#bec2ff",
+              surface: "#12131c",
+              "surface-tint": "#bec2ff",
+              primary: "#bec2ff",
+              "on-surface": "#e3e1ef",
+              "on-tertiary": "#660700",
+              "surface-variant": "#34343e",
+              "on-tertiary-container": "#ffece9",
+              "surface-dim": "#12131c",
+              "on-surface-variant": "#c6c5d9",
+              "on-error": "#690005",
+              "on-error-container": "#ffdad6",
+              "surface-container-low": "#1b1b24",
+              background: "#12131c",
+              "surface-container-highest": "#34343e",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "stack-xs": "0.25rem",
+              "stack-md": "1rem",
+              "grid-margin": "2rem",
+              "stack-lg": "2rem",
+              "stack-sm": "0.5rem",
+              "grid-gutter": "1.5rem",
+            },
+            fontFamily: {
+              "data-mono": ["JetBrains Mono"],
+              "headline-md": ["Geist"],
+              "display-lg": ["Geist"],
+              "body-lg": ["Geist"],
+              "label-caps": ["JetBrains Mono"],
+              "headline-md-mobile": ["Geist"],
+              "body-sm": ["Geist"],
+            },
+            fontSize: {
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .icon-fill {
+        font-variation-settings: "FILL" 1;
+      }
+      body {
+        font-family: "Geist", sans-serif;
+        background-color: #12131c;
+        color: #e3e1ef;
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-background min-h-screen font-body-lg text-body-lg flex">
+    <!-- SideNavBar -->
+    <nav
+      class="h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant bg-surface-container flex flex-col py-grid-margin z-50"
+    >
+      <div class="px-6 mb-8">
+        <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tighter">
+          EyeX Neural OS
+        </h1>
+        <p class="font-data-mono text-data-mono text-on-surface-variant mt-1">v4.0 Neural Carbon</p>
+      </div>
+      <div class="px-4 mb-6">
+        <button
+          class="w-full bg-primary text-on-primary font-body-sm text-body-sm py-2 px-4 rounded font-bold hover:bg-primary-fixed-dim transition-colors flex items-center justify-center gap-2"
+        >
+          <span class="material-symbols-outlined">add</span>
+          New Mission
+        </button>
+      </div>
+      <div
+        class="flex-1 flex flex-col gap-1 px-2 font-body-sm text-body-sm font-label-caps text-label-caps"
+      >
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">corporate_fare</span>
+          Organization
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">grid_view</span>
+          Workspace
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">target</span>
+          Mission Center
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">diversity_3</span>
+          Executive Council
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">smart_toy</span>
+          AI Agents
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg border-l-4 border-primary hover:bg-surface-container-high transition-all duration-150 scale-95 ease-in-out"
+          href="#"
+        >
+          <span class="material-symbols-outlined icon-fill">database</span>
+          Data Platform
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">verified_user</span>
+          Security Center
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined">settings</span>
+          Settings
+        </a>
+      </div>
+      <div class="px-6 mt-auto">
+        <div class="flex items-center gap-3 pt-4 border-t border-outline-variant">
+          <div
+            class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant"
+          >
+            <img
+              alt="User Profile Avatar"
+              class="w-full h-full object-cover"
+              data-alt="A detailed headshot of a technical enterprise administrator in a low-light cyberpunk setting. The lighting is dominated by deep neural carbon grays and electric indigo blue accents. The style is hyper-realistic, conveying authority and focus."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEgh0NCiY7W25Uuz-OK8Mznbif75krJX3z_kvw6S3xBnkylYQTVOAkrZS15Y4dWzdzirE_N8lLPfyqsEphfo7BJOyj43jUg1yOWYfy8KzXJlnwX9VY_cxlppVB9uXV1Jt3lxB0DlrjHROy7QEBEC1rMUnvpGQrtHDzTPVkdxR9mdCOt3kcqNh0zOAiNjnjZT7HLfB_e27hGR678b5XjVrYMVI40_u7iSA00NPB2ppLfnKqbymThAtC86W6t370twf7PB15cwEdMbQ"
+            />
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-on-surface truncate">Admin Root</p>
+            <p class="text-xs text-on-surface-variant truncate">System Ops</p>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- Main Content Area -->
+    <main class="ml-64 flex-1 flex flex-col min-h-screen relative">
+      <!-- TopNavBar -->
+      <header
+        class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex justify-between items-center h-16 px-grid-margin font-body-lg text-body-lg font-data-mono text-data-mono"
+      >
+        <div class="flex items-center gap-6">
+          <span class="font-headline-md text-headline-md font-black text-primary">EyeX OS</span>
+          <div class="h-6 w-px bg-outline-variant mx-2"></div>
+          <nav class="flex gap-6">
+            <a class="text-on-surface-variant hover:text-primary transition-opacity" href="#"
+              >Dashboard</a
+            >
+            <a class="text-on-surface-variant hover:text-primary transition-opacity" href="#"
+              >Analytics</a
+            >
+            <a class="text-on-surface-variant hover:text-primary transition-opacity" href="#"
+              >Logs</a
+            >
+            <a
+              class="text-primary font-bold border-b-2 border-primary pb-1 opacity-80 transition-all"
+              href="#"
+              >Integrations</a
+            >
+          </nav>
+        </div>
+        <div class="flex items-center gap-4">
+          <button class="text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">terminal</span>
+          </button>
+          <button class="text-on-surface-variant hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">help_outline</span>
+          </button>
+          <div class="h-6 w-px bg-outline-variant mx-2"></div>
+          <button
+            class="bg-error text-on-error font-body-sm text-body-sm px-3 py-1.5 rounded border border-error-container hover:bg-error-container transition-colors"
+          >
+            Emergency Stop
+          </button>
+          <button
+            class="bg-primary text-on-primary font-body-sm text-body-sm px-3 py-1.5 rounded font-medium hover:bg-primary-fixed transition-colors"
+          >
+            Deploy Agent
+          </button>
+        </div>
+      </header>
+      <!-- Canvas -->
+      <div class="pt-24 pb-20 px-grid-margin flex-1 overflow-y-auto">
+        <div class="flex justify-between items-end mb-8">
+          <div>
+            <h2 class="font-headline-md text-headline-md font-bold mb-2">Integrations Hub</h2>
+            <p class="text-on-surface-variant max-w-2xl">
+              Manage external enterprise system connections, sync health, and data mapping
+              configurations.
+            </p>
+          </div>
+          <div class="flex gap-3">
+            <button
+              class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded bg-surface text-on-surface hover:bg-surface-variant transition-colors font-data-mono text-data-mono"
+            >
+              <span class="material-symbols-outlined text-lg">filter_list</span>
+              Filter
+            </button>
+            <button
+              class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded font-bold hover:bg-primary-fixed transition-colors font-data-mono text-data-mono"
+            >
+              <span class="material-symbols-outlined text-lg">add_link</span>
+              New Connection
+            </button>
+          </div>
+        </div>
+        <!-- Dashboard Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div
+            class="bg-surface-container p-4 rounded-lg border border-outline-variant relative overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+            ></div>
+            <p
+              class="font-data-mono text-data-mono text-on-surface-variant mb-1 uppercase text-[10px]"
+            >
+              Active Connections
+            </p>
+            <p class="font-display-lg text-display-lg text-primary">12</p>
+            <div class="mt-2 flex items-center gap-1 text-tertiary">
+              <span class="material-symbols-outlined text-sm">trending_up</span>
+              <span class="font-data-mono text-data-mono text-[11px]">+2 this week</span>
+            </div>
+          </div>
+          <div
+            class="bg-surface-container p-4 rounded-lg border border-outline-variant relative overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+            ></div>
+            <p
+              class="font-data-mono text-data-mono text-on-surface-variant mb-1 uppercase text-[10px]"
+            >
+              Sync Health
+            </p>
+            <p class="font-display-lg text-display-lg text-on-surface">
+              99.8<span class="text-2xl text-on-surface-variant">%</span>
+            </p>
+            <div class="mt-2 flex items-center gap-1 text-primary">
+              <span class="material-symbols-outlined text-sm">check_circle</span>
+              <span class="font-data-mono text-data-mono text-[11px]">All systems nominal</span>
+            </div>
+          </div>
+          <div
+            class="bg-surface-container p-4 rounded-lg border border-outline-variant relative overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+            ></div>
+            <p
+              class="font-data-mono text-data-mono text-on-surface-variant mb-1 uppercase text-[10px]"
+            >
+              Data Volume (24h)
+            </p>
+            <p class="font-display-lg text-display-lg text-on-surface">
+              4.2<span class="text-2xl text-on-surface-variant">TB</span>
+            </p>
+            <div class="mt-2 flex items-center gap-1 text-on-surface-variant">
+              <span class="material-symbols-outlined text-sm">database</span>
+              <span class="font-data-mono text-data-mono text-[11px]">850M records synced</span>
+            </div>
+          </div>
+          <div
+            class="bg-surface-container p-4 rounded-lg border border-outline-variant relative overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+            ></div>
+            <p
+              class="font-data-mono text-data-mono text-on-surface-variant mb-1 uppercase text-[10px]"
+            >
+              Avg Latency
+            </p>
+            <p class="font-display-lg text-display-lg text-on-surface">
+              42<span class="text-2xl text-on-surface-variant">ms</span>
+            </p>
+            <div class="mt-2 flex items-center gap-1 text-primary">
+              <span class="material-symbols-outlined text-sm">speed</span>
+              <span class="font-data-mono text-data-mono text-[11px]">Optimal routing active</span>
+            </div>
+          </div>
+        </div>
+        <!-- Integrations Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Card 1: Salesforce -->
+          <div
+            class="bg-surface-container rounded border border-outline-variant p-5 hover:border-primary/50 transition-colors flex flex-col h-full group relative overflow-hidden"
+          >
+            <div
+              class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent opacity-50"
+            ></div>
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded bg-surface flex items-center justify-center border border-outline-variant"
+                >
+                  <span class="material-symbols-outlined text-primary">cloud</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-lg leading-tight">Salesforce CRM</h3>
+                  <p
+                    class="font-data-mono text-data-mono text-[10px] text-on-surface-variant uppercase"
+                  >
+                    Enterprise Prod
+                  </p>
+                </div>
+              </div>
+              <span
+                class="px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded font-data-mono text-label-caps text-[9px] flex items-center gap-1"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                SYNCING
+              </span>
+            </div>
+            <div class="space-y-3 mb-6 flex-1">
+              <div
+                class="flex justify-between items-center text-sm border-b border-outline-variant/30 pb-2"
+              >
+                <span class="text-on-surface-variant">Requests/sec</span>
+                <span class="font-data-mono text-data-mono">1,240</span>
+              </div>
+              <div
+                class="flex justify-between items-center text-sm border-b border-outline-variant/30 pb-2"
+              >
+                <span class="text-on-surface-variant">Last Sync</span>
+                <span class="font-data-mono text-data-mono">2s ago</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-on-surface-variant">Auth Method</span>
+                <span class="font-data-mono text-data-mono">OAuth 2.0</span>
+              </div>
+            </div>
+            <div class="flex gap-2 mt-auto">
+              <button
+                class="flex-1 bg-surface-variant hover:bg-surface-bright text-on-surface py-2 rounded text-xs font-bold transition-colors border border-outline-variant"
+              >
+                Configure
+              </button>
+              <button
+                class="flex-1 bg-surface-variant hover:bg-surface-bright text-on-surface py-2 rounded text-xs font-bold transition-colors border border-outline-variant"
+              >
+                Data Map
+              </button>
+              <button
+                class="w-10 flex items-center justify-center bg-surface-variant hover:bg-surface-bright text-on-surface rounded border border-outline-variant transition-colors"
+              >
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+            </div>
+          </div>
+          <!-- Card 2: AWS -->
+          <div
+            class="bg-surface-container rounded border border-outline-variant p-5 hover:border-primary/50 transition-colors flex flex-col h-full group relative overflow-hidden"
+          >
+            <div
+              class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent opacity-50"
+            ></div>
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded bg-surface flex items-center justify-center border border-outline-variant"
+                >
+                  <span class="material-symbols-outlined text-[#ff9900]">dns</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-lg leading-tight">AWS S3 / Redshift</h3>
+                  <p
+                    class="font-data-mono text-data-mono text-[10px] text-on-surface-variant uppercase"
+                  >
+                    Data Lake Main
+                  </p>
+                </div>
+              </div>
+              <span
+                class="px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded font-data-mono text-label-caps text-[9px] flex items-center gap-1"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                ACTIVE
+              </span>
+            </div>
+            <div class="space-y-3 mb-6 flex-1">
+              <div
+                class="flex justify-between items-center text-sm border-b border-outline-variant/30 pb-2"
+              >
+                <span class="text-on-surface-variant">Throughput</span>
+                <span class="font-data-mono text-data-mono">4.2 GB/s</span>
+              </div>
+              <div
+                class="flex justify-between items-center text-sm border-b border-outline-variant/30 pb-2"
+              >
+                <span class="text-on-surface-variant">Uptime</span>
+                <span class="font-data-mono text-data-mono">99.99%</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-on-surface-variant">IAM Role</span>
+                <span class="font-data-mono text-data-mono">eyex-data-ingest</span>
+              </div>
+            </div>
+            <div class="flex gap-2 mt-auto">
+              <button
+                class="flex-1 bg-surface-variant hover:bg-surface-bright text-on-surface py-2 rounded text-xs font-bold transition-colors border border-outline-variant"
+              >
+                Configure
+              </button>
+              <button
+                class="flex-1 bg-surface-variant hover:bg-surface-bright text-on-surface py-2 rounded text-xs font-bold transition-colors border border-outline-variant"
+              >
+                Pipelines
+              </button>
+              <button
+                class="w-10 flex items-center justify-center bg-surface-variant hover:bg-surface-bright text-on-surface rounded border border-outline-variant transition-colors"
+              >
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+            </div>
+          </div>
+          <!-- Card 3: SAP -->
+          <div
+            class="bg-surface-container rounded border border-outline-variant p-5 hover:border-primary/50 transition-colors flex flex-col h-full group relative overflow-hidden"
+          >
+            <div
+              class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-error to-transparent opacity-50"
+            ></div>
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded bg-surface flex items-center justify-center border border-outline-variant"
+                >
+                  <span class="material-symbols-outlined text-blue-400">account_tree</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-lg leading-tight">SAP S/4HANA</h3>
+                  <p
+                    class="font-data-mono text-data-mono text-[10px] text-on-surface-variant uppercase"
+                  >
+                    Finance Core
+                  </p>
+                </div>
+              </div>
+              <span
+                class="px-2 py-1 bg-error/10 text-error border border-error/20 rounded font-data-mono text-label-caps text-[9px] flex items-center gap-1"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                DEGRADED
+              </span>
+            </div>
+            <div class="space-y-3 mb-6 flex-1">
+              <div
+                class="flex justify-between items-center text-sm border-b border-outline-variant/30 pb-2"
+              >
+                <span class="text-on-surface-variant">Latency</span>
+                <span class="font-data-mono text-data-mono text-error">1,450ms</span>
+              </div>
+              <div
+                class="flex justify-between items-center text-sm border-b border-outline-variant/30 pb-2"
+              >
+                <span class="text-on-surface-variant">Failing Jobs</span>
+                <span class="font-data-mono text-data-mono text-error">3</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-on-surface-variant">Last Success</span>
+                <span class="font-data-mono text-data-mono">45m ago</span>
+              </div>
+            </div>
+            <div class="flex gap-2 mt-auto">
+              <button
+                class="flex-1 bg-error/10 hover:bg-error/20 text-error border border-error/30 py-2 rounded text-xs font-bold transition-colors"
+              >
+                View Logs
+              </button>
+              <button
+                class="flex-1 bg-surface-variant hover:bg-surface-bright text-on-surface py-2 rounded text-xs font-bold transition-colors border border-outline-variant"
+              >
+                Retry Sync
+              </button>
+              <button
+                class="w-10 flex items-center justify-center bg-surface-variant hover:bg-surface-bright text-on-surface rounded border border-outline-variant transition-colors"
+              >
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Footer -->
+      <footer
+        class="fixed bottom-0 right-0 w-[calc(100%-16rem)] border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center px-grid-margin py-2 text-[10px] font-data-mono text-data-mono text-outline z-40"
+      >
+        <div class="font-label-caps text-label-caps text-outline">
+          © 2024 EyeX Neural Systems. Status: OPTIMAL
+        </div>
+        <div class="flex gap-4">
+          <a
+            class="text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >Documentation</a
+          >
+          <a
+            class="text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >Support</a
+          >
+          <a
+            class="text-tertiary underline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >System Health</a
+          >
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>

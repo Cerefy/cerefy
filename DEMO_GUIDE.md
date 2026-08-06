@@ -24,6 +24,7 @@ bash scripts/start-local.sh
 ```
 
 The script will:
+
 1. Ensure the backend connects to the configured Postgres database (Supabase by default).
 2. Run backend migrations.
 3. Seed a demo user and workspace.
@@ -92,11 +93,11 @@ npm run dev
 
 Open these URLs in your browser or use `curl`:
 
-| URL | Expected Result |
-| --- | --------------- |
-| `http://localhost:8000/api/v1/health` | JSON with `status: ok` |
-| `http://localhost:8000/docs` | Swagger UI for the backend API |
-| `http://localhost:3000` | EyeX frontend login page |
+| URL                                   | Expected Result                |
+| ------------------------------------- | ------------------------------ |
+| `http://localhost:8000/api/v1/health` | JSON with `status: ok`         |
+| `http://localhost:8000/docs`          | Swagger UI for the backend API |
+| `http://localhost:3000`               | EyeX frontend login page       |
 
 Run the local check script:
 

@@ -70,3 +70,107 @@ class TestParserRegistry:
         bio = BytesIO()
         pd.DataFrame({"x": [1]}).to_excel(bio, index=False)
         assert parser.can_parse(bio) is True
+
+
+class TestTextDocumentParsers:
+    @pytest.mark.asyncio
+    async def test_parse_text(self, tmp_path: Path):
+        path = tmp_path / "notes.txt"
+        path.write_text("Line one\nLine two\n")
+        result = await parse_source(path)
+        assert result.format == "text"
+        df = result.raw_data["sheets"][0]["data"]
+        assert len(df) == 2
+
+    @pytest.mark.asyncio
+    async def test_parse_markdown(self, tmp_path: Path):
+        from app.cognitive_data_layer.parser.plugins import MarkdownParser
+
+        path = tmp_path / "report.md"
+        path.write_text("# Title\n\nSome content.\n## Section\nMore content.")
+        result = await MarkdownParser().parse(path)
+        assert result.format == "markdown"
+        assert "Title" in result.metadata["headers"]
+
+    @pytest.mark.asyncio
+    async def test_parse_html(self, tmp_path: Path):
+        from app.cognitive_data_layer.parser.plugins import HTMLParser
+
+        path = tmp_path / "page.html"
+        path.write_text(
+            "<html><head><title>Hello</title></head><body><a href='/x'>Link</a></body></html>"
+        )
+        result = await HTMLParser().parse(path)
+        assert result.format == "html"
+        assert result.metadata["title"] == "Hello"
+        assert "/x" in result.metadata["links"]
+
+    @pytest.mark.asyncio
+    async def test_parse_pptx(self, tmp_path: Path):
+        from pptx import Presentation
+
+        from app.cognitive_data_layer.parser.plugins import PPTXParser
+
+        path = tmp_path / "deck.pptx"
+        prs = Presentation()
+        slide = prs.slides.add_slide(prs.slide_layouts[6])
+        slide.shapes.add_textbox(0, 0, 100, 50).text_frame.text = "Hello"
+        prs.save(path)
+
+        result = await PPTXParser().parse(path)
+        assert result.format == "pptx"
+        assert result.metadata["slides"] == 1
+
+    @pytest.mark.asyncio
+    async def test_parse_email(self, tmp_path: Path):
+        from app.cognitive_data_layer.parser.plugins import EmailParser
+
+        path = tmp_path / "message.eml"
+        path.write_text(
+            "Subject: Test\r\nFrom: a@example.com\r\nTo: b@example.com\r\n\r\nBody text",
+            encoding="utf-8",
+        )
+        result = await EmailParser().parse(path)
+        assert result.format == "email"
+        assert "Test" in result.metadata["subject"]
+        assert "Body text" in result.raw_data["sheets"][0]["data"]["body"].iloc[0]
+
+    @pytest.mark.asyncio
+    async def test_parse_image(self, tmp_path: Path):
+        from PIL import Image
+
+        from app.cognitive_data_layer.parser.plugins import ImageParser
+
+        path = tmp_path / "image.png"
+        Image.new("RGB", (10, 10), color="red").save(path)
+        result = await ImageParser().parse(path)
+        assert result.format == "image"
+        assert result.metadata["width"] == 10
+        assert result.metadata["height"] == 10
+
+
+class TestCodeParser:
+    @pytest.mark.asyncio
+    async def test_parse_python(self, tmp_path: Path):
+        from app.cognitive_data_layer.parser.plugins import CodeParser
+
+        path = tmp_path / "script.py"
+        path.write_text(
+            "import os\n\nclass Greeter:\n    def greet(self):\n        return 'hi'\n",
+            encoding="utf-8",
+        )
+        result = await CodeParser().parse(path)
+        assert result.format == "code"
+        assert "Greeter" in result.metadata["classes"]
+        assert "greet" in result.metadata["functions"]
+        assert "os" in result.metadata["imports"]
+
+    @pytest.mark.asyncio
+    async def test_parse_yaml(self, tmp_path: Path):
+        from app.cognitive_data_layer.parser.plugins import CodeParser
+
+        path = tmp_path / "config.yaml"
+        path.write_text("app:\n  name: test\n", encoding="utf-8")
+        result = await CodeParser().parse(path)
+        assert result.format == "code"
+        assert "app" in result.metadata["top_level_keys"]

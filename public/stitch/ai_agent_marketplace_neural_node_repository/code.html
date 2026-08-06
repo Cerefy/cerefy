@@ -1,0 +1,731 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EyeX AI Agent Marketplace</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-container": "#f1efff",
+              "inverse-on-surface": "#302f3a",
+              "surface-variant": "#34343e",
+              "secondary-fixed": "#e0e0ff",
+              "inverse-primary": "#3a44ef",
+              tertiary: "#ffb4a6",
+              "on-primary-fixed": "#00016d",
+              "tertiary-container": "#c83923",
+              "on-tertiary-container": "#ffece9",
+              "on-error-container": "#ffdad6",
+              "surface-container-lowest": "#0d0d16",
+              "on-primary": "#0003aa",
+              "surface-tint": "#bec2ff",
+              "primary-container": "#4b56fe",
+              "secondary-fixed-dim": "#bec2ff",
+              "error-container": "#93000a",
+              "surface-container-highest": "#34343e",
+              error: "#ffb4ab",
+              "outline-variant": "#454556",
+              "on-primary-fixed-variant": "#1820d9",
+              "on-secondary-fixed-variant": "#393f8a",
+              "tertiary-fixed": "#ffdad4",
+              "on-tertiary": "#660700",
+              "surface-bright": "#383843",
+              "on-surface": "#e3e1ef",
+              "on-secondary": "#212772",
+              "on-tertiary-fixed-variant": "#900e00",
+              "surface-container": "#1f1f28",
+              primary: "#bec2ff",
+              "surface-container-high": "#292933",
+              secondary: "#bec2ff",
+              "inverse-surface": "#e3e1ef",
+              "on-tertiary-fixed": "#3f0300",
+              "secondary-container": "#393f8a",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "on-error": "#690005",
+              "on-secondary-fixed": "#080c5e",
+              "surface-container-low": "#1b1b24",
+              "primary-fixed": "#e0e0ff",
+              "on-secondary-container": "#a9afff",
+              background: "#12131c",
+              surface: "#12131c",
+              "primary-fixed-dim": "#bec2ff",
+              outline: "#8f8fa2",
+              "on-background": "#e3e1ef",
+              "surface-dim": "#12131c",
+              "on-surface-variant": "#c6c5d9",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "stack-lg": "2rem",
+              "grid-margin": "2rem",
+              "stack-sm": "0.5rem",
+              "stack-xs": "0.25rem",
+              "stack-md": "1rem",
+              "grid-gutter": "1.5rem",
+            },
+            fontFamily: {
+              "label-caps": ["JetBrains Mono"],
+              "headline-md": ["Geist"],
+              "data-mono": ["JetBrains Mono"],
+              "display-lg": ["Geist"],
+              "headline-md-mobile": ["Geist"],
+              "body-sm": ["Geist"],
+              "body-lg": ["Geist"],
+            },
+            fontSize: {
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: theme("colors.background");
+        color: theme("colors.on-background");
+        font-family: "Geist", sans-serif;
+        overflow-x: hidden;
+      }
+
+      .glass-panel {
+        background: rgba(31, 31, 40, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid theme("colors.outline-variant");
+      }
+
+      .glass-card {
+        background: rgba(41, 41, 51, 0.4);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid theme("colors.outline-variant");
+        transition: all 0.2s ease-out;
+      }
+
+      .glass-card:hover {
+        border-color: theme("colors.primary");
+        background: rgba(52, 52, 62, 0.6);
+        box-shadow: inset 0 0 20px rgba(190, 194, 255, 0.05);
+      }
+
+      .mech-button {
+        transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .mech-button:active {
+        transform: scale(0.98);
+      }
+
+      /* Custom Scrollbar for high-tech feel */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: theme("colors.surface-container-lowest");
+      }
+      ::-webkit-scrollbar-thumb {
+        background: theme("colors.outline-variant");
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: theme("colors.primary");
+      }
+    </style>
+  </head>
+  <body class="flex h-screen w-screen overflow-hidden">
+    <!-- SideNavBar -->
+    <nav
+      class="bg-surface-container docked h-full left-0 w-64 border-r border-outline-variant flat no shadows flex flex-col h-full py-stack-md px-stack-sm flex-shrink-0 z-40 hidden md:flex"
+    >
+      <!-- Header -->
+      <div class="px-3 mb-8">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary-container text-sm">memory</span>
+          </div>
+          <div>
+            <h2
+              class="font-headline-md text-headline-md text-primary"
+              style="font-size: 18px; line-height: 24px"
+            >
+              Neural Carbon
+            </h2>
+          </div>
+        </div>
+        <p class="font-label-caps text-label-caps text-on-surface-variant">v4.0.2 Stable</p>
+      </div>
+      <!-- CTA -->
+      <div class="px-3 mb-6">
+        <button
+          class="w-full bg-primary text-on-primary font-label-caps text-label-caps py-2 px-4 rounded hover:bg-primary-fixed transition-colors duration-150 mech-button flex items-center justify-center gap-2"
+        >
+          <span class="material-symbols-outlined text-[16px]">rocket_launch</span>
+          Deploy Agent
+        </button>
+      </div>
+      <!-- Main Navigation -->
+      <div class="flex-1 overflow-y-auto space-y-1 px-2">
+        <!-- Inactive -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-primary transition-colors"
+            >psychology</span
+          >
+          <span class="font-label-caps text-label-caps">Neural Core</span>
+        </a>
+        <!-- Active (Marketplace falls under Agent Grid conceptually based on prompt) -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container rounded-lg font-bold active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >smart_toy</span
+          >
+          <span class="font-label-caps text-label-caps">Agent Grid</span>
+        </a>
+        <!-- Inactive -->
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-primary transition-colors"
+            >gavel</span
+          >
+          <span class="font-label-caps text-label-caps">Governance</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-primary transition-colors"
+            >hub</span
+          >
+          <span class="font-label-caps text-label-caps">Data Flow</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-primary transition-colors"
+            >security</span
+          >
+          <span class="font-label-caps text-label-caps">Security</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-primary transition-colors"
+            >inventory_2</span
+          >
+          <span class="font-label-caps text-label-caps">Resources</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-primary transition-colors"
+            >memory</span
+          >
+          <span class="font-label-caps text-label-caps">Compute</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-150 active:scale-98 transform duration-100 group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-primary transition-colors"
+            >terminal</span
+          >
+          <span class="font-label-caps text-label-caps">Logs</span>
+        </a>
+      </div>
+      <!-- Footer Navigation -->
+      <div class="mt-auto pt-4 border-t border-outline-variant px-2 space-y-1">
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all duration-150 group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-primary transition-colors"
+            >description</span
+          >
+          <span class="font-label-caps text-label-caps">Docs</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all duration-150 group"
+          href="#"
+        >
+          <span class="material-symbols-outlined group-hover:text-primary transition-colors"
+            >contact_support</span
+          >
+          <span class="font-label-caps text-label-caps">Support</span>
+        </a>
+      </div>
+    </nav>
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
+      <!-- Header / TopAppBar -->
+      <header
+        class="h-16 px-grid-margin flex-shrink-0 flex items-center justify-between border-b border-outline-variant glass-panel z-30"
+      >
+        <div>
+          <h1
+            class="font-headline-md text-headline-md md:text-[24px] md:leading-[32px] font-bold text-on-surface tracking-tight"
+          >
+            Agent Marketplace <span class="text-outline mx-2 font-normal">|</span>
+            <span class="text-primary font-medium text-[20px]">Neural Node Repository</span>
+          </h1>
+        </div>
+        <div class="flex items-center gap-4">
+          <!-- Search -->
+          <div class="relative hidden lg:block w-64">
+            <span
+              class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-outline text-[18px]"
+              >search</span
+            >
+            <input
+              class="w-full bg-surface-container-highest border border-outline-variant rounded-full py-1.5 pl-10 pr-4 text-body-sm text-on-surface focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+              placeholder="Search Agents..."
+              type="text"
+            />
+          </div>
+          <!-- Actions -->
+          <button
+            class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary transition-colors mech-button"
+          >
+            <span class="material-symbols-outlined text-[20px]">filter_list</span>
+          </button>
+          <button
+            class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary transition-colors mech-button"
+          >
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+          </button>
+          <div class="w-8 h-8 rounded-full overflow-hidden border border-primary ml-2">
+            <img
+              alt="Administrator Profile"
+              class="w-full h-full object-cover"
+              data-alt="A highly detailed close-up portrait of a futuristic AI enterprise administrator avatar, featuring glowing neural network patterns on the face, illuminated by high-tech cyan and deep blue studio lighting against a dark minimalist background, exhibiting supreme intelligence and precision."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKAHTWxeA8qXQ6RiHADPy-rxjXsKyUT5GD7FmfnQJvz3Z58trizE42vKZOvVOQGeN-ffJPXpw-zSH9zP1XPD741FYlLaZw9cJc6_NIbnemJW-KBq02rrsxHS1eBzOJCeR1UH7PJWyEAW8LMOaYTU0wFQ4NGI5q1-TWcxssZQIXUPnSwzkZcXQev_K5l9vw__jR8K9kiVa5Cjxd3HMD1572oDwiHdVLtNLaN9kcOKbJA04e1_NlSHYsUFHCjV_GzNzJ-4E4Y1aHEEo"
+            />
+          </div>
+        </div>
+      </header>
+      <!-- Filters Bar -->
+      <div
+        class="px-grid-margin py-3 border-b border-surface-container-highest bg-surface-container-low flex items-center gap-4 overflow-x-auto no-scrollbar flex-shrink-0"
+      >
+        <span class="font-label-caps text-label-caps text-outline shrink-0">FILTERS:</span>
+        <div class="flex gap-2">
+          <select
+            class="bg-surface-container text-body-sm text-on-surface border border-outline-variant rounded px-3 py-1 text-sm focus:border-primary focus:ring-1 focus:ring-primary appearance-none pr-8 relative cursor-pointer outline-none"
+          >
+            <option>Industry: All</option>
+            <option>Finance</option>
+            <option>Manufacturing</option>
+            <option>Healthcare</option>
+          </select>
+          <div
+            class="pointer-events-none absolute right-4 top-1/2 transform -translate-y-1/2 text-outline-variant hidden"
+          >
+            <span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <select
+            class="bg-surface-container text-body-sm text-on-surface border border-outline-variant rounded px-3 py-1 text-sm focus:border-primary focus:ring-1 focus:ring-primary appearance-none pr-8 relative cursor-pointer outline-none"
+          >
+            <option>Capability: All</option>
+            <option>Strategy</option>
+            <option>Audit</option>
+            <option>Analysis</option>
+          </select>
+        </div>
+        <div class="flex gap-2">
+          <select
+            class="bg-surface-container text-body-sm text-on-surface border border-outline-variant rounded px-3 py-1 text-sm focus:border-primary focus:ring-1 focus:ring-primary appearance-none pr-8 relative cursor-pointer outline-none"
+          >
+            <option>Model Tier: Any</option>
+            <option>Tier 1 (High Compute)</option>
+            <option>Tier 2 (Balanced)</option>
+            <option>Tier 3 (Edge)</option>
+          </select>
+        </div>
+        <div class="ml-auto flex items-center gap-2">
+          <span class="font-label-caps text-label-caps text-outline">SORT:</span>
+          <button
+            class="text-primary text-body-sm font-medium hover:text-on-primary-container flex items-center gap-1"
+          >
+            Performance <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+          </button>
+        </div>
+      </div>
+      <!-- Scrollable Content Layout -->
+      <div
+        class="flex-1 overflow-y-auto p-grid-margin flex flex-col lg:flex-row gap-grid-gutter relative"
+      >
+        <!-- Primary Grid (Left) -->
+        <div class="flex-1">
+          <h3
+            class="font-label-caps text-label-caps text-on-surface-variant mb-4 flex items-center gap-2"
+          >
+            <span class="material-symbols-outlined text-[16px] text-primary">star</span>
+            FEATURED NEURAL AGENTS
+          </h3>
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <!-- Card 1 -->
+            <article class="glass-card rounded-xl p-5 flex flex-col relative overflow-hidden group">
+              <!-- BG Decoration -->
+              <div
+                class="absolute -right-10 -top-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all duration-500"
+              ></div>
+              <div class="flex justify-between items-start mb-4 relative z-10">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-12 h-12 rounded bg-surface-container-highest border border-outline-variant flex items-center justify-center shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-primary text-[28px]">policy</span>
+                  </div>
+                  <div>
+                    <h4
+                      class="font-headline-md text-headline-md text-on-surface text-[20px] leading-tight mb-1"
+                    >
+                      Forensic Auditor v4
+                    </h4>
+                    <span
+                      class="font-label-caps text-label-caps bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded border border-outline-variant/50"
+                      >FINANCE / COMPLIANCE</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 text-primary">
+                  <span class="material-symbols-outlined text-[18px]">verified</span>
+                </div>
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mb-6 relative z-10">
+                Deep-scan neural agent specialized in anomaly detection across multi-ledger
+                financial systems. Certified for Tier 1 compliance auditing.
+              </p>
+              <div class="grid grid-cols-2 gap-3 mb-6 relative z-10">
+                <div class="bg-surface-container-low rounded p-3 border border-outline-variant/50">
+                  <div class="font-label-caps text-label-caps text-outline mb-1">ARCHITECTURE</div>
+                  <div class="font-data-mono text-data-mono text-on-surface">
+                    Transformer-XL (80B)
+                  </div>
+                </div>
+                <div class="bg-surface-container-low rounded p-3 border border-outline-variant/50">
+                  <div class="font-label-caps text-label-caps text-outline mb-1">
+                    LATENCY / ACCURACY
+                  </div>
+                  <div
+                    class="font-data-mono text-data-mono text-on-surface flex items-center gap-2"
+                  >
+                    <span class="text-tertiary">42ms</span> <span class="text-outline">/</span>
+                    <span class="text-primary">99.8%</span>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="mt-auto pt-4 border-t border-outline-variant/50 flex items-center justify-between relative z-10"
+              >
+                <div class="flex gap-2">
+                  <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                  <span class="font-label-caps text-label-caps text-on-surface-variant"
+                    >ONLINE • 12.4K DEPLOYS</span
+                  >
+                </div>
+                <button
+                  class="bg-surface-container text-primary border border-primary hover:bg-primary hover:text-on-primary font-label-caps text-label-caps py-1.5 px-4 rounded transition-all duration-200 mech-button flex items-center gap-2"
+                >
+                  <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
+                  DEPLOY
+                </button>
+              </div>
+            </article>
+            <!-- Card 2 -->
+            <article class="glass-card rounded-xl p-5 flex flex-col relative overflow-hidden group">
+              <div
+                class="absolute -right-10 -top-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all duration-500"
+              ></div>
+              <div class="flex justify-between items-start mb-4 relative z-10">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-12 h-12 rounded bg-surface-container-highest border border-outline-variant flex items-center justify-center shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-primary text-[28px]"
+                      >local_shipping</span
+                    >
+                  </div>
+                  <div>
+                    <h4
+                      class="font-headline-md text-headline-md text-on-surface text-[20px] leading-tight mb-1"
+                    >
+                      Supply Chain Opt.
+                    </h4>
+                    <span
+                      class="font-label-caps text-label-caps bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded border border-outline-variant/50"
+                      >LOGISTICS / STRATEGY</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mb-6 relative z-10">
+                Predictive logistics routing and inventory balancing agent. Integrates live IoT
+                sensory data to minimize transit delays.
+              </p>
+              <div class="grid grid-cols-2 gap-3 mb-6 relative z-10">
+                <div class="bg-surface-container-low rounded p-3 border border-outline-variant/50">
+                  <div class="font-label-caps text-label-caps text-outline mb-1">ARCHITECTURE</div>
+                  <div class="font-data-mono text-data-mono text-on-surface">
+                    Graph Neural Net (v2)
+                  </div>
+                </div>
+                <div class="bg-surface-container-low rounded p-3 border border-outline-variant/50">
+                  <div class="font-label-caps text-label-caps text-outline mb-1">
+                    LATENCY / ACCURACY
+                  </div>
+                  <div
+                    class="font-data-mono text-data-mono text-on-surface flex items-center gap-2"
+                  >
+                    <span class="text-tertiary">120ms</span> <span class="text-outline">/</span>
+                    <span class="text-primary">96.4%</span>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="mt-auto pt-4 border-t border-outline-variant/50 flex items-center justify-between relative z-10"
+              >
+                <div class="flex gap-2">
+                  <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                  <span class="font-label-caps text-label-caps text-on-surface-variant"
+                    >ONLINE • 8.1K DEPLOYS</span
+                  >
+                </div>
+                <button
+                  class="bg-surface-container text-primary border border-primary hover:bg-primary hover:text-on-primary font-label-caps text-label-caps py-1.5 px-4 rounded transition-all duration-200 mech-button flex items-center gap-2"
+                >
+                  <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
+                  DEPLOY
+                </button>
+              </div>
+            </article>
+            <!-- Additional List Items to show density -->
+            <div class="xl:col-span-2 mt-4 space-y-3">
+              <h3 class="font-label-caps text-label-caps text-on-surface-variant mb-2 mt-4">
+                STANDARD REPOSITORY
+              </h3>
+              <!-- List Item 1 -->
+              <div
+                class="glass-panel rounded-lg p-3 flex items-center justify-between hover:bg-surface-container-highest transition-colors cursor-pointer group"
+              >
+                <div class="flex items-center gap-4">
+                  <div
+                    class="w-10 h-10 rounded bg-surface-container-high border border-outline-variant flex items-center justify-center"
+                  >
+                    <span
+                      class="material-symbols-outlined text-on-surface-variant text-[20px] group-hover:text-primary transition-colors"
+                      >analytics</span
+                    >
+                  </div>
+                  <div>
+                    <h5 class="font-data-mono text-data-mono text-on-surface font-bold">
+                      Market Sentiment Analyzer
+                    </h5>
+                    <div class="flex gap-2 mt-1">
+                      <span class="font-label-caps text-[9px] text-outline">NLP MODULE</span>
+                      <span
+                        class="font-label-caps text-[9px] text-outline border-l border-outline-variant pl-2"
+                        >V 2.1.0</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-6">
+                  <div class="hidden md:block text-right">
+                    <div class="font-data-mono text-[11px] text-primary">85ms</div>
+                    <div class="font-label-caps text-[9px] text-outline">LATENCY</div>
+                  </div>
+                  <button
+                    class="text-primary hover:text-on-primary-container p-2 rounded hover:bg-primary/10 transition-colors"
+                  >
+                    <span class="material-symbols-outlined">add_circle</span>
+                  </button>
+                </div>
+              </div>
+              <!-- List Item 2 -->
+              <div
+                class="glass-panel rounded-lg p-3 flex items-center justify-between hover:bg-surface-container-highest transition-colors cursor-pointer group"
+              >
+                <div class="flex items-center gap-4">
+                  <div
+                    class="w-10 h-10 rounded bg-surface-container-high border border-outline-variant flex items-center justify-center"
+                  >
+                    <span
+                      class="material-symbols-outlined text-on-surface-variant text-[20px] group-hover:text-primary transition-colors"
+                      >code</span
+                    >
+                  </div>
+                  <div>
+                    <h5 class="font-data-mono text-data-mono text-on-surface font-bold">
+                      Code QA Sentinel
+                    </h5>
+                    <div class="flex gap-2 mt-1">
+                      <span class="font-label-caps text-[9px] text-outline">DEV OPS</span>
+                      <span
+                        class="font-label-caps text-[9px] text-outline border-l border-outline-variant pl-2"
+                        >V 1.4.2</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-6">
+                  <div class="hidden md:block text-right">
+                    <div class="font-data-mono text-[11px] text-primary">210ms</div>
+                    <div class="font-label-caps text-[9px] text-outline">LATENCY</div>
+                  </div>
+                  <button
+                    class="text-primary hover:text-on-primary-container p-2 rounded hover:bg-primary/10 transition-colors"
+                  >
+                    <span class="material-symbols-outlined">add_circle</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Right Panel: Analytics (Fixed width on lg+) -->
+        <aside class="w-full lg:w-80 flex-shrink-0 flex flex-col gap-6">
+          <!-- Usage Widget -->
+          <div class="glass-panel rounded-xl p-5">
+            <h3
+              class="font-label-caps text-label-caps text-outline mb-4 flex items-center justify-between"
+            >
+              MARKETPLACE ANALYTICS
+              <span class="material-symbols-outlined text-[16px]">bar_chart</span>
+            </h3>
+            <div class="mb-5">
+              <div class="flex justify-between items-end mb-2">
+                <span class="font-body-sm text-body-sm text-on-surface-variant"
+                  >Global Compute Usage</span
+                >
+                <span class="font-data-mono text-data-mono text-primary">78%</span>
+              </div>
+              <div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+                <div class="h-full bg-primary rounded-full w-[78%]"></div>
+              </div>
+            </div>
+            <div class="space-y-4 border-t border-outline-variant/50 pt-4">
+              <h4 class="font-label-caps text-label-caps text-on-surface-variant">
+                TOP DEPLOYED (ORG)
+              </h4>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-1.5 h-4 bg-primary rounded-sm"></div>
+                  <span class="font-data-mono text-[12px] text-on-surface">Data Sanitizer</span>
+                </div>
+                <span class="font-data-mono text-[12px] text-outline">42 Nodes</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-1.5 h-4 bg-primary rounded-sm opacity-70"></div>
+                  <span class="font-data-mono text-[12px] text-on-surface">Forensic Auditor</span>
+                </div>
+                <span class="font-data-mono text-[12px] text-outline">28 Nodes</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-1.5 h-4 bg-primary rounded-sm opacity-40"></div>
+                  <span class="font-data-mono text-[12px] text-on-surface">Threat Hunter</span>
+                </div>
+                <span class="font-data-mono text-[12px] text-outline">15 Nodes</span>
+              </div>
+            </div>
+          </div>
+          <!-- Updates Widget -->
+          <div class="glass-panel rounded-xl p-5">
+            <h3
+              class="font-label-caps text-label-caps text-outline mb-4 flex items-center justify-between"
+            >
+              FIRMWARE UPDATES
+              <span class="material-symbols-outlined text-[16px]">system_update</span>
+            </h3>
+            <div class="relative pl-4 border-l border-outline-variant space-y-5">
+              <!-- Timeline Item 1 -->
+              <div class="relative">
+                <div
+                  class="absolute -left-[21px] top-1 w-2 h-2 rounded-full bg-tertiary border-2 border-background"
+                ></div>
+                <div class="font-data-mono text-[11px] text-tertiary mb-1">T-Minus 24h</div>
+                <div class="font-body-sm text-body-sm text-on-surface font-medium">
+                  Core NLP Module v3
+                </div>
+                <div class="font-body-sm text-[12px] text-on-surface-variant mt-1">
+                  Mandatory security patch for all language models.
+                </div>
+              </div>
+              <!-- Timeline Item 2 -->
+              <div class="relative">
+                <div
+                  class="absolute -left-[21px] top-1 w-2 h-2 rounded-full bg-outline border-2 border-background"
+                ></div>
+                <div class="font-data-mono text-[11px] text-outline mb-1">T-Minus 3 Days</div>
+                <div class="font-body-sm text-body-sm text-on-surface font-medium">
+                  Vision Net Optimization
+                </div>
+                <div class="font-body-sm text-[12px] text-on-surface-variant mt-1">
+                  Reduces inference latency by ~12%.
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>

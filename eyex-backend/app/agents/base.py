@@ -50,19 +50,19 @@ def default_llm() -> ChatOpenAI:
         kwargs["model_kwargs"] = {
             "extra_body": {
                 "chat_template_kwargs": {
-                    "thinking": True, 
+                    "thinking": True,
                     "reasoning_effort": "high"
                 }
             }
         }
-        
+
     # Add reasoning support for DiffusionGemma
     if "diffusiongemma" in settings.openai_model.lower():
         kwargs.setdefault("model_kwargs", {})
         kwargs["model_kwargs"]["chat_template_kwargs"] = {
             "enable_thinking": True
         }
-        
+
     return ChatOpenAI(**kwargs)
 
 

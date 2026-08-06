@@ -2,17 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BackendApi, type DashboardStats } from "@/services/backend-api.service";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/components/providers/auth-provider";
-import {
-  TrendingUp,
-  Gauge,
-  AlertTriangle,
-  Target,
-  Gavel,
-  Cpu,
-  BarChart3,
-  MemoryStick,
-  Bot,
-} from "lucide-react";
+import { TrendingUp, Gauge, AlertTriangle, Cpu, BarChart3, MemoryStick, Bot } from "lucide-react";
 
 /* ── mock data (will wire to real API when endpoints exist) ── */
 const SWARM_AGENTS = [
@@ -106,6 +96,41 @@ export function DashboardPage() {
     refetchInterval: 15000,
   });
 
+  const { data: agentsData } = useQuery({
+    queryKey: ["dashboard-agents"],
+    queryFn: () => BackendApi.listAgents(),
+    refetchInterval: 30000,
+  });
+
+  const swarmAgents = (agentsData?.agents ?? []).map((agent, idx) => {
+    const colors = [
+      "text-[#00e5ff]",
+      "text-amber-400",
+      "text-rose-400",
+      "text-emerald-400",
+      "text-violet-400",
+    ];
+    const barColors = [
+      "bg-[#00e5ff]",
+      "bg-amber-400",
+      "bg-rose-500",
+      "bg-emerald-400",
+      "bg-violet-400",
+    ];
+    return {
+      name: agent.name,
+      icon: agent.role,
+      status: agent.enabled ? "ACTIVE" : "IDLE",
+      statusColor: agent.enabled ? colors[idx % colors.length] : "text-muted-foreground",
+      barColor: barColors[idx % barColors.length],
+      barWidth: agent.enabled ? `${60 + idx * 8}%` : "100%",
+      desc: agent.description,
+      meta: [`Role: ${agent.role}`, `Tools: ${agent.tools.length}`],
+      glow: agent.enabled,
+      alert: false,
+    };
+  });
+
   return (
     <AppShell title={`Welcome, ${name}`} subtitle="EXECUTIVE_COMMAND_CENTER">
       <div className="space-y-6 pb-20">
@@ -128,7 +153,7 @@ export function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {SWARM_AGENTS.map((agent) => (
+            {swarmAgents.map((agent) => (
               <div
                 key={agent.name}
                 className={`bg-secondary/60 border rounded-lg p-4 relative overflow-hidden transition-all hover:border-white/20 ${
@@ -234,127 +259,48 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* ═══ Missions & Decisions split ═══ */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          {/* Active Strategic Missions */}
-          <section className="glass-panel rounded-xl p-6">
-            <h3 className="text-lg font-semibold tracking-tight text-white mb-4 flex items-center gap-2">
-              <Target size={18} className="text-white" />
-              Active Strategic Missions
-            </h3>
-            <div className="space-y-4">
-              {MISSIONS.map((m) => (
-                <div
-                  key={m.title}
-                  className="p-4 bg-background/60 rounded-lg border border-border hover:border-white/20 transition-colors"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <h4 className="text-sm font-semibold text-white">{m.title}</h4>
-                    <span className="text-xs font-mono text-[#00e5ff]">{m.pct}%</span>
-                  </div>
-                  <div className="w-full bg-background h-2 rounded-full overflow-hidden mb-3">
-                    <div
-                      className={`${m.barColor} h-full transition-all duration-1000`}
-                      style={{ width: `${m.pct}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      {m.agents > 0 ? (
-                        <>
-                          <Bot size={12} /> {m.agents} Agents Deployed
-                        </>
-                      ) : (
-                        <span>{m.label}</span>
-                      )}
-                    </div>
-                    <span>Target: {m.target}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Council Decisions Required */}
-          <section className="glass-panel rounded-xl p-6">
-            <h3 className="text-lg font-semibold tracking-tight text-white mb-4 flex items-center gap-2">
-              <Gavel size={18} className="text-white" />
-              Council Decisions Required
-            </h3>
-            <div className="space-y-4">
-              {DECISIONS.map((d) => (
-                <div
-                  key={d.title}
-                  className={`p-4 bg-secondary/60 border-l-4 ${d.borderColor} rounded-r-lg relative`}
-                >
-                  <div className="absolute top-3 right-3 flex gap-1.5">
-                    <button
-                      className={`px-3 py-1 text-[10px] font-mono font-bold rounded transition-colors ${
-                        d.urgent
-                          ? "bg-rose-500 text-white hover:bg-rose-600"
-                          : "bg-[#00e5ff] text-black hover:bg-[#00e5ff]/80"
-                      }`}
-                    >
-                      Approve
-                    </button>
-                    <button className="px-3 py-1 border border-border text-white text-[10px] font-mono rounded hover:bg-white/5 transition-colors">
-                      Discuss
-                    </button>
-                  </div>
-                  <h4 className="text-sm font-semibold text-white pr-36 mb-1">{d.title}</h4>
-                  <p className="text-xs text-muted-foreground mb-2 pr-36 leading-relaxed">
-                    {d.desc}
-                  </p>
-                  <div
-                    className={`text-[10px] font-mono flex items-center gap-1 ${
-                      d.urgent ? "text-rose-400" : "text-[#00e5ff]"
-                    }`}
-                  >
-                    {d.urgent ? <AlertTriangle size={12} /> : <TrendingUp size={12} />}
-                    {d.confidence}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-
-        {/* ═══ Live Stats from API (preserving existing data wiring) ═══ */}
+        {/* ═══ Live Stats from API ═══ */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
               <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
                 TOTAL TASKS
               </span>
-              <div className="flex items-end justify-between">
-                <span className="text-3xl font-bold tracking-tight text-white">
+              <div>
+                <div className="text-3xl font-bold tracking-tight text-white">
                   {stats.total_tasks ?? "—"}
-                </span>
-                <span className="text-[10px] font-mono text-[#00e5ff]">
+                </div>
+                <div className="text-[10px] font-mono text-muted-foreground mt-1">
                   +{stats.tasks_today ?? 0} today
-                </span>
+                </div>
               </div>
             </div>
+
             <div className="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
               <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
                 SUCCESS RATE
               </span>
-              <div className="flex items-end justify-between">
-                <span className="text-3xl font-bold tracking-tight text-white">
+              <div>
+                <div className="text-3xl font-bold tracking-tight text-white">
                   {stats.success_rate ?? "—"}%
-                </span>
-                <span className="text-[10px] font-mono text-emerald-400">STABLE</span>
+                </div>
+                <div className="text-[10px] font-mono text-muted-foreground mt-1">
+                  Avg {stats.avg_duration_ms ?? 0}ms per task
+                </div>
               </div>
             </div>
+
             <div className="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
               <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
                 ACTIVE AGENTS
               </span>
-              <div className="flex items-end justify-between">
-                <span className="text-3xl font-bold tracking-tight text-white">
+              <div>
+                <div className="text-3xl font-bold tracking-tight text-white">
                   {stats.active_agents_count ?? "—"}
-                </span>
-                <span className="text-[10px] font-mono text-[#00e5ff]">ONLINE</span>
+                </div>
+                <div className="text-[10px] font-mono text-muted-foreground mt-1">
+                  {stats.members_count ?? 0} team members
+                </div>
               </div>
             </div>
           </div>

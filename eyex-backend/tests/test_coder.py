@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.agents.coder import CodingAgent, CodingOutput, CodeFile, create_coding_agent
+from app.agents.coder import CodeFile, CodingOutput, create_coding_agent
 
 
 def test_coder_schema():

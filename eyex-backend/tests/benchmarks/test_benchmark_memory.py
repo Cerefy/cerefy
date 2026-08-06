@@ -6,7 +6,6 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.agents.base import NodeAgent, set_global_persistent_memory
 from app.db.memory import PersistentMemory
 
 

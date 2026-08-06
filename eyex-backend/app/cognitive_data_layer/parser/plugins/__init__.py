@@ -8,11 +8,21 @@ import pandas as pd
 from charset_normalizer import detect
 
 from app.cognitive_data_layer.parser.base import BaseParser, ParseResult
+from app.cognitive_data_layer.parser.plugins.code import CodeParser
+from app.cognitive_data_layer.parser.plugins.text_document import (
+    EmailParser,
+    HTMLParser,
+    ImageParser,
+    MarkdownParser,
+    PPTXParser,
+    RTFParser,
+    TextParser,
+)
 
 
 class CSVParser(BaseParser):
     name = "csv"
-    supported_extensions = ["csv", "txt"]
+    supported_extensions = ["csv"]
 
     def can_parse(self, source: str | Path | bytes, hint: str | None = None) -> bool:
         ext = Path(source).suffix.lower().lstrip(".") if isinstance(source, (str, Path)) else ""
@@ -322,6 +332,16 @@ def _xml_to_records(element: Any) -> list[dict[str, Any]]:
 
 
 def register_default_parsers() -> None:
+    from app.cognitive_data_layer.parser.plugins.code import CodeParser
+    from app.cognitive_data_layer.parser.plugins.text_document import (
+        EmailParser,
+        HTMLParser,
+        ImageParser,
+        MarkdownParser,
+        PPTXParser,
+        RTFParser,
+        TextParser,
+    )
     from app.cognitive_data_layer.parser.registry import register_parser
 
     register_parser(CSVParser())
@@ -332,3 +352,32 @@ def register_default_parsers() -> None:
     register_parser(APIParser())
     register_parser(PDFParser())
     register_parser(DOCXParser())
+    register_parser(TextParser())
+    register_parser(MarkdownParser())
+    register_parser(HTMLParser())
+    register_parser(RTFParser())
+    register_parser(PPTXParser())
+    register_parser(EmailParser())
+    register_parser(ImageParser())
+    register_parser(CodeParser())
+
+
+__all__ = [
+    "APIParser",
+    "CSVParser",
+    "CodeParser",
+    "DOCXParser",
+    "EmailParser",
+    "ExcelParser",
+    "HTMLParser",
+    "ImageParser",
+    "JSONParser",
+    "MarkdownParser",
+    "PDFParser",
+    "PPTXParser",
+    "RTFParser",
+    "SQLParser",
+    "TextParser",
+    "XMLParser",
+    "register_default_parsers",
+]

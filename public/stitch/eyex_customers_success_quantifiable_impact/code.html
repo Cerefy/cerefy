@@ -1,0 +1,482 @@
+<!doctype html>
+
+<html class="dark" lang="en" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Customers &amp; Case Studies - EyeX Technologies</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline-variant": "#454556",
+              error: "#ffb4ab",
+              "on-tertiary-fixed-variant": "#900e00",
+              "on-error": "#690005",
+              "inverse-on-surface": "#302f3a",
+              "on-primary-fixed": "#00016d",
+              "surface-dim": "#12131c",
+              "on-primary-fixed-variant": "#1820d9",
+              "on-surface": "#e3e1ef",
+              "secondary-fixed": "#e0e0ff",
+              "surface-dark": "#05070A",
+              "tertiary-fixed": "#ffdad4",
+              "primary-fixed-dim": "#bec2ff",
+              "on-error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "tertiary-container": "#c83923",
+              "primary-fixed": "#e0e0ff",
+              "surface-bright": "#383843",
+              "on-surface-variant": "#c6c5d9",
+              "inverse-surface": "#e3e1ef",
+              "surface-container": "#1f1f28",
+              "on-tertiary-fixed": "#3f0300",
+              "on-tertiary": "#660700",
+              "inverse-primary": "#3a44ef",
+              "surface-container-highest": "#34343e",
+              "on-secondary": "#212772",
+              "surface-tint": "#bec2ff",
+              "on-background": "#e3e1ef",
+              "surface-container-high": "#292933",
+              "surface-variant": "#34343e",
+              surface: "#12131c",
+              outline: "#8f8fa2",
+              "on-tertiary-container": "#ffece9",
+              "on-primary": "#0003aa",
+              "primary-container": "#4b56fe",
+              "secondary-container": "#393f8a",
+              background: "#12131c",
+              "on-secondary-fixed": "#080c5e",
+              "surface-container-lowest": "#0d0d16",
+              "on-secondary-container": "#a9afff",
+              primary: "#bec2ff",
+              secondary: "#bec2ff",
+              "surface-container-low": "#1b1b24",
+              "on-primary-container": "#f1efff",
+              "on-secondary-fixed-variant": "#393f8a",
+              tertiary: "#ffb4a6",
+              "outline-cyan": "rgba(0, 229, 255, 0.3)",
+              "secondary-fixed-dim": "#bec2ff",
+              "error-container": "#93000a",
+            },
+            borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" },
+            spacing: {
+              "stack-xs": "0.25rem",
+              "stack-sm": "0.5rem",
+              "grid-margin": "2rem",
+              "grid-gutter": "1.5rem",
+              "stack-md": "1rem",
+              "stack-lg": "2rem",
+            },
+            fontFamily: {
+              "headline-md-mobile": ["Geist"],
+              "label-caps": ["JetBrains Mono"],
+              "body-lg": ["Geist"],
+              "headline-md": ["Geist"],
+              "display-lg": ["Geist"],
+              "data-mono": ["JetBrains Mono"],
+              "body-sm": ["Geist"],
+              headline: ["Geist"],
+              display: ["Geist"],
+              body: ["Geist"],
+              label: ["Jetbrains Mono"],
+            },
+            fontSize: {
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .glass-panel {
+        background-color: rgba(11, 20, 28, 0.4);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 229, 255, 0.1);
+      }
+      .glass-panel:hover {
+        border-color: rgba(0, 229, 255, 0.3);
+        box-shadow: 0px 0px 30px rgba(0, 229, 255, 0.15);
+      }
+      .glow-text {
+        text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+      }
+      .partner-logo {
+        filter: grayscale(100%) opacity(50%);
+        transition: all 300ms ease-out;
+      }
+      .partner-logo:hover {
+        filter: grayscale(0%) opacity(100%) drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
+      }
+    </style>
+  </head>
+  <body class="bg-surface-dark text-on-surface font-body-lg min-h-screen flex flex-col">
+    <!-- TopNavBar -->
+    <nav
+      class="fixed top-0 w-full z-50 bg-surface/40 dark:bg-surface-dark/40 backdrop-blur-xl border-b border-outline-cyan/10 shadow-[0px_0px_30px_rgba(0,229,255,0.05)] transition-all duration-150 ease-out"
+    >
+      <div class="flex justify-between items-center px-grid-margin py-4 max-w-[1440px] mx-auto">
+        <div class="flex items-center gap-4">
+          <img
+            alt="EyeX Technologies Logo"
+            class="h-12 w-12 object-contain bg-transparent"
+            src="https://lh3.googleusercontent.com/aida/AP1WRLs1qz4AaLkAH4Xn1ZBLnjwOzn1wjUTiRGqiiQL1m0Hvnk8B0-boRiHU619fZwDvtb6w43g5gm1WM9XUKu-FGBsz7czQNUz3s3ehwlNjuWZuxCnEnc2t-91RQ9Sy1sVJWlXzomH3aSW4rHKBxPC8P3YhmoDubRYhfcbaBNihFbU8axjV_MgfxtC7dnNmB504ZNrlqhxOVO-KUjIYa1Q_ktPCWexauZMYl9WNOh-9rK24H_lxxLyTctcQsnM"
+          />
+          <span
+            class="text-body-lg font-headline-md font-bold tracking-tight text-on-surface dark:text-on-background"
+            >EyeX Technologies</span
+          >
+        </div>
+        <div class="hidden md:flex gap-8 items-center text-label-caps font-label-caps">
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20 px-2 py-1 rounded-DEFAULT"
+            href="#"
+            >Platform</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20 px-2 py-1 rounded-DEFAULT"
+            href="#"
+            >Solutions</a
+          >
+          <a
+            class="text-primary dark:text-primary-fixed-dim border-b-2 border-primary pb-1 hover:bg-surface-bright/20 px-2 rounded-DEFAULT"
+            href="#"
+            >Resources</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20 px-2 py-1 rounded-DEFAULT"
+            href="#"
+            >Pricing</a
+          >
+        </div>
+        <div class="flex items-center gap-4 text-label-caps font-label-caps">
+          <a class="text-on-surface hover:text-primary transition-colors" href="#">Login</a>
+          <a
+            class="bg-primary-container text-on-primary-container px-4 py-2 rounded-DEFAULT hover:bg-primary transition-colors font-bold border border-transparent hover:border-primary-container hover:shadow-[0_0_15px_rgba(0,229,255,0.3)]"
+            href="#"
+            >Book Demo</a
+          >
+        </div>
+      </div>
+    </nav>
+    <!-- Main Content Canvas -->
+    <main
+      class="flex-grow pt-32 pb-24 px-grid-margin max-w-[1440px] mx-auto w-full flex flex-col gap-16 relative"
+    >
+      <!-- Abstract Background Glow -->
+      <div
+        class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-primary-container/5 blur-[120px] rounded-full pointer-events-none -z-10"
+      ></div>
+      <!-- Hero Section -->
+      <section class="flex flex-col items-center text-center gap-6 max-w-4xl mx-auto">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-DEFAULT border border-outline-cyan/30 bg-surface/30 backdrop-blur-md"
+        >
+          <span
+            class="material-symbols-outlined text-primary-fixed-dim text-sm"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >public</span
+          >
+          <span
+            class="text-label-caps font-label-caps text-primary-fixed-dim uppercase tracking-wider"
+            >Quantifiable Intelligence</span
+          >
+        </div>
+        <h1 class="text-display-lg font-display-lg text-on-background">
+          Intelligence Defined.<br /><span class="text-primary-fixed-dim glow-text"
+            >Performance Proven.</span
+          >
+        </h1>
+        <p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl">
+          Enterprise architects and technical leaders rely on EyeX OS to transform complex data
+          environments into high-fidelity actionable intelligence. See how absolute precision drives
+          computational power.
+        </p>
+      </section>
+      <!-- Metrics Grid -->
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-grid-gutter w-full">
+        <div
+          class="glass-panel p-8 rounded-lg flex flex-col gap-4 items-start transition-all duration-200 group"
+        >
+          <span
+            class="material-symbols-outlined text-primary-fixed-dim text-3xl mb-2 group-hover:scale-110 transition-transform"
+            >monitoring</span
+          >
+          <h3 class="text-display-lg font-display-lg text-on-background">314%</h3>
+          <div class="flex flex-col gap-1">
+            <span class="text-label-caps font-label-caps text-primary uppercase">Average ROI</span>
+            <span class="text-body-sm font-body-sm text-on-surface-variant"
+              >Measured across Tier-1 enterprise deployments over 12 months.</span
+            >
+          </div>
+        </div>
+        <div
+          class="glass-panel p-8 rounded-lg flex flex-col gap-4 items-start transition-all duration-200 group"
+        >
+          <span
+            class="material-symbols-outlined text-primary-fixed-dim text-3xl mb-2 group-hover:scale-110 transition-transform"
+            >speed</span
+          >
+          <h3 class="text-display-lg font-display-lg text-on-background">40x</h3>
+          <div class="flex flex-col gap-1">
+            <span class="text-label-caps font-label-caps text-primary uppercase"
+              >Processing Speed</span
+            >
+            <span class="text-body-sm font-body-sm text-on-surface-variant"
+              >Reduction in query latency for massive distributed datasets.</span
+            >
+          </div>
+        </div>
+        <div
+          class="glass-panel p-8 rounded-lg flex flex-col gap-4 items-start transition-all duration-200 group"
+        >
+          <span
+            class="material-symbols-outlined text-primary-fixed-dim text-3xl mb-2 group-hover:scale-110 transition-transform"
+            >schema</span
+          >
+          <h3 class="text-display-lg font-display-lg text-on-background">99.9%</h3>
+          <div class="flex flex-col gap-1">
+            <span class="text-label-caps font-label-caps text-primary uppercase"
+              >Model Accuracy</span
+            >
+            <span class="text-body-sm font-body-sm text-on-surface-variant"
+              >Precision rate in automated anomaly detection protocols.</span
+            >
+          </div>
+        </div>
+      </section>
+      <!-- Divider -->
+      <div
+        class="w-full h-[1px] bg-gradient-to-r from-transparent via-outline-cyan/30 to-transparent my-8"
+      ></div>
+      <!-- Case Studies Bento Grid -->
+      <section class="flex flex-col gap-8 w-full">
+        <div class="flex justify-between items-end">
+          <h2 class="text-headline-md font-headline-md text-on-background">
+            Deployed Architectures
+          </h2>
+          <a
+            class="text-label-caps font-label-caps text-primary-fixed-dim hover:text-primary transition-colors flex items-center gap-1"
+            href="#"
+            >VIEW ALL <span class="material-symbols-outlined text-sm">arrow_forward</span></a
+          >
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-grid-gutter auto-rows-[300px]">
+          <!-- Large Feature Study -->
+          <div
+            class="md:col-span-2 md:row-span-2 glass-panel rounded-xl overflow-hidden relative group flex flex-col"
+          >
+            <div
+              class="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-50 transition-opacity duration-300 mix-blend-luminosity"
+              data-alt="A sprawling ultra-modern server farm interior bathed in cool cyan and deep blue LED lighting, conveying massive computational power. Glass servers reflect intricate data patterns in a high-fidelity, high-tech enterprise aesthetic."
+              style="
+                background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCQrFTtBdAciHMc6a6hB9LPsgnP6f8lvoNazgV7iJWCyLo5v5MBJjCEcSJO8kCYm2pGafqk_UZY7O9V1oT6tpoOmQqpe6tRGp0R8Wptiks9Yn35iaq4PnVrJNlrJQ00fqK9_FOukNV7s3Pqmf1SE49y5_jHGlTPowShvJViH57x2fsV8TqzxSKB7B7U2ZxSmMauOd6Csix_zGGUSl3GFQ4R3bo2ozFpxCt-2Cce7j6h-FdhOzPyL74HyRqkDSF7UBrOVV4PukPj-M0&quot;);
+              "
+            ></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-surface-dark via-surface-dark/80 to-transparent"
+            ></div>
+            <div class="relative z-10 flex flex-col justify-end h-full p-8 gap-4">
+              <div
+                class="bg-surface/50 backdrop-blur-md px-3 py-1 rounded-DEFAULT self-start border border-outline-cyan/20"
+              >
+                <img
+                  class="h-6 partner-logo"
+                  data-alt="A minimalist, futuristic corporate logo for a global logistics firm, clean lines, white on transparent background, high tech aesthetic."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJABNPt8AwOIfFKG4VskF6OFbuDBw8e0CRZ-oqBm8L4c6DZruXp2Qig1WuaSxhm-3w07GmZFea0JCCx7YuRlgTp8QWRYdy37-b41v4M5voma4RoLNAHszW9Ds_9ICi5n7GhNXHppgs7neZvBO0HBH24LjivakiSWw3ntg3oviV_s9q4PELg-q3O_x6BN1VMXtulEj-gy_qwlD4IPWrMtDwbAoU7bNAuZsy8thk1DhbmaGfgSjeXR3lRUt7pYRROCTsVh7Zk42mTZI"
+                />
+              </div>
+              <h3 class="text-headline-md font-headline-md text-on-background">
+                Global Logistics Optimization
+              </h3>
+              <p class="text-body-lg font-body-lg text-on-surface-variant">
+                How Nexus Freight utilized EyeX OS to route millions of autonomous delivery nodes,
+                reducing operational overhead by 22% while increasing delivery speed.
+              </p>
+              <div class="flex gap-2 mt-2">
+                <span
+                  class="text-data-mono font-data-mono text-xs bg-surface-bright/50 px-2 py-1 rounded-DEFAULT border border-outline-variant"
+                  >ROUTING</span
+                >
+                <span
+                  class="text-data-mono font-data-mono text-xs bg-surface-bright/50 px-2 py-1 rounded-DEFAULT border border-outline-variant"
+                  >PREDICTIVE_AI</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Standard Study 1 -->
+          <div
+            class="md:col-span-2 glass-panel rounded-xl overflow-hidden relative group flex flex-col justify-between p-6"
+          >
+            <div class="flex justify-between items-start z-10 relative">
+              <img
+                class="h-8 partner-logo"
+                data-alt="A sleek, geometric icon representing a highly advanced financial technology institution, stark white on transparent background, symbolizing precision and security."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAkB7jnBXcikpzmfqm9qqmUFckjDjShfzsTBvquS8r0KkDUVVNd-PyR9okCB5TMZmVozAG9aCT6hE2f-hSdP_bRaqP9rlxfeygVRybI9shZ3yFy3-1NKotJp3GzJlLtdUSYrCI5sDkX3eBQiPoX-4co1daOZ76ix7LF_ehjhXTISAwe1OQoFq7HZFpAPDtDnjbsZILsfeZDchosUvWaZf4Z7qLav_lbHLPF8WVH2tPuGCYih28gAmoXrLgIURV667lZUv7RqBvIfE"
+              />
+              <span
+                class="material-symbols-outlined text-outline-cyan/50 group-hover:text-primary-fixed-dim transition-colors"
+                >arrow_outward</span
+              >
+            </div>
+            <div class="z-10 relative flex flex-col gap-2">
+              <h4 class="text-headline-md-mobile font-headline-md-mobile text-on-background">
+                High-Frequency Trading Defense
+              </h4>
+              <p class="text-body-sm font-body-sm text-on-surface-variant">
+                Implementing sub-millisecond anomaly detection to secure algorithmic trading
+                pipelines against adversarial injection.
+              </p>
+              <span class="text-primary text-sm font-bold mt-2">-40ms Latency Reduction</span>
+            </div>
+          </div>
+          <!-- Standard Study 2 -->
+          <div
+            class="md:col-span-1 glass-panel rounded-xl overflow-hidden relative group flex flex-col justify-between p-6"
+          >
+            <div class="flex justify-between items-start z-10 relative">
+              <img
+                class="h-6 partner-logo"
+                data-alt="Abstract minimalist symbol for a biotechnology research lab, intersecting clean rings, high contrast white, futuristic tech design."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMe4lvx19bZjSkR8_Z5q_spvnAo4WmdJE_c4dlz2oPZ7YT91dP5ByQucgBlYbfkVJH9nTcrX3qIXPj44siC3McbvCU1N1ewUywMzGcPzNyqdiySL_gXPkZn-IvBZZ36GGYubKEM0HuFUycCDSmWW9qKoMCo_xQrQBkGj3S-yDpjohsvoR4Te8ThAku6pdiXi8VJf_NhuDHEmDhwS5JJKhvbACLpxQKryfa0CrFamr4XEluKomULCzPxm0N3-qry8StzyvIns_hVEU"
+              />
+            </div>
+            <div class="z-10 relative flex flex-col gap-2">
+              <h4 class="text-body-lg font-bold text-on-background">Genomic Sequencing Scale</h4>
+              <p class="text-body-sm font-body-sm text-on-surface-variant text-xs">
+                Distributed processing for massive bio-data sets.
+              </p>
+            </div>
+          </div>
+          <!-- Standard Study 3 -->
+          <div
+            class="md:col-span-1 glass-panel rounded-xl overflow-hidden relative group flex flex-col justify-between p-6"
+          >
+            <div class="flex justify-between items-start z-10 relative">
+              <img
+                class="h-6 partner-logo"
+                data-alt="Sharp angular emblem for an aerospace manufacturing corp, sleek lines denoting flight and precision engineering, white vector style."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmowV3A_Iii-1Plsq5htNwOtNZLrCQyL11e1JsPYoPLse17VeZ1QIz0zLALGqxv8tp84WQrVUvMFlUKlIUjKtEJ5Pifh6kCd9BaRoEi1V514LLNDxiHbgPt_p6qQ8Y9cQ3_CFZgdYLhQeQzNBUncuMO-KcqWk3qmLyOexH_2Kvj0vUXPVnCXK-AiYfsh_w8DtJHZdYcdWdptw9pomsN30UEdj-f6FWc_orXwroTfGa3R0TiLGMBlx1Hl9XvdJFFIII-JoS_A6Q7N0"
+              />
+            </div>
+            <div class="z-10 relative flex flex-col gap-2">
+              <h4 class="text-body-lg font-bold text-on-background">Aerospace Telemetry</h4>
+              <p class="text-body-sm font-body-sm text-on-surface-variant text-xs">
+                Real-time orbital sensor fusion and analysis.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Footer -->
+    <footer
+      class="bg-surface-dark dark:bg-surface-dark w-full py-stack-lg border-t border-outline-variant/20 grid grid-cols-2 md:grid-cols-4 gap-grid-gutter px-grid-margin max-w-[1440px] mx-auto text-on-surface dark:text-on-background transition-all duration-200 ease-[cubic-bezier(0,0,1,1)]"
+    >
+      <div class="col-span-2 md:col-span-1 flex flex-col gap-4">
+        <div class="flex items-center gap-4">
+          <img
+            alt="EyeX Technologies Logo"
+            class="h-12 w-12 object-contain bg-transparent"
+            src="https://lh3.googleusercontent.com/aida/AP1WRLs1qz4AaLkAH4Xn1ZBLnjwOzn1wjUTiRGqiiQL1m0Hvnk8B0-boRiHU619fZwDvtb6w43g5gm1WM9XUKu-FGBsz7czQNUz3s3ehwlNjuWZuxCnEnc2t-91RQ9Sy1sVJWlXzomH3aSW4rHKBxPC8P3YhmoDubRYhfcbaBNihFbU8axjV_MgfxtC7dnNmB504ZNrlqhxOVO-KUjIYa1Q_ktPCWexauZMYl9WNOh-9rK24H_lxxLyTctcQsnM"
+          /><span class="text-headline-md font-headline-md text-on-surface dark:text-on-background"
+            >EyeX</span
+          >
+        </div>
+        <span class="text-body-sm font-body-sm text-on-surface-variant"
+          >© 2024 EyeX Technologies. Intelligence defined.</span
+        >
+      </div>
+      <div class="flex flex-col gap-2 text-body-sm font-body-sm">
+        <span class="text-label-caps font-label-caps text-on-surface-variant mb-2">Product</span>
+        <a
+          class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+          href="#"
+          >Platform Overview</a
+        >
+        <a
+          class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+          href="#"
+          >API Documentation</a
+        >
+        <a
+          class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+          href="#"
+          >Security</a
+        >
+      </div>
+      <div class="flex flex-col gap-2 text-body-sm font-body-sm">
+        <span class="text-label-caps font-label-caps text-on-surface-variant mb-2">Company</span>
+        <a
+          class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+          href="#"
+          >About Us</a
+        >
+        <a
+          class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+          href="#"
+          >Careers</a
+        >
+        <a class="text-primary transition-colors" href="#">Customers</a>
+      </div>
+      <div class="flex flex-col gap-2 text-body-sm font-body-sm">
+        <span class="text-label-caps font-label-caps text-on-surface-variant mb-2">Legal</span>
+        <a
+          class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+          href="#"
+          >Privacy Policy</a
+        >
+        <a
+          class="text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors"
+          href="#"
+          >Terms of Service</a
+        >
+        <div class="flex gap-4 mt-4">
+          <a class="text-on-surface-variant hover:text-primary" href="#"
+            ><span class="material-symbols-outlined text-lg">language</span></a
+          >
+          <a class="text-on-surface-variant hover:text-primary" href="#"
+            ><span class="material-symbols-outlined text-lg">terminal</span></a
+          >
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

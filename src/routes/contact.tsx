@@ -4,17 +4,17 @@ import { ContactPage } from "@/pages/Contact";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact EyeX Technologies" },
+      { title: "Contact Cerefy" },
       {
         name: "description",
         content:
-          "Get in touch with EyeX Technologies. Reach out for partnerships, support, or general inquiries.",
+          "Get in touch with Cerefy. Reach out for partnerships, support, or general inquiries.",
       },
-      { property: "og:title", content: "Contact EyeX Technologies" },
+      { property: "og:title", content: "Contact Cerefy" },
       {
         property: "og:description",
         content:
-          "Get in touch with EyeX Technologies. Reach out for partnerships, support, or general inquiries.",
+          "Get in touch with Cerefy. Reach out for partnerships, support, or general inquiries.",
       },
     ],
   }),

@@ -80,7 +80,12 @@ export function TasksPage() {
   const tasks = tasksData?.tasks ?? [];
   const total = tasksData?.total ?? 0;
 
-  const columns: { key: string; label: string; align?: "left" | "right"; render?: (row: TaskExecutionRead) => React.ReactNode }[] = [
+  const columns: {
+    key: string;
+    label: string;
+    align?: "left" | "right";
+    render?: (row: TaskExecutionRead) => React.ReactNode;
+  }[] = [
     {
       key: "agent_role",
       label: "Agent",

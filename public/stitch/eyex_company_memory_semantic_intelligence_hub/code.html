@@ -1,0 +1,487 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EyeX Company Memory</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary": "#3e2e00",
+              "on-secondary-fixed-variant": "#1820d9",
+              "on-secondary-fixed": "#00016d",
+              "on-primary-fixed": "#001f24",
+              "surface-container-high": "#242b2d",
+              tertiary: "#ffeac0",
+              "on-error": "#690005",
+              "on-tertiary-container": "#6f5500",
+              "on-primary-container": "#00626e",
+              "surface-container-highest": "#2e3638",
+              error: "#ffb4ab",
+              "on-tertiary-fixed": "#251a00",
+              "on-primary-fixed-variant": "#004f58",
+              "surface-container-lowest": "#080f11",
+              "on-primary": "#00363d",
+              "secondary-fixed": "#e0e0ff",
+              "outline-variant": "#3b494c",
+              "inverse-surface": "#dce4e5",
+              "surface-dim": "#0d1516",
+              "surface-container-low": "#151d1e",
+              "on-error-container": "#ffdad6",
+              "on-background": "#dce4e5",
+              "inverse-on-surface": "#2a3233",
+              "tertiary-container": "#fec931",
+              secondary: "#bec2ff",
+              "on-secondary": "#0003aa",
+              "inverse-primary": "#006875",
+              surface: "#0d1516",
+              primary: "#c3f5ff",
+              "on-secondary-container": "#a9afff",
+              "primary-container": "#00e5ff",
+              "tertiary-fixed": "#ffdf96",
+              "secondary-fixed-dim": "#bec2ff",
+              "primary-fixed": "#9cf0ff",
+              "on-surface-variant": "#bac9cc",
+              "error-container": "#93000a",
+              "primary-fixed-dim": "#00daf3",
+              "surface-bright": "#333a3c",
+              "surface-container": "#192122",
+              "on-surface": "#dce4e5",
+              "surface-variant": "#2e3638",
+              "surface-tint": "#00daf3",
+              "on-tertiary-fixed-variant": "#594400",
+              "tertiary-fixed-dim": "#f3bf26",
+              background: "#0d1516",
+              "secondary-container": "#1820d9",
+              outline: "#849396",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              gutter: "16px",
+              unit: "4px",
+              "container-max": "1440px",
+              margin: "24px",
+            },
+            fontFamily: {
+              "mono-label": ["JetBrains Mono"],
+              "body-lg": ["Geist"],
+              "headline-md": ["Geist"],
+              "mono-data": ["JetBrains Mono"],
+              "body-sm": ["Geist"],
+              "display-lg": ["Geist"],
+              "display-lg-mobile": ["Geist"],
+            },
+            fontSize: {
+              "mono-label": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.05em",
+                  fontWeight: "500",
+                },
+              ],
+              "body-lg": [
+                "16px",
+                {
+                  lineHeight: "24px",
+                  fontWeight: "400",
+                },
+              ],
+              "headline-md": [
+                "24px",
+                {
+                  lineHeight: "32px",
+                  fontWeight: "600",
+                },
+              ],
+              "mono-data": [
+                "13px",
+                {
+                  lineHeight: "18px",
+                  fontWeight: "400",
+                },
+              ],
+              "body-sm": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  fontWeight: "400",
+                },
+              ],
+              "display-lg": [
+                "48px",
+                {
+                  lineHeight: "56px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "display-lg-mobile": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  fontWeight: "700",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #0d0d16;
+        color: #dce4e5;
+      }
+      .neural-card {
+        background-color: #1b1b24;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .neural-glow:hover {
+        box-shadow: 0 0 15px 2px rgba(0, 229, 255, 0.15);
+      }
+    </style>
+  </head>
+  <body class="font-body-sm text-body-sm h-screen overflow-hidden flex">
+    <!-- SideNavBar -->
+    <nav
+      class="bg-surface-container-lowest dark:bg-surface-container-lowest text-primary dark:text-primary-container font-body-sm text-body-sm font-headline-md text-headline-md font-bold text-primary h-screen w-64 fixed left-0 top-0 border-r border-outline-variant flex flex-col h-full py-margin px-4 z-50"
+    >
+      <div class="mb-8 mt-4 flex flex-col items-start">
+        <span class="font-headline-md text-headline-md font-bold text-primary tracking-tight"
+          >EyeX Neural OS</span
+        >
+        <span class="font-mono-label text-mono-label text-on-surface-variant mt-1"
+          >Neural Substrate v4.2</span
+        >
+      </div>
+      <ul class="flex flex-col gap-2 flex-grow">
+        <li>
+          <a
+            class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors Active: scale-[0.98] transition-transform duration-200"
+            href="#"
+            ><span
+              class="material-symbols-outlined"
+              style="font-variation-settings: &quot;FILL&quot; 0"
+              >business</span
+            >Organization</a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors Active: scale-[0.98] transition-transform duration-200"
+            href="#"
+            ><span
+              class="material-symbols-outlined"
+              style="font-variation-settings: &quot;FILL&quot; 0"
+              >workspaces</span
+            >Workspace</a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors Active: scale-[0.98] transition-transform duration-200"
+            href="#"
+            ><span
+              class="material-symbols-outlined"
+              style="font-variation-settings: &quot;FILL&quot; 0"
+              >rocket_launch</span
+            >Mission Center</a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors Active: scale-[0.98] transition-transform duration-200"
+            href="#"
+            ><span
+              class="material-symbols-outlined"
+              style="font-variation-settings: &quot;FILL&quot; 0"
+              >groups</span
+            >Executive Council</a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors Active: scale-[0.98] transition-transform duration-200"
+            href="#"
+            ><span
+              class="material-symbols-outlined"
+              style="font-variation-settings: &quot;FILL&quot; 0"
+              >psychology</span
+            >AI Agents</a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 p-3 rounded-DEFAULT text-primary font-bold border-r-2 border-primary bg-surface-container-high"
+            href="#"
+            ><span
+              class="material-symbols-outlined"
+              style="font-variation-settings: &quot;FILL&quot; 1"
+              >database</span
+            >Data Platform</a
+          >
+        </li>
+        <li>
+          <a
+            class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors Active: scale-[0.98] transition-transform duration-200"
+            href="#"
+            ><span
+              class="material-symbols-outlined"
+              style="font-variation-settings: &quot;FILL&quot; 0"
+              >security</span
+            >Security Center</a
+          >
+        </li>
+        <li class="mt-auto">
+          <a
+            class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors Active: scale-[0.98] transition-transform duration-200"
+            href="#"
+            ><span
+              class="material-symbols-outlined"
+              style="font-variation-settings: &quot;FILL&quot; 0"
+              >settings</span
+            >Settings</a
+          >
+        </li>
+      </ul>
+      <button
+        class="mt-4 w-full bg-primary-container text-surface-lowest font-body-sm text-body-sm font-bold py-3 rounded-lg hover:bg-primary-fixed-dim transition-colors"
+      >
+        Sync Neural Link
+      </button>
+    </nav>
+    <!-- Main Content Area -->
+    <div class="ml-64 w-full flex flex-col h-full bg-background relative overflow-hidden">
+      <!-- TopNavBar -->
+      <header
+        class="bg-surface-container-low dark:bg-surface-container-low text-primary dark:text-primary-container font-body-lg text-body-lg font-headline-md text-headline-md font-extrabold text-primary fixed top-0 right-0 w-[calc(100%-16rem)] h-16 border-b border-outline-variant flex justify-between items-center px-margin h-full z-40"
+      >
+        <div class="flex items-center gap-4">
+          <span class="font-headline-md text-headline-md font-extrabold text-primary"
+            >EyeX Command</span
+          >
+          <span class="text-on-surface-variant text-sm font-normal"
+            >/ Data Platform / Company Memory</span
+          >
+        </div>
+        <div class="flex-1 max-w-xl mx-8">
+          <div
+            class="relative flex items-center w-full h-10 rounded-lg bg-surface-container border border-outline-variant focus-within:border-primary-container overflow-hidden"
+          >
+            <div class="grid place-items-center h-full w-12 text-on-surface-variant">
+              <span class="material-symbols-outlined text-sm">search</span>
+            </div>
+            <input
+              class="peer h-full w-full outline-none text-sm text-on-surface bg-transparent pr-2 font-mono-data"
+              id="search"
+              placeholder="Semantic vector search..."
+              type="text"
+            />
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <button
+            class="px-4 py-2 text-sm font-semibold rounded-lg bg-primary-container text-surface-lowest hover:bg-primary-fixed-dim transition-colors"
+          >
+            AI Command
+          </button>
+          <button class="text-on-surface-variant hover:text-primary transition-all">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <img
+            alt="User Neural Profile"
+            class="w-8 h-8 rounded-full border border-outline-variant"
+            data-alt="A macro shot of a sleek, futuristic metallic sphere with glowing cyan circuit patterns, set against a dark obsidian background, emphasizing technical precision and advanced AI, modern minimal lighting, 8k resolution."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDG5rXwHAVDasllNDg4ze3kswGRIuNJIn1V7tjJJfeJ8eNLwxscK-HrNmnvLBIGHPuz71qESBMsrVAKaMIA9nFhGIUfcsIfvtAMalGVXpQ9mA9hImQYETTnKTCCfl6fSc55KEYU6UhKEx3tnF0-GLGAYhn3WOAtuhAXXYXqsg9nkLxP3SobW-vHSbEcNEIanEl1WeATquNyznnSaY6atHbA0vKtdo7W5IaPc2VuoG9-RoiHXXGPr_R3B63RnYFkndAPw8s3pzjIsI"
+          />
+        </div>
+      </header>
+      <!-- Canvas -->
+      <main class="flex-1 mt-16 p-margin overflow-y-auto grid grid-cols-12 gap-gutter">
+        <!-- Bento Grid Layout -->
+        <div class="col-span-12 xl:col-span-8 flex flex-col gap-gutter">
+          <!-- Knowledge Graph -->
+          <div
+            class="neural-card rounded-xl p-4 flex flex-col h-[500px] relative overflow-hidden group"
+          >
+            <div class="flex justify-between items-center mb-4 z-10 relative">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-on-surface">
+                  Semantic Knowledge Graph
+                </h2>
+                <p class="font-mono-data text-mono-data text-on-surface-variant">
+                  Live Topology mapping of interconnected data nodes.
+                </p>
+              </div>
+              <span
+                class="px-2 py-1 bg-[#1820d9]/20 text-[#a9afff] rounded text-xs font-mono-label border border-[#1820d9]/50 flex items-center gap-1"
+                ><span class="material-symbols-outlined text-[14px]">psychology</span>
+                Agent-Processing</span
+              >
+            </div>
+            <div
+              class="absolute inset-0 z-0 bg-gradient-to-br from-primary-container/5 to-transparent pointer-events-none"
+            ></div>
+            <div
+              class="flex-1 bg-surface-dim rounded-lg border border-outline-variant relative overflow-hidden flex items-center justify-center"
+            >
+              <span class="text-on-surface-variant font-mono-label"
+                >[Interactive Graph Canvas Placeholder]</span
+              >
+              <!-- Abstract nodes illustration via CSS -->
+              <div
+                class="absolute top-1/4 left-1/4 w-3 h-3 bg-primary-container rounded-full shadow-[0_0_10px_#00e5ff]"
+              ></div>
+              <div
+                class="absolute top-1/2 left-1/2 w-4 h-4 bg-tertiary-container rounded-full shadow-[0_0_10px_#fec931]"
+              ></div>
+              <div
+                class="absolute bottom-1/3 right-1/4 w-3 h-3 bg-error rounded-full shadow-[0_0_10px_#ffb4ab]"
+              ></div>
+              <svg
+                class="absolute inset-0 w-full h-full pointer-events-none opacity-20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line stroke="#00e5ff" stroke-width="1" x1="25%" x2="50%" y1="25%" y2="50%"></line>
+                <line
+                  stroke="#bac9cc"
+                  stroke-dasharray="4"
+                  stroke-width="1"
+                  x1="50%"
+                  x2="75%"
+                  y1="50%"
+                  y2="66%"
+                ></line>
+              </svg>
+            </div>
+          </div>
+          <!-- Recent Artifacts -->
+          <div class="grid grid-cols-2 gap-gutter">
+            <div class="neural-card rounded-xl p-4 neural-glow transition-all">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="material-symbols-outlined text-primary-container">description</span>
+                <h3 class="font-body-lg text-body-lg text-on-surface">Q3 Strategy Doc</h3>
+              </div>
+              <p class="font-mono-data text-mono-data text-on-surface-variant mb-4">
+                Vectorized 2 hrs ago. High semantic link to 'Project Orion'.
+              </p>
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded"
+                  >Confidence: 98%</span
+                >
+                <button class="text-primary-container text-sm font-bold hover:underline">
+                  View Node
+                </button>
+              </div>
+            </div>
+            <div class="neural-card rounded-xl p-4 neural-glow transition-all">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="material-symbols-outlined text-tertiary-container">forum</span>
+                <h3 class="font-body-lg text-body-lg text-on-surface">Exec Sync Transcript</h3>
+              </div>
+              <p class="font-mono-data text-mono-data text-on-surface-variant mb-4">
+                Processing entities. Extracted 4 action items.
+              </p>
+              <div class="flex justify-between items-center">
+                <span
+                  class="text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded border border-tertiary-container/30"
+                  >Processing...</span
+                >
+                <button class="text-primary-container text-sm font-bold hover:underline">
+                  View Node
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Right Sidebar Panel -->
+        <div class="col-span-12 xl:col-span-4 flex flex-col gap-gutter">
+          <!-- Neural Sync Status -->
+          <div class="neural-card rounded-xl p-6">
+            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">
+              Neural Sync Status
+            </h3>
+            <p class="font-mono-data text-mono-data text-on-surface-variant mb-6">
+              Global corpus vectorization progress.
+            </p>
+            <div class="mb-4">
+              <div class="flex justify-between font-mono-label text-mono-label mb-1">
+                <span class="text-on-surface">Total Indexed</span>
+                <span class="text-primary-container">84.2%</span>
+              </div>
+              <div class="w-full bg-surface-container-highest rounded-full h-2 overflow-hidden">
+                <div class="bg-primary-container h-2 rounded-full" style="width: 84.2%"></div>
+              </div>
+            </div>
+            <div class="space-y-3 font-mono-data text-mono-data">
+              <div
+                class="flex justify-between items-center py-2 border-b border-outline-variant/30"
+              >
+                <span class="text-on-surface-variant">Nodes Active</span>
+                <span class="text-on-surface">1,492,031</span>
+              </div>
+              <div
+                class="flex justify-between items-center py-2 border-b border-outline-variant/30"
+              >
+                <span class="text-on-surface-variant">Edges Mapped</span>
+                <span class="text-on-surface">8,340,992</span>
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-on-surface-variant">Last Pulse</span>
+                <span class="text-primary-container">14ms ago</span>
+              </div>
+            </div>
+          </div>
+          <!-- Query Interface -->
+          <div class="neural-card rounded-xl p-6 flex-1 flex flex-col">
+            <h3 class="font-headline-md text-headline-md text-on-surface mb-4">Semantic Query</h3>
+            <textarea
+              class="w-full bg-surface-dim border border-outline-variant rounded-lg p-3 text-on-surface font-mono-data text-sm focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none resize-none mb-4"
+              placeholder="Enter natural language query to interrogate the knowledge graph... e.g. 'What were the key technical blockers discussed in last week's engineering sync?'"
+              rows="4"
+            ></textarea>
+            <button
+              class="w-full py-2 bg-transparent border border-primary-container/30 text-primary-container font-bold rounded-lg hover:bg-primary-container hover:text-surface-lowest transition-colors mt-auto flex items-center justify-center gap-2"
+            >
+              <span class="material-symbols-outlined text-sm">memory</span> Execute Neural Search
+            </button>
+          </div>
+        </div>
+      </main>
+      <!-- Footer -->
+      <footer
+        class="bg-surface-container-lowest dark:bg-surface-container-lowest text-on-surface-variant font-mono-label text-mono-label font-mono-label text-mono-label text-primary fixed bottom-0 right-0 w-[calc(100%-16rem)] py-2 border-t border-outline-variant flex justify-between items-center px-margin z-40"
+      >
+        <span class="text-on-surface-variant">EyeX Neural OS v4.2-Stable</span>
+        <div class="flex gap-4">
+          <a class="hover:text-primary transition-colors duration-200" href="#">System Status</a>
+          <a class="hover:text-primary transition-colors duration-200" href="#">Documentation</a>
+          <a class="hover:text-primary transition-colors duration-200" href="#">Privacy Protocol</a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

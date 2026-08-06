@@ -19,6 +19,13 @@ import {
   Menu,
   RefreshCw,
   Plus,
+  Rocket,
+  Brain,
+  Target,
+  Workflow,
+  Activity,
+  Video,
+  Zap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -42,6 +49,13 @@ const ICONS: Record<string, LucideIcon> = {
   memory: Database,
   history: BarChart3,
   credit_card: Wallet,
+  rocket: Rocket,
+  brain: Brain,
+  target: Target,
+  workflow: Workflow,
+  activity: Activity,
+  video: Video,
+  zap: Zap,
 };
 
 type NavItem = { to: string; label: string; icon: string };
@@ -69,13 +83,6 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/hr", label: "HR", icon: "badge" },
       { to: "/projects", label: "Projects", icon: "assignment" },
       { to: "/documents", label: "Documents", icon: "folder" },
-    ],
-  },
-  {
-    label: "Agents",
-    items: [
-      { to: "/agents", label: "Agents", icon: "auto_awesome" },
-      { to: "/tasks", label: "Task History", icon: "history" },
     ],
   },
   {
@@ -112,11 +119,18 @@ export function AppShell({
       >
         <div className="px-6 mb-8 mt-2 flex items-center gap-3">
           <div className="w-8 h-8 bg-[#38BDF8] rounded-sm flex items-center justify-center">
-            <span className="material-symbols-outlined text-[#003549] text-xl font-bold" style={{fontVariationSettings: "'FILL' 1"}}>terminal</span>
+            <span
+              className="material-symbols-outlined text-[#003549] text-xl font-bold"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
+              rocket_launch
+            </span>
           </div>
           <div className="flex flex-col">
-            <h1 className="text-[18px] font-bold tracking-tight text-white leading-none">QORX</h1>
-            <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] leading-none mt-1">Analytic Core</p>
+            <h1 className="text-[18px] font-bold tracking-tight text-white leading-none">Cerefy</h1>
+            <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] leading-none mt-1">
+              AI Startup Builder
+            </p>
           </div>
         </div>
 
@@ -141,7 +155,10 @@ export function AppShell({
                           : "text-muted-foreground hover:text-white hover:bg-white/[0.03] border-transparent"
                       }`}
                     >
-                      <Icon size={18} className={active ? "text-primary" : "text-muted-foreground"} />
+                      <Icon
+                        size={18}
+                        className={active ? "text-primary" : "text-muted-foreground"}
+                      />
                       <span>{item.label}</span>
                     </Link>
                   );

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.agents.researcher import ResearchAgent, ResearchOutput, create_research_agent
+from app.agents.researcher import ResearchOutput, create_research_agent
 
 
 def test_researcher_schema():

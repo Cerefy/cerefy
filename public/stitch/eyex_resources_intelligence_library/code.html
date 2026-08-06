@@ -1,0 +1,532 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Resources - EyeX Technologies</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#bec2ff",
+              background: "#12131c",
+              "surface-dim": "#12131c",
+              surface: "#12131c",
+              primary: "#bec2ff",
+              "on-surface": "#e3e1ef",
+              "on-secondary-fixed-variant": "#393f8a",
+              "error-container": "#93000a",
+              "surface-container-high": "#292933",
+              "surface-dark": "#05070A",
+              "on-tertiary": "#660700",
+              outline: "#8f8fa2",
+              "tertiary-container": "#c83923",
+              "surface-variant": "#34343e",
+              "surface-container": "#1f1f28",
+              "on-primary-fixed": "#00016d",
+              "on-error": "#690005",
+              tertiary: "#ffb4a6",
+              "primary-fixed": "#e0e0ff",
+              "secondary-container": "#393f8a",
+              "inverse-on-surface": "#302f3a",
+              "on-tertiary-fixed-variant": "#900e00",
+              "on-primary-container": "#f1efff",
+              "tertiary-fixed": "#ffdad4",
+              "on-error-container": "#ffdad6",
+              "secondary-fixed-dim": "#bec2ff",
+              "on-primary-fixed-variant": "#1820d9",
+              "surface-container-lowest": "#0d0d16",
+              "secondary-fixed": "#e0e0ff",
+              "outline-variant": "#454556",
+              "on-tertiary-container": "#ffece9",
+              "on-secondary-fixed": "#080c5e",
+              "on-tertiary-fixed": "#3f0300",
+              "outline-cyan": "rgba(0, 229, 255, 0.3)",
+              "surface-container-highest": "#34343e",
+              "inverse-primary": "#3a44ef",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "primary-container": "#4b56fe",
+              "on-secondary": "#212772",
+              "on-background": "#e3e1ef",
+              "on-surface-variant": "#c6c5d9",
+              "surface-tint": "#bec2ff",
+              "on-primary": "#0003aa",
+              "surface-bright": "#383843",
+              secondary: "#bec2ff",
+              "on-secondary-container": "#a9afff",
+              error: "#ffb4ab",
+              "inverse-surface": "#e3e1ef",
+              "surface-container-low": "#1b1b24",
+            },
+            borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" },
+            spacing: {
+              "stack-lg": "2rem",
+              "stack-sm": "0.5rem",
+              "stack-xs": "0.25rem",
+              "stack-md": "1rem",
+              "grid-margin": "2rem",
+              "grid-gutter": "1.5rem",
+            },
+            fontFamily: {
+              "data-mono": ["JetBrains Mono"],
+              "label-caps": ["JetBrains Mono"],
+              "headline-md-mobile": ["Geist"],
+              "body-lg": ["Geist"],
+              "display-lg": ["Geist"],
+              "body-sm": ["Geist"],
+              "headline-md": ["Geist"],
+              headline: ["Geist"],
+              display: ["Geist"],
+              body: ["Geist"],
+              label: ["Jetbrains Mono"],
+            },
+            fontSize: {
+              "data-mono": [
+                "13px",
+                { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "label-caps": [
+                "11px",
+                { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" },
+              ],
+              "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "display-lg": [
+                "64px",
+                { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" },
+              ],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "headline-md": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #05070a;
+        color: #dae4ef;
+        overflow-x: hidden;
+      }
+      .glass-panel {
+        background: rgba(11, 20, 28, 0.4);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 229, 255, 0.1);
+      }
+      .glow-hover:hover {
+        box-shadow: 0px 0px 30px rgba(0, 229, 255, 0.15);
+        border-color: rgba(0, 229, 255, 0.3);
+      }
+      .tech-gradient-text {
+        background: linear-gradient(90deg, #c3f5ff 0%, #00daf3 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .reveal-on-scroll {
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.6s ease-out,
+          transform 0.6s ease-out;
+      }
+      .reveal-on-scroll.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .grid-bg {
+        background-image:
+          linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+        background-size: 32px 32px;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-surface-dark font-body-lg text-body-lg selection:bg-primary-container selection:text-on-primary-container"
+  >
+    <!-- TopNavBar -->
+    <nav
+      class="fixed top-0 w-full z-50 bg-surface/40 dark:bg-surface-dark/40 backdrop-blur-xl border-b border-outline-cyan/10 shadow-[0px_0px_30px_rgba(0,229,255,0.05)] transition-all duration-150 ease-out"
+    >
+      <div class="flex justify-between items-center px-grid-margin py-4 max-w-[1440px] mx-auto">
+        <div class="flex items-center gap-4">
+          <img
+            alt="EyeX Atomic Logo"
+            class="h-12 w-12 object-contain bg-transparent"
+            src="https://lh3.googleusercontent.com/aida/AP1WRLsqxHOHMkLuCPZB4-VZlzk65flnJb0sMuPqADd3fPlyEOcJWIRvswCZ8xmagpJ32L3HWfKNmpHUy70AYWiejZhcNBfr9XsptYX7xdC4JCMRa-Q7zTuNIjIHb9oNOZsujPWzkGM22SSKki3wY_LMk7AMbwWWlRh7dtjKQLGvxffISjDrRZ-3hFy16Hx0zQvhFFDMg7d7_xJtAUW-BTq_b09KFoGe0-AjQQqjet4L5O7huddozmx571_xVIM"
+          />
+          <span
+            class="text-body-lg font-headline-md font-bold tracking-tight text-on-surface dark:text-on-background hidden sm:block"
+            >EyeX Technologies</span
+          >
+        </div>
+        <div class="hidden md:flex gap-8 items-center">
+          <a
+            class="text-label-caps font-label-caps text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20 px-3 py-2 rounded-DEFAULT"
+            href="#"
+            >Platform</a
+          >
+          <a
+            class="text-label-caps font-label-caps text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20 px-3 py-2 rounded-DEFAULT"
+            href="#"
+            >Solutions</a
+          >
+          <a
+            class="text-label-caps font-label-caps text-primary dark:text-primary-fixed-dim border-b-2 border-primary pb-1 px-3 py-2"
+            href="#"
+            >Resources</a
+          >
+          <a
+            class="text-label-caps font-label-caps text-on-surface-variant dark:text-on-secondary-container transition-colors duration-200 hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-bright/20 px-3 py-2 rounded-DEFAULT"
+            href="#"
+            >Pricing</a
+          >
+        </div>
+        <div class="flex items-center gap-4">
+          <button
+            class="hidden lg:block text-label-caps font-label-caps text-on-surface hover:text-primary transition-colors"
+          >
+            Login
+          </button>
+          <button
+            class="bg-primary-container hover:bg-primary text-on-primary-container text-label-caps font-label-caps px-6 py-2 rounded-DEFAULT transition-colors"
+          >
+            Book Demo
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main class="pt-32 pb-24 relative z-10">
+      <!-- Hero Section -->
+      <section
+        class="px-grid-margin max-w-[1440px] mx-auto mb-24 reveal-on-scroll relative visible"
+      >
+        <div class="absolute inset-0 grid-bg opacity-30 -z-10 pointer-events-none rounded-xl"></div>
+        <div class="text-center max-w-4xl mx-auto py-16">
+          <h1 class="text-display-lg font-display-lg mb-6 tracking-tight">
+            Intelligence <span class="tech-gradient-text">Unbound.</span>
+          </h1>
+          <p class="text-headline-md-mobile font-headline-md-mobile text-on-surface-variant mb-10">
+            The central repository for technical deep-dives, architectural blueprints, and frontier
+            AI research.
+          </p>
+          <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <div class="relative glass-panel rounded-DEFAULT p-1 w-full max-w-md flex items-center">
+              <span
+                class="material-symbols-outlined text-outline-cyan ml-3 mr-2"
+                style="font-variation-settings: &quot;FILL&quot; 0"
+                >search</span
+              >
+              <input
+                class="bg-transparent border-none text-on-surface focus:ring-0 w-full font-data-mono text-data-mono placeholder:text-outline p-2 outline-none"
+                placeholder="Search documentation, whitepapers..."
+                type="text"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Filters & Bento Grid -->
+      <section class="px-grid-margin max-w-[1440px] mx-auto mb-24 reveal-on-scroll visible">
+        <div class="flex flex-wrap gap-4 mb-10 items-center justify-center md:justify-start">
+          <button
+            class="px-4 py-2 border border-outline-cyan/30 rounded-full text-label-caps font-label-caps text-primary bg-primary/10 glow-hover transition-all"
+          >
+            All Resources
+          </button>
+          <button
+            class="px-4 py-2 border border-outline-variant/30 rounded-full text-label-caps font-label-caps text-on-surface-variant hover:border-outline-cyan/30 hover:text-primary transition-all"
+          >
+            Whitepapers
+          </button>
+          <button
+            class="px-4 py-2 border border-outline-variant/30 rounded-full text-label-caps font-label-caps text-on-surface-variant hover:border-outline-cyan/30 hover:text-primary transition-all"
+          >
+            Architecture
+          </button>
+          <button
+            class="px-4 py-2 border border-outline-variant/30 rounded-full text-label-caps font-label-caps text-on-surface-variant hover:border-outline-cyan/30 hover:text-primary transition-all"
+          >
+            Research
+          </button>
+          <button
+            class="px-4 py-2 border border-outline-variant/30 rounded-full text-label-caps font-label-caps text-on-surface-variant hover:border-outline-cyan/30 hover:text-primary transition-all"
+          >
+            Case Studies
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-grid-gutter">
+          <!-- Feature Card Large -->
+          <div
+            class="md:col-span-8 glass-panel rounded-lg p-8 glow-hover transition-all group flex flex-col justify-between min-h-[400px] relative overflow-hidden"
+          >
+            <div class="absolute inset-0 z-0">
+              <div
+                class="bg-cover bg-center w-full h-full opacity-20 group-hover:opacity-30 transition-opacity duration-500"
+                data-alt="A highly complex, glowing blue and cyan 3D neural network topology visualization against a deep carbon black background. The nodes connect dynamically, illustrating computational power and advanced AI architecture. Minimalist, high-contrast, premium tech aesthetic."
+                style="
+                  background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuDLDoYgJMeiB6SIGSALfIaV_6q2iyS_tVn4n-eHcBoeHYv-ZfOAZW8PQy4JMXWGqPIGRUi0Nb-1q1wMcsvbtUgMskLgOIDDKb_YZGeaqSCj6_1uPhscUR-iTxvY4TIeSg1tb3kpW6k_EolUCQnIywxh5vs7jJLOqvD-aRPncLPlXU6GeX0N2R1d77dyWDZoN2-gcCh5WJv20K4oXrzXUSdA3FdYKhdFwOhSuAn6EUaeNMSzczyYmdZDIwA3JYSMCSkR212mNICsHMc&quot;);
+                "
+              ></div>
+            </div>
+            <div class="relative z-10">
+              <span
+                class="inline-block px-2 py-1 bg-surface-bright/50 border border-outline-cyan/20 text-data-mono font-data-mono text-primary rounded-sm mb-4"
+                >WHITEPAPER</span
+              >
+              <h3
+                class="text-headline-md font-headline-md mb-4 group-hover:text-primary transition-colors"
+              >
+                Distributed Cognitive Meshes: Scaling Multi-Agent Systems
+              </h3>
+              <p class="text-on-surface-variant max-w-2xl mb-8">
+                An architectural blueprint for deploying self-organizing LLM clusters in
+                high-latency edge environments.
+              </p>
+            </div>
+            <div class="relative z-10 flex items-center justify-between mt-auto">
+              <div
+                class="flex items-center gap-2 text-on-surface-variant text-data-mono font-data-mono"
+              >
+                <span
+                  class="material-symbols-outlined"
+                  style="font-variation-settings: &quot;FILL&quot; 0"
+                  >calendar_today</span
+                >
+                Oct 24, 2024
+              </div>
+              <a
+                class="flex items-center gap-2 text-primary font-label-caps text-label-caps hover:underline"
+                href="#"
+              >
+                READ REPORT
+                <span
+                  class="material-symbols-outlined"
+                  style="font-variation-settings: &quot;FILL&quot; 0"
+                  >arrow_forward</span
+                >
+              </a>
+            </div>
+          </div>
+          <!-- Small Card 1 -->
+          <div
+            class="md:col-span-4 glass-panel rounded-lg p-6 glow-hover transition-all flex flex-col"
+          >
+            <span
+              class="inline-block self-start px-2 py-1 bg-surface-bright/50 border border-outline-variant/20 text-data-mono font-data-mono text-secondary rounded-sm mb-4"
+              >RESEARCH</span
+            >
+            <h3 class="text-headline-md-mobile font-headline-md-mobile mb-2">
+              Zero-Shot Reasoning in Quantized Models
+            </h3>
+            <p class="text-body-sm font-body-sm text-on-surface-variant mb-6 flex-grow">
+              Analyzing performance degradation curves in INT4 quantized transformer architectures.
+            </p>
+            <a
+              class="flex items-center gap-2 text-primary font-label-caps text-label-caps hover:underline mt-auto"
+              href="#"
+            >
+              DOWNLOAD PDF
+              <span
+                class="material-symbols-outlined"
+                style="font-variation-settings: &quot;FILL&quot; 0"
+                >download</span
+              >
+            </a>
+          </div>
+          <!-- Medium Card 1 -->
+          <div
+            class="md:col-span-6 glass-panel rounded-lg p-6 glow-hover transition-all flex flex-col group"
+          >
+            <div
+              class="w-full h-48 mb-6 overflow-hidden rounded-md border border-outline-variant/20 relative"
+            >
+              <div
+                class="bg-cover bg-center w-full h-full transform group-hover:scale-105 transition-transform duration-700"
+                data-alt="A clean, minimalist isometric diagram of a cloud infrastructure architecture. Floating servers, database cylinders, and data flow lines in bright white and tech cyan on a pitch black background. Precise, mathematical, high-end enterprise aesthetic."
+                style="
+                  background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuAW6Omrr7LTJu1tp8qhI7AaOQQ7115MTltSE6jqfAZ57IWfC0AiPGy2J95k_Wohrx_PuQyxCyRqO5TJk6UT5euc33xg-vI4LAJx0HrbUBceHOLGV0aTUg3L5HbEnbF-ETuRJRQolfrpuWEiK1q3_21obGxkIBYb5GzjbnE0fR-uTEOgC-u2F2jPyncrhpaocNBuytDpO3MCIhM-6gJ7oRxbo1aHTYqsSSq8FzhBo2aUvg1Y2ZdxfR90dyiJezW-UhGZzhKC_aHmK6I&quot;);
+                "
+              ></div>
+            </div>
+            <span
+              class="inline-block self-start px-2 py-1 bg-surface-bright/50 border border-outline-variant/20 text-data-mono font-data-mono text-tertiary rounded-sm mb-4"
+              >ARCHITECTURE</span
+            >
+            <h3 class="text-headline-md-mobile font-headline-md-mobile mb-2">
+              Secure Enclave Deployment Blueprint
+            </h3>
+            <p class="text-body-sm font-body-sm text-on-surface-variant mb-4">
+              Reference architecture for deploying EyeX OS within confidential computing
+              environments.
+            </p>
+          </div>
+          <!-- Medium Card 2 -->
+          <div
+            class="md:col-span-6 glass-panel rounded-lg p-6 glow-hover transition-all flex flex-col group"
+          >
+            <div
+              class="w-full h-48 mb-6 overflow-hidden rounded-md border border-outline-variant/20 relative"
+            >
+              <div
+                class="bg-cover bg-center w-full h-full transform group-hover:scale-105 transition-transform duration-700"
+                data-alt="A sleek, modern dashboard interface visualizing complex data streams. Glowing heatmaps and sharp line charts in cyan and neon yellow against a dark carbon ui. Represents real-time enterprise monitoring. Minimalist and authoritative."
+                style="
+                  background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuDoehOtvQNLqVQgf-b2FnpQ_rTI7ihQIV_Y8xfOi8U-rr0i02JCLVTmUUxRKCD3mmsuThAUxlPZ65k_9W8QySb13VfatsckXXAGlI8cXVX7_K4-1V1x46zyc-vKBQlycKFZaWwdKxxvUD1OJj7oWLcW75ETYaDiIx_MWZO2AUSe5mRaWbVc-lqU0N7BLfTFUN5Kbprhnyzl5XbPNacdGQRHXT3uvTl3jR4PtW1cq923z2iMlfhhc2j2pjB_U8KV9rCzJWH6wDNndnE&quot;);
+                "
+              ></div>
+            </div>
+            <span
+              class="inline-block self-start px-2 py-1 bg-surface-bright/50 border border-outline-variant/20 text-data-mono font-data-mono text-tertiary-fixed rounded-sm mb-4"
+              >CASE STUDY</span
+            >
+            <h3 class="text-headline-md-mobile font-headline-md-mobile mb-2">
+              Global Logistics Corp: Predictive Routing
+            </h3>
+            <p class="text-body-sm font-body-sm text-on-surface-variant mb-4">
+              How integrating EyeX inference engines reduced global supply chain latency by 34%.
+            </p>
+          </div>
+        </div>
+      </section>
+      <!-- Newsletter Section -->
+      <section class="px-grid-margin max-w-4xl mx-auto reveal-on-scroll visible">
+        <div class="glass-panel rounded-xl p-8 md:p-12 text-center relative overflow-hidden">
+          <div
+            class="absolute -top-24 -right-24 w-64 h-64 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"
+          ></div>
+          <span
+            class="material-symbols-outlined text-4xl text-primary mb-4"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >terminal</span
+          >
+          <h2 class="text-headline-md font-headline-md mb-4">Subscribe to the Signal</h2>
+          <p class="text-on-surface-variant mb-8 max-w-xl mx-auto">
+            Get notified when new research, whitepapers, and major protocol updates are published to
+            the repository.
+          </p>
+          <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto justify-center">
+            <input
+              class="bg-surface-dark border border-outline-variant/50 focus:border-outline-cyan focus:ring-0 text-on-surface rounded-DEFAULT px-4 py-3 flex-grow font-data-mono text-data-mono"
+              placeholder="SYS.ENTER_EMAIL()"
+              type="email"
+            />
+            <button
+              class="bg-primary text-on-primary-fixed font-label-caps text-label-caps px-8 py-3 rounded-DEFAULT hover:bg-primary-fixed transition-colors"
+              type="button"
+            >
+              INITIALIZE
+            </button>
+          </form>
+        </div>
+      </section>
+    </main>
+    <!-- Footer -->
+    <footer
+      class="bg-surface-dark dark:bg-surface-dark w-full py-stack-lg border-t border-outline-variant/20 grid grid-cols-2 md:grid-cols-4 gap-grid-gutter px-grid-margin max-w-[1440px] mx-auto text-on-surface dark:text-on-background relative z-10"
+    >
+      <div class="col-span-2 md:col-span-1 flex flex-col items-start">
+        <img
+          alt="EyeX Logo Footer"
+          class="h-12 w-12 object-contain mb-4 bg-transparent"
+          src="https://lh3.googleusercontent.com/aida/AP1WRLsqxHOHMkLuCPZB4-VZlzk65flnJb0sMuPqADd3fPlyEOcJWIRvswCZ8xmagpJ32L3HWfKNmpHUy70AYWiejZhcNBfr9XsptYX7xdC4JCMRa-Q7zTuNIjIHb9oNOZsujPWzkGM22SSKki3wY_LMk7AMbwWWlRh7dtjKQLGvxffISjDrRZ-3hFy16Hx0zQvhFFDMg7d7_xJtAUW-BTq_b09KFoGe0-AjQQqjet4L5O7huddozmx571_xVIM"
+        />
+        <span
+          class="text-headline-md font-headline-md text-on-surface dark:text-on-background mb-2 tracking-tight"
+          >EyeX Technologies</span
+        >
+        <span class="text-body-sm font-body-sm text-on-surface-variant"
+          >© 2024 EyeX Technologies. Intelligence defined.</span
+        >
+      </div>
+      <div class="flex flex-col gap-2">
+        <span class="text-label-caps font-label-caps text-on-surface-variant mb-2">Product</span>
+        <a
+          class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors duration-200"
+          href="#"
+          >Platform</a
+        >
+        <a
+          class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors duration-200"
+          href="#"
+          >Solutions</a
+        >
+        <a
+          class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors duration-200"
+          href="#"
+          >Pricing</a
+        >
+      </div>
+      <div class="flex flex-col gap-2">
+        <span class="text-label-caps font-label-caps text-on-surface-variant mb-2">Company</span>
+        <a
+          class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors duration-200"
+          href="#"
+          >About Us</a
+        >
+        <a
+          class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors duration-200"
+          href="#"
+          >Careers</a
+        >
+        <a
+          class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors duration-200"
+          href="#"
+          >Contact</a
+        >
+      </div>
+      <div class="flex flex-col gap-2">
+        <span class="text-label-caps font-label-caps text-on-surface-variant mb-2">Legal</span>
+        <a
+          class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors duration-200"
+          href="#"
+          >Privacy Policy</a
+        >
+        <a
+          class="text-body-sm font-body-sm text-on-surface-variant dark:text-on-secondary-container hover:text-primary transition-colors duration-200"
+          href="#"
+          >Terms of Service</a
+        >
+      </div>
+    </footer>
+    <script>
+      // Simple scroll reveal interaction
+      document.addEventListener("DOMContentLoaded", () => {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+              }
+            });
+          },
+          { threshold: 0.1 },
+        );
+
+        document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
+          observer.observe(el);
+        });
+      });
+    </script>
+  </body>
+</html>

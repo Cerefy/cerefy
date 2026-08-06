@@ -10,7 +10,7 @@ from typing import Any
 class ParseResult:
     raw_data: Any
     format: str
-    metadata: dict
+    metadata: dict[str, Any]
     warnings: list[str]
 
 
@@ -25,7 +25,11 @@ class BaseParser(ABC):
         """Return True if this parser can handle the source."""
 
     @abstractmethod
-    async def parse(self, source: str | Path | bytes, options: dict | None = None) -> ParseResult:
+    async def parse(
+        self,
+        source: str | Path | bytes,
+        options: dict[str, Any] | None = None,
+    ) -> ParseResult:
         """Parse source into a raw representation."""
 
 

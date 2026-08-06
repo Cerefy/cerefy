@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.agents.planner import PlannerAgent, PlannerOutput, create_planner_agent
+from app.agents.planner import PlannerOutput, create_planner_agent
 
 
 def test_planner_schema():

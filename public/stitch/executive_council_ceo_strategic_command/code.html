@@ -1,0 +1,634 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EyeX Neural OS - CEO Office Command Suite</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary": "#660700",
+              "outline-variant": "#454556",
+              outline: "#8f8fa2",
+              surface: "#12131c",
+              "surface-tint": "#bec2ff",
+              "tertiary-fixed-dim": "#ffb4a6",
+              "inverse-primary": "#3a44ef",
+              secondary: "#bec2ff",
+              "primary-fixed": "#e0e0ff",
+              "primary-fixed-dim": "#bec2ff",
+              "surface-bright": "#383843",
+              tertiary: "#ffb4a6",
+              "on-tertiary-fixed": "#3f0300",
+              "on-primary-fixed": "#00016d",
+              "on-background": "#e3e1ef",
+              "secondary-container": "#393f8a",
+              "surface-container": "#1f1f28",
+              "tertiary-fixed": "#ffdad4",
+              "on-primary-fixed-variant": "#1820d9",
+              "inverse-on-surface": "#302f3a",
+              primary: "#bec2ff",
+              "on-tertiary-container": "#ffece9",
+              "on-primary": "#0003aa",
+              "primary-container": "#4b56fe",
+              "on-secondary": "#212772",
+              "surface-container-low": "#1b1b24",
+              "inverse-surface": "#e3e1ef",
+              "on-surface-variant": "#c6c5d9",
+              "on-surface": "#e3e1ef",
+              background: "#12131c",
+              "surface-container-lowest": "#0d0d16",
+              "surface-container-highest": "#34343e",
+              "on-secondary-fixed-variant": "#393f8a",
+              "on-secondary-fixed": "#080c5e",
+              "on-secondary-container": "#a9afff",
+              "surface-container-high": "#292933",
+              "on-error": "#690005",
+              "on-primary-container": "#f1efff",
+              "on-error-container": "#ffdad6",
+              error: "#ffb4ab",
+              "tertiary-container": "#c83923",
+              "secondary-fixed": "#e0e0ff",
+              "surface-variant": "#34343e",
+              "secondary-fixed-dim": "#bec2ff",
+              "on-tertiary-fixed-variant": "#900e00",
+              "error-container": "#93000a",
+              "surface-dim": "#12131c",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "grid-margin": "2rem",
+              "stack-md": "1rem",
+              "stack-sm": "0.5rem",
+              "stack-lg": "2rem",
+              "grid-gutter": "1.5rem",
+              "stack-xs": "0.25rem",
+            },
+            fontFamily: {
+              "body-sm": ["Geist"],
+              "display-lg": ["Geist"],
+              "data-mono": ["JetBrains Mono"],
+              "body-lg": ["Geist"],
+              "headline-md": ["Geist"],
+              "label-caps": ["JetBrains Mono"],
+              "headline-md-mobile": ["Geist"],
+            },
+            fontSize: {
+              "body-sm": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  fontWeight: "400",
+                },
+              ],
+              "display-lg": [
+                "64px",
+                {
+                  lineHeight: "72px",
+                  letterSpacing: "-0.04em",
+                  fontWeight: "700",
+                },
+              ],
+              "data-mono": [
+                "13px",
+                {
+                  lineHeight: "18px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "500",
+                },
+              ],
+              "body-lg": [
+                "16px",
+                {
+                  lineHeight: "24px",
+                  fontWeight: "400",
+                },
+              ],
+              "headline-md": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "label-caps": [
+                "11px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.1em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-md-mobile": [
+                "24px",
+                {
+                  lineHeight: "32px",
+                  fontWeight: "600",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom scrollbar for high-density look */
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #12131c;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #454556;
+        border-radius: 2px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #8f8fa2;
+      }
+
+      /* Glassmorphic Panel Utility */
+      .glass-panel {
+        background: rgba(31, 31, 40, 0.6); /* surface-container with opacity */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid #454556; /* outline-variant */
+      }
+
+      .glow-border:hover {
+        border-color: #bec2ff; /* primary */
+        box-shadow: 0 0 10px rgba(190, 194, 255, 0.1);
+        transition: all 0.2s ease-in-out;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-surface font-body-sm h-screen overflow-hidden flex selection:bg-primary-container selection:text-on-primary-container"
+  >
+    <!-- SideNavBar (Shared Component) -->
+    <nav
+      class="h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant bg-surface-container flex flex-col py-grid-margin z-50"
+    >
+      <!-- Header -->
+      <div class="px-4 mb-stack-lg">
+        <div class="flex items-center gap-3 mb-2">
+          <img
+            class="w-8 h-8 rounded-DEFAULT object-cover"
+            data-alt="A minimalist, futuristic geometric logo representing a neural network core, glowing subtly in tech cyan and deep indigo on a dark background."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfyNQy37z8eQ9ZRN1ZPmKvwKxg0oUezMwFCmUFbKVJTM3Sxw3D4qyMx6oAOQl8MUZTyeW5KRuqz-d4FEWPuUYnny_Xq_2jLswMPTY4r6GV5MRzHlwmxqQ8v1DzaYhRmeYDeuzCQWFoahS3hrrCnOevYjCb7ct2mV1tjcDsvNSpmJKeZJYkhP4nEpXLrgVuwWsUghdrazpidaeC7ApSaLsdYvQBoiRDp-Tz7JWIT64u3QuDmhnd1ezywU4SSRWLsd7lwP6TiNws0LI"
+          />
+          <span
+            class="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-tighter"
+            >EyeX Neural OS</span
+          >
+        </div>
+        <p class="font-data-mono text-data-mono text-on-surface-variant">v4.0 Neural Carbon</p>
+      </div>
+      <!-- Navigation Links -->
+      <div class="flex-1 px-2 space-y-1">
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >corporate_fare</span
+          >
+          <span class="font-label-caps text-label-caps">Organization</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >grid_view</span
+          >
+          <span class="font-label-caps text-label-caps">Workspace</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >target</span
+          >
+          <span class="font-label-caps text-label-caps">Mission Center</span>
+        </a>
+        <!-- ACTIVE TAB -->
+        <a
+          class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg border-l-4 border-primary scale-95 duration-100 ease-in-out"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >diversity_3</span
+          >
+          <span class="font-label-caps text-label-caps">Executive Council</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >smart_toy</span
+          >
+          <span class="font-label-caps text-label-caps">AI Agents</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >database</span
+          >
+          <span class="font-label-caps text-label-caps">Data Platform</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >verified_user</span
+          >
+          <span class="font-label-caps text-label-caps">Security Center</span>
+        </a>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container-high transition-all duration-150 rounded-lg"
+          href="#"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 0"
+            >settings</span
+          >
+          <span class="font-label-caps text-label-caps">Settings</span>
+        </a>
+      </div>
+      <!-- CTA -->
+      <div class="px-4 mt-auto">
+        <button
+          class="w-full bg-primary-container text-on-primary-container font-label-caps text-label-caps py-2 rounded-DEFAULT hover:bg-primary transition-colors flex justify-center items-center gap-2"
+        >
+          <span class="material-symbols-outlined">add</span>
+          New Mission
+        </button>
+      </div>
+    </nav>
+    <!-- Main Content Area -->
+    <main class="ml-64 flex-1 h-full flex flex-col relative">
+      <!-- TopNavBar (Shared Component) -->
+      <header
+        class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex justify-between items-center h-16 px-grid-margin"
+      >
+        <!-- Left Side: Brand/Nav -->
+        <div class="flex items-center gap-8">
+          <div class="font-headline-md text-headline-md font-black text-primary">EyeX OS</div>
+          <nav class="hidden md:flex gap-6">
+            <a
+              class="font-body-lg text-body-lg font-data-mono text-data-mono text-on-surface-variant hover:text-primary transition-opacity"
+              href="#"
+              >Dashboard</a
+            >
+            <a
+              class="font-body-lg text-body-lg font-data-mono text-data-mono text-on-surface-variant hover:text-primary transition-opacity"
+              href="#"
+              >Analytics</a
+            >
+            <a
+              class="font-body-lg text-body-lg font-data-mono text-data-mono text-on-surface-variant hover:text-primary transition-opacity"
+              href="#"
+              >Logs</a
+            >
+          </nav>
+        </div>
+        <!-- Right Side: Actions & Profile -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2 text-on-surface-variant">
+            <button class="p-2 hover:text-primary transition-colors">
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="p-2 hover:text-primary transition-colors">
+              <span class="material-symbols-outlined">terminal</span>
+            </button>
+            <button class="p-2 hover:text-primary transition-colors">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+          </div>
+          <div class="h-6 w-px bg-outline-variant mx-2"></div>
+          <button
+            class="font-label-caps text-label-caps px-4 py-1.5 border border-error text-error rounded-DEFAULT hover:bg-error-container hover:text-on-error-container transition-colors"
+          >
+            Emergency Stop
+          </button>
+          <button
+            class="font-label-caps text-label-caps px-4 py-1.5 bg-primary text-on-primary rounded-DEFAULT hover:bg-primary-fixed-dim transition-colors"
+          >
+            Deploy Agent
+          </button>
+          <img
+            class="w-8 h-8 rounded-full border border-outline-variant ml-2 object-cover"
+            data-alt="A professional headshot of an executive in a high-tech dark environment, illuminated by cyan and deep blue interface light, cyberpunk corporate aesthetic."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGBrpvodX072GvwGJnMGh4d0RnFkIvGAyZm9x9XWobcuISp7vhro2XlvvI51pLm1SCDIIqC2pjFH0ugvACDuaIzLHn3IB-phBtZMwTzSsLQP41XaRN-lu3_cU1XakyaPmzV7Z8nU_q99NZnACHBpoEsaRW5bOySmyHPJ7R6XAtTPdv6LJ50T3k_4kW2lMTgnRC6V7hK0oYT5eeHoJH1L0aJHwbKdUpFjes58ZWL4jjDRoPqEsU8t49-Bay-SHI8FE_6aptZAEVYt0"
+          />
+        </div>
+      </header>
+      <!-- Scrollable Canvas -->
+      <div class="flex-1 overflow-y-auto mt-16 pb-12 bg-background p-grid-margin">
+        <div class="max-w-7xl mx-auto space-y-grid-gutter">
+          <!-- Page Header -->
+          <div class="flex justify-between items-end mb-stack-lg">
+            <div>
+              <h1 class="font-display-lg text-display-lg text-on-surface mb-2">
+                CEO Command Suite
+              </h1>
+              <p class="font-body-lg text-body-lg text-on-surface-variant">
+                High-level strategic overview and critical decision queue.
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <span
+                class="px-2 py-1 bg-surface-container-high border border-outline-variant rounded-DEFAULT font-data-mono text-data-mono text-primary flex items-center gap-1"
+              >
+                <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                SYSTEM: NOMINAL
+              </span>
+            </div>
+          </div>
+          <!-- Bento Grid Layout -->
+          <div class="grid grid-cols-12 gap-grid-gutter">
+            <!-- 1. Strategic Horizon (Span 8) -->
+            <div
+              class="col-span-12 lg:col-span-8 glass-panel rounded-lg p-6 flex flex-col min-h-[400px] glow-border"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <h2
+                  class="font-headline-md text-headline-md text-on-surface flex items-center gap-2"
+                >
+                  <span class="material-symbols-outlined text-primary">ssid_chart</span>
+                  Strategic Horizon
+                </h2>
+                <button class="text-on-surface-variant hover:text-primary">
+                  <span class="material-symbols-outlined">more_horiz</span>
+                </button>
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mb-6">
+                Long-term goals and predictive market positioning.
+              </p>
+              <div
+                class="flex-1 relative border border-outline-variant rounded-DEFAULT overflow-hidden"
+              >
+                <!-- Simulated Chart Area -->
+                <div
+                  class="absolute inset-0 bg-surface-container-lowest"
+                  style="
+                    background-image: radial-gradient(#454556 1px, transparent 1px);
+                    background-size: 20px 20px;
+                    opacity: 0.3;
+                  "
+                ></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="font-data-mono text-data-mono text-outline"
+                    >[Data Visualization Component Rendering]</span
+                  >
+                </div>
+              </div>
+            </div>
+            <!-- 2. Global Sentiment & Impact (Span 4) -->
+            <div
+              class="col-span-12 lg:col-span-4 glass-panel rounded-lg p-6 flex flex-col glow-border"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <h2
+                  class="font-headline-md text-headline-md text-on-surface flex items-center gap-2"
+                >
+                  <span class="material-symbols-outlined text-tertiary">public</span>
+                  Global Sentiment
+                </h2>
+              </div>
+              <div class="space-y-4 mt-2">
+                <div>
+                  <div class="flex justify-between font-data-mono text-data-mono mb-1">
+                    <span class="text-on-surface-variant">Brand Health Index</span>
+                    <span class="text-primary">94.2%</span>
+                  </div>
+                  <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="h-full bg-primary w-[94%]"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between font-data-mono text-data-mono mb-1">
+                    <span class="text-on-surface-variant">Market Impact Score</span>
+                    <span class="text-secondary">88.7%</span>
+                  </div>
+                  <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="h-full bg-secondary w-[88%]"></div>
+                  </div>
+                </div>
+                <div class="pt-4 border-t border-outline-variant">
+                  <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">
+                    Recent Shifts
+                  </p>
+                  <div class="flex items-start gap-3 text-body-sm">
+                    <span class="material-symbols-outlined text-tertiary text-sm mt-0.5"
+                      >trending_up</span
+                    >
+                    <span class="text-on-surface"
+                      >Positive reception to Q3 autonomous agent rollout in APAC region.</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 3. Critical Decisions Queue (Span 6) -->
+            <div class="col-span-12 lg:col-span-6 glass-panel rounded-lg p-6 glow-border">
+              <h2
+                class="font-headline-md text-headline-md text-on-surface mb-4 flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-error">priority_high</span>
+                Critical Decisions Queue
+              </h2>
+              <div class="space-y-3">
+                <!-- Decision Item 1 -->
+                <div
+                  class="p-4 bg-surface-container-low border border-outline-variant rounded-DEFAULT hover:border-primary transition-colors cursor-pointer group"
+                >
+                  <div class="flex justify-between items-start mb-2">
+                    <span
+                      class="font-label-caps text-label-caps text-error bg-error-container text-on-error-container px-2 py-0.5 rounded-sm"
+                      >URGENT</span
+                    >
+                    <span class="font-data-mono text-data-mono text-on-surface-variant text-[10px]"
+                      >T-MINUS 2H</span
+                    >
+                  </div>
+                  <h3
+                    class="font-body-lg text-body-lg text-on-surface mb-1 group-hover:text-primary transition-colors"
+                  >
+                    Resource Allocation: Project Titan
+                  </h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+                    AI recommends shifting 15% compute power from legacy systems to support Project
+                    Titan deployment phase.
+                  </p>
+                  <div class="flex gap-2">
+                    <button
+                      class="font-label-caps text-label-caps px-3 py-1 bg-surface-bright text-on-surface hover:bg-primary-container hover:text-on-primary-container transition-colors rounded-sm border border-outline-variant"
+                    >
+                      APPROVE
+                    </button>
+                    <button
+                      class="font-label-caps text-label-caps px-3 py-1 bg-transparent text-on-surface-variant hover:text-on-surface transition-colors rounded-sm border border-outline-variant"
+                    >
+                      DEFER
+                    </button>
+                  </div>
+                </div>
+                <!-- Decision Item 2 -->
+                <div
+                  class="p-4 bg-surface-container-low border border-outline-variant rounded-DEFAULT hover:border-primary transition-colors cursor-pointer group"
+                >
+                  <div class="flex justify-between items-start mb-2">
+                    <span
+                      class="font-label-caps text-label-caps text-secondary bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-sm"
+                      >STRATEGIC</span
+                    >
+                    <span class="font-data-mono text-data-mono text-on-surface-variant text-[10px]"
+                      >T-MINUS 24H</span
+                    >
+                  </div>
+                  <h3
+                    class="font-body-lg text-body-lg text-on-surface mb-1 group-hover:text-primary transition-colors"
+                  >
+                    Acquisition Target Alpha
+                  </h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+                    Valuation metrics updated. Synergy potential increased by 4.2% based on new
+                    market data.
+                  </p>
+                  <div class="flex gap-2">
+                    <button
+                      class="font-label-caps text-label-caps px-3 py-1 bg-surface-bright text-on-surface hover:bg-primary-container hover:text-on-primary-container transition-colors rounded-sm border border-outline-variant"
+                    >
+                      REVIEW BRIEF
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 4. Executive Briefing (Span 6) -->
+            <div
+              class="col-span-12 lg:col-span-6 glass-panel rounded-lg p-6 glow-border flex flex-col"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <h2
+                  class="font-headline-md text-headline-md text-on-surface flex items-center gap-2"
+                >
+                  <span class="material-symbols-outlined text-primary">auto_awesome</span>
+                  Executive Briefing
+                </h2>
+                <span class="font-data-mono text-data-mono text-on-surface-variant text-[10px]"
+                  >Generated by CEO-Agent Alpha</span
+                >
+              </div>
+              <div
+                class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-4 overflow-y-auto max-h-[300px]"
+              >
+                <div class="prose prose-invert prose-sm font-body-sm text-on-surface-variant">
+                  <p class="mb-2">
+                    <strong class="text-on-surface">Swarm Status:</strong> All core agent swarms
+                    operating within optimal parameters. Infrastructure utilization at 78%.
+                  </p>
+                  <p class="mb-2">
+                    <strong class="text-on-surface">Key Priority - Security:</strong> Threat
+                    detection nodes intercepted a coordinated scanning attempt targeting Sector 4
+                    data lakes. Automated countermeasures successfully deflected the probe with zero
+                    data exfiltration.
+                  </p>
+                  <p class="mb-2">
+                    <strong class="text-on-surface">Market Opportunity:</strong> Predictive models
+                    indicate a minor disruption in the European supply chain network within 72
+                    hours. Recommended action: Pre-emptively adjust routing protocols for logistics
+                    division to capitalize on competitor delays.
+                  </p>
+                  <p>
+                    <strong class="text-on-surface">Internal Dynamics:</strong> Cross-functional
+                    collaboration index between Engineering and Product Strategy teams has increased
+                    following the implementation of the new AI-mediated communication protocols.
+                  </p>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-end">
+                <button
+                  class="font-label-caps text-label-caps text-primary hover:text-primary-fixed flex items-center gap-1 transition-colors"
+                >
+                  FULL REPORT <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Footer (Shared Component) -->
+      <footer
+        class="fixed bottom-0 right-0 w-[calc(100%-16rem)] border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center px-grid-margin py-2 text-[10px] z-40"
+      >
+        <span class="font-data-mono text-data-mono text-outline"
+          >© 2024 EyeX Neural Systems. Status: OPTIMAL</span
+        >
+        <div class="flex gap-4">
+          <a
+            class="font-data-mono text-data-mono text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >Documentation</a
+          >
+          <a
+            class="font-data-mono text-data-mono text-outline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >Support</a
+          >
+          <a
+            class="font-data-mono text-data-mono text-tertiary underline hover:text-tertiary-fixed-dim transition-colors duration-200"
+            href="#"
+            >System Health</a
+          >
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>
