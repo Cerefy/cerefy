@@ -12,11 +12,28 @@ function requireGitHubToken(): string {
   return token;
 }
 
+function assertValidRepository(repository: string): void {
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository)) {
+    throw new Error('Invalid GitHub repository format. Expected owner/repo.');
+  }
+}
+
+function assertValidRef(ref: string): void {
+  if (!/^[A-Za-z0-9._/-]+$/.test(ref) || ref.includes('..') || ref.startsWith('/') || ref.endsWith('/')) {
+    throw new Error('Invalid GitHub ref format.');
+  }
+}
+
 function encodeGitHubPath(filePath: string): string {
-  return filePath.split('/').map((part) => encodeURIComponent(part)).join('/');
+  const parts = filePath.split('/').filter(Boolean);
+  if (parts.length === 0) {
+    throw new Error('GitHub file path is required');
+  }
+  return parts.map((part) => encodeURIComponent(part)).join('/');
 }
 
 function encodeGitHubRef(ref: string): string {
+  assertValidRef(ref);
   return encodeURIComponent(ref);
 }
 
@@ -53,10 +70,13 @@ async function githubRequest<T>(path: string, init: RequestInit = {}): Promise<T
 }
 
 export async function getGitHubRepository(repository: string) {
+  assertValidRepository(repository);
   return githubRequest<Record<string, unknown>>(`/repos/${repository}`);
 }
 
 export async function createGitHubBranch(repository: string, branch: string, baseBranch = 'main') {
+  assertValidRepository(repository);
+  assertValidRef(branch);
   const ref = await githubRequest<{ object: { sha: string } }>(`/repos/${repository}/git/ref/heads/${encodeGitHubRef(baseBranch)}`);
   return githubRequest<Record<string, unknown>>(`/repos/${repository}/git/refs`, {
     method: 'POST',
@@ -68,6 +88,9 @@ export async function createGitHubBranch(repository: string, branch: string, bas
 }
 
 export async function createGitHubPullRequest(repository: string, title: string, head: string, base: string, body?: string, draft = true) {
+  assertValidRepository(repository);
+  assertValidRef(head);
+  assertValidRef(base);
   return githubRequest<Record<string, unknown>>(`/repos/${repository}/pulls`, {
     method: 'POST',
     body: JSON.stringify({
@@ -88,13 +111,15 @@ export async function updateGitHubFile(params: {
   branch?: string;
   sha?: string;
 }) {
+  assertValidRepository(params.repository);
+  const encodedPath = encodeGitHubPath(params.filePath);
   const existing = params.sha
     ? { sha: params.sha }
-    : await githubRequest<{ sha: string }>(`/repos/${params.repository}/contents/${encodeGitHubPath(params.filePath)}`, {
+    : await githubRequest<{ sha: string }>(`/repos/${params.repository}/contents/${encodedPath}`, {
         method: 'GET',
       }).catch(() => null);
 
-  return githubRequest<Record<string, unknown>>(`/repos/${params.repository}/contents/${encodeGitHubPath(params.filePath)}`, {
+  return githubRequest<Record<string, unknown>>(`/repos/${params.repository}/contents/${encodedPath}`, {
     method: 'PUT',
     body: JSON.stringify({
       message: params.commitMessage,
