@@ -19,6 +19,25 @@ import { corsMiddleware, securityHeaders, requestId, requestSizeLimiter } from '
 import { apiRateLimiter, authRateLimiter, aiRateLimiter } from './src/lib/rateLimiter';
 import { livenessCheck, readinessCheck, simpleHealthCheck } from './src/lib/healthCheck';
 
+// ─── Initialize Firebase Admin ───────────────────────────────────────────────
+let firebaseApp: admin.app.App | null = null;
+
+function getFirebaseAdmin(): admin.app.App {
+  if (!firebaseApp) {
+    try {
+      // Check if already initialized
+      firebaseApp = admin.app();
+    } catch {
+      // Initialize with Application Default Credentials or explicit config
+      firebaseApp = admin.initializeApp({
+        credential: admin.credential.applicationDefault(),
+        projectId: process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT,
+      });
+    }
+  }
+  return firebaseApp;
+}
+
 dotenv.config();
 
 const app = express();
