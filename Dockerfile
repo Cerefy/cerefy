@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 COPY package*.json ./
-RUN npm ci --ignore-scripts
+RUN npm ci --ignore-scripts --audit=false
 
 # ─── Stage 2: Frontend Build (Vite) ─────────────────────────────────────
 FROM node:22-alpine AS frontend-builder
@@ -52,7 +52,7 @@ ENV PORT=3000
 
 # Install only production dependencies
 COPY package*.json ./
-RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
+RUN npm ci --omit=dev --ignore-scripts --audit=false && npm cache clean --force
 
 # Copy built artifacts
 COPY --from=backend-builder /app/dist ./dist
