@@ -141,7 +141,7 @@ export function EnterpriseDemoPage() {
               </span>
             </div>
             <h1 className="text-2xl font-display text-white mb-2">
-              See EyeX analyze a real company in real time
+              See Cerefy analyze a real company in real time
             </h1>
             <p className="text-sm text-muted-foreground max-w-2xl">
               Watch our multi-agent system ingest NovaPay’s business data, detect risks, run a
@@ -430,7 +430,9 @@ function renderStepCard(step: (typeof DEMO_STEPS)[number], data: DemoStepResult 
                 label="Impact Score"
               />
             </div>
-            {"message" in data && data.message && <div className="text-xs text-muted-foreground">{data.message}</div>}
+            {"message" in data && data.message && (
+              <div className="text-xs text-muted-foreground">{data.message}</div>
+            )}
           </div>
         )}
       </div>

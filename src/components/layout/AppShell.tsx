@@ -112,11 +112,18 @@ export function AppShell({
       >
         <div className="px-6 mb-8 mt-2 flex items-center gap-3">
           <div className="w-8 h-8 bg-[#38BDF8] rounded-sm flex items-center justify-center">
-            <span className="material-symbols-outlined text-[#003549] text-xl font-bold" style={{fontVariationSettings: "'FILL' 1"}}>terminal</span>
+            <span
+              className="material-symbols-outlined text-[#003549] text-xl font-bold"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
+              terminal
+            </span>
           </div>
           <div className="flex flex-col">
             <h1 className="text-[18px] font-bold tracking-tight text-white leading-none">QORX</h1>
-            <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] leading-none mt-1">Analytic Core</p>
+            <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] leading-none mt-1">
+              Analytic Core
+            </p>
           </div>
         </div>
 
@@ -141,7 +148,10 @@ export function AppShell({
                           : "text-muted-foreground hover:text-white hover:bg-white/[0.03] border-transparent"
                       }`}
                     >
-                      <Icon size={18} className={active ? "text-primary" : "text-muted-foreground"} />
+                      <Icon
+                        size={18}
+                        className={active ? "text-primary" : "text-muted-foreground"}
+                      />
                       <span>{item.label}</span>
                     </Link>
                   );

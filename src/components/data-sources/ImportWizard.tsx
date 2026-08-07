@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Upload, FileText, CheckCircle, AlertCircle, RefreshCw, X, ChevronRight } from "lucide-react";
+import {
+  Upload,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  RefreshCw,
+  X,
+  ChevronRight,
+} from "lucide-react";
 import { toast } from "sonner";
 import { UploadService } from "@/services/upload.service";
 import { useQueryClient } from "@tanstack/react-query";
@@ -11,7 +19,12 @@ interface ImportWizardProps {
   initialProcessingResult: any;
 }
 
-export function ImportWizard({ onClose, file, datasetId, initialProcessingResult }: ImportWizardProps) {
+export function ImportWizard({
+  onClose,
+  file,
+  datasetId,
+  initialProcessingResult,
+}: ImportWizardProps) {
   const [step, setStep] = useState<"mapping" | "importing" | "report">("mapping");
   const [mappings, setMappings] = useState<Record<string, string>>({});
   const [importing, setImporting] = useState(false);
@@ -31,7 +44,7 @@ export function ImportWizard({ onClose, file, datasetId, initialProcessingResult
   const handleConfirmMapping = async () => {
     setStep("importing");
     setImporting(true);
-    
+
     try {
       const report = await UploadService.importData(datasetId, file, mappings);
       setImportReport(report);
@@ -66,24 +79,36 @@ export function ImportWizard({ onClose, file, datasetId, initialProcessingResult
             <CheckCircle className="h-8 w-8 text-green-500" />
             <div>
               <h2 className="text-xl font-display text-white">Import Complete</h2>
-              <p className="text-sm text-muted-foreground">Processed in {importReport.processing_time_ms}ms</p>
+              <p className="text-sm text-muted-foreground">
+                Processed in {importReport.processing_time_ms}ms
+              </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-white"><X className="h-5 w-5"/></button>
+          <button onClick={onClose} className="text-muted-foreground hover:text-white">
+            <X className="h-5 w-5" />
+          </button>
         </div>
-        
+
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="p-4 bg-eye-bg border border-eye-border rounded-lg">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest font-mono mb-1">Total Rows</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest font-mono mb-1">
+              Total Rows
+            </p>
             <p className="text-2xl font-bold text-white">{importReport.total_rows}</p>
           </div>
           <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-            <p className="text-xs text-green-400 uppercase tracking-widest font-mono mb-1">Imported</p>
+            <p className="text-xs text-green-400 uppercase tracking-widest font-mono mb-1">
+              Imported
+            </p>
             <p className="text-2xl font-bold text-green-400">{importReport.imported_rows}</p>
           </div>
           <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-            <p className="text-xs text-red-400 uppercase tracking-widest font-mono mb-1">Failed/Skipped</p>
-            <p className="text-2xl font-bold text-red-400">{importReport.failed_rows + importReport.skipped_rows}</p>
+            <p className="text-xs text-red-400 uppercase tracking-widest font-mono mb-1">
+              Failed/Skipped
+            </p>
+            <p className="text-2xl font-bold text-red-400">
+              {importReport.failed_rows + importReport.skipped_rows}
+            </p>
           </div>
         </div>
 
@@ -92,7 +117,10 @@ export function ImportWizard({ onClose, file, datasetId, initialProcessingResult
             <h3 className="text-sm font-medium text-white mb-3">Validation Issues</h3>
             <ul className="space-y-2">
               {Object.entries(importReport.error_summary).map(([errorType, count]) => (
-                <li key={errorType} className="flex items-center justify-between text-sm p-2 bg-red-500/5 border border-red-500/10 rounded">
+                <li
+                  key={errorType}
+                  className="flex items-center justify-between text-sm p-2 bg-red-500/5 border border-red-500/10 rounded"
+                >
                   <span className="text-red-400 flex items-center gap-2">
                     <AlertCircle className="h-4 w-4" />
                     {errorType.replace("_", " ").toUpperCase()}
@@ -105,7 +133,10 @@ export function ImportWizard({ onClose, file, datasetId, initialProcessingResult
         )}
 
         <div className="flex justify-end">
-          <button onClick={onClose} className="luminous-btn-primary px-6 py-2 text-[10px] font-bold uppercase tracking-widest">
+          <button
+            onClick={onClose}
+            className="luminous-btn-primary px-6 py-2 text-[10px] font-bold uppercase tracking-widest"
+          >
             Close Wizard
           </button>
         </div>
@@ -119,14 +150,18 @@ export function ImportWizard({ onClose, file, datasetId, initialProcessingResult
     <div className="p-6 bg-eye-surface border border-eye-border rounded-xl">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-display text-white">Schema Discovery & Mapping</h2>
-        <button onClick={onClose} className="text-muted-foreground hover:text-white"><X className="h-4 w-4"/></button>
+        <button onClick={onClose} className="text-muted-foreground hover:text-white">
+          <X className="h-4 w-4" />
+        </button>
       </div>
-      
+
       <div className="mb-4 p-3 bg-secondary/20 rounded flex items-center gap-3 border border-secondary/50">
         <FileText className="h-5 w-5 text-primary-brand" />
         <div>
           <p className="text-sm text-white font-medium">AI Schema Detection Complete</p>
-          <p className="text-xs text-muted-foreground">Review the detected columns and override mappings if necessary before importing.</p>
+          <p className="text-xs text-muted-foreground">
+            Review the detected columns and override mappings if necessary before importing.
+          </p>
         </div>
       </div>
 
@@ -150,8 +185,8 @@ export function ImportWizard({ onClose, file, datasetId, initialProcessingResult
                 <td className="p-3">
                   <div className="flex items-center gap-2">
                     <div className="w-16 h-1.5 bg-eye-bg rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${col.confidence > 0.8 ? 'bg-green-500' : col.confidence > 0.5 ? 'bg-yellow-500' : 'bg-red-500'}`} 
+                      <div
+                        className={`h-full ${col.confidence > 0.8 ? "bg-green-500" : col.confidence > 0.5 ? "bg-yellow-500" : "bg-red-500"}`}
                         style={{ width: `${(col.confidence || 0) * 100}%` }}
                       />
                     </div>
@@ -161,7 +196,7 @@ export function ImportWizard({ onClose, file, datasetId, initialProcessingResult
                   </div>
                 </td>
                 <td className="p-3">
-                  <select 
+                  <select
                     className="bg-eye-bg border border-eye-border rounded px-3 py-1.5 text-white text-xs outline-none focus:border-primary-brand w-full"
                     value={mappings[col.name] || ""}
                     onChange={(e) => setMappings({ ...mappings, [col.name]: e.target.value })}
@@ -187,11 +222,14 @@ export function ImportWizard({ onClose, file, datasetId, initialProcessingResult
       </div>
 
       <div className="flex justify-end gap-3">
-        <button onClick={onClose} className="px-6 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-white transition">
+        <button
+          onClick={onClose}
+          className="px-6 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-white transition"
+        >
           Cancel
         </button>
-        <button 
-          className="luminous-btn-primary px-6 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2" 
+        <button
+          className="luminous-btn-primary px-6 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2"
           onClick={handleConfirmMapping}
         >
           Confirm & Import Data <ChevronRight className="h-4 w-4" />

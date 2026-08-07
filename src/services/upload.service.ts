@@ -14,9 +14,9 @@ interface ProcessingOptions {
 
 export const UploadService = {
   async processUpload(
-    file: File, 
+    file: File,
     datasetName: string,
-    options: ProcessingOptions = {}
+    options: ProcessingOptions = {},
   ): Promise<UploadResult> {
     try {
       // Validate file
@@ -79,9 +79,9 @@ export const UploadService = {
         } catch (processingError) {
           console.error("Processing error:", processingError);
           // Don't fail the entire upload if processing fails
-          return { 
-            dataset, 
-            error: `File uploaded but processing failed: ${processingError instanceof Error ? processingError.message : 'Unknown error'}` 
+          return {
+            dataset,
+            error: `File uploaded but processing failed: ${processingError instanceof Error ? processingError.message : "Unknown error"}`,
           };
         }
       }
@@ -89,8 +89,8 @@ export const UploadService = {
       return { dataset };
     } catch (error) {
       console.error("Upload service error:", error);
-      return { 
-        error: error instanceof Error ? error.message : "Failed to process upload" 
+      return {
+        error: error instanceof Error ? error.message : "Failed to process upload",
       };
     }
   },
@@ -104,16 +104,16 @@ export const UploadService = {
 
     // Check file type
     const allowedTypes = [
-      'text/csv',
-      'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'application/json',
-      'text/plain',
+      "text/csv",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/json",
+      "text/plain",
     ];
-    
-    const allowedExtensions = ['.csv', '.xlsx', '.xls', '.json', '.txt'];
-    const fileExt = file.name.split('.').pop()?.toLowerCase();
-    
+
+    const allowedExtensions = [".csv", ".xlsx", ".xls", ".json", ".txt"];
+    const fileExt = file.name.split(".").pop()?.toLowerCase();
+
     if (!allowedExtensions.includes(`.${fileExt}`)) {
       return { valid: false, error: "Invalid file type. Allowed: CSV, Excel, JSON, TXT" };
     }
@@ -121,26 +121,23 @@ export const UploadService = {
     return { valid: true };
   },
 
-  async processWithCognitivePipeline(
-    file: File, 
-    options: ProcessingOptions
-  ): Promise<any> {
+  async processWithCognitivePipeline(file: File, options: ProcessingOptions): Promise<any> {
     const backendUrl = import.meta.env.VITE_PYTHON_BACKEND_URL || "/api/v1";
-    
+
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     if (options.company_id) {
-      formData.append('company_id', options.company_id);
+      formData.append("company_id", options.company_id);
     }
 
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    
+
     const response = await fetch(`${backendUrl}/cognitive-data/process`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${session?.access_token}`,
+        Authorization: `Bearer ${session?.access_token}`,
       },
       body: formData,
     });
@@ -153,29 +150,28 @@ export const UploadService = {
     return response.json();
   },
 
-  async importData(
-    datasetId: string,
-    file: File,
-    mappings: Record<string, string>,
-  ): Promise<any> {
+  async importData(datasetId: string, file: File, mappings: Record<string, string>): Promise<any> {
     const backendUrl = import.meta.env.VITE_PYTHON_BACKEND_URL || "/api/v1";
-    
+
     const formData = new FormData();
-    formData.append('file', file);
-    
+    formData.append("file", file);
+
     // Convert datasetId to uuid format? Assuming it's already a string UUID.
-    
+
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    
-    const response = await fetch(`${backendUrl}/cognitive-data/import?dataset_id=${datasetId}&mappings=${encodeURIComponent(JSON.stringify(mappings))}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${session?.access_token}`,
+
+    const response = await fetch(
+      `${backendUrl}/cognitive-data/import?dataset_id=${datasetId}&mappings=${encodeURIComponent(JSON.stringify(mappings))}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: formData,
       },
-      body: formData,
-    });
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -194,7 +190,7 @@ export const UploadService = {
       .single();
 
     if (error) throw error;
-    
+
     return {
       status: (data as any).status,
       progress: (data as any).processing_progress || 0,
@@ -217,7 +213,7 @@ export const UploadService = {
       const { error: storageError } = await supabase.storage
         .from("files")
         .remove([(dataset as any).storage_path]);
-      
+
       if (storageError) console.error("Storage deletion error:", storageError);
     }
 

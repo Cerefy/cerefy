@@ -4,8 +4,8 @@ import SignupPage from "@/pages/Signup";
 export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
-      { title: "Sign Up — EyeX Technologies" },
-      { name: "description", content: "Create your EyeX Technologies account." },
+      { title: "Sign Up — Cerefy" },
+      { name: "description", content: "Create your Cerefy account." },
     ],
   }),
   component: SignupPage,

@@ -5,7 +5,7 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 export const Route = createFileRoute("/tasks")({
   head: () => ({
     meta: [
-      { title: "Task History | EyeX Technologies" },
+      { title: "Task History | Cerefy" },
       { name: "description", content: "Browse past agent task executions" },
     ],
   }),

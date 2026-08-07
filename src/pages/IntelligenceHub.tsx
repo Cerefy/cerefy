@@ -39,7 +39,7 @@ export function IntelligenceHubPage() {
       formData.append("query", data.query);
       if (data.context) formData.append("context", data.context);
       formData.append("session_id", data.session_id);
-      const resp = await fetch("http://eyex-api:8000/api/v1/intelligence/analyze", {
+      const resp = await fetch("http://Cerefy-api:8000/api/v1/intelligence/analyze", {
         method: "POST",
         body: formData,
       });
@@ -61,7 +61,7 @@ export function IntelligenceHubPage() {
       formData.append("key", data.key);
       formData.append("value", data.value);
       formData.append("session_id", sessionId);
-      return fetch("http://eyex-api:8000/api/v1/intelligence/knowledge", {
+      return fetch("http://Cerefy-api:8000/api/v1/intelligence/knowledge", {
         method: "POST",
         body: formData,
       });
@@ -76,13 +76,15 @@ export function IntelligenceHubPage() {
 
   const { data: knowledge } = useQuery<{ records?: KnowledgeRecord[] }>({
     queryKey: ["knowledge", sessionId],
-    queryFn: () => BackendApi.getKnowledgeData(sessionId) as Promise<{ records?: KnowledgeRecord[] }>,
+    queryFn: () =>
+      BackendApi.getKnowledgeData(sessionId) as Promise<{ records?: KnowledgeRecord[] }>,
     enabled: activeTab === "knowledge",
   });
 
   const { data: documents } = useQuery<{ documents?: IntelligenceDocument[] }>({
     queryKey: ["documents", sessionId],
-    queryFn: () => BackendApi.listDocuments(sessionId) as Promise<{ documents?: IntelligenceDocument[] }>,
+    queryFn: () =>
+      BackendApi.listDocuments(sessionId) as Promise<{ documents?: IntelligenceDocument[] }>,
     enabled: activeTab === "documents",
   });
 
@@ -98,7 +100,7 @@ export function IntelligenceHubPage() {
     formData.append("file", file);
     formData.append("session_id", sessionId);
     try {
-      const resp = await fetch("http://eyex-api:8000/api/v1/intelligence/documents/upload", {
+      const resp = await fetch("http://Cerefy-api:8000/api/v1/intelligence/documents/upload", {
         method: "POST",
         body: formData,
       });
@@ -300,7 +302,9 @@ export function IntelligenceHubPage() {
                   <div key={i} className="px-5 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <FileText size={14} className="text-muted-foreground" />
-                      <span className="text-xs text-white">{d.filename ?? d.name ?? "Document"}</span>
+                      <span className="text-xs text-white">
+                        {d.filename ?? d.name ?? "Document"}
+                      </span>
                     </div>
                     <Badge tone="neutral">{d.chunks ?? 0} chunks</Badge>
                   </div>

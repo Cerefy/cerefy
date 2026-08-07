@@ -229,7 +229,7 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
       const errorData = await response.json();
       errorMessage = errorData.detail || errorData.message || JSON.stringify(errorData);
     } catch {
-      errorMessage = await response.text() || errorMessage;
+      errorMessage = (await response.text()) || errorMessage;
     }
     throw new Error(errorMessage);
   }
@@ -251,7 +251,7 @@ export const BackendApi = {
     }
 
     const enhancedMessage = ragContext ? `${body.message}${ragContext}` : body.message;
-    
+
     return apiFetch("/chat", {
       method: "POST",
       body: JSON.stringify({ ...body, message: enhancedMessage }),

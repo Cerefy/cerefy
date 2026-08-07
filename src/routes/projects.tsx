@@ -5,12 +5,12 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 export const Route = createFileRoute("/projects")({
   head: () => ({
     meta: [
-      { title: "Projects | EyeX Technologies" },
+      { title: "Projects | Cerefy" },
       {
         name: "description",
         content: "Project and task management with intelligent scheduling and resource allocation.",
       },
-      { property: "og:title", content: "Projects | EyeX Technologies" },
+      { property: "og:title", content: "Projects | Cerefy" },
       {
         property: "og:description",
         content: "Project and task management with intelligent scheduling and resource allocation.",

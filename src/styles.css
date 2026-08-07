@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* EyeX brand palette */
+  /* Cerefy brand palette */
   --color-eye-bg: #050505;
   --color-eye-surface: #0a0a0c;
   --color-eye-border: #1a1a1c;
@@ -38,7 +38,7 @@
   --spacing-margin-desktop: 64px;
   --spacing-gutter: 24px;
   --spacing-unit: 4px;
-  
+
   --color-secondary-fixed-dim: #00dbe9;
   --color-on-secondary-fixed: #002022;
   --color-tertiary-fixed-dim: #c6c6c7;
@@ -103,7 +103,7 @@
   --color-ring-offset-background: var(--background);
 }
 
-/* Force dark aesthetic globally: EyeX site is dark-only. */
+/* Force dark aesthetic globally: Cerefy site is dark-only. */
 :root {
   --background: #050505;
   --foreground: #fafafa;
@@ -313,6 +313,13 @@ html[data-js-ready] [data-fade-up].visible {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.3; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.1); }
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }

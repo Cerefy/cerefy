@@ -12,7 +12,7 @@ const root = document.getElementById("root")!;
 createRoot(root).render(
   <QueryClientProvider client={queryClient}>
     <RouterProvider router={router} />
-  </QueryClientProvider>
+  </QueryClientProvider>,
 );
 
 document.documentElement.setAttribute("data-js-ready", "");

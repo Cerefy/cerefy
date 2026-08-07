@@ -13,10 +13,7 @@ async function isPythonBackendAvailable(): Promise<boolean> {
     const timeout = setTimeout(() => controller.abort(), 3000);
     const backendUrl = import.meta.env.VITE_PYTHON_BACKEND_URL || "/api/v1";
     const baseUrl = backendUrl.endsWith("/api/v1") ? backendUrl.slice(0, -7) : backendUrl;
-    const resp = await fetch(
-      `${baseUrl}/api/v1/health`,
-      { signal: controller.signal },
-    );
+    const resp = await fetch(`${baseUrl}/api/v1/health`, { signal: controller.signal });
     clearTimeout(timeout);
     return resp.ok;
   } catch {
