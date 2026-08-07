@@ -93,6 +93,7 @@ const WorkspaceLayout = () => {
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
+  // Show loading spinner while checking auth
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#08080a] flex items-center justify-center">
@@ -104,6 +105,7 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
+  // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }

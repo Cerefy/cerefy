@@ -39,7 +39,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       try {
+        // Add timeout to prevent long waiting on slow backend
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
         const profile = await authApi.me();
+        clearTimeout(timeoutId);
         setUser(profile);
         socketService.connect();
         setCurrentUser(profile);
