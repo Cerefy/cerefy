@@ -13,7 +13,21 @@ logs/
 .env
 .env.local
 .env.production
+.env.*.local
 !.env.example
+
+# Secrets and credentials
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+secrets/
+credentials/
+*secret*
+*credential*
+service-account*.json
+*-credentials.json
 
 # OS files
 .DS_Store

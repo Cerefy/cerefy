@@ -1,0 +1,434 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>About | EyeX Technologies</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Geist+Mono:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/gh/vercel/geist-font@main/packages/next/dist/fonts/geist-sans/Geist-Regular.woff2') format('woff2');
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/gh/vercel/geist-font@main/packages/next/dist/fonts/geist-sans/Geist-Medium.woff2') format('woff2');
+            font-weight: 500;
+        }
+        @font-face {
+            font-family: 'Geist Mono';
+            src: url('https://cdn.jsdelivr.net/gh/vercel/geist-font@main/packages/next/dist/fonts/geist-mono/GeistMono-Medium.woff2') format('woff2');
+            font-weight: 500;
+        }
+        
+        body {
+            background-color: #050505;
+            color: #dee3e8;
+            font-family: 'Geist', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .cinematic-mask {
+            mask-image: linear-gradient(to right, black 70%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
+        }
+
+        .premium-border {
+            border: 0.5px solid #1A1A1C;
+        }
+
+        .timeline-line {
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, #1A1A1C, #3abff8, #1A1A1C, transparent);
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#f89f36",
+                      "on-surface-variant": "#bdc8d0",
+                      "secondary-fixed-dim": "#c6c6c7",
+                      "eye-border": "#1A1A1C",
+                      "surface-dim": "#0f1417",
+                      "surface-container": "#1b2024",
+                      "on-secondary-fixed-variant": "#454747",
+                      "on-error-container": "#ffdad6",
+                      "eye-surface": "#0A0A0C",
+                      "ambient-glow": "rgba(56, 189, 248, 0.15)",
+                      "surface-container-lowest": "#0a0f12",
+                      "on-primary-fixed-variant": "#004c68",
+                      "secondary-fixed": "#e2e2e2",
+                      "inverse-on-surface": "#2c3135",
+                      "on-tertiary-fixed-variant": "#693c00",
+                      "error-container": "#93000a",
+                      "eye-bg": "#050505",
+                      "secondary": "#c6c6c7",
+                      "eye-text": "#A1A1AA",
+                      "on-background": "#dee3e8",
+                      "on-secondary": "#2f3131",
+                      "primary-container": "#3abff8",
+                      "tertiary": "#ffc387",
+                      "tertiary-fixed-dim": "#ffb86e",
+                      "outline": "#87929a",
+                      "primary-fixed": "#c3e8ff",
+                      "on-secondary-fixed": "#1a1c1c",
+                      "on-error": "#690005",
+                      "primary": "#90d7ff",
+                      "tertiary-fixed": "#ffdcbd",
+                      "surface-container-low": "#171c20",
+                      "outline-variant": "#3e484f",
+                      "surface-container-high": "#252b2e",
+                      "on-primary-fixed": "#001e2c",
+                      "inverse-surface": "#dee3e8",
+                      "surface": "#0f1417",
+                      "surface-variant": "#303539",
+                      "on-surface": "#dee3e8",
+                      "on-primary": "#003549",
+                      "eye-border-hover": "#27272A",
+                      "inverse-primary": "#006689",
+                      "background": "#0f1417",
+                      "on-tertiary-container": "#673b00",
+                      "secondary-container": "#454747",
+                      "surface-tint": "#78d1ff",
+                      "primary-fixed-dim": "#78d1ff",
+                      "surface-bright": "#343a3e",
+                      "surface-container-highest": "#303539",
+                      "on-primary-container": "#004b66",
+                      "on-tertiary": "#492900",
+                      "error": "#ffb4ab",
+                      "on-tertiary-fixed": "#2c1600",
+                      "on-secondary-container": "#b4b5b5"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-sm": "0.5rem",
+                      "section-padding": "6rem",
+                      "container-max": "1200px",
+                      "gutter": "1.5rem",
+                      "stack-md": "1.5rem",
+                      "stack-lg": "2.5rem"
+              },
+              "fontFamily": {
+                      "display-lg-mobile": ["Geist"],
+                      "display-lg": ["Geist"],
+                      "headline-md": ["Geist"],
+                      "label-mono": ["Geist Mono"],
+                      "body-lg": ["Geist"],
+                      "body-sm": ["Geist"]
+              },
+              "fontSize": {
+                      "display-lg-mobile": ["48px", {"lineHeight": "1.1", "fontWeight": "500"}],
+                      "display-lg": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                      "headline-md": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                      "label-mono": ["12px", {"letterSpacing": "0.15em", "fontWeight": "500"}],
+                      "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-eye-bg selection:bg-primary/30">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full h-16 glass-nav bg-[#050505]/60 border-b border-eye-border z-50 transition-all duration-300">
+<div class="flex justify-between items-center px-gutter max-w-container-max mx-auto h-full">
+<div class="flex items-center gap-2 cursor-pointer group">
+<img alt="EyeX Logo" class="w-8 h-8 opacity-90 group-hover:opacity-100 transition-opacity" src="https://lh3.googleusercontent.com/aida/AP1WRLs3QIR8bz_KeO6mBtkKGaJ0z1O7nOO4knQsxU4j_m0kEq0rJeN0jL3P30sKhRnkTRHsos4yyjXi4oXThdw7EyPRe5_I_MvI48WlQ_vnr_LVkOosOcI_CzAOSau72FYBsR3SyHVn8eGNxxuOrh18T_txLPsUfDShYcX67Qtd5DdXEXrjzz3CUfxqvb0734jgWeCuWvgujX5Imsyn3oRHJsCr7ywDyrbErLXgpAtQ_q41KRQ2FXCvfTH9VA">
+<span class="font-display-lg text-display-lg-mobile tracking-tighter text-on-surface leading-none pt-1">EyeX</span>
+</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="font-body-sm text-body-sm text-eye-text hover:text-on-surface transition-colors duration-300" href="#">Network</a>
+<a class="font-body-sm text-body-sm text-eye-text hover:text-on-surface transition-colors duration-300" href="#">Infrastructure</a>
+<a class="font-body-sm text-body-sm text-eye-text hover:text-on-surface transition-colors duration-300" href="#">Security</a>
+<a class="font-body-sm text-body-sm text-eye-text hover:text-on-surface transition-colors duration-300" href="#">Intelligence</a>
+<a class="font-body-sm text-body-sm text-eye-text hover:text-on-surface transition-colors duration-300" href="#">Enterprise</a>
+</div>
+<button class="bg-[#FAFAFA] text-[#050505] px-6 py-2 rounded-full font-body-sm text-body-sm font-medium hover:shadow-[0_0_20px_rgba(56,189,248,0.3)] transition-all active:scale-95">
+                Deploy Now
+            </button>
+</div>
+</nav>
+<main class="relative">
+<!-- Hero Section -->
+<section class="min-h-screen flex items-center pt-16 relative overflow-hidden">
+<div class="absolute inset-0 z-0 opacity-40">
+<div class="absolute inset-0 bg-gradient-to-r from-eye-bg via-eye-bg/80 to-transparent z-10"></div>
+<img alt="Advanced Data Infrastructure" class="w-full h-full object-cover grayscale brightness-50" src="https://lh3.googleusercontent.com/aida/AP1WRLsSTRRmt8dgkBXiQ8QcWAV7bkDw7M6WK_9umpgJmvWbQlEvt0UyK4A5qVECyuOotq8NXDuPWp6VDlDb4nB43Dmq8i8E7AXLo3siCWNtjGIUsKMON9YUR6OX8J6C4rFBeUtchjZwRRGgDLaMWatem8M0S4Ciy5uSEOKYR6borx6LwCNyrnzWjgm68qhrRrcagfFhP0YfkldiHjH5w40K6b14qdK_ebhW944tHMbwANBcSw7anYvmqb3FB0Y">
+</div>
+<div class="relative z-20 max-w-container-max mx-auto px-gutter w-full">
+<div class="max-w-3xl space-y-stack-lg">
+<span class="font-label-mono text-label-mono text-primary-container tracking-widest uppercase">Company Manifesto</span>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface">
+                        Building the intelligence layer for the world's most ambitious companies.
+                    </h1>
+<p class="font-body-lg text-body-lg text-eye-text max-w-xl">
+                        EyeX builds advanced AI systems that connect human expertise with machine intelligence, creating a formidable advantage for modern enterprises.
+                    </p>
+</div>
+</div>
+</section>
+<!-- Mission Section -->
+<section class="py-section-padding bg-eye-bg relative overflow-hidden">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-lg items-center">
+<div class="space-y-stack-md">
+<h2 class="font-headline-md text-headline-md text-on-surface">Our Mission</h2>
+<p class="font-body-lg text-body-lg text-eye-text leading-relaxed">
+                            AI should not be limited to a few companies. EyeX is building the infrastructure that allows every ambitious organization to use intelligence as a competitive advantage. We believe in high-precision engineering and absolute security.
+                        </p>
+</div>
+<div class="relative aspect-video rounded-xl overflow-hidden premium-border">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent"></div>
+<!-- Micro-interaction overlay -->
+<div class="absolute bottom-8 left-8 flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-mono text-label-mono text-primary opacity-80 uppercase">System Status: Active</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Cinematic Timeline -->
+<section class="py-section-padding border-t border-eye-border bg-[#070708]">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="text-center mb-24">
+<h2 class="font-headline-md text-headline-md text-on-surface">How EyeX Began</h2>
+<p class="font-body-sm text-body-sm text-eye-text mt-4">The evolution of computational dominance</p>
+</div>
+<div class="relative max-w-4xl mx-auto">
+<!-- Vertical Line -->
+<div class="absolute left-1/2 top-0 bottom-0 timeline-line -translate-x-1/2"></div>
+<!-- Timeline Item 1 -->
+<div class="relative grid grid-cols-1 md:grid-cols-2 gap-12 mb-32 group">
+<div class="md:text-right">
+<span class="font-display-lg text-display-lg-mobile text-primary/20 group-hover:text-primary transition-colors duration-500">2018</span>
+<h3 class="font-headline-md text-[24px] text-on-surface mt-2">Cairo</h3>
+</div>
+<div class="space-y-4">
+<p class="font-label-mono text-label-mono text-primary tracking-[0.2em]">THE FIRST QUESTION</p>
+<p class="font-body-sm text-body-sm text-eye-text">Engineering studies in Cairo focused on pattern recognition. We asked why data was plentiful but intelligence was scarce.</p>
+</div>
+<div class="absolute left-1/2 top-10 -translate-x-1/2 w-3 h-3 rounded-full bg-eye-bg border-2 border-primary z-10"></div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative grid grid-cols-1 md:grid-cols-2 gap-12 mb-32 group">
+<div class="order-1 md:order-2">
+<span class="font-display-lg text-display-lg-mobile text-primary/20 group-hover:text-primary transition-colors duration-500">2021</span>
+<h3 class="font-headline-md text-[24px] text-on-surface mt-2">Milan</h3>
+</div>
+<div class="md:text-right space-y-4 order-2 md:order-1">
+<p class="font-label-mono text-label-mono text-primary tracking-[0.2em]">THE PATTERN BECAME CLEAR</p>
+<p class="font-body-sm text-body-sm text-eye-text">Refining neural architectures in Italy. The gap between information storage and intelligence processing became our obsession.</p>
+</div>
+<div class="absolute left-1/2 top-10 -translate-x-1/2 w-3 h-3 rounded-full bg-eye-bg border-2 border-primary z-10"></div>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative grid grid-cols-1 md:grid-cols-2 gap-12 mb-32 group">
+<div class="md:text-right">
+<span class="font-display-lg text-display-lg-mobile text-primary/20 group-hover:text-primary transition-colors duration-500">2023</span>
+<h3 class="font-headline-md text-[24px] text-on-surface mt-2">Oviedo</h3>
+</div>
+<div class="space-y-4">
+<p class="font-label-mono text-label-mono text-primary tracking-[0.2em]">THE AI OPPORTUNITY</p>
+<p class="font-body-sm text-body-sm text-eye-text">Fragmented technology vs. a unified global challenge. We realized the world needed a singular, formidable AI backbone.</p>
+</div>
+<div class="absolute left-1/2 top-10 -translate-x-1/2 w-3 h-3 rounded-full bg-eye-bg border-2 border-primary z-10"></div>
+</div>
+<!-- Timeline Item 4 -->
+<div class="relative grid grid-cols-1 md:grid-cols-2 gap-12 group">
+<div class="order-1 md:order-2">
+<span class="font-display-lg text-display-lg-mobile text-primary/20 group-hover:text-primary transition-colors duration-500">2024</span>
+<h3 class="font-headline-md text-[24px] text-on-surface mt-2">Milan</h3>
+</div>
+<div class="md:text-right space-y-4 order-2 md:order-1">
+<p class="font-label-mono text-label-mono text-primary tracking-[0.2em]">EYEX IS BORN</p>
+<p class="font-body-sm text-body-sm text-eye-text">Official launch. Deploying QORX as the flagship platform for those who refuse to compromise on power.</p>
+</div>
+<div class="absolute left-1/2 top-10 -translate-x-1/2 w-3 h-3 rounded-full bg-eye-bg border-2 border-primary z-10 glow-hover transition-all"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Values Section -->
+<section class="py-section-padding bg-eye-bg">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Value Card 1 -->
+<div class="p-8 bg-eye-surface premium-border rounded-xl group hover:border-eye-border-hover transition-all duration-300">
+<span class="material-symbols-outlined text-primary mb-6 text-3xl">psychology</span>
+<h4 class="font-headline-md text-[20px] text-on-surface mb-4">Intelligence</h4>
+<p class="font-body-sm text-body-sm text-eye-text leading-relaxed">Pushing the boundaries of what machine reasoning can achieve in real-time environments.</p>
+</div>
+<!-- Value Card 2 -->
+<div class="p-8 bg-eye-surface premium-border rounded-xl group hover:border-eye-border-hover transition-all duration-300">
+<span class="material-symbols-outlined text-primary mb-6 text-3xl">verified_user</span>
+<h4 class="font-headline-md text-[20px] text-on-surface mb-4">Trust</h4>
+<p class="font-body-sm text-body-sm text-eye-text leading-relaxed">Built with an intelligence-first security posture. Your sovereignty is our architecture.</p>
+</div>
+<!-- Value Card 3 -->
+<div class="p-8 bg-eye-surface premium-border rounded-xl group hover:border-eye-border-hover transition-all duration-300">
+<span class="material-symbols-outlined text-primary mb-6 text-3xl">architecture</span>
+<h4 class="font-headline-md text-[20px] text-on-surface mb-4">Simplicity</h4>
+<p class="font-body-sm text-body-sm text-eye-text leading-relaxed">Hiding the complexity. Precise interfaces that allow you to command vast compute effortlessly.</p>
+</div>
+<!-- Value Card 4 -->
+<div class="p-8 bg-eye-surface premium-border rounded-xl group hover:border-eye-border-hover transition-all duration-300">
+<span class="material-symbols-outlined text-primary mb-6 text-3xl">groups</span>
+<h4 class="font-headline-md text-[20px] text-on-surface mb-4">Human Impact</h4>
+<p class="font-body-sm text-body-sm text-eye-text leading-relaxed">Technology is a tool for human brilliance. We build to amplify, not replace, our users.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Team Section -->
+<section class="py-section-padding border-t border-eye-border">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="flex flex-col md:flex-row gap-stack-lg items-end justify-between mb-16">
+<div class="max-w-2xl">
+<span class="font-label-mono text-label-mono text-primary mb-4 block">OUR ARCHITECTS</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Built by people who believe intelligence should be accessible.</h2>
+</div>
+<div class="pb-2">
+<a class="font-body-sm text-body-sm text-eye-text hover:text-primary transition-colors flex items-center gap-2 group" href="#">
+                            Join the team <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="relative overflow-hidden rounded-2xl aspect-[21/9] premium-border mb-12">
+<img alt="The EyeX Engineering Team collaborating" class="w-full h-full object-cover filter contrast-125 brightness-75" src="https://lh3.googleusercontent.com/aida/AP1WRLtmzOCIAmT4jt6t5CA5jV9y-CTYrRmT3I0SnK_QfieSSTjnkx4bscbJngEzp5BCD1DFoLpCx6MB09u2lgOrQbOWJJjCXuwTsbS7KYolS0VQn-89ObjFkLxwDoBbxtx3ti9tk_KYGU0t8LkZUMDnAwzlNHvibl7BEdzYZQMz_XuluzxipgJEV5ALtHB-E1N3NhJ8I1sjDoEvi3ygNIK4oJ6wnkVA0D3lcN3D9MKe8ZLO9HEGgBOAZSsHVko">
+<div class="absolute inset-0 bg-gradient-to-t from-eye-bg/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-12 left-12">
+<div class="flex gap-12">
+<div>
+<p class="font-display-lg text-[40px] text-on-surface">120+</p>
+<p class="font-label-mono text-label-mono text-primary opacity-60">PHD RESEARCHERS</p>
+</div>
+<div>
+<p class="font-display-lg text-[40px] text-on-surface">4</p>
+<p class="font-label-mono text-label-mono text-primary opacity-60">GLOBAL HUBS</p>
+</div>
+<div>
+<p class="font-display-lg text-[40px] text-on-surface">∞</p>
+<p class="font-label-mono text-label-mono text-primary opacity-60">COMMITMENT</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-section-padding bg-[#0A0A0C] border-t border-eye-border relative overflow-hidden">
+<!-- Subtle ambient glow -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="max-w-container-max mx-auto px-gutter text-center relative z-10">
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-stack-lg">
+                    Building the future of intelligent systems.
+                </h2>
+<div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+<button class="bg-[#FAFAFA] text-[#050505] px-10 py-4 rounded-full font-body-lg text-body-lg font-medium hover:shadow-[0_0_30px_rgba(56,189,248,0.4)] transition-all active:scale-95 w-full md:w-auto">
+                        Explore QORX
+                    </button>
+<button class="bg-transparent text-on-surface border border-eye-border hover:border-primary px-10 py-4 rounded-full font-body-lg text-body-lg font-medium transition-all active:scale-95 w-full md:w-auto">
+                        Partner with EyeX
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-padding bg-eye-bg border-t border-eye-border">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-stack-lg max-w-container-max mx-auto px-gutter">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-2 mb-6">
+<img alt="EyeX Logo" class="w-6 h-6 opacity-80" src="https://lh3.googleusercontent.com/aida/AP1WRLs3QIR8bz_KeO6mBtkKGaJ0z1O7nOO4knQsxU4j_m0kEq0rJeN0jL3P30sKhRnkTRHsos4yyjXi4oXThdw7EyPRe5_I_MvI48WlQ_vnr_LVkOosOcI_CzAOSau72FYBsR3SyHVn8eGNxxuOrh18T_txLPsUfDShYcX67Qtd5DdXEXrjzz3CUfxqvb0734jgWeCuWvgujX5Imsyn3oRHJsCr7ywDyrbErLXgpAtQ_q41KRQ2FXCvfTH9VA">
+<span class="font-display-lg text-display-lg-mobile text-on-surface leading-none pt-1">EyeX</span>
+</div>
+<p class="font-body-sm text-body-sm text-eye-text mb-8">Precise. Powerful. Formidable. The intelligence layer for enterprise infrastructure.</p>
+<p class="font-body-sm text-body-sm text-eye-text opacity-50">© 2024 EyeX Technologies. All rights reserved.</p>
+</div>
+<div class="space-y-4">
+<h5 class="font-label-mono text-label-mono text-on-surface uppercase tracking-widest">Platform</h5>
+<nav class="flex flex-col gap-3">
+<a class="font-body-sm text-body-sm text-eye-text hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="font-body-sm text-body-sm text-eye-text hover:text-primary transition-colors" href="#">Changelog</a>
+<a class="font-body-sm text-body-sm text-eye-text hover:text-primary transition-colors" href="#">Infrastructure</a>
+</nav>
+</div>
+<div class="space-y-4">
+<h5 class="font-label-mono text-label-mono text-on-surface uppercase tracking-widest">Company</h5>
+<nav class="flex flex-col gap-3">
+<a class="font-body-sm text-body-sm text-on-surface" href="#">About Us</a>
+<a class="font-body-sm text-body-sm text-eye-text hover:text-primary transition-colors" href="#">Contact Support</a>
+<a class="font-body-sm text-body-sm text-eye-text hover:text-primary transition-colors" href="#">Privacy Policy</a>
+</nav>
+</div>
+<div class="space-y-4">
+<h5 class="font-label-mono text-label-mono text-on-surface uppercase tracking-widest">Connect</h5>
+<nav class="flex flex-col gap-3">
+<a class="font-body-sm text-body-sm text-eye-text hover:text-primary transition-colors" href="#">LinkedIn</a>
+<a class="font-body-sm text-body-sm text-eye-text hover:text-primary transition-colors" href="#">X (Twitter)</a>
+<a class="font-body-sm text-body-sm text-eye-text hover:text-primary transition-colors" href="#">System Status</a>
+</nav>
+</div>
+</div>
+</footer>
+<script>
+        // Interactive Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('py-2');
+                nav.classList.remove('h-16');
+                nav.classList.add('h-14');
+            } else {
+                nav.classList.remove('py-2');
+                nav.classList.add('h-16');
+                nav.classList.remove('h-14');
+            }
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100');
+                    entry.target.classList.remove('translate-y-10');
+                    entry.target.classList.remove('opacity-0');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-10');
+            observer.observe(section);
+        });
+    </script>
+</body></html>

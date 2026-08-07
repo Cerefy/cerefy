@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EyeX Pro | Enterprise BI Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/geist-mono.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/geist-sans.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#90d7ff",
+                    "on-tertiary-fixed-variant": "#693c00",
+                    "eye-text": "#A1A1AA",
+                    "background": "#0f1417",
+                    "primary-container": "#3abff8",
+                    "error-container": "#93000a",
+                    "tertiary": "#ffc387",
+                    "surface-variant": "#303539",
+                    "on-error": "#690005",
+                    "on-tertiary-container": "#673b00",
+                    "on-tertiary": "#492900",
+                    "tertiary-fixed-dim": "#ffb86e",
+                    "surface-tint": "#78d1ff",
+                    "eye-border-hover": "#27272A",
+                    "surface-container-highest": "#303539",
+                    "on-surface-variant": "#bdc8d0",
+                    "on-error-container": "#ffdad6",
+                    "on-background": "#dee3e8",
+                    "primary-fixed-dim": "#78d1ff",
+                    "on-tertiary-fixed": "#2c1600",
+                    "eye-border": "#1A1A1C",
+                    "secondary": "#c6c6c7",
+                    "on-primary": "#003549",
+                    "outline-variant": "#3e484f",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "on-secondary-fixed-variant": "#454747",
+                    "primary-fixed": "#c3e8ff",
+                    "on-surface": "#dee3e8",
+                    "eye-bg": "#050505",
+                    "surface-bright": "#343a3e",
+                    "surface": "#0f1417",
+                    "surface-container-low": "#171c20",
+                    "inverse-on-surface": "#2c3135",
+                    "on-primary-container": "#004b66",
+                    "tertiary-container": "#f89f36",
+                    "on-secondary-container": "#b4b5b5",
+                    "inverse-surface": "#dee3e8",
+                    "surface-container": "#1b2024",
+                    "surface-container-lowest": "#0a0f12",
+                    "outline": "#87929a",
+                    "surface-container-high": "#252b2e",
+                    "secondary-container": "#454747",
+                    "on-primary-fixed": "#001e2c",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "secondary-fixed": "#e2e2e2",
+                    "surface-dim": "#0f1417",
+                    "on-secondary": "#2f3131",
+                    "tertiary-fixed": "#ffdcbd",
+                    "eye-surface": "#0A0A0C",
+                    "error": "#ffb4ab",
+                    "inverse-primary": "#006689",
+                    "on-primary-fixed-variant": "#004c68",
+                    "ambient-glow": "rgba(56, 189, 248, 0.15)"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "2.5rem",
+                    "section-padding": "6rem",
+                    "stack-md": "1.5rem",
+                    "stack-sm": "0.5rem",
+                    "container-max": "1200px",
+                    "gutter": "1.5rem"
+            },
+            "fontFamily": {
+                    "display-lg": ["Geist", "sans-serif"],
+                    "headline-md": ["Geist", "sans-serif"],
+                    "body-sm": ["Geist", "sans-serif"],
+                    "label-mono": ["Geist Mono", "monospace"],
+                    "display-lg-mobile": ["Geist", "sans-serif"],
+                    "body-lg": ["Geist", "sans-serif"]
+            },
+            "fontSize": {
+                    "display-lg": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                    "headline-md": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "body-sm": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-mono": ["12px", {"letterSpacing": "0.15em", "fontWeight": "500"}],
+                    "display-lg-mobile": ["48px", {"lineHeight": "1.1", "fontWeight": "500"}],
+                    "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #050505;
+            color: #dee3e8;
+            font-family: 'Geist', sans-serif;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #0A0A0C;
+            border: 1px solid #1A1A1C;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: #27272A;
+            background: linear-gradient(135deg, #0A0A0C 0%, #111113 100%);
+        }
+        .sparkline {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: dash 2s ease-in-out forwards;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #1A1A1C; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-eye-bg">
+<!-- SIDE NAVIGATION -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r border-eye-border bg-eye-bg flex flex-col py-6 z-[60]">
+<div class="px-6 mb-10">
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tighter leading-none" style="font-size: 24px;">EyeX Pro</h1>
+<p class="font-label-mono text-label-mono text-eye-text mt-1">Enterprise BI</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-6 py-3 text-primary font-bold border-r-2 border-primary bg-primary/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="font-label-mono text-label-mono">Dashboard</span>
+</a>
+<a class="flex items-center px-6 py-3 text-eye-text hover:text-on-surface hover:bg-eye-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">monitoring</span>
+<span class="font-label-mono text-label-mono">Analytics</span>
+</a>
+<a class="flex items-center px-6 py-3 text-eye-text hover:text-on-surface hover:bg-eye-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">forum</span>
+<span class="font-label-mono text-label-mono">AI Chat</span>
+</a>
+<a class="flex items-center px-6 py-3 text-eye-text hover:text-on-surface hover:bg-eye-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">description</span>
+<span class="font-label-mono text-label-mono">Documents</span>
+</a>
+<a class="flex items-center px-6 py-3 text-eye-text hover:text-on-surface hover:bg-eye-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="font-label-mono text-label-mono">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full bg-[#FAFAFA] text-[#050505] py-3 rounded font-label-mono text-label-mono hover:shadow-[0_0_20px_rgba(56,189,248,0.3)] transition-all">
+                Upgrade Power
+            </button>
+</div>
+</aside>
+<!-- TOP NAVIGATION -->
+<header class="fixed top-0 right-0 h-16 border-b border-eye-border backdrop-blur-md flex justify-between items-center px-gutter w-[calc(100%-16rem)] ml-64 z-50 bg-eye-bg/60">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md text-on-surface" style="font-size: 18px;">EyeX Analytics</span>
+<div class="h-4 w-[1px] bg-eye-border mx-2"></div>
+<div class="flex items-center bg-eye-surface border border-eye-border rounded px-3 py-1.5 focus-within:ring-1 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-eye-text text-sm mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm text-on-surface w-48 placeholder:text-eye-text font-body-sm" placeholder="Search Systems" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-eye-text hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-eye-text hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-fixed-dim overflow-hidden border border-eye-border">
+<img class="w-full h-full object-cover" data-alt="Professional studio portrait of a corporate administrator in a high-tech office environment. The subject is wearing a dark, minimal turtleneck, looking directly into the camera with a confident expression. The lighting is cold, with subtle blue rim light reflecting off polished glass surfaces in the background, matching the EyeX tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDitNiwCP6Zy0ae-XXZ6CuzvnT7TjqAJ_cfSsKnanxxWVIY9EMNRx0b4NgMTeeeDH_VKoRUZmzmii38J8Wnz20qxbxagVFYiysMnM0flG9tscqVd1vYMAJPDAlKyGKkV3iYiV_hlECExrC0Im0rAxOfzfMUFyoAT9ezZQ92s81pii4Q_S2r_zYY-icRub07TQQ9N6uGKZW-2GgryBJoqI_qdwOzhWo2bcSJ1f3o0ym67l7DnuPB7eGfAXQSv3a_QdIKHYNTPkbje1E"/>
+</div>
+</div>
+</header>
+<!-- MAIN CONTENT -->
+<main class="ml-64 pt-16 min-h-screen">
+<!-- FILTER BAR -->
+<div class="sticky top-16 z-40 px-gutter py-4 border-b border-eye-border bg-eye-bg/80 backdrop-blur-md flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-2 glass-card rounded cursor-pointer">
+<span class="material-symbols-outlined text-sm text-primary">calendar_today</span>
+<span class="font-label-mono text-label-mono">Last 30 Days</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-2 glass-card rounded cursor-pointer">
+<span class="material-symbols-outlined text-sm text-primary">analytics</span>
+<span class="font-label-mono text-label-mono">All Metrics</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 border border-[#27272A] rounded font-label-mono text-label-mono hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm">download</span>
+                Export Report
+            </button>
+</div>
+<div class="p-gutter space-y-6 max-w-[1400px] mx-auto">
+<!-- AMBIENT GLOWS -->
+<div class="fixed top-1/4 right-0 w-[400px] h-[400px] bg-primary/10 blur-[120px] pointer-events-none -z-10"></div>
+<div class="fixed bottom-1/4 left-64 w-[300px] h-[300px] bg-primary/5 blur-[100px] pointer-events-none -z-10"></div>
+<!-- KPI SECTION -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Sessions -->
+<div class="glass-card p-6 rounded-lg relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-mono text-label-mono text-eye-text uppercase">Sessions</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1">1.2M</h3>
+</div>
+<span class="text-[#38BDF8] font-label-mono text-[10px] flex items-center bg-[#38BDF8]/10 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-xs mr-1">trending_up</span>
+                            +12.4%
+                        </span>
+</div>
+<div class="w-full h-12 mt-2">
+<svg class="w-full h-full" viewbox="0 0 200 40">
+<path class="sparkline" d="M0,35 Q20,32 40,30 T80,15 T120,25 T160,10 T200,5" fill="none" stroke="#38BDF8" stroke-width="2"></path>
+<path d="M0,35 Q20,32 40,30 T80,15 T120,25 T160,10 T200,5 L200,40 L0,40 Z" fill="url(#grad-blue)" opacity="0.1"></path>
+<defs>
+<lineargradient id="grad-blue" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#38BDF8;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#38BDF8;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+</div>
+<!-- Bounce Rate -->
+<div class="glass-card p-6 rounded-lg relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-mono text-label-mono text-eye-text uppercase">Bounce Rate</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1">42.8%</h3>
+</div>
+<span class="text-[#4ade80] font-label-mono text-[10px] flex items-center bg-[#4ade80]/10 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-xs mr-1">trending_down</span>
+                            -2.1%
+                        </span>
+</div>
+<div class="w-full h-12 mt-2">
+<svg class="w-full h-full" viewbox="0 0 200 40">
+<path class="sparkline" d="M0,10 Q30,15 60,8 T100,20 T140,12 T180,25 T200,30" fill="none" stroke="#4ade80" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Avg Duration -->
+<div class="glass-card p-6 rounded-lg relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-mono text-label-mono text-eye-text uppercase">Avg Duration</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1">4m 12s</h3>
+</div>
+<span class="text-[#38BDF8] font-label-mono text-[10px] flex items-center bg-[#38BDF8]/10 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-xs mr-1">trending_up</span>
+                            +8%
+                        </span>
+</div>
+<div class="w-full h-12 mt-2">
+<svg class="w-full h-full" viewbox="0 0 200 40">
+<path class="sparkline" d="M0,30 Q40,25 80,28 T120,15 T160,18 T200,10" fill="none" stroke="#38BDF8" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- MAIN CHART -->
+<div class="glass-card p-8 rounded-lg">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h2 class="font-headline-md text-[24px] text-on-surface">Traffic Over Time</h2>
+<p class="font-body-sm text-eye-text">System-wide node interactions across active clusters.</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 font-label-mono text-[10px] rounded border border-eye-border bg-eye-surface text-primary">Nodes</button>
+<button class="px-3 py-1 font-label-mono text-[10px] rounded border border-eye-border text-eye-text hover:text-white">Clusters</button>
+</div>
+</div>
+<div class="h-[400px] w-full relative">
+<!-- Custom SVG Chart Visualization -->
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 1000 400">
+<defs>
+<lineargradient id="chartFill" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#38BDF8" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#38BDF8" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid Lines -->
+<g class="stroke-eye-border/30" stroke-dasharray="4 4" stroke-width="1">
+<line x1="0" x2="1000" y1="100" y2="100"></line>
+<line x1="0" x2="1000" y1="200" y2="200"></line>
+<line x1="0" x2="1000" y1="300" y2="300"></line>
+</g>
+<!-- Chart Path -->
+<path class="sparkline" d="M0,350 C100,320 150,380 250,250 C350,120 450,220 550,150 C650,80 750,120 850,50 C950,-20 1000,50 1000,50" fill="none" stroke="#38BDF8" stroke-width="3"></path>
+<path d="M0,350 C100,320 150,380 250,250 C350,120 450,220 550,150 C650,80 750,120 850,50 C950,-20 1000,50 1000,50 L1000,400 L0,400 Z" fill="url(#chartFill)"></path>
+<!-- Nodes -->
+<circle class="pulse-dot" cx="250" cy="250" fill="#38BDF8" r="4"></circle>
+<circle class="pulse-dot" cx="550" cy="150" fill="#38BDF8" r="4"></circle>
+<circle class="pulse-dot" cx="850" cy="50" fill="#38BDF8" r="4"></circle>
+</svg>
+</div>
+<div class="flex justify-between mt-6 px-2">
+<span class="font-label-mono text-[10px] text-eye-text">01 OCT</span>
+<span class="font-label-mono text-[10px] text-eye-text">08 OCT</span>
+<span class="font-label-mono text-[10px] text-eye-text">15 OCT</span>
+<span class="font-label-mono text-[10px] text-eye-text">22 OCT</span>
+<span class="font-label-mono text-[10px] text-eye-text">30 OCT</span>
+</div>
+</div>
+<!-- LOWER GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- PIE CHART: Traffic Sources -->
+<div class="lg:col-span-4 glass-card p-6 rounded-lg flex flex-col">
+<h2 class="font-headline-md text-[20px] text-on-surface mb-6">Traffic Sources</h2>
+<div class="flex-1 flex items-center justify-center relative">
+<div class="w-48 h-48 rounded-full border-[12px] border-eye-surface relative">
+<!-- Visual Ring Segments simulated by SVG -->
+<svg class="w-full h-full -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="40" stroke="#38BDF8" stroke-dasharray="251.2" stroke-dashoffset="150" stroke-width="12"></circle>
+<circle cx="50" cy="50" fill="none" opacity="0.6" r="40" stroke="#22d3ee" stroke-dasharray="251.2" stroke-dashoffset="200" stroke-width="12"></circle>
+<circle cx="50" cy="50" fill="none" opacity="0.4" r="40" stroke="#67e8f9" stroke-dasharray="251.2" stroke-dashoffset="230" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-md text-on-surface">100%</span>
+<span class="font-label-mono text-[10px] text-eye-text">Captured</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-8">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-[#38BDF8]"></div>
+<span class="font-label-mono text-[11px] text-on-surface">Direct (40%)</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-[#22d3ee] opacity-60"></div>
+<span class="font-label-mono text-[11px] text-on-surface">Organic (35%)</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-[#67e8f9] opacity-40"></div>
+<span class="font-label-mono text-[11px] text-on-surface">Referral (15%)</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-eye-border"></div>
+<span class="font-label-mono text-[11px] text-on-surface">Social (10%)</span>
+</div>
+</div>
+</div>
+<!-- DATA TABLE: Top Pages -->
+<div class="lg:col-span-8 glass-card p-6 rounded-lg">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-[20px] text-on-surface">Top Pages</h2>
+<span class="font-label-mono text-[10px] text-primary cursor-pointer hover:underline">View All Pages</span>
+</div>
+<table class="w-full">
+<thead>
+<tr class="text-left border-b border-eye-border">
+<th class="pb-4 font-label-mono text-eye-text text-[11px] uppercase tracking-wider">Page URL</th>
+<th class="pb-4 font-label-mono text-eye-text text-[11px] uppercase tracking-wider text-right">Views</th>
+<th class="pb-4 font-label-mono text-eye-text text-[11px] uppercase tracking-wider text-right">Bounce Rate</th>
+<th class="pb-4 font-label-mono text-eye-text text-[11px] uppercase tracking-wider text-right">Trend</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-eye-border/50">
+<tr class="group hover:bg-eye-surface/50 transition-colors">
+<td class="py-4 font-label-mono text-[13px] text-on-surface">/dashboard/v2</td>
+<td class="py-4 text-right font-label-mono text-on-surface">428,192</td>
+<td class="py-4 text-right font-label-mono text-on-surface">12.4%</td>
+<td class="py-4 text-right">
+<span class="text-[#38BDF8] material-symbols-outlined text-sm">trending_up</span>
+</td>
+</tr>
+<tr class="group hover:bg-eye-surface/50 transition-colors">
+<td class="py-4 font-label-mono text-[13px] text-on-surface">/systems/core</td>
+<td class="py-4 text-right font-label-mono text-on-surface">312,044</td>
+<td class="py-4 text-right font-label-mono text-on-surface">24.8%</td>
+<td class="py-4 text-right">
+<span class="text-[#38BDF8] material-symbols-outlined text-sm">trending_up</span>
+</td>
+</tr>
+<tr class="group hover:bg-eye-surface/50 transition-colors">
+<td class="py-4 font-label-mono text-[13px] text-on-surface">/analytics/realtime</td>
+<td class="py-4 text-right font-label-mono text-on-surface">184,291</td>
+<td class="py-4 text-right font-label-mono text-on-surface">8.1%</td>
+<td class="py-4 text-right">
+<span class="text-[#4ade80] material-symbols-outlined text-sm">trending_flat</span>
+</td>
+</tr>
+<tr class="group hover:bg-eye-surface/50 transition-colors">
+<td class="py-4 font-label-mono text-[13px] text-on-surface">/docs/api-v4</td>
+<td class="py-4 text-right font-label-mono text-on-surface">144,910</td>
+<td class="py-4 text-right font-label-mono text-on-surface">54.2%</td>
+<td class="py-4 text-right">
+<span class="text-error material-symbols-outlined text-sm">trending_down</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- FOOTER -->
+<footer class="w-full border-t border-eye-border mt-12 py-6 px-gutter flex justify-between items-center bg-eye-bg">
+<span class="font-label-mono text-label-mono text-eye-text">© 2024 EyeX Technologies. All rights reserved.</span>
+<div class="flex gap-6">
+<a class="font-label-mono text-label-mono text-eye-text hover:text-on-surface hover:underline transition-all" href="#">System Status</a>
+<a class="font-label-mono text-label-mono text-eye-text hover:text-on-surface hover:underline transition-all" href="#">Privacy Policy</a>
+<a class="font-label-mono text-label-mono text-eye-text hover:text-on-surface hover:underline transition-all" href="#">Legal</a>
+<a class="font-label-mono text-label-mono text-eye-text hover:text-on-surface hover:underline transition-all" href="#">Terms of Service</a>
+</div>
+</footer>
+</main>
+<!-- REAL-TIME TELEMETRY FLOATER -->
+<div class="fixed bottom-8 right-8 z-[100]">
+<div class="glass-card px-4 py-3 rounded-full flex items-center shadow-2xl backdrop-blur-xl border-primary/30">
+<div class="w-2 h-2 rounded-full bg-primary pulse-dot mr-3"></div>
+<span class="font-label-mono text-[12px] text-on-surface">843 Live Visitors</span>
+<div class="h-4 w-[1px] bg-eye-border mx-3"></div>
+<span class="font-label-mono text-[10px] text-eye-text uppercase">Real-Time Sync</span>
+</div>
+</div>
+<script>
+        // Micro-interaction for hover states
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,133 @@
+Metadata-Version: 2.4
+Name: eyex-backend
+Version: 0.1.0
+Summary: EyeX Technologies — AI Backend Platform
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: uvicorn[standard]>=0.32.0
+Requires-Dist: langgraph>=0.3.0
+Requires-Dist: langchain>=0.3.0
+Requires-Dist: langchain-community>=0.3.0
+Requires-Dist: langchain-openai>=0.3.0
+Requires-Dist: openai>=1.55.0
+Requires-Dist: sqlalchemy[asyncio]>=2.0.36
+Requires-Dist: asyncpg>=0.30.0
+Requires-Dist: redis[hiredis]>=5.2.0
+Requires-Dist: alembic>=1.14.0
+Requires-Dist: pydantic>=2.10.0
+Requires-Dist: pydantic-settings>=2.7.0
+Requires-Dist: python-jose[cryptography]>=3.3.0
+Requires-Dist: passlib[bcrypt]>=1.7.4
+Requires-Dist: httpx>=0.28.0
+Requires-Dist: python-multipart>=0.0.12
+Requires-Dist: greenlet>=3.1.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: openpyxl>=3.1.0
+Requires-Dist: python-docx>=1.1.0
+Requires-Dist: pdfplumber>=0.10.0
+Requires-Dist: charset-normalizer>=3.3.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.3.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.24.0; extra == "dev"
+Requires-Dist: pytest-cov>=6.0.0; extra == "dev"
+Requires-Dist: httpx>=0.28.0; extra == "dev"
+Requires-Dist: ruff>=0.8.0; extra == "dev"
+Requires-Dist: mypy>=1.14.0; extra == "dev"
+
+# EyeX Technologies — AI Backend
+
+# Python project scaffold for multi-agent LangGraph workflows.
+
+## Tech Stack
+
+- **Python 3.12**
+- **FastAPI** — async REST framework
+- **LangGraph** — multi-agent DAG orchestration
+- **LangChain** — LLM integration
+- **OpenAI** — LLM provider
+- **PostgreSQL 16** — primary database (async via asyncpg)
+- **Redis 7** — caching and checkpoint storage
+- **Docker Compose** — local development
+- **Alembic** — schema migrations
+
+## Quick Start
+
+```bash
+# 1. Environment
+cp .env.example .env
+# Edit .env with your settings
+
+# 2. Docker
+docker compose up -d
+
+# 3. Run migrations
+alembic upgrade head
+
+# 4. Seed data
+python scripts/seed.py
+
+# 5. Open API docs
+open http://localhost:8000/docs
+```
+
+## Project Structure
+
+```
+eyex-backend/
+├── app/
+│   ├── agents/          # LangGraph agent nodes
+│   ├── api/             # REST endpoints (v1)
+│   ├── core/            # Security, exceptions, middleware
+│   ├── db/              # Database session & migrations
+│   ├── models/          # SQLAlchemy ORM models
+│   ├── schemas/         # Pydantic request/response schemas
+│   ├── services/        # Business logic layer
+│   ├── config.py        # Settings via pydantic-settings
+│   ├── database.py      # Async engine & session factory
+│   ├── dependencies.py  # FastAPI dependency injection
+│   └── main.py          # FastAPI application factory
+├── tests/               # pytest test suite
+├── scripts/             # Database init & seed scripts
+├── alembic/             # Database migrations
+├── Dockerfile
+├── docker-compose.yml
+└── pyproject.toml
+```
+
+## API Endpoints
+
+| Method | Path                  | Description       |
+| ------ | --------------------- | ----------------- |
+| GET    | /api/v1/health        | Health check      |
+| POST   | /api/v1/auth/register | User registration |
+| POST   | /api/v1/auth/login    | Login             |
+| POST   | /api/v1/auth/refresh  | Refresh token     |
+
+## Environment Variables
+
+See `.env.example` for the full list. Key variables:
+
+- `DATABASE_URL` — PostgreSQL connection string
+- `REDIS_URL` — Redis connection string
+- `OPENAI_API_KEY` — OpenAI / LangChain API key
+- `APP_SECRET_KEY` — JWT signing key (64+ random chars)
+
+## Development
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run locally
+uvicorn app.main:app --reload --port 8000
+
+# Run tests
+pytest
+
+# Lint
+ruff check .
+
+# Type check
+mypy app/
+```
