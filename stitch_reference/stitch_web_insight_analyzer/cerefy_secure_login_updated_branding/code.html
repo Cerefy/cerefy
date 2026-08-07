@@ -1,0 +1,261 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cerefy OS | Enterprise Intelligence Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#c8c9a3",
+                        "secondary-container": "#e1dfdd",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#47492c",
+                        "surface-dim": "#dadada",
+                        "surface-container": "#eeeeee",
+                        "surface-container-low": "#f3f3f3",
+                        "on-secondary-container": "#636361",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#474746",
+                        "surface-bright": "#f9f9f9",
+                        "surface-variant": "#e2e2e2",
+                        "secondary": "#5e5e5d",
+                        "primary-fixed-dim": "#c7c6c6",
+                        "primary-fixed": "#e3e2e2",
+                        "inverse-primary": "#c7c6c6",
+                        "outline": "#747879",
+                        "on-primary-fixed-variant": "#464747",
+                        "surface-container-highest": "#e2e2e2",
+                        "surface-container-high": "#e8e8e8",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#5e5e5f",
+                        "on-tertiary-container": "#747655",
+                        "background": "#f9f9f9",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "on-surface-variant": "#444748",
+                        "tertiary-fixed": "#e4e5bd",
+                        "on-tertiary-fixed": "#1b1d05",
+                        "on-primary": "#ffffff",
+                        "on-background": "#1b1b1b",
+                        "inverse-surface": "#303030",
+                        "surface": "#f9f9f9",
+                        "outline-variant": "#c4c7c8",
+                        "on-error": "#ffffff",
+                        "on-surface": "#1b1b1b",
+                        "primary-container": "#fdfcfc",
+                        "tertiary-container": "#feffd7",
+                        "tertiary": "#5e6141",
+                        "secondary-fixed": "#e4e2e0",
+                        "on-primary-container": "#737474",
+                        "primary": "#5e5e5f",
+                        "on-primary-fixed": "#1a1c1c",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#f1f1f1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "display": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Geist"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 229, 229, 0.5);
+        }
+        .security-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .gradient-orb {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.15;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body overflow-hidden">
+<!-- Atmospheric Background Layers -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+<div class="gradient-orb bg-primary top-[-200px] left-[-100px]"></div>
+<div class="gradient-orb bg-secondary bottom-[-200px] right-[-100px]"></div>
+<!-- Subtle Pattern Overlay -->
+<div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#000 0.5px, transparent 0.5px); background-size: 24px 24px;"></div>
+</div>
+<!-- Main Content Shell -->
+<main class="min-h-screen flex items-center justify-center px-4 md:px-0">
+<div class="w-full max-w-[1200px] grid md:grid-cols-2 bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden border border-outline-variant/30 relative">
+<!-- Left Side: Visual/Context (Product Preview Aesthetic) -->
+<div class="hidden md:flex flex-col justify-between p-12 bg-surface-container-low relative overflow-hidden">
+<div class="z-10">
+<div class="flex items-center gap-3 mb-8">
+<img alt="Cerefy Logo" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh9KGOAi25FpHgKncMo2jrENr1BsEUwwk2_Bb25k-FaT-TfjCXh_gzIS0Ywfptnfgj4twVbqNUL5N3_ZeC20hI46XO8ELYe3VNxlnG-c6Z6tCeygAoRi9T60OsjInblfz-WVIwL6SZwSEhGDURaqpuEP0BfAvmfOOamR6Ei1zaVZuJ8f_eCNw4UqEI4EQM746ia4XUCzdtVgSz61sH23Yf0Vn8jK8H1nRHeoXxBLhiyFxUuidSUKULY6q7UfJ-TaJ7GA">
+<span class="font-headline text-headline-md font-bold tracking-tighter text-on-surface">Cerefy</span>
+</div>
+<h1 class="font-headline text-4xl font-bold tracking-tight text-on-surface leading-tight mb-6">
+                        Unified Intelligence for the Enterprise.
+                    </h1>
+<p class="text-on-surface-variant text-body-lg max-w-md">
+                        Experience the next generation of decision-making with our secure, autonomous agent architecture.
+                    </p>
+</div>
+<!-- Abstract Technical Texture / Placeholder for Product UI -->
+<div class="relative mt-12 flex-grow flex items-center justify-center">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-lg"></div>
+<div class="glass-panel w-full h-[300px] rounded-lg p-6 shadow-sm border border-outline-variant/20">
+<div class="flex items-center gap-2 mb-4">
+<div class="w-2 h-2 rounded-full bg-primary security-pulse" style="opacity: 0.868464;"></div>
+<span class="font-label text-xs uppercase tracking-widest text-on-surface-variant">Live Security Feed</span>
+</div>
+<div class="space-y-3">
+<div class="h-2 w-3/4 bg-surface-container-highest rounded animate-pulse"></div>
+<div class="h-2 w-1/2 bg-surface-container-highest rounded animate-pulse"></div>
+<div class="h-2 w-5/6 bg-surface-container-highest rounded animate-pulse"></div>
+<div class="pt-4 grid grid-cols-3 gap-2">
+<div class="h-16 rounded bg-surface-container-high/50"></div>
+<div class="h-16 rounded bg-surface-container-high/50"></div>
+<div class="h-16 rounded bg-surface-container-high/50"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="z-10 flex items-center gap-4 mt-8">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-low bg-surface-dim" data-alt="A close-up portrait of a professional female executive in a modern office, wearing a clean, white blazer. The lighting is bright and high-key, reflecting a premium enterprise aesthetic with neutral grey tones." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCsii4_kKH7uIKnggFjta1fUa-6GEIXmc_pv0QkFJwDjCNNFY02ChYnZ2sSCK0ziY1CtyUmE69TAGvvgHorD2b58ZatpCAq_aOzqfc9vxb27aj4_dn7Qqk4VG6L5qZynfSu9YsAKXDvradVvJJPVEmQNwtOmK9zZY_9quvdNV16luVY1kdqPQoHWSndILtGJj0vcA0C5Re_JmCk2yhgWl11N5bO8iWdlda6ILGoAImbxIYCc47dEVfc')"></div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-low bg-surface-dim" data-alt="A professional male developer with glasses, working in a sleek, minimalist tech workspace. Soft natural lighting illuminates the scene, emphasizing high-end office design and a clean, sophisticated light-mode color palette." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAXHr9HdcQvsxEUsGEMPCXYhYKMZsLnQFemst4b0u3aPk18wbNym7gJSi0jYst_9ldJvj-GIkrw0vhtgJeXVpPCxjAmgkRjxHOZsNYkiE0cnXctYdAcLCF-GkR_HiG-SDE8H2hLVO4MbIakpBM8MxXR2c8aICzDDUAvkgML2kkJUz77oFPBGDRTbFFgwNfnepggoBmmBQPD0Ehe7jb8qkJ2fcVGmrTeZf6WIC2jmS4AuoF_4H4Y7-Tv')"></div>
+</div>
+<p class="font-label text-xs text-on-surface-variant">Trusted by 500+ Fortune Entities</p>
+</div>
+</div>
+<!-- Right Side: Login Form -->
+<div class="p-8 md:p-16 flex flex-col justify-center bg-surface-container-lowest">
+<div class="md:hidden flex justify-center mb-8">
+<img alt="Cerefy Logo" class="w-12 h-12 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0wbU3ROUHypdn1ThWLdNN8zvH1fmBxAUtsmD0pg6UMOtM5JsVpAUGChwYrHSiU2aVLCQetfD2JebDZ1IdMsWq0ugfbPqZBSOM-i8FBjI_kBucJNu7Pse3Td59BlrmNZyR8iex_muXZbFn25KhPXJ5TRqbPBZ2uo-JhCdZszBMBnX_rJkamQGWAwFM8KzU006r_uAh7rCK49Q6pIZPSKDvXHKa7YnMCRZ--1LCgkC5Rv5yW904A5EHKU2gFqYprKXDdQ">
+</div>
+<div class="mb-10 text-center md:text-left">
+<h2 class="text-2xl font-semibold text-on-surface mb-2">Access Secure Terminal</h2>
+<p class="text-on-surface-variant">Enter your credentials to manage enterprise memory.</p>
+</div>
+<form class="space-y-6" onsubmit="return false;">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="font-label text-sm font-medium text-on-surface-variant ml-1" for="email">Work Email</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-outline-variant/60" id="email" placeholder="name@company.com" type="email">
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-center px-1">
+<label class="font-label text-sm font-medium text-on-surface-variant" for="password">Password</label>
+<a class="text-xs font-medium text-primary hover:underline transition-all" href="#">Forgot password?</a>
+</div>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+<input class="w-full pl-10 pr-12 py-3 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" id="password" placeholder="••••••••" type="password">
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">visibility</span>
+</button>
+</div>
+</div>
+<!-- Actions -->
+<div class="space-y-4 pt-2">
+<button class="w-full py-3.5 bg-on-background text-on-primary font-semibold rounded-lg hover:bg-on-background/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-on-background/10">
+                            Sign In
+                            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-outline-variant/40"></div>
+<span class="flex-shrink mx-4 text-xs font-label text-outline-variant uppercase tracking-widest">or</span>
+<div class="flex-grow border-t border-outline-variant/40"></div>
+</div>
+<button class="w-full py-3.5 bg-surface-container border border-outline-variant/60 text-on-surface font-medium rounded-lg hover:bg-surface-container-high active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-primary">id_card</span>
+                            Single Sign-On (SSO)
+                        </button>
+</div>
+</form>
+<!-- Security Indicators Footer -->
+<div class="mt-12 pt-8 border-t border-outline-variant/20 space-y-4">
+<div class="flex items-center gap-3">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+<div>
+<p class="text-xs font-semibold text-on-surface">Enterprise-grade encryption active</p>
+<p class="text-[10px] text-on-surface-variant font-label">AES-256 Bit Security Protocols Enabled</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-low border border-outline-variant/30">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-tighter font-semibold">Protected by Cerefy Shield</span>
+</div>
+<div class="flex gap-4">
+<a class="text-[10px] font-label text-outline hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-[10px] font-label text-outline hover:text-primary transition-colors" href="#">Terms</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Copyright -->
+<p class="absolute bottom-8 text-[11px] font-label text-outline uppercase tracking-[0.2em] opacity-60">
+            © 2024 Cerefy Enterprise Intelligence. All rights reserved.
+        </p>
+</main>
+<script>
+        // Simple micro-interaction for button press effect
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+
+        // Atmospheric random pulse for security status dots
+        const pulseElements = document.querySelectorAll('.security-pulse');
+        setInterval(() => {
+            pulseElements.forEach(el => {
+                el.style.opacity = Math.random() * (1 - 0.7) + 0.7;
+            });
+        }, 1500);
+    </script>
+
+
+</body></html>

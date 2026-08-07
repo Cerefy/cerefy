@@ -1,0 +1,261 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Sign Up | Cerefy Enterprise Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#feffd7",
+                        "surface-tint": "#5e5e5f",
+                        "primary-fixed-dim": "#c7c6c6",
+                        "on-error": "#ffffff",
+                        "primary": "#5e5e5f",
+                        "on-primary-fixed-variant": "#464747",
+                        "on-secondary-container": "#636361",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-tertiary-fixed": "#1b1d05",
+                        "surface-container-low": "#f3f3f3",
+                        "outline": "#747879",
+                        "inverse-primary": "#c7c6c6",
+                        "tertiary-fixed": "#e4e5bd",
+                        "tertiary": "#5e6141",
+                        "error-container": "#ffdad6",
+                        "outline-variant": "#c4c7c8",
+                        "primary-fixed": "#e3e2e2",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-tertiary-fixed-variant": "#47492c",
+                        "on-tertiary-container": "#747655",
+                        "surface-container-high": "#e8e8e8",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#e1dfdd",
+                        "surface-bright": "#f9f9f9",
+                        "tertiary-fixed-dim": "#c8c9a3",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-surface": "#303030",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "background": "#f9f9f9",
+                        "surface-variant": "#e2e2e2",
+                        "on-background": "#1b1b1b",
+                        "inverse-on-surface": "#f1f1f1",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#dadada",
+                        "surface-container": "#eeeeee",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "on-surface-variant": "#444748",
+                        "surface": "#f9f9f9",
+                        "secondary": "#5e5e5d",
+                        "on-surface": "#1b1b1b",
+                        "on-primary-container": "#737474",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#fdfcfc",
+                        "secondary-fixed": "#e4e2e0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "sans-serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Geist", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; color: #1b1b1b; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .aurora-blur {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(94, 94, 95, 0.08) 0%, rgba(94, 94, 95, 0) 70%);
+            filter: blur(60px);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+<main class="min-h-screen flex flex-col md:flex-row">
+<!-- Left Side: Brand Storytelling -->
+<section class="relative w-full md:w-1/2 lg:w-[45%] bg-on-background flex flex-col justify-between p-8 md:p-16 overflow-hidden">
+<!-- Animated Background (Atmospheric Shader) -->
+<div class="absolute inset-0 opacity-20">
+</div>
+<!-- Content -->
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-16"><img alt="Cerefy OS Logo" class="w-10 h-10 rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk03WQWi_rbGKGUwSyY_sSN4Y_Lqnx7jpUNFlaAzUcIUUeWjQ2rlJSzrv3dlaA8unoXT3Jd1u8IVoOZO_xG__58WIeIx5o5we3mZTa-n6aWDQgi5K8VwQ1AvYAXnA1EJ38n4cWeUgfRJk3tnLK1NIzfeuyTOEOMLXYXfuA3RdNB1swJmf_aVYKCr8OhCo_70YUBBcnuhEg0sh-PYGABRTZ5hlgDFOlFF1-Jjro_axcfZ1glIswfB3CbXvyoDiBGyGwlA"><span class="text-surface-container-lowest font-headline font-bold text-xl tracking-tighter">Cerefy</span></div>
+<h1 class="text-surface-container-lowest font-display font-bold text-4xl md:text-6xl lg:text-7xl leading-tight tracking-tight mb-6">
+                    Join the Intelligence Revolution
+                </h1>
+<p class="text-surface-variant font-body text-lg md:text-xl max-w-md opacity-80">
+                    Start building your autonomous enterprise today. Orchestrate AI agents, master complex workflows, and unlock institutional knowledge.
+                </p>
+</div>
+<div class="relative z-10 flex flex-col gap-4 mt-12">
+<div class="flex items-center gap-4 text-surface-variant">
+<div class="w-12 h-[1px] bg-outline-variant/30"></div>
+<span class="font-label text-xs uppercase tracking-widest">Enterprise Ready</span>
+</div>
+<div class="flex flex-wrap gap-6 mt-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-surface-variant text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-surface-container-lowest font-body text-sm">SOC2 Type II</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-surface-variant text-sm" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="text-surface-container-lowest font-body text-sm">E2E Encryption</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Side: Sign Up Form -->
+<section class="w-full md:w-1/2 lg:w-[55%] bg-surface flex items-center justify-center p-6 md:p-12 relative overflow-hidden">
+<!-- Decorative atmospheric glows -->
+<div class="aurora-blur top-[-100px] right-[-100px]"></div>
+<div class="aurora-blur bottom-[-100px] left-[-100px]"></div>
+<div class="w-full max-w-md space-y-8 relative z-10">
+<div class="text-center md:text-left"><div class="flex items-center gap-2 mb-4 justify-center md:justify-start"><img alt="Cerefy OS Logo" class="w-8 h-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq_kxZuSyvZxabeB9pB__jAGeFF9KHn41xv0I6nyuFmptNRmLoWo2NsMvbe7DjMyzInD12FNzGfgBFRyM0P7ckTDKW89-Z79FSJtuWDidkx_73sI_E9KTaOCizGzruhf3FMGBgtuW0-5P2SJ46Z5bo_6oLqHUv2ALn-dDiQnCiEz_vT5W3LU5wVtEiKRTw9ocCq4gz42rGN_wGGkM1_JQlVx1AkuqKS_2KBWXVyzVsYIXN-PkQESDHMvrPeJpZPYR4kQ"><span class="text-on-surface font-headline font-bold text-lg tracking-tighter">Cerefy</span></div>
+<h2 class="text-on-surface font-headline font-semibold text-3xl tracking-tight">Create your account</h2>
+<p class="text-on-surface-variant mt-2">Get started with a 14-day free trial.</p>
+</div>
+<!-- Social Sign Up Grid -->
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-2.5 px-4 bg-surface-container-lowest border border-outline-variant/50 rounded hover:bg-surface-container-low transition-all duration-200 active:scale-[0.98]">
+<img class="w-5 h-5" data-alt="Official Google logo icon, minimalist and clean for a professional UI design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq_kxZuSyvZxabeB9pB__jAGeFF9KHn41xv0I6nyuFmptNRmLoWo2NsMvbe7DjMyzInD12FNzGfgBFRyM0P7ckTDKW89-Z79FSJtuWDidkx_73sI_E9KTaOCizGzruhf3FMGBgtuW0-5P2SJ46Z5bo_6oLqHUv2ALn-dDiQnCiEz_vT5W3LU5wVtEiKRTw9ocCq4gz42rGN_wGGkM1_JQlVx1AkuqKS_2KBWXVyzVsYIXN-PkQESDHMvrPeJpZPYR4kQ">
+<span class="text-sm font-medium text-on-surface">Cerefy</span>
+</button>
+<button class="flex items-center justify-center gap-2 py-2.5 px-4 bg-surface-container-lowest border border-outline-variant/50 rounded hover:bg-surface-container-low transition-all duration-200 active:scale-[0.98]">
+<img class="w-5 h-5" data-alt="Official GitHub logo icon, black and white minimalist style for developer-centric interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq_kxZuSyvZxabeB9pB__jAGeFF9KHn41xv0I6nyuFmptNRmLoWo2NsMvbe7DjMyzInD12FNzGfgBFRyM0P7ckTDKW89-Z79FSJtuWDidkx_73sI_E9KTaOCizGzruhf3FMGBgtuW0-5P2SJ46Z5bo_6oLqHUv2ALn-dDiQnCiEz_vT5W3LU5wVtEiKRTw9ocCq4gz42rGN_wGGkM1_JQlVx1AkuqKS_2KBWXVyzVsYIXN-PkQESDHMvrPeJpZPYR4kQ">
+<span class="text-sm font-medium text-on-surface">Cerefy</span>
+</button>
+<button class="flex items-center justify-center gap-2 py-2.5 px-4 bg-surface-container-lowest border border-outline-variant/50 rounded hover:bg-surface-container-low transition-all duration-200 active:scale-[0.98]">
+<img class="w-5 h-5" data-alt="Official Apple logo icon, elegant grey and white for high-end technology dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq_kxZuSyvZxabeB9pB__jAGeFF9KHn41xv0I6nyuFmptNRmLoWo2NsMvbe7DjMyzInD12FNzGfgBFRyM0P7ckTDKW89-Z79FSJtuWDidkx_73sI_E9KTaOCizGzruhf3FMGBgtuW0-5P2SJ46Z5bo_6oLqHUv2ALn-dDiQnCiEz_vT5W3LU5wVtEiKRTw9ocCq4gz42rGN_wGGkM1_JQlVx1AkuqKS_2KBWXVyzVsYIXN-PkQESDHMvrPeJpZPYR4kQ">
+<span class="text-sm font-medium text-on-surface">Cerefy</span>
+</button>
+<button class="flex items-center justify-center gap-2 py-2.5 px-4 bg-surface-container-lowest border border-outline-variant/50 rounded hover:bg-surface-container-low transition-all duration-200 active:scale-[0.98]">
+<img class="w-5 h-5" data-alt="Microsoft Azure AD logo icon, clean corporate branding for enterprise authentication UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq_kxZuSyvZxabeB9pB__jAGeFF9KHn41xv0I6nyuFmptNRmLoWo2NsMvbe7DjMyzInD12FNzGfgBFRyM0P7ckTDKW89-Z79FSJtuWDidkx_73sI_E9KTaOCizGzruhf3FMGBgtuW0-5P2SJ46Z5bo_6oLqHUv2ALn-dDiQnCiEz_vT5W3LU5wVtEiKRTw9ocCq4gz42rGN_wGGkM1_JQlVx1AkuqKS_2KBWXVyzVsYIXN-PkQESDHMvrPeJpZPYR4kQ">
+<span class="text-sm font-medium text-on-surface">Cerefy</span>
+</button>
+</div>
+<div class="relative flex items-center justify-center py-4">
+<div class="flex-grow border-t border-outline-variant/30"></div>
+<span class="flex-shrink mx-4 text-outline font-label text-xs uppercase tracking-widest">Or continue with</span>
+<div class="flex-grow border-t border-outline-variant/30"></div>
+</div>
+<!-- Email Sign Up Form -->
+<form class="space-y-5" onsubmit="return false">
+<div class="space-y-1.5">
+<label class="block text-sm font-semibold text-on-surface ml-1" for="name">Full Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/60 rounded px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" id="name" placeholder="John Doe" type="text">
+</div>
+<div class="space-y-1.5">
+<label class="block text-sm font-semibold text-on-surface ml-1" for="email">Work Email</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/60 rounded px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" id="email" placeholder="name@company.com" type="email">
+</div>
+<div class="space-y-1.5">
+<label class="block text-sm font-semibold text-on-surface ml-1" for="password">Password</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border border-outline-variant/60 rounded px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" id="password" placeholder="••••••••" type="password">
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</button>
+</div>
+<p class="text-[11px] text-on-surface-variant/70 mt-1 ml-1">Must be at least 8 characters with one special symbol.</p>
+</div>
+<div class="flex items-start gap-3 mt-6">
+<div class="flex items-center h-5">
+<input class="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary" id="terms" name="terms" type="checkbox">
+</div>
+<label class="text-xs text-on-surface-variant leading-tight" for="terms">
+                            I agree to the <a class="text-on-surface font-medium underline underline-offset-2" href="#">Terms of Service</a> and <a class="text-on-surface font-medium underline underline-offset-2" href="#">Privacy Policy</a>.
+                        </label>
+</div>
+<button class="w-full bg-on-background text-surface py-4 rounded font-semibold tracking-wide hover:bg-on-background/90 transition-all duration-200 shadow-sm active:scale-[0.99] mt-4" type="submit">
+                        Create Enterprise Account
+                    </button>
+</form>
+<div class="text-center pt-4">
+<p class="text-sm text-on-surface-variant">
+                        Already have an account? 
+                        <a class="text-primary font-bold hover:underline underline-offset-4 ml-1 transition-all" href="#">Sign In</a>
+</p>
+</div>
+<!-- Security Footer -->
+<div class="flex justify-center items-center gap-8 pt-8 border-t border-outline-variant/20 opacity-60">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">shield</span>
+<span class="text-[10px] font-label uppercase tracking-tighter">Secure Auth</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">cloud</span>
+<span class="text-[10px] font-label uppercase tracking-tighter">99.9% Uptime</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer from Shared Components -->
+<footer class="w-full py-12 bg-surface-container-low border-t border-outline-variant/20">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 md:px-16 max-w-[1280px] mx-auto gap-6">
+<div class="flex items-center gap-2"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRGBX6DbM_9fkKM7lAtvWw2knUJNNknKypDCgbBj8iBoWGPk0VDPCDWNyM_yNsyYho9713iJovR3KG3knX6SgwLwuCQaNbdViWIpdrhBsSUTZF4ZsTFjR89WEWczsxiynpqQUQzVbm27K1_sd5pjvrl2e46VRsaJli_kLdNvnC5vTznM5lLi2D-RCz7uPnscrd4FWIuIIR5x2CvnEoZsDuoLEh19XEKret6OETmW10ZjNjWr9dSJ2RBxTRshaR5r9stA" alt="Cerefy Logo" class="w-6 h-6">
+<span class="font-headline text-body-lg font-semibold text-on-surface">Cerefy</span>
+<span class="text-on-surface-variant/70 text-xs font-body ml-2">© 2024 Cerefy Enterprise Intelligence. All rights reserved.</span>
+</div>
+<nav class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+<a class="text-on-surface-variant/70 font-body text-xs hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant/70 font-body text-xs hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
+<a class="text-on-surface-variant/70 font-body text-xs hover:text-primary transition-colors duration-200" href="#">Security Architecture</a>
+<a class="text-on-surface-variant/70 font-body text-xs hover:text-primary transition-colors duration-200" href="#">Contact Support</a>
+</nav>
+</div>
+</footer>
+<script>
+        // Micro-interaction for form inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('scale-[1.01]');
+                input.parentElement.style.transition = 'transform 0.2s ease-out';
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('scale-[1.01]');
+            });
+        });
+
+        // Toggle Password Visibility
+        const togglePassword = document.querySelector('button .material-symbols-outlined');
+        const passwordInput = document.querySelector('#password');
+        
+        if (togglePassword && passwordInput) {
+            togglePassword.parentElement.addEventListener('click', () => {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                togglePassword.textContent = type === 'password' ? 'visibility' : 'visibility_off';
+            });
+        }
+    </script>
+
+
+</body></html>

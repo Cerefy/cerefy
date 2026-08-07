@@ -1,0 +1,273 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cerefy - Support &amp; Help Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bento-glow {
+            position: relative;
+        }
+        .bento-glow::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(94, 94, 95, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface": "#f9f9f9",
+                        "tertiary-fixed": "#e4e5bd",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#c7c6c6",
+                        "inverse-surface": "#303030",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#1b1d05",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "secondary": "#5e5e5d",
+                        "surface-container-low": "#f3f3f3",
+                        "surface-container": "#eeeeee",
+                        "on-background": "#1b1b1b",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#444748",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c4c7c8",
+                        "primary": "#5e5e5f",
+                        "inverse-primary": "#c7c6c6",
+                        "primary-container": "#fdfcfc",
+                        "tertiary-fixed-dim": "#c8c9a3",
+                        "surface-bright": "#f9f9f9",
+                        "tertiary": "#5e6141",
+                        "on-tertiary-fixed-variant": "#47492c",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#464747",
+                        "surface-container-high": "#e8e8e8",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e2e2e2",
+                        "secondary-container": "#e1dfdd",
+                        "on-primary-container": "#737474",
+                        "primary-fixed": "#e3e2e2",
+                        "background": "#f9f9f9",
+                        "outline": "#747879",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#747655",
+                        "secondary-fixed": "#e4e2e0",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#feffd7",
+                        "on-secondary-fixed-variant": "#474746",
+                        "surface-tint": "#5e5e5f",
+                        "surface-dim": "#dadada",
+                        "on-surface": "#1b1b1b",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-secondary-container": "#636361",
+                        "surface-container-highest": "#e2e2e2"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "display": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Geist"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased selection:bg-primary/20 selection:text-primary">
+<!-- SideNavBar Component -->
+<nav class="hidden md:flex flex-col py-6 space-y-2 h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/50 bg-surface-container-lowest dark:bg-surface-dim z-40">
+<div class="px-6 mb-8">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-SYIu8XL4JdldV7w5ieA7XOtdpsx_14uzidCcETtdGv-ExvRWTxgTCY4hba3BQSRE9TnEvHXxImB7pGGopapLq2gP4q2KU33fl7RrbL1GgneXjwTb5LDf7HgJpKJ2GWyt-gZEHNTR-BhvIRkkvNRyhyIwVd_8hHm8LqZRAacI5gkWopkGoZ_8jE-0IFYbnrV9KmRBWczqIih9Cd0faJWqaL4APKeFLp0ivsJArhBC37Lu7GbpoIHwB8PD4cDa8DCo3Q" alt="Cerefy Logo" class="h-8 w-auto">
+<p class="font-body text-body-md text-on-surface-variant">Enterprise Intelligence</p>
+</div>
+<div class="flex-1 px-4 space-y-1">
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high mx-2 cursor-pointer transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high mx-2 cursor-pointer transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span class="font-body text-body-md">Agent Studio</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high mx-2 cursor-pointer transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-body text-body-md">Enterprise Memory</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high mx-2 cursor-pointer transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-body text-body-md">Analytics</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high mx-2 cursor-pointer transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+<span class="font-body text-body-md">Compliance</span>
+</a>
+</div>
+<div class="px-4 mt-auto mb-6">
+<div class="space-y-1 mb-6">
+<!-- Active Help Tab -->
+<a class="flex items-center space-x-3 px-3 py-2 bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-lg mx-2 cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="help" style="font-variation-settings: 'FILL' 1;">help</span>
+<span class="font-body text-body-md font-medium">Help</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high mx-2 cursor-pointer transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-body text-body-md">Documentation</span>
+</a>
+</div>
+<button class="w-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label text-sm py-2 px-4 rounded transition-colors border border-outline-variant/30">
+                Upgrade Plan
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 min-h-screen flex flex-col">
+<!-- TopAppBar / Mobile Nav Toggle (Simplified for Help Center context) -->
+<header class="sticky top-0 z-30 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 h-16 flex items-center justify-between px-6 md:px-8">
+<div class="md:hidden flex items-center">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9jLSyz9H3UfY1zMuxh5PZ2JmeBmYCS5HR2zvsgOsAgiJTCKEp2XrVhS0vrybGb2PACUJ4GwNZCfTmuO3vdat_5vXHl2El6b74cYlHaULTouuz8MHYeWwsbDzqMeh52d-gbY6dZ_jxgqvmMH_7Izvc113lXMhEVGbmy-BnBT3Bzk3xYrm2vz0y_yjp-NB957DrpHQPQZj9nKMLRYDELifFbjPsHutk7ZBstLacrS8LCOXMWyXtY0qEYbBRW3KF94TolQ" alt="Cerefy Logo" class="h-6 w-auto">
+</div>
+<div class="flex items-center space-x-4 ml-auto">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant/50 overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate user in a brightly lit modern office setting, soft white lighting, highly detailed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9z6oOVwSS9e65ZE0IzcqJZQ-oIsfe5STs7l2GgYMdId-RO39oif-sbeM2WJ2z9lKKQoSkboDyOy0xpkOV1gyEKJpCiODW6gfD-Dsjv1AKjFKLdHonahzNPs3KXbbOQsgjRW4ZKBLmYxaWFyFxeOrmlaVjSkwq6EmpqYlOfhLGkcUzOVxoAAdttHBup-He9qL-ETMjkCuT0pGWXT0goekyu88WIrr6zJFNTaX2TiVOOukxHwRYUPdL">
+</div>
+</div>
+</header>
+<div class="flex-1 p-6 md:p-8 lg:p-12 max-w-7xl mx-auto w-full">
+<!-- Hero Search Section -->
+<section class="mb-16 text-center max-w-3xl mx-auto">
+<h2 class="font-display text-[40px] md:text-[56px] font-bold leading-[1.1] tracking-[-0.02em] mb-4 text-on-surface">How can we help?</h2>
+<p class="font-body text-body-lg text-on-surface-variant mb-8">Search documentation, tutorials, and community answers.</p>
+<div class="relative max-w-2xl mx-auto">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-lowest border border-outline-variant/50 rounded-xl focus:border-on-surface focus:ring-1 focus:ring-on-surface focus:outline-none transition-all shadow-sm text-body-lg" placeholder="Search for 'API keys', 'Agent setup', or 'Billing'" type="text">
+</div>
+</section>
+<!-- Grid Layout (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-16">
+<!-- Help Categories (Span 8) -->
+<div class="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+<a class="block bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 hover:shadow-sm hover:border-outline-variant/60 transition-all bento-glow group" href="#">
+<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<h3 class="font-headline text-lg font-semibold mb-2">Getting Started</h3>
+<p class="font-body text-sm text-on-surface-variant">Guides and tutorials for your first deployment.</p>
+</a>
+<a class="block bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 hover:shadow-sm hover:border-outline-variant/60 transition-all bento-glow group" href="#">
+<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="api">api</span>
+</div>
+<h3 class="font-headline text-lg font-semibold mb-2">API Integration</h3>
+<p class="font-body text-sm text-on-surface-variant">Endpoints, authentication, and webhooks.</p>
+</a>
+<a class="block bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 hover:shadow-sm hover:border-outline-variant/60 transition-all bento-glow group" href="#">
+<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="credit_card">credit_card</span>
+</div>
+<h3 class="font-headline text-lg font-semibold mb-2">Billing &amp; Plans</h3>
+<p class="font-body text-sm text-on-surface-variant">Manage your subscription, invoices, and usage.</p>
+</a>
+<a class="block bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 hover:shadow-sm hover:border-outline-variant/60 transition-all bento-glow group" href="#">
+<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="lock">lock</span>
+</div>
+<h3 class="font-headline text-lg font-semibold mb-2">Security</h3>
+<p class="font-body text-sm text-on-surface-variant">Compliance docs, SOC2 reports, and data privacy.</p>
+</a>
+</div>
+<!-- Right Column: Recent Tickets & CTA (Span 4) -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<!-- Recent Tickets Card -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 h-full flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline text-lg font-semibold">Recent Tickets</h3>
+<a class="font-label text-xs text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="space-y-4 flex-1">
+<div class="group cursor-pointer">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label text-xs px-2 py-0.5 bg-surface-container-high rounded text-on-surface-variant">Open</span>
+<span class="text-xs text-on-surface-variant">2h ago</span>
+</div>
+<h4 class="font-body text-sm font-medium group-hover:text-primary transition-colors">Latency spike in US-East region</h4>
+<p class="text-xs text-on-surface-variant mt-1 truncate">#TKT-8992 - Infrastructure</p>
+</div>
+<hr class="border-outline-variant/20">
+<div class="group cursor-pointer opacity-75">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label text-xs px-2 py-0.5 bg-secondary-container/50 rounded text-on-secondary-container">Resolved</span>
+<span class="text-xs text-on-surface-variant">2d ago</span>
+</div>
+<h4 class="font-body text-sm font-medium group-hover:text-primary transition-colors">Memory limit exceeded on Agent v2</h4>
+<p class="text-xs text-on-surface-variant mt-1 truncate">#TKT-8841 - Agent Studio</p>
+</div>
+</div>
+<button class="w-full mt-6 py-2 border border-outline-variant/30 rounded-lg text-sm font-medium hover:bg-surface-container-low transition-colors">
+                            Submit New Ticket
+                        </button>
+</div>
+<!-- Live Chat CTA -->
+<div class="bg-[#1b1b1b] rounded-xl p-6 text-[#fdfcfc] relative overflow-hidden bento-glow">
+<div class="relative z-10">
+<div class="w-10 h-10 bg-[#303030] rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[#fdfcfc]" data-icon="support_agent">support_agent</span>
+</div>
+<h3 class="font-headline text-lg font-semibold mb-2">Need Immediate Help?</h3>
+<p class="font-body text-sm text-[#c4c7c8] mb-6">Connect with a platform engineer. Avg response time: &lt; 3 mins.</p>
+<button class="w-full py-3 bg-[#fdfcfc] text-[#1b1b1b] rounded-lg text-sm font-semibold hover:bg-[#e8e8e8] transition-colors flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="chat">chat</span>
+<span class="">Live Chat with Engineer</span>
+</button>
+</div>
+<!-- Abstract decorative gradient for premium feel -->
+<div class="absolute -bottom-8 -right-8 w-32 h-32 bg-primary/20 blur-2xl rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-auto w-full py-12 border-t border-outline-variant/20 bg-surface-container-low dark:bg-surface-dim px-6 md:px-8">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="font-headline text-body-lg font-semibold text-on-surface-variant dark:text-on-secondary-fixed-variant"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3k40ARhL7ELmTl5mIpqaIAiJ6BEA_IJvNqwl972dVrhXnmqt_N0C0Mrbm2XejGQUjrrP6c5dAATssBiI3SOtfGg1qVypl-3MuGysGvdJneW8GbU1hK7a-d36I2Q8E3jfESHJ6NalnfSQPyD2H4uPXLLCuG2J4YxEF0abuvKBNmuncHymq84DgUMIhsMGX6yCTEfWZ4Zyy7YQCMis_BoeXRfGwL91zoOzn1rPUtu_bcw7KFrVsLVI_-pVe4v1_C4PXqw" alt="Cerefy Logo" class="h-6 w-auto"></div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="font-body text-caption text-on-surface-variant/70 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-body text-caption text-on-surface-variant/70 hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-body text-caption text-on-surface-variant/70 hover:text-primary transition-colors" href="#">Security Architecture</a>
+<a class="font-body text-caption text-on-surface-variant/70 hover:text-primary transition-colors" href="#">Contact Support</a>
+</div>
+<div class="font-body text-caption text-on-surface-variant/70">© 2024 Cerefy. All rights reserved.</div>
+</div>
+</footer>
+</main>
+
+
+
+
+</body></html>

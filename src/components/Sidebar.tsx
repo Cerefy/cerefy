@@ -1,171 +1,128 @@
+// src/components/Sidebar.tsx
+// Enterprise Sidebar Navigation - Premium Design System
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { WorkspaceTab } from '../types';
 import {
-  Sparkles,
   LayoutDashboard,
-  BrainCircuit,
-  BookOpen,
+  Bot,
+  Brain,
   FolderKanban,
   FileText,
-  CalendarDays,
+  Calendar,
   CheckSquare,
-  Bot,
   Workflow,
-  Scale,
   BarChart3,
   Blocks,
   Settings,
-  ShieldCheck,
+  Shield,
   Activity,
   Network,
-  FileCode,
-  Cpu,
+  Database,
   Terminal,
 } from 'lucide-react';
 
+interface NavItem {
+  path: string;
+  label: string;
+  icon: React.FC<{ className?: string }>;
+  badge?: string;
+}
+
+const mainNavItems: NavItem[] = [
+  { path: '/workspace/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/workspace/command-center', label: 'AI Command Center', icon: Bot, badge: 'Primary' },
+  { path: '/workspace/agents', label: 'Agent Studio', icon: Bot, badge: '40+' },
+  { path: '/workspace/memory', label: 'Enterprise Memory', icon: Brain, badge: '6 Tiers' },
+  { path: '/workspace/knowledge', label: 'Knowledge Hub', icon: Database },
+  { path: '/workspace/projects', label: 'Projects', icon: FolderKanban },
+  { path: '/workspace/documents', label: 'Documents', icon: FileText },
+  { path: '/workspace/decisions', label: 'Decisions', icon: Workflow },
+  { path: '/workspace/analytics', label: 'Analytics', icon: BarChart3 },
+  { path: '/workspace/automation', label: 'Automation', icon: Workflow },
+  { path: '/workspace/integrations', label: 'Integrations', icon: Blocks },
+];
+
+const devNavItems: NavItem[] = [
+  { path: '/workspace/orchestrator', label: 'LangGraph Orchestrator', icon: Network },
+  { path: '/workspace/graph', label: 'Knowledge Graph', icon: Network },
+  { path: '/workspace/security', label: 'Security & Compliance', icon: Shield },
+  { path: '/workspace/telemetry', label: 'System Telemetry', icon: Activity },
+];
+
 export const Sidebar: React.FC = () => {
-  const mainNavItems: { id: WorkspaceTab; label: string; icon: React.FC<{ className?: string }>; badge?: string; isPrimary?: boolean }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'command-center', label: 'AI Command Center', icon: Sparkles, isPrimary: true, badge: '⭐ PRIMARY' },
-    { id: 'ai-canvas', label: 'AI Agent Canvas', icon: Network, badge: 'LIVE' },
-    { id: 'memory', label: 'Enterprise Memory', icon: BrainCircuit, badge: '6 Tiers' },
-    { id: 'knowledge', label: 'Knowledge Hub', icon: BookOpen },
-    { id: 'projects', label: 'Projects', icon: FolderKanban },
-    { id: 'bpmn', label: 'BPMN Workspace', icon: Workflow },
-    { id: 'tasks', label: 'Tasks', icon: CheckSquare },
-    { id: 'documents', label: 'Documents', icon: FileText },
-    { id: 'meetings', label: 'Meetings', icon: CalendarDays },
-    { id: 'agents', label: 'AI Agents', icon: Bot, badge: '40+ Roster' },
-    { id: 'studio', label: 'Automation', icon: Workflow, badge: 'Studio' },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { id: 'governance', label: 'Decision Governance', icon: Scale, badge: '94% ROI' },
-    { id: 'activity', label: 'Activity Feed', icon: Activity },
-    { id: 'integrations', label: 'Integrations', icon: Blocks, badge: '16 Active' },
-    { id: 'settings', label: 'Settings', icon: Settings },
-  ];
-
-  const devNavItems: { id: WorkspaceTab; label: string; icon: React.FC<{ className?: string }>; badge?: string }[] = [
-    { id: 'orchestrator', label: 'LangGraph Orchestrator', icon: Cpu },
-    { id: 'graph', label: 'Knowledge Graph Map', icon: Network },
-    { id: 'ingestion', label: 'Vector RAG Ingestion', icon: FileCode },
-    { id: 'security', label: 'RLS & ABAC Security', icon: ShieldCheck },
-    { id: 'telemetry', label: 'System Telemetry', icon: Activity },
-  ];
-
   return (
-    <aside className="w-64 bg-[#08080a] border-r border-zinc-800/80 flex flex-col justify-between shrink-0 select-none overflow-y-auto custom-scrollbar font-sans">
-      <div className="p-3 space-y-5">
-        {/* Workspace Operations Category */}
+    <aside className="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest/80 backdrop-blur-xl border-r border-outline-variant/50 flex flex-col py-6 z-50 transition-all">
+      {/* Logo */}
+      <div className="px-6 mb-8 flex items-center gap-3">
+        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-on-primary font-bold">
+          C
+        </div>
         <div>
-          <div className="px-3 mb-2 text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-500 flex items-center justify-between">
-            <span>Enterprise Workspace</span>
-            <span className="text-indigo-400 text-[9px] bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
-              Active
-            </span>
-          </div>
-          <nav className="space-y-1">
-            {mainNavItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.id}
-                  to={`/workspace/${item.id}`}
-                  className={({ isActive }) => `w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer ${
-                    item.isPrimary && isActive
-                      ? 'bg-white text-zinc-950 font-bold shadow-lg'
-                      : item.isPrimary
-                      ? 'bg-zinc-900/90 text-zinc-200 border border-zinc-800 hover:bg-zinc-800'
-                      : isActive
-                      ? 'bg-zinc-800 text-white font-semibold border border-zinc-700/80 shadow-sm'
-                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 border border-transparent'
-                  }`}
-                >
-                  {({ isActive }) => (
-                    <>
-                      <div className="flex items-center gap-2.5 truncate">
-                        <Icon className={`h-4 w-4 shrink-0 ${item.isPrimary ? 'text-indigo-400' : isActive ? 'text-white' : 'text-zinc-500'}`} />
-                        <span className="truncate">{item.label}</span>
-                      </div>
-                      {item.badge && (
-                        <span
-                          className={`px-2 py-0.5 text-[9px] font-mono rounded-full border shrink-0 ${
-                            item.isPrimary
-                              ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
-                              : isActive
-                              ? 'bg-zinc-700 text-white border-zinc-600'
-                              : 'bg-zinc-900 text-zinc-500 border-zinc-800'
-                          }`}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </NavLink>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Technical Deep Engine */}
-        <div className="pt-2 border-t border-zinc-900">
-          <div className="px-3 mb-2 text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-500">
-            Deep Tech &amp; Telemetry
-          </div>
-          <nav className="space-y-1">
-            {devNavItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.id}
-                  to={`/workspace/${item.id}`}
-                  className={({ isActive }) => `w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-[11px] font-mono transition-all duration-150 cursor-pointer ${
-                    isActive
-                      ? 'bg-zinc-800 text-white border border-zinc-700'
-                      : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900 border border-transparent'
-                  }`}
-                >
-                  {({ isActive }) => (
-                    <div className="flex items-center gap-2 truncate">
-                      <Icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-cyan-400' : 'text-zinc-600'}`} />
-                      <span className="truncate">{item.label}</span>
-                    </div>
-                  )}
-                </NavLink>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Health Diagnostics Widget */}
-        <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-3 space-y-2 font-mono">
-          <div className="flex items-center justify-between text-[11px] text-zinc-400">
-            <span className="flex items-center gap-1.5 font-semibold text-zinc-300">
-              <Cpu className="h-3.5 w-3.5 text-cyan-400" /> Platform Engine
-            </span>
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-          </div>
-
-          <div className="space-y-1 text-[10px] text-zinc-400">
-            <div className="flex justify-between items-center">
-              <span>System Status</span>
-              <span className="text-emerald-400 font-bold">OPERATIONAL</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>Memory Vector RAG</span>
-              <span className="text-cyan-300 font-bold">ONLINE</span>
-            </div>
-          </div>
+          <h1 className="font-headline text-lg font-bold text-on-surface leading-tight tracking-tight">
+            Cerefy OS
+          </h1>
+          <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-label">
+            Enterprise Intel
+          </p>
         </div>
       </div>
 
-      {/* Footer Info */}
-      <div className="p-3 border-t border-zinc-900 text-[10px] text-zinc-500 font-mono flex items-center justify-between bg-[#08080a]">
-        <span className="flex items-center gap-1.5">
-          <Terminal className="h-3.5 w-3.5 text-zinc-600" /> CEREFY OS
-        </span>
-        <span className="text-emerald-400 font-bold">READY</span>
+      {/* Main Navigation */}
+      <nav className="flex-1 px-3 space-y-1 overflow-y-auto custom-scrollbar">
+        <div className="px-3 mb-2">
+          <span className="text-[10px] uppercase tracking-widest text-on-surface-variant font-label">
+            Workspace
+          </span>
+        </div>
+        {mainNavItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `nav-item ${isActive ? 'active' : ''}`
+            }
+          >
+            <item.icon className="w-5 h-5" />
+            <span className="text-sm flex-1">{item.label}</span>
+            {item.badge && (
+              <span className="badge badge-success text-[9px]">{item.badge}</span>
+            )}
+          </NavLink>
+        ))}
+
+        <div className="px-3 mt-6 mb-2">
+          <span className="text-[10px] uppercase tracking-widest text-on-surface-variant font-label">
+            Developer
+          </span>
+        </div>
+        {devNavItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `nav-item ${isActive ? 'active' : ''}`
+            }
+          >
+            <item.icon className="w-5 h-5" />
+            <span className="text-sm flex-1">{item.label}</span>
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Bottom Section */}
+      <div className="px-4 mt-auto space-y-1 border-t border-outline-variant/30 pt-6">
+        <NavLink
+          to="/workspace/settings"
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+        >
+          <Settings className="w-5 h-5" />
+          <span className="text-sm">Settings</span>
+        </NavLink>
+        <div className="mt-4 p-4 bg-primary text-on-primary rounded-xl text-center cursor-pointer active:scale-95 transition-transform">
+          <p className="font-label text-xs font-bold uppercase tracking-wider mb-1">Upgrade Plan</p>
+          <p className="text-[10px] opacity-80">Unlock Pro Features</p>
+        </div>
       </div>
     </aside>
   );

@@ -1,0 +1,506 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cerefy - Analytics Dashboard</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Three.js for background -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-bright": "#f9f9f9",
+                "on-primary-container": "#737474",
+                "on-surface-variant": "#444748",
+                "on-error-container": "#93000a",
+                "primary-fixed": "#e3e2e2",
+                "surface-tint": "#5e5e5f",
+                "surface-dim": "#dadada",
+                "on-secondary-container": "#636361",
+                "surface-container-high": "#e8e8e8",
+                "surface": "#f9f9f9",
+                "secondary-fixed-dim": "#c8c6c4",
+                "on-secondary": "#ffffff",
+                "surface-variant": "#e2e2e2",
+                "on-primary-fixed": "#1a1c1c",
+                "inverse-primary": "#c7c6c6",
+                "inverse-surface": "#303030",
+                "error": "#ba1a1a",
+                "secondary-fixed": "#e4e2e0",
+                "inverse-on-surface": "#f1f1f1",
+                "primary-fixed-dim": "#c7c6c6",
+                "surface-container-lowest": "#ffffff",
+                "outline": "#747879",
+                "secondary": "#5e5e5d",
+                "tertiary-fixed": "#e4e5bd",
+                "background": "#f9f9f9",
+                "primary": "#5e5e5f",
+                "on-secondary-fixed": "#1b1c1b",
+                "on-tertiary": "#ffffff",
+                "on-tertiary-fixed-variant": "#47492c",
+                "primary-container": "#fdfcfc",
+                "tertiary-container": "#feffd7",
+                "on-tertiary-container": "#747655",
+                "tertiary-fixed-dim": "#c8c9a3",
+                "on-primary-fixed-variant": "#464747",
+                "on-secondary-fixed-variant": "#474746",
+                "on-tertiary-fixed": "#1b1d05",
+                "error-container": "#ffdad6",
+                "outline-variant": "#c4c7c8",
+                "on-background": "#1b1b1b",
+                "surface-container": "#eeeeee",
+                "surface-container-highest": "#e2e2e2",
+                "tertiary": "#5e6141",
+                "secondary-container": "#e1dfdd",
+                "surface-container-low": "#f3f3f3",
+                "on-error": "#ffffff",
+                "on-primary": "#ffffff",
+                "on-surface": "#1b1b1b",
+                "electric-cobalt": "#2563EB",
+                "cyber-purple": "#9333EA",
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {},
+        "fontFamily": {
+                "headline": [
+                        "Inter"
+                ],
+                "display": [
+                        "Inter"
+                ],
+                "body": [
+                        "Inter"
+                ],
+                "label": [
+                        "Geist"
+                ]
+        },
+        "fontSize": {}
+},
+    },
+  }
+</script>
+<style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0;
+            overflow-x: hidden;
+            background-color: transparent;
+        }
+        
+        #vanta-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+        .fill-icon { font-variation-settings: 'FILL' 1; }
+        
+        /* Glassmorphic card base */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: theme('borderRadius.xl');
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 1);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+            transform: translateY(-2px);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .glass-button {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.2s ease;
+        }
+        
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 1);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, theme('colors.on-surface') 0%, theme('colors.on-surface-variant') 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .accent-gradient {
+            background: linear-gradient(135deg, #2563EB 0%, #9333EA 100%);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: theme('colors.surface-container'); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.outline-variant'); 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline'); 
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-electric-cobalt selection:text-white text-on-surface">
+<!-- Three.js Background Container -->
+<div id="vanta-bg"><canvas class="vanta-canvas" height="2140" style="display: block; position: absolute; z-index: 0; top: 0px; left: 0px; width: 1280px; height: 1427px;" width="1920"></canvas><canvas class="vanta-canvas" width="1920" height="2149" style="display: block; position: absolute; z-index: 0; top: 0px; left: 0px; width: 1280px; height: 1433px;"></canvas><canvas class="vanta-canvas" width="1920" height="2149" style="display: block; position: absolute; z-index: 0; top: 0px; left: 0px; width: 1280px; height: 1433px;"></canvas></div>
+<!-- Desktop Side Navigation Shell -->
+<nav class="hidden md:flex h-screen w-64 fixed left-0 top-0 flex-col py-6 space-y-2 glass-nav z-40">
+<!-- Brand Header -->
+<div class="px-6 mb-8 flex items-center space-x-3">
+<div class="w-8 h-8 rounded overflow-hidden shadow-[0_0_15px_rgba(37,99,235,0.2)]"><img alt="Cerefy Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlw707DDMjdpDr25SLvHPopaEsmthPj8GUB7PNtcEst1nkISH5Oz-CR9Gf7ePj20Rl1FYIWn9-CaIcnprQBd6gi7TwFpK4X8-YC8gXYRD4f565Wk-9J3cGZeTx5eYOxWv8sEImc2KPlYudac0CeubxqZ3Sdr37XDQzISQ3n1lpGCP_wBsEd6FWlM0hyrQETyhV0zZLSJaDud0lIkWx27uz4G1aJ7y5pyN5wPTxGAPdhSIJIiJVPnkfpe617y5pU2Zo7Q"></div>
+<div>
+<h1 class="font-headline text-lg font-bold text-on-surface leading-tight tracking-tight">Cerefy</h1>
+<p class="font-body text-xs text-on-surface-variant">Enterprise Intelligence</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 px-4 space-y-2">
+<a class="flex items-center space-x-3 px-3 py-2.5 font-body text-sm text-on-surface-variant hover:text-on-surface hover:bg-white/50 transition-all duration-200 rounded-lg mx-2 cursor-pointer" href="#dashboard">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2.5 font-body text-sm text-on-surface-variant hover:text-on-surface hover:bg-white/50 transition-all duration-200 rounded-lg mx-2 cursor-pointer" href="#agent-studio">
+<span class="material-symbols-outlined text-lg">smart_toy</span>
+<span class="">Agent Studio</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2.5 font-body text-sm text-on-surface-variant hover:text-on-surface hover:bg-white/50 transition-all duration-200 rounded-lg mx-2 cursor-pointer" href="#memory">
+<span class="material-symbols-outlined text-lg">database</span>
+<span class="">Enterprise Memory</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center space-x-3 px-3 py-2.5 font-body text-sm text-on-surface bg-white/70 border border-white/80 rounded-lg mx-2 cursor-pointer transition-all duration-200 shadow-sm font-medium" href="#analytics">
+<span class="material-symbols-outlined text-lg text-electric-cobalt fill-icon">monitoring</span>
+<span class="">Analytics</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2.5 font-body text-sm text-on-surface-variant hover:text-on-surface hover:bg-white/50 transition-all duration-200 rounded-lg mx-2 cursor-pointer" href="#compliance">
+<span class="material-symbols-outlined text-lg">verified_user</span>
+<span class="">Compliance</span>
+</a>
+</div>
+<!-- Footer Actions -->
+<div class="px-6 pt-4 border-t border-outline-variant/30 space-y-4">
+<button class="w-full py-2 px-4 glass-button text-on-surface rounded-lg font-body text-xs font-medium shadow-sm flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined text-sm">rocket_launch</span>
+<span class="">Upgrade Plan</span>
+</button>
+<div class="space-y-2">
+<a class="flex items-center space-x-2 text-on-surface-variant text-xs hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span class="">Help</span>
+</a>
+<a class="flex items-center space-x-2 text-on-surface-variant text-xs hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">description</span>
+<span class="">Documentation</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Mobile Top Navigation -->
+<nav class="md:hidden flex justify-between items-center px-5 h-16 glass-nav border-b border-outline-variant/30 sticky top-0 z-50">
+<div class="flex items-center space-x-2">
+<div class="w-6 h-6 rounded overflow-hidden shadow-[0_0_10px_rgba(37,99,235,0.2)]"><img alt="Cerefy Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNRUsqtNVx58WQYoQ-heiPWDtxWY0EJynzbYx30cyLSIuJGaGkpTOYeN9g2qekN8xggKvAtme5a5GaoW5_2BIsR272GFV5R6PjpqDe9mNN0VnkyuROm_309rOkyp86QA3n-8J8LIa8L3kNNH2TQuWP9bWqb-2R43-WLaW0_aOKwPsnMkbbQcHn9qo5JRe70qrdwzZRczy9A-ZWLhww7WxHnnIWIq5jklCPXLeOEW2y0M6JQ0qR6ltkum8PBpcuyE_7Nw"></div>
+<span class="font-headline font-bold tracking-tight text-on-surface">Cerefy</span>
+</div>
+<button class="text-on-surface glass-button p-1.5 rounded-md"><span class="material-symbols-outlined text-sm">menu</span></button>
+</nav>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 p-5 md:p-8 max-w-[1600px] mx-auto min-h-screen pb-24 md:pb-8 relative z-10">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<h2 class="font-headline text-2xl md:text-4xl font-bold tracking-tight text-gradient">Analytics Dashboard</h2>
+<p class="font-body text-on-surface-variant mt-2 text-sm md:text-base">Real-time performance metrics for deployed intelligence.</p>
+</div>
+<div class="flex items-center space-x-3">
+<div class="px-3 py-1.5 rounded-full bg-white/60 backdrop-blur-md flex items-center space-x-2 text-xs font-label text-on-surface border border-electric-cobalt/30">
+<span class="w-2 h-2 rounded-full bg-electric-cobalt animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.5)]"></span>
+<span class="">System Nominal</span>
+</div>
+<button class="p-2 rounded-lg glass-button text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+</button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-6">
+<!-- KPI Card 1: Compute Efficiency -->
+<div class="glass-card p-6 col-span-1 md:col-span-4 flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="font-body text-sm text-on-surface-variant font-medium">Compute Efficiency</span>
+<div class="p-1.5 rounded-md bg-white/50 border border-white/80">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">speed</span>
+</div>
+</div>
+<div>
+<div class="flex items-baseline space-x-2">
+<span class="font-headline text-4xl font-bold tracking-tighter text-on-surface">94.2%</span>
+<span class="font-label text-xs text-electric-cobalt font-medium flex items-center"><span class="material-symbols-outlined text-[10px] mr-0.5">trending_up</span>+1.2%</span>
+</div>
+<div class="w-full bg-black/5 h-1.5 rounded-full mt-4 overflow-hidden border border-white/50">
+<div class="accent-gradient h-full rounded-full" style="width: 94.2%;"></div>
+</div>
+</div>
+</div>
+<!-- KPI Card 2: Agent Success Rate -->
+<div class="glass-card p-6 col-span-1 md:col-span-4 flex flex-col justify-between h-40 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-electric-cobalt/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="relative z-10 flex justify-between items-start">
+<span class="font-body text-sm text-on-surface-variant font-medium">Agent Success Rate</span>
+<div class="p-1.5 rounded-md bg-white/50 border border-white/80">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">check_circle</span>
+</div>
+</div>
+<div class="relative z-10">
+<div class="flex items-baseline space-x-2">
+<span class="font-headline text-4xl font-bold tracking-tighter text-on-surface">99.98%</span>
+<span class="font-label text-xs text-on-surface-variant font-medium px-1.5 py-0.5 rounded bg-white/50 border border-white/80">Stable</span>
+</div>
+<p class="font-label text-xs text-on-surface-variant mt-2">Over last 10M operations</p>
+</div>
+</div>
+<!-- KPI Card 3: Decision Velocity -->
+<div class="glass-card p-6 col-span-1 md:col-span-4 flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="font-body text-sm text-on-surface-variant font-medium">Decision Velocity</span>
+<div class="p-1.5 rounded-md bg-white/50 border border-white/80">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">bolt</span>
+</div>
+</div>
+<div>
+<div class="flex items-baseline space-x-1">
+<span class="font-headline text-4xl font-bold tracking-tighter text-on-surface">142</span>
+<span class="font-label text-sm text-on-surface-variant">ms</span>
+</div>
+<div class="mt-3 flex items-center space-x-2">
+<svg fill="none" height="16" viewBox="0 0 60 16" width="60" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 8C5 8 10 12 15 12C20 12 25 4 30 4C35 4 40 14 45 14C50 14 55 6 60 6" stroke="#9333EA" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="font-label text-[10px] text-on-surface-variant ml-2 uppercase tracking-wider">Latency Trend</span>
+</div>
+</div>
+</div>
+<!-- Chart Section: Intelligence Usage -->
+<div class="glass-card p-6 col-span-1 md:col-span-8 min-h-[380px] flex flex-col relative overflow-hidden">
+<div class="absolute -top-40 -right-40 w-80 h-80 bg-cyber-purple/5 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="absolute -bottom-40 -left-40 w-80 h-80 bg-electric-cobalt/5 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="relative z-10 flex justify-between items-center mb-8">
+<h3 class="font-headline text-lg font-semibold tracking-tight text-on-surface">Intelligence Usage</h3>
+<div class="flex space-x-1 bg-white/50 p-1 rounded-lg border border-white/80">
+<button class="px-3 py-1 bg-white rounded-md text-xs font-label text-on-surface shadow-sm border border-white/80">Compute Cycles</button>
+<button class="px-3 py-1 text-on-surface-variant rounded-md text-xs font-label hover:text-on-surface transition-colors">Token Output</button>
+</div>
+</div>
+<!-- Chart Area -->
+<div class="flex-1 w-full relative flex items-end pt-4 pb-6 z-10">
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-10 pt-4">
+<div class="border-b border-outline-variant/30 w-full border-dashed"></div>
+<div class="border-b border-outline-variant/30 w-full border-dashed"></div>
+<div class="border-b border-outline-variant/30 w-full border-dashed"></div>
+<div class="border-b border-outline-variant/30 w-full border-dashed"></div>
+</div>
+<!-- SVG Chart with vibrant colors -->
+<svg class="w-full h-full relative z-10 overflow-visible" fill="none" preserveAspectRatio="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="chartGradientLight" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#2563EB" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#2563EB" stop-opacity="0.0"></stop>
+</linearGradient>
+</defs>
+<!-- Area Fill -->
+<path d="M0 100 L0 60 Q 15 70 30 40 T 60 50 T 85 20 L 100 30 L 100 100 Z" fill="url(#chartGradientLight)"></path>
+<!-- Line -->
+<path d="M0 60 Q 15 70 30 40 T 60 50 T 85 20 L 100 30" fill="none" stroke="#2563EB" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+<!-- Data Points -->
+<circle class="animate-pulse" cx="30" cy="40" fill="#ffffff" r="3" stroke="#2563EB" stroke-width="2"></circle>
+<circle cx="60" cy="50" fill="#ffffff" r="3" stroke="#2563EB" stroke-width="2"></circle>
+<circle class="animate-pulse" cx="85" cy="20" fill="#ffffff" r="3" stroke="#2563EB" stroke-width="2"></circle>
+</svg>
+<!-- X-Axis Labels -->
+<div class="absolute bottom-0 left-0 w-full flex justify-between px-2 font-label text-[10px] text-on-surface-variant mt-4 uppercase tracking-widest">
+<span class="">00:00</span>
+<span class="">06:00</span>
+<span class="">12:00</span>
+<span class="">18:00</span>
+<span class="text-electric-cobalt font-semibold">Now</span>
+</div>
+</div>
+</div>
+<!-- ROI Summary Card -->
+<div class="glass-card p-6 col-span-1 md:col-span-4 flex flex-col justify-between relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-5">
+<span class="material-symbols-outlined text-8xl text-on-surface">account_balance</span>
+</div>
+<div class="relative z-10">
+<h3 class="font-headline text-lg font-semibold tracking-tight mb-3 text-on-surface flex items-center">
+<span class="material-symbols-outlined text-cyber-purple mr-2 text-xl">diamond</span>
+                        Enterprise ROI
+                    </h3>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed mb-6">
+                        Cumulative value generated through autonomous workflows and optimized compute routing.
+                    </p>
+<div class="space-y-5">
+<div class="flex justify-between items-end border-b border-outline-variant/30 pb-3">
+<span class="font-label text-xs text-on-surface-variant uppercase tracking-wider">Hours Saved</span>
+<span class="font-headline font-bold text-xl text-on-surface">1,240 <span class="text-sm text-on-surface-variant font-normal">h</span></span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/30 pb-3">
+<span class="font-label text-xs text-on-surface-variant uppercase tracking-wider">Resource Offset</span>
+<span class="font-headline font-bold text-xl text-emerald-600">$84.2K</span>
+</div>
+</div>
+</div>
+<button class="mt-8 w-full py-3 glass-button rounded-xl font-body font-medium text-sm flex items-center justify-center space-x-2 text-on-surface bg-cyber-purple/5 hover:bg-cyber-purple/10 border-cyber-purple/20 transition-all group relative z-10">
+<span class="material-symbols-outlined text-sm group-hover:translate-y-[2px] transition-transform">download</span>
+<span class="">Download Full Audit</span>
+</button>
+</div>
+<!-- Table Section: Autonomous Decisions Log -->
+<div class="glass-card p-0 col-span-1 md:col-span-12 overflow-hidden flex flex-col">
+<div class="p-6 border-b border-outline-variant/30 flex justify-between items-center bg-white/40">
+<h3 class="font-headline text-lg font-semibold tracking-tight text-on-surface flex items-center">
+<span class="material-symbols-outlined text-electric-cobalt mr-2 text-xl">list_alt</span>
+                        Autonomous Decisions Log
+                    </h3>
+<div class="flex space-x-2">
+<button class="glass-button p-2 rounded-lg text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-sm">search</span></button>
+<button class="glass-button p-2 rounded-lg text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-sm">filter_list</span></button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-white/30 font-label text-[10px] text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/30">
+<th class="px-6 py-4 font-semibold">Action Event</th>
+<th class="px-6 py-4 font-semibold">Agent Module</th>
+<th class="px-6 py-4 font-semibold text-center">Confidence</th>
+<th class="px-6 py-4 font-semibold">Business Impact</th>
+<th class="px-6 py-4 font-semibold text-right">Time</th>
+</tr>
+</thead>
+<tbody class="font-body text-sm divide-y divide-outline-variant/30">
+<!-- Row 1 -->
+<tr class="hover:bg-white/50 transition-colors group cursor-default">
+<td class="px-6 py-4 flex items-center space-x-3">
+<span class="w-2 h-2 rounded-full bg-electric-cobalt shadow-[0_0_8px_rgba(37,99,235,0.5)]"></span>
+<span class="font-medium text-on-surface transition-colors">Routing Optimization Auth</span>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-label text-xs">Network_Node_Alpha</td>
+<td class="px-6 py-4 text-center">
+<span class="inline-block px-2.5 py-1 rounded-md bg-electric-cobalt/10 font-label text-xs text-electric-cobalt border border-electric-cobalt/20 font-medium">0.99</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-emerald-100 text-xs font-medium border border-emerald-200 text-emerald-700">
+                                        High
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant font-label text-xs">12s ago</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-white/50 transition-colors group cursor-default">
+<td class="px-6 py-4 flex items-center space-x-3">
+<span class="w-2 h-2 rounded-full bg-gray-400"></span>
+<span class="font-medium text-on-surface transition-colors">Data Normalization Sync</span>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-label text-xs">ETL_Stream_Processor</td>
+<td class="px-6 py-4 text-center">
+<span class="inline-block px-2.5 py-1 rounded-md bg-white/50 font-label text-xs text-on-surface-variant border border-white/80 font-medium">0.95</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white/50 text-xs font-medium border border-white/80 text-on-surface-variant">
+                                        Low
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant font-label text-xs">4m ago</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-white/50 transition-colors group cursor-default">
+<td class="px-6 py-4 flex items-center space-x-3">
+<span class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]"></span>
+<span class="font-medium text-on-surface transition-colors">Security Policy Enforcement</span>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-label text-xs">Guardrail_Sentinel</td>
+<td class="px-6 py-4 text-center">
+<span class="inline-block px-2.5 py-1 rounded-md bg-cyber-purple/10 font-label text-xs text-cyber-purple border border-cyber-purple/20 font-medium">1.00</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-rose-100 text-xs font-medium border border-rose-200 text-rose-700">
+                                        Critical
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant font-label text-xs">18m ago</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Initialize Vanta.js NET Background -->
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.VANTA) {
+                VANTA.NET({
+                    el: "#vanta-bg",
+                    mouseControls: true,
+                    touchControls: true,
+                    gyroControls: false,
+                    minHeight: 200.00,
+                    minWidth: 200.00,
+                    scale: 1.00,
+                    scaleMobile: 1.00,
+                    color: 0x93c5fd,
+                    backgroundColor: 0xf9f9f9,
+                    points: 12.00,
+                    maxDistance: 22.00,
+                    spacing: 18.00,
+                    showDots: true
+                })
+            }
+        });
+    </script>
+
+
+
+
+</body></html>

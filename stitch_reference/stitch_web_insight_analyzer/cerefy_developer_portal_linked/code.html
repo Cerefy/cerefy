@@ -1,0 +1,481 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cerefy - Developer Portal</title>
+<!-- Google Fonts: Inter & Geist -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#fdfcfc",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#5e5e5d",
+                    "on-primary-fixed": "#1a1c1c",
+                    "surface-bright": "#f9f9f9",
+                    "on-background": "#1b1b1b",
+                    "on-secondary-fixed": "#1b1c1b",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-tint": "#5e5e5f",
+                    "tertiary-container": "#feffd7",
+                    "outline": "#747879",
+                    "surface-container-highest": "#e2e2e2",
+                    "inverse-on-surface": "#f1f1f1",
+                    "inverse-primary": "#c7c6c6",
+                    "on-surface": "#1b1b1b",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed-variant": "#464747",
+                    "tertiary-fixed": "#e4e5bd",
+                    "surface-container": "#eeeeee",
+                    "tertiary-fixed-dim": "#c8c9a3",
+                    "surface-container-high": "#e8e8e8",
+                    "tertiary": "#5e6141",
+                    "primary-fixed": "#e3e2e2",
+                    "on-tertiary-container": "#747655",
+                    "outline-variant": "#c4c7c8",
+                    "background": "#f9f9f9",
+                    "on-error-container": "#93000a",
+                    "surface": "#f9f9f9",
+                    "on-primary-container": "#737474",
+                    "secondary-fixed": "#e4e2e0",
+                    "surface-variant": "#e2e2e2",
+                    "secondary-container": "#e1dfdd",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#1b1d05",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#c8c6c4",
+                    "on-tertiary-fixed-variant": "#47492c",
+                    "primary": "#5e5e5f",
+                    "surface-container-low": "#f3f3f3",
+                    "primary-fixed-dim": "#c7c6c6",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#444748",
+                    "inverse-surface": "#303030",
+                    "error": "#ba1a1a",
+                    "on-secondary-container": "#636361",
+                    "on-secondary-fixed-variant": "#474746",
+                    "surface-dim": "#dadada"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.5rem",
+                    "sm": "0.25rem",
+                    "md": "0.75rem",
+                    "lg": "1rem",
+                    "xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                "unit": "4px",
+                "gutter": "24px",
+                "margin-site": "64px",
+                "margin-mobile": "20px",
+                "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter", "sans-serif"],
+                    "display": ["Inter", "sans-serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Geist", "monospace"]
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        /* Kinetic Precision specific typography overrides to match config exactly */
+        .text-display-lg { font-size: 72px; font-weight: 700; line-height: 1.1; letter-spacing: -0.04em; }
+        .text-headline-md { font-size: 32px; font-weight: 600; line-height: 1.3; letter-spacing: -0.02em; }
+        .text-body-lg { font-size: 18px; font-weight: 400; line-height: 1.6; }
+        .text-body-md { font-size: 16px; font-weight: 400; line-height: 1.5; }
+        .text-label-mono { font-size: 14px; font-weight: 500; line-height: 1.2; letter-spacing: 0.05em; font-family: 'Geist', monospace; }
+        .text-caption { font-size: 12px; font-weight: 500; line-height: 1.4; letter-spacing: 0.01em; }
+        
+        /* Custom scrollbar for logs */
+        .log-scroll::-webkit-scrollbar { width: 4px; }
+        .log-scroll::-webkit-scrollbar-track { background: transparent; }
+        .log-scroll::-webkit-scrollbar-thumb { background: #dadada; border-radius: 4px; }
+        
+        /* Subtle glowing glow behind bento cards */
+        .bento-glow::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, var(--tw-colors-primary-fixed) 0%, transparent 50%);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.5s ease;
+        }
+        .bento-card:hover .bento-glow::before {
+            opacity: 0.25;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased min-h-screen flex selection:bg-surface-tint selection:text-on-primary">
+<!-- Shared Component: SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/50 bg-surface-container-lowest flex flex-col py-6 space-y-2 z-40">
+<!-- Header -->
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzvrmrb5hLovIJnidVgKneeSW5i6y3fPWgt6xg1hcgrhMAuF1DEVLxOvN4QST6rm-HlHCC098GSy2aNxXkEQzAYfFRHYh091vsk4Q8b_4jmMoy2u3mNiR7R8cgJ9czUzkyyrrNPpbp6ITGW7qCLG6cdfqk57sQ_IObQEQuEYf9yYfmxRwdCgi59TvT4rmI0YwKRrGt_jPYZQR5f6wxz_sjmvj3zvdHG1Tz8NM3fQP0sD1L43eSBqKOrG-VMGTkcsHDXg" alt="Cerefy Logo" class="w-full h-full object-cover"></div><div><h1 class="font-headline text-body-lg font-bold text-on-surface tracking-tight">Cerefy</h1><p class="font-body text-caption text-on-surface-variant">Enterprise Intelligence</p></div></div>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex-1 px-2 space-y-1">
+<!-- Active Tab (Dashboard -> conceptually mapping Developer Portal here) -->
+<a class="bg-secondary-container text-on-secondary-container rounded-lg mx-2 flex items-center gap-3 px-4 py-2 cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-body-lg" data-icon="dashboard">dashboard</span>
+<span class="font-body text-body-md font-medium">Dashboard</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-body-lg" data-icon="smart_toy">smart_toy</span>
+<span class="font-body text-body-md">Agent Studio</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-body-lg" data-icon="database">database</span>
+<span class="font-body text-body-md">Enterprise Memory</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-body-lg" data-icon="monitoring">monitoring</span>
+<span class="font-body text-body-md">Analytics</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-body-lg" data-icon="verified_user">verified_user</span>
+<span class="font-body text-body-md">Compliance</span>
+</a>
+</div>
+<!-- Footer Tabs -->
+<div class="px-2 space-y-1 mt-auto">
+<a class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-body-lg" data-icon="help">help</span>
+<span class="font-body text-body-md">Help</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-body-lg" data-icon="description">description</span>
+<span class="font-body text-body-md">Documentation</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="px-4 mt-4">
+<button class="w-full bg-surface-container border border-outline-variant/30 text-on-surface font-body text-body-md py-2 rounded-lg hover:bg-surface-container-high transition-colors font-medium">
+                Upgrade Plan
+            </button>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="ml-64 flex-1 p-margin-site max-w-container-max relative">
+<!-- Ambient background for antigravity feel -->
+<div class="absolute top-0 right-0 w-[800px] h-[600px] bg-primary-fixed/20 blur-[100px] rounded-full pointer-events-none -z-10"></div>
+<!-- Page Header -->
+<header class="flex justify-between items-end mb-12">
+<div>
+<div class="inline-flex items-center gap-2 px-2 py-1 bg-surface-container border border-outline-variant/20 rounded-full mb-3">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span class="text-label-mono text-on-surface-variant">System Status: Operational</span>
+</div>
+<h2 class="text-headline-md text-on-surface tracking-tighter">Developer Portal</h2>
+<p class="text-body-md text-on-surface-variant mt-2 max-w-xl">Manage API integration, monitor real-time orchestration streams, and configure webhook endpoints for enterprise deployment.</p>
+</div>
+<button class="bg-on-surface text-on-primary font-body text-body-md font-medium px-5 py-2.5 rounded-lg hover:bg-surface-tint transition-all hover:-translate-y-0.5 shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-body-md" data-icon="key">key</span>
+                Generate Key
+            </button>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Bento Card: SDK Initialization (Span 8) -->
+<div class="bento-card col-span-12 md:col-span-8 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm relative overflow-hidden group">
+<div class="bento-glow"></div>
+<div class="p-8 relative z-10 h-full flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="terminal">terminal</span>
+<h3 class="font-headline text-body-lg font-semibold text-on-surface">Cerefy SDK Initialization</h3>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant text-caption rounded-full border border-outline-variant/20">Python</span>
+<span class="px-3 py-1 bg-surface-bright text-on-surface-variant text-caption rounded-full border border-outline-variant/20 opacity-50">Node.js</span>
+</div>
+</div>
+<div class="flex-1 bg-inverse-surface rounded-lg p-5 border border-outline-variant/10 shadow-inner overflow-x-auto relative">
+<button class="absolute top-4 right-4 text-outline hover:text-inverse-on-surface transition-colors" title="Copy code">
+<span class="material-symbols-outlined text-body-md" data-icon="content_copy">content_copy</span>
+</button>
+<pre class="text-label-mono text-inverse-on-surface whitespace-pre-wrap"><code><span class="text-surface-tint">from</span> cerefy <span class="text-surface-tint">import</span> CerefyOS
+
+<span class="text-outline"># Initialize the Cerefy enterprise client</span>
+client = CerefyOS(
+    api_key=<span class="text-tertiary-fixed-dim">"cfy_live_xxxxxxxxxxxxx"</span>,
+    environment=<span class="text-tertiary-fixed-dim">"production"</span>,
+    options={
+        <span class="text-tertiary-fixed-dim">"memory_allocation"</span>: <span class="text-secondary-fixed">"high_throughput"</span>,
+        <span class="text-tertiary-fixed-dim">"enable_telemetry"</span>: <span class="text-surface-tint">True</span>
+    }
+)
+
+<span class="text-outline"># Orchestrate a base agent</span>
+agent = client.studio.deploy(
+    agent_id=<span class="text-tertiary-fixed-dim">"ag_financial_analyst_v2"</span>,
+    sync=<span class="text-surface-tint">True</span>
+)</code></pre>
+</div>
+</div>
+</div>
+<!-- Bento Card: Resource Allocation (Span 4) -->
+<div class="bento-card col-span-12 md:col-span-4 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm relative overflow-hidden">
+<div class="p-8 relative z-10 flex flex-col h-full">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="pie_chart">pie_chart</span>
+<h3 class="font-headline text-body-lg font-semibold text-on-surface">Resource Allocation</h3>
+</div>
+<div class="flex-1 flex flex-col justify-center gap-6">
+<!-- Compute Metric -->
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="text-label-mono text-on-surface-variant">Compute (vCPU)</span>
+<span class="font-headline font-semibold text-on-surface">64%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-on-surface rounded-full w-[64%] relative overflow-hidden">
+<div class="absolute inset-0 bg-white/20 -skew-x-12 animate-[shimmer_2s_infinite]"></div>
+</div>
+</div>
+</div>
+<!-- Memory Metric -->
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="text-label-mono text-on-surface-variant">Enterprise Memory</span>
+<span class="font-headline font-semibold text-on-surface">82%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[82%] relative overflow-hidden">
+<div class="absolute inset-0 bg-white/20 -skew-x-12 animate-[shimmer_2s_infinite_0.5s]"></div>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/20 flex justify-between items-center">
+<span class="text-caption text-on-surface-variant">Cluster: US-East-1</span>
+<span class="text-caption text-tertiary font-medium">Stable</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Card: Active API Keys (Span 6) -->
+<div class="bento-card col-span-12 md:col-span-6 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm relative overflow-hidden">
+<div class="p-8 relative z-10 h-full flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="vpn_key">vpn_key</span>
+<h3 class="font-headline text-body-lg font-semibold text-on-surface">Active API Keys</h3>
+</div>
+<button class="text-caption font-medium text-on-surface-variant hover:text-on-surface transition-colors">Manage All</button>
+</div>
+<div class="flex-1 flex flex-col gap-3">
+<!-- Key Row -->
+<div class="flex items-center justify-between p-4 rounded-lg bg-surface-bright border border-outline-variant/20 hover:border-outline-variant/50 transition-colors">
+<div>
+<h4 class="text-body-md font-medium text-on-surface">Production Main</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-label-mono text-on-surface-variant">cfy_live_...9f2a</span>
+<span class="px-2 py-0.5 bg-tertiary-container text-on-tertiary-container text-[10px] uppercase font-bold rounded-sm tracking-wider">Prod</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-outline hover:text-on-surface transition-colors bg-surface-container-lowest rounded-md shadow-sm border border-outline-variant/20">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-outline hover:text-on-surface transition-colors bg-surface-container-lowest rounded-md shadow-sm border border-outline-variant/20">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<!-- Key Row -->
+<div class="flex items-center justify-between p-4 rounded-lg bg-surface-bright border border-outline-variant/20 hover:border-outline-variant/50 transition-colors">
+<div>
+<h4 class="text-body-md font-medium text-on-surface">Staging Integration</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-label-mono text-on-surface-variant">cfy_test_...4b1c</span>
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] uppercase font-bold rounded-sm tracking-wider">Test</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-outline hover:text-on-surface transition-colors bg-surface-container-lowest rounded-md shadow-sm border border-outline-variant/20">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-outline hover:text-on-surface transition-colors bg-surface-container-lowest rounded-md shadow-sm border border-outline-variant/20">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Card: System Health Logs (Span 6) -->
+<div class="bento-card col-span-12 md:col-span-6 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm relative overflow-hidden flex flex-col">
+<div class="p-6 pb-2 border-b border-outline-variant/20 flex justify-between items-center relative z-10 bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="stream">stream</span>
+<h3 class="font-headline text-body-lg font-semibold text-on-surface">System Health Logs</h3>
+</div>
+<div class="flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+</span>
+<span class="text-caption text-on-surface-variant">Live</span>
+</div>
+</div>
+<div class="flex-1 bg-surface-bright p-4 overflow-y-auto log-scroll relative z-10 h-64" id="log-container">
+<div class="space-y-2 text-label-mono text-xs" id="log-stream"><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:44:17</span>
+                <span class="text-tertiary">[INFO]</span>
+                <span class="text-on-surface-variant">Database health check: OK.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:44:20</span>
+                <span class="text-tertiary">[INFO]</span>
+                <span class="text-on-surface-variant">Routing request to regional cluster.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:44:22</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Vector index rebuild queued.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:44:25</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Spike in computational load detected.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:44:35</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Spike in computational load detected.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:44:43</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Spike in computational load detected.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:44:53</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Vector index rebuild queued.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:44:58</span>
+                <span class="text-tertiary">[INFO]</span>
+                <span class="text-on-surface-variant">Agent idle state engaged.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:05</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Spike in computational load detected.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:07</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Vector index rebuild queued.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:08</span>
+                <span class="text-tertiary">[INFO]</span>
+                <span class="text-on-surface-variant">Database health check: OK.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:13</span>
+                <span class="text-tertiary">[INFO]</span>
+                <span class="text-on-surface-variant">Routing request to regional cluster.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:14</span>
+                <span class="text-tertiary">[INFO]</span>
+                <span class="text-on-surface-variant">Routing request to regional cluster.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:16</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Spike in computational load detected.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:17</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Vector index rebuild queued.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:28</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Vector index rebuild queued.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:32</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Vector index rebuild queued.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:38</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Spike in computational load detected.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:40</span>
+                <span class="text-tertiary">[INFO]</span>
+                <span class="text-on-surface-variant">Agent idle state engaged.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:44</span>
+                <span class="text-tertiary">[INFO]</span>
+                <span class="text-on-surface-variant">Token limits verified for partition_a.</span>
+            </div><div class="flex gap-3 animate-[fade-in_0.3s_ease-out]">
+                <span class="text-outline">17:45:47</span>
+                <span class="text-primary-fixed-dim">[WARN]</span>
+                <span class="text-on-surface-variant">Spike in computational load detected.</span>
+            </div></div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interaction: Fake live log stream
+        const logStream = document.getElementById('log-stream');
+        const logContainer = document.getElementById('log-container');
+        
+        const logTypes = [
+            { level: '[INFO]', color: 'text-tertiary', msgs: ['Token limits verified for partition_a.', 'Agent idle state engaged.', 'Database health check: OK.', 'Routing request to regional cluster.'] },
+            { level: '[WARN]', color: 'text-primary-fixed-dim', msgs: ['Spike in computational load detected.', 'Vector index rebuild queued.'] },
+            { level: '[ERROR]', color: 'text-error', msgs: ['Timeout retrieving external context. Retrying...'] }
+        ];
+
+        function getTimestamp() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
+        }
+
+        setInterval(() => {
+            // Randomly decide to add a log (creates variable pacing)
+            if(Math.random() > 0.4) return;
+
+            const typeSet = logTypes[Math.floor(Math.random() * (Math.random() > 0.1 ? 2 : 3))]; // favor info/warn
+            const msg = typeSet.msgs[Math.floor(Math.random() * typeSet.msgs.length)];
+            
+            const div = document.createElement('div');
+            div.className = 'flex gap-3 animate-[fade-in_0.3s_ease-out]';
+            div.innerHTML = `
+                <span class="text-outline">${getTimestamp()}</span>
+                <span class="${typeSet.color}">${typeSet.level}</span>
+                <span class="text-on-surface-variant">${msg}</span>
+            `;
+            
+            logStream.appendChild(div);
+            
+            // Keep only last 15 logs to prevent DOM bloat
+            if(logStream.children.length > 15) {
+                logStream.removeChild(logStream.firstChild);
+            }
+            
+            // Auto scroll to bottom
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+        }, 1500);
+
+        // Simple Tailwind animation config additions for the JS effects
+        tailwind.config.theme.extend.keyframes = {
+            ...tailwind.config.theme.extend.keyframes,
+            shimmer: {
+                '100%': { transform: 'translateX(100%)' }
+            }
+        }
+    </script>
+
+
+
+
+</body></html>

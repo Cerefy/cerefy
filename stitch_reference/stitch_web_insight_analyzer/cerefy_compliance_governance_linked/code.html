@@ -1,0 +1,386 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cerefy OS - Compliance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed": "#e3e2e2",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-primary-container": "#737474",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-secondary-container": "#636361",
+                        "tertiary-fixed-dim": "#c8c9a3",
+                        "on-primary-fixed-variant": "#464747",
+                        "on-surface-variant": "#444748",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "secondary-container": "#e1dfdd",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-tertiary-fixed": "#1b1d05",
+                        "primary-container": "#fdfcfc",
+                        "surface-variant": "#e2e2e2",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "inverse-primary": "#c7c6c6",
+                        "outline": "#747879",
+                        "inverse-surface": "#303030",
+                        "on-secondary-fixed-variant": "#474746",
+                        "tertiary-fixed": "#e4e5bd",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f3f3f3",
+                        "on-tertiary-fixed-variant": "#47492c",
+                        "on-background": "#1b1b1b",
+                        "outline-variant": "#c4c7c8",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#dadada",
+                        "surface-tint": "#5e5e5f",
+                        "on-primary-fixed": "#1a1c1c",
+                        "surface-container-high": "#e8e8e8",
+                        "tertiary-container": "#feffd7",
+                        "tertiary": "#5e6141",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#e4e2e0",
+                        "surface-container": "#eeeeee",
+                        "surface": "#f9f9f9",
+                        "primary-fixed-dim": "#c7c6c6",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f9f9f9",
+                        "on-surface": "#1b1b1b",
+                        "secondary": "#5e5e5d",
+                        "on-tertiary-container": "#747655",
+                        "primary": "#5e5e5f",
+                        "surface-bright": "#f9f9f9"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "sm": "0.25rem",
+                        "md": "0.75rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "display": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Geist"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f9f9f9;
+            color: #1b1b1b;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .antigravity-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: linear-gradient(135deg, #f9f9f9 0%, #eeeeee 100%);
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(94, 94, 95, 0.1);
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb-2 {
+            width: 600px;
+            height: 600px;
+            background: rgba(200, 201, 163, 0.15); /* tertiary-fixed-dim */
+            bottom: -200px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+        
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(228, 226, 224, 0.2); /* secondary-fixed */
+            top: 40%;
+            left: 60%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            50% {
+                transform: translate(50px, 30px) scale(1.05);
+            }
+            100% {
+                transform: translate(-30px, -50px) scale(0.95);
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(196, 199, 200, 0.3); /* outline-variant */
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02);
+        }
+
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #1b1b1b;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #1b1b1b;
+        }
+        
+        /* Nav active state override for specificity */
+        .nav-item.active {
+            background-color: #e1dfdd !important; /* secondary-container */
+            color: #636361 !important; /* on-secondary-container */
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex text-on-surface">
+<!-- Antigravity Background -->
+<div class="antigravity-bg">
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+</div>
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/50 flex flex-col py-6 space-y-2 z-40 hidden md:flex">
+<div class="px-6 mb-8 flex items-center gap-3">
+<img alt="Cerefy Logo" class="w-8 h-8 rounded-sm object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtnKnnLZtHYdenvR2qTum1CtOQK-qQvXz_dw2BJHGqMCgoiYsldkrhY-KUJUePjFQpSET2oStaG6VuC2SH0daNMtViKWRQgYnyWfBSXATOT0Ilry2jvPuouoPvSeFkOFko6VFTRxvde-ZkEF2WIshp9Jf-oYPRIPCmOCF5bfPalSdX5_ZD9tPKpqkMwn0XHvVghs3zPP-M-x4l7d0vjEo3kVW_1L2xVBz6NVYvWth28E93EHBoOvT4sD9FZa6IcDzQtQ">
+<div>
+<h1 class="font-headline text-headline-md font-bold text-on-surface text-xl leading-tight tracking-tight">Cerefy</h1>
+<p class="font-body text-caption text-on-surface-variant">Enterprise Intelligence</p>
+</div>
+</div>
+<div class="flex-1 px-4 space-y-1">
+<a class="nav-item flex items-center gap-3 px-4 py-2 text-body-md font-body text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-lg transition-all duration-200" href="#dashboard">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+                Dashboard
+            </a>
+<a class="nav-item flex items-center gap-3 px-4 py-2 text-body-md font-body text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-lg transition-all duration-200" href="#agent-studio">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">smart_toy</span>
+                Agent Studio
+            </a>
+<a class="nav-item flex items-center gap-3 px-4 py-2 text-body-md font-body text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-lg transition-all duration-200" href="#memory">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">database</span>
+                Enterprise Memory
+            </a>
+<a class="nav-item flex items-center gap-3 px-4 py-2 text-body-md font-body text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-lg transition-all duration-200" href="#analytics">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">monitoring</span>
+                Analytics
+            </a>
+<a class="nav-item active flex items-center gap-3 px-4 py-2 text-body-md font-body mx-2 rounded-lg transition-all duration-200 cursor-pointer" href="#compliance">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+                Compliance
+            </a>
+</div>
+<div class="px-6 mt-auto space-y-4">
+<button class="w-full bg-on-surface text-surface-container-lowest rounded-lg py-2 font-body text-body-md font-medium hover:bg-on-surface/90 transition-colors">
+                Upgrade Plan
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-2 py-1.5 text-caption font-body text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+                    Help
+                </a>
+<a class="flex items-center gap-3 px-2 py-1.5 text-caption font-body text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">description</span>
+                    Documentation
+                </a>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 relative min-h-screen flex flex-col">
+<!-- TopNavBar (Mobile Only / Responsive Header) -->
+<header class="bg-surface/80 backdrop-blur-md fixed top-0 w-full z-50 border-b border-outline-variant/30 shadow-sm flex justify-between items-center px-4 h-16 md:hidden">
+<div class="flex items-center gap-2">
+<img alt="Cerefy Logo" class="w-6 h-6 rounded-sm object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiMYOVyM9RUlQQqpCNHgHM-sTKBhbZiO2ZfzO3vsB63tsYa-UeErYJZsl5PSg8xBWmMxhfzouI9n713ivLVAvQ7XcX-scb-5L_bs3aa0DNg3wmcxEgbyE-0Q8BBSylmjm9uRNChKpqLMl9OfApsZ6DhE8Y-CaJ_rf2CkALU3XywLYH9QnTl_q2kNQhQKoRmjrnBNYIAmFaI9ARKKzwEKPhbNTyqVYm8c7Iv_w9CdTkGYOGKroWXbD-93_nOdoeYdIweg">
+<span class="font-headline text-body-lg font-bold tracking-tighter text-on-surface">Cerefy</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 p-6 md:p-12 pt-24 md:pt-12 max-w-7xl mx-auto w-full space-y-8">
+<header class="mb-8">
+<h2 class="font-headline text-headline-md font-bold text-on-surface tracking-tight">Compliance &amp; Governance</h2>
+<p class="font-body text-body-lg text-on-surface-variant mt-2">Manage enterprise security posture, agent guardrails, and audit trails.</p>
+</header>
+<!-- 1. Security Posture Bento Grid -->
+<section>
+<h3 class="font-headline text-body-lg font-semibold text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">shield</span> Security Posture
+                </h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- SOC2 Card -->
+<div class="glass-card rounded-xl p-6 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-tertiary-container/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="bg-tertiary-container text-on-tertiary-container p-2 rounded-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<span class="bg-surface-container-high text-on-surface px-2 py-1 rounded-full font-label text-[10px] tracking-wider uppercase font-medium">Active</span>
+</div>
+<h4 class="font-headline text-body-lg font-bold text-on-surface relative z-10">SOC2 Type II</h4>
+<p class="font-body text-caption text-on-surface-variant mt-1 relative z-10">Continuous monitoring enabled. Last attestation: 12 days ago.</p>
+<div class="mt-4 flex items-center gap-2 text-xs font-label text-on-surface relative z-10">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> 100% Controls Passed
+                        </div>
+</div>
+<!-- GDPR Card -->
+<div class="glass-card rounded-xl p-6 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-secondary-container/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="bg-secondary-container text-on-secondary-container p-2 rounded-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">public</span>
+</div>
+<span class="bg-surface-container-high text-on-surface px-2 py-1 rounded-full font-label text-[10px] tracking-wider uppercase font-medium">Active</span>
+</div>
+<h4 class="font-headline text-body-lg font-bold text-on-surface relative z-10">GDPR Ready</h4>
+<p class="font-body text-caption text-on-surface-variant mt-1 relative z-10">Data residency forced to EU-Central. Right-to-forget API enabled.</p>
+<div class="mt-4 flex items-center gap-2 text-xs font-label text-on-surface relative z-10">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Zero Violations
+                        </div>
+</div>
+<!-- HIPAA Card -->
+<div class="glass-card rounded-xl p-6 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-fixed-dim/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="bg-surface-variant text-on-surface-variant p-2 rounded-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<span class="bg-surface-container-highest text-on-surface px-2 py-1 rounded-full font-label text-[10px] tracking-wider uppercase font-medium">Configuring</span>
+</div>
+<h4 class="font-headline text-body-lg font-bold text-on-surface relative z-10">HIPAA Compliant</h4>
+<p class="font-body text-caption text-on-surface-variant mt-1 relative z-10">BAA signed. Requires additional encryption-at-rest configuration.</p>
+<div class="mt-4 flex items-center gap-2 text-xs font-label text-on-surface relative z-10">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span> Action Required
+                        </div>
+</div>
+</div>
+</section>
+<!-- 2. AI Guardrails -->
+<section>
+<h3 class="font-headline text-body-lg font-semibold text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">tune</span> AI Guardrails
+                </h3>
+<div class="glass-card rounded-xl border border-outline-variant/30 overflow-hidden">
+<div class="divide-y divide-outline-variant/20">
+<!-- PII Scrubbing -->
+<div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-surface-container-lowest/50 transition-colors">
+<div class="flex-1">
+<div class="flex items-center gap-2">
+<h4 class="font-headline text-body-md font-medium text-on-surface">PII Scrubbing</h4>
+<span class="bg-tertiary-container/50 text-on-tertiary-container px-2 py-0.5 rounded font-label text-[10px] uppercase">Strict</span>
+</div>
+<p class="font-body text-caption text-on-surface-variant mt-1">Automatically detect and redact Personally Identifiable Information from user prompts before reaching the LLM.</p>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-outline-variant transition-transform duration-200" id="toggle1" name="toggle" type="checkbox" style="transform: translateX(100%);">
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer transition-colors duration-200" for="toggle1"></label>
+</div>
+</div>
+<!-- Bias Detection -->
+<div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-surface-container-lowest/50 transition-colors">
+<div class="flex-1">
+<h4 class="font-headline text-body-md font-medium text-on-surface">Bias Detection</h4>
+<p class="font-body text-caption text-on-surface-variant mt-1">Run secondary safety model alongside primary generation to flag potentially biased outputs.</p>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-outline-variant transition-transform duration-200" id="toggle2" name="toggle" type="checkbox" style="transform: translateX(100%);">
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer transition-colors duration-200" for="toggle2"></label>
+</div>
+</div>
+<!-- Token Budgeting -->
+<div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-surface-container-lowest/50 transition-colors">
+<div class="flex-1">
+<div class="flex items-center gap-2">
+<h4 class="font-headline text-body-md font-medium text-on-surface">Token Budgeting</h4>
+<span class="bg-secondary-container/50 text-on-secondary-container px-2 py-0.5 rounded font-label text-[10px] uppercase">Warning @ 80%</span>
+</div>
+<p class="font-body text-caption text-on-surface-variant mt-1">Enforce strict token limits per agent deployment to prevent runaway cost accumulation.</p>
+</div>
+<button class="px-4 py-2 bg-surface-container border border-outline-variant/30 rounded-lg font-body text-caption font-medium hover:bg-surface-container-high transition-colors">
+                                Configure Limits
+                            </button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Component -->
+<footer class="bg-surface-container-low border-t border-outline-variant/20 py-8 mt-auto z-10 relative">
+<div class="flex flex-col md:flex-row justify-between items-center px-6 md:px-16 max-w-7xl mx-auto w-full gap-4">
+<p class="font-headline text-caption font-semibold text-on-surface-variant">© 2024 Cerefy Enterprise Intelligence. All rights reserved.</p>
+<div class="flex flex-wrap gap-4 md:gap-6">
+<a class="font-body text-caption text-on-surface-variant/70 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-body text-caption text-on-surface-variant/70 hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-body text-caption text-on-surface-variant/70 hover:text-primary transition-colors" href="#">Security Architecture</a>
+<a class="font-body text-caption text-on-surface-variant/70 hover:text-primary transition-colors" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+</main>
+<script>
+        // Simple toggle logic for the custom CSS toggle switch
+        document.querySelectorAll('.toggle-checkbox').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                if(this.checked) {
+                    this.style.transform = 'translateX(100%)';
+                    this.style.borderColor = '#1b1b1b';
+                    label.style.backgroundColor = '#1b1b1b';
+                } else {
+                    this.style.transform = 'translateX(0)';
+                    this.style.borderColor = '#c4c7c8';
+                    label.style.backgroundColor = '#c4c7c8';
+                }
+            });
+            // Init state
+            if(toggle.checked) {
+                toggle.style.transform = 'translateX(100%)';
+            }
+        });
+    </script>
+
+
+
+
+</body></html>

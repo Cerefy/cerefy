@@ -1,0 +1,303 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Neural Core Management - Cerefy OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-surface": "#303030",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f9f9f9",
+                        "on-tertiary-fixed": "#1b1d05",
+                        "surface-dim": "#dadada",
+                        "on-background": "#1b1b1b",
+                        "on-surface": "#1b1b1b",
+                        "on-surface-variant": "#444748",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#47492c",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e2e2e2",
+                        "on-secondary-container": "#636361",
+                        "secondary-fixed": "#e4e2e0",
+                        "outline": "#747879",
+                        "on-primary-fixed": "#1a1c1c",
+                        "tertiary-fixed": "#e4e5bd",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c4c7c8",
+                        "primary-fixed-dim": "#c7c6c6",
+                        "on-primary-container": "#737474",
+                        "tertiary-fixed-dim": "#c8c9a3",
+                        "surface-container-low": "#f3f3f3",
+                        "primary": "#5e5e5f",
+                        "secondary-container": "#e1dfdd",
+                        "primary-fixed": "#e3e2e2",
+                        "secondary": "#5e5e5d",
+                        "on-primary-fixed-variant": "#464747",
+                        "surface-container-highest": "#e2e2e2",
+                        "primary-container": "#fdfcfc",
+                        "tertiary": "#5e6141",
+                        "inverse-primary": "#c7c6c6",
+                        "surface": "#f9f9f9",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e8e8e8",
+                        "on-tertiary-container": "#747655",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#474746",
+                        "surface-tint": "#5e5e5f",
+                        "tertiary-container": "#feffd7",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "background": "#f9f9f9",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "surface-container": "#eeeeee"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "margin-site": "64px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "display": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Geist"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(253, 252, 252, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 229, 229, 0.5);
+        }
+        .glow-effect::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: radial-gradient(circle at 50% 50%, rgba(94, 94, 95, 0.15), transparent 70%);
+            z-index: -1;
+            border-radius: inherit;
+        }
+        
+        /* Node Animation */
+        .node-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Connecting Lines */
+        .svg-line {
+            stroke-dasharray: 10;
+            animation: dash 30s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -1000; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav aria-label="Main Navigation" class="bg-surface/80 backdrop-blur-md dark:bg-surface-dim/80 text-primary dark:text-primary-fixed font-headline text-body-md font-medium tracking-tight fixed top-0 w-full z-50 border-b border-outline-variant/30 dark:border-outline/20 shadow-sm flex justify-between items-center px-64px max-w-container-max mx-auto h-16">
+<div class="flex items-center space-x-8 h-full"><div class="flex items-center space-x-3 h-full"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVJEpdYskdLULQQ-P4VhAGqkroxJYxN5WWbuXP-z9PCo2D-1GDGN-QooXgPjbDzWJm8AXGU7NwEJpqWURHIedtv4H0Ib-E-iPVpH-EiJPT5RgNu_xChBOzVYhD5v47CRXOk5MO6_DZvBiJCkfsUMQ6RzW65xM3sPdPEN6dVMDqHEOVdyS-rE4isgkbcnevlTC0xD3eHKO3a2wTp12UxA-tI_Mt4T4BSekctNujnTrcNspOzJN8-wejaRzvCovbzIZgqg" alt="Cerefy Logo" class="w-8 h-8 object-contain"><span class="font-headline text-headline-md font-bold tracking-tighter text-on-surface dark:text-on-primary-fixed">Cerefy</span></div><div class="hidden md:flex space-x-6 h-full items-center"><a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-on-surface h-full flex items-center hover:bg-surface-container-high/50 transition-colors duration-200 px-3" href="#">Studio</a><a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-on-surface h-full flex items-center hover:bg-surface-container-high/50 transition-colors duration-200 px-3" href="#">Memory</a><a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-on-surface h-full flex items-center hover:bg-surface-container-high/50 transition-colors duration-200 px-3" href="#">Analytics</a><a class="text-on-surface dark:text-on-primary-fixed border-b-2 border-primary h-full flex items-center px-3" href="#">Compliance</a></div></div>
+<div class="flex items-center space-x-4">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="bg-on-surface text-surface-container-lowest px-4 py-2 rounded font-medium hover:bg-inverse-surface transition-colors text-sm active:scale-95 transition-transform">
+                Deploy Agent
+            </button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant/30">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A macro shot of a sleek, abstract geometric sphere composed of iridescent glass and polished dark metal, resting on a stark white surface. The lighting is crisp and modern, creating soft caustics and sharp reflections, embodying a highly advanced, pristine tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSriOcvzR9HvE7LckTKz_Xhj-9TLSnW7LGXluuCEsXdwDYKGYDG9RaGoQpTJhdbPrLcDm25fA14XE1aIQkhfnAH1fvgJ9hX4_JtADPehpfTvKniuIgytFlomqYNlcTTQL1m5XAUGUmcRMj1lLtxynffuBpt82rHqpZ9SxOe73UwpESblOd-tipitHRLvaRBiCYGIhWgW1BHqA0OQjQOoxv_VefIoJlXv9XF1FpyGzHvbJzMLKWFww5">
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 mt-16 px-gutter md:px-margin-site max-w-container-max mx-auto w-full py-8 space-y-8 flex flex-col h-[calc(100vh-4rem)]">
+<!-- Header Section -->
+<header class="flex justify-between items-end flex-shrink-0">
+<div>
+<h1 class="font-headline text-headline-md tracking-tight text-on-surface mb-2">Neural Core Management</h1>
+<p class="text-on-surface-variant font-body text-body-lg">Active topology and node distribution.</p>
+</div>
+<div class="flex space-x-3">
+<button class="glass-panel text-on-surface px-4 py-2 rounded-lg font-medium hover:bg-surface-container-low transition-colors text-sm flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">refresh</span>
+<span class="">Sync State</span>
+</button>
+<button class="bg-on-surface text-surface-container-lowest px-4 py-2 rounded-lg font-medium hover:bg-inverse-surface transition-colors text-sm flex items-center space-x-2 shadow-sm">
+<span class="material-symbols-outlined text-sm">add</span>
+<span class="">Init Node</span>
+</button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter flex-1 min-h-0">
+<!-- Left Column: Map/Topology (Span 8) -->
+<div class="md:col-span-8 glass-panel rounded-xl flex flex-col relative overflow-hidden glow-effect">
+<div class="absolute inset-0 bg-surface/30 z-0"></div>
+<div class="p-6 relative z-10 flex justify-between items-center border-b border-outline-variant/20">
+<h2 class="font-headline text-body-lg font-semibold text-on-surface">Global Topology</h2>
+<div class="flex items-center space-x-4">
+<span class="flex items-center space-x-2 text-label-mono text-xs text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-[#10b981]"></span>
+<span class="">Optimal</span>
+</span>
+<span class="flex items-center space-x-2 text-label-mono text-xs text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+<span class="">High Load</span>
+</span>
+</div>
+</div>
+<!-- Interactive Map Area Placeholder -->
+<div class="flex-1 relative z-10 w-full h-full bg-surface-bright/50 overflow-hidden" id="topology-map">
+<!-- SVG Overlay for Lines -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<path class="svg-line" d="M 200,150 Q 300,100 450,200 T 700,150" fill="none" stroke="rgba(94, 94, 95, 0.2)" stroke-width="2"></path>
+<path class="svg-line" d="M 450,200 Q 500,350 650,300" fill="none" stroke="rgba(94, 94, 95, 0.2)" stroke-width="2"></path>
+<path class="svg-line" d="M 200,150 Q 150,300 300,350 T 450,200" fill="none" stroke="rgba(94, 94, 95, 0.2)" stroke-width="2"></path>
+</svg>
+<!-- Node 1 (Alpha) -->
+<div class="absolute top-[150px] left-[200px] -translate-x-1/2 -translate-y-1/2 cursor-pointer group" onclick="selectNode('Alpha')">
+<div class="absolute inset-0 rounded-full bg-[#10b981] node-pulse"></div>
+<div class="w-4 h-4 bg-[#10b981] rounded-full relative z-10 shadow-[0_0_10px_rgba(16,185,129,0.5)] border-2 border-surface-container-lowest"></div>
+<div class="absolute top-6 left-1/2 -translate-x-1/2 bg-inverse-surface text-surface-container-lowest text-label-mono text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            us-east-1 (Alpha)
+                        </div>
+</div>
+<!-- Node 2 (Beta) -->
+<div class="absolute top-[200px] left-[450px] -translate-x-1/2 -translate-y-1/2 cursor-pointer group" onclick="selectNode('Beta')">
+<div class="absolute inset-0 rounded-full bg-[#f59e0b] node-pulse" style="animation-delay: 0.5s"></div>
+<div class="w-5 h-5 bg-[#f59e0b] rounded-full relative z-10 shadow-[0_0_10px_rgba(245,158,11,0.5)] border-2 border-surface-container-lowest"></div>
+<div class="absolute top-6 left-1/2 -translate-x-1/2 bg-inverse-surface text-surface-container-lowest text-label-mono text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            eu-central-1 (Beta)
+                        </div>
+</div>
+<!-- Node 3 (Gamma) -->
+<div class="absolute top-[150px] left-[700px] -translate-x-1/2 -translate-y-1/2 cursor-pointer group" onclick="selectNode('Gamma')">
+<div class="absolute inset-0 rounded-full bg-[#10b981] node-pulse" style="animation-delay: 1s"></div>
+<div class="w-3 h-3 bg-[#10b981] rounded-full relative z-10 shadow-[0_0_10px_rgba(16,185,129,0.5)] border-2 border-surface-container-lowest"></div>
+<div class="absolute top-5 left-1/2 -translate-x-1/2 bg-inverse-surface text-surface-container-lowest text-label-mono text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            ap-northeast (Gamma)
+                        </div>
+</div>
+</div>
+<!-- Overlay Stats -->
+<div class="absolute bottom-6 left-6 flex space-x-4 z-20">
+<div class="glass-panel px-4 py-2 rounded-lg flex flex-col">
+<span class="text-label-mono text-on-surface-variant text-xs">Total Nodes</span>
+<span class="font-headline font-semibold text-lg">24</span>
+</div>
+<div class="glass-panel px-4 py-2 rounded-lg flex flex-col">
+<span class="text-label-mono text-on-surface-variant text-xs">Network Load</span>
+<span class="font-headline font-semibold text-lg">42%</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Node Details (Span 4) -->
+<div class="md:col-span-4 flex flex-col space-y-gutter overflow-y-auto pr-2" id="node-details-panel">
+<!-- Selected Node Info -->
+<div class="glass-panel rounded-xl p-6 flex-shrink-0">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline text-body-lg font-semibold" id="selected-node-name">eu-central-1 (Beta)</h3>
+<span class="text-label-mono text-on-surface-variant text-xs">Primary Inference Cluster</span>
+</div>
+<span class="bg-surface-container px-2 py-1 rounded text-label-mono text-xs text-on-surface-variant flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span>
+<span class="">Active</span>
+</span>
+</div>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-label-mono text-xs mb-1">
+<span class="text-on-surface-variant">Compute Load</span>
+<span class="">87%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 87%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-label-mono text-xs mb-1">
+<span class="text-on-surface-variant">Memory Saturation</span>
+<span class="">62%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 62%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Technical Specs -->
+<div class="glass-panel rounded-xl p-6 flex-1 min-h-0 flex flex-col">
+<h3 class="font-headline text-body-md font-semibold mb-4 text-on-surface">Telemetry</h3>
+<div class="space-y-3 flex-1 overflow-y-auto pr-1">
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+<span class="text-label-mono text-xs text-on-surface-variant">Latency (p99)</span>
+<span class="font-mono text-sm">42ms</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+<span class="text-label-mono text-xs text-on-surface-variant">Context Window</span>
+<span class="font-mono text-sm">128k</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+<span class="text-label-mono text-xs text-on-surface-variant">Throughput</span>
+<span class="font-mono text-sm">2.4k t/s</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+<span class="text-label-mono text-xs text-on-surface-variant">Uptime</span>
+<span class="font-mono text-sm">99.99%</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="text-label-mono text-xs text-on-surface-variant">Hardware</span>
+<span class="font-mono text-sm">8x H100</span>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/20 grid grid-cols-2 gap-2">
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface py-2 rounded text-label-mono text-xs transition-colors">Rebalance</button>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface py-2 rounded text-label-mono text-xs transition-colors">Isolate</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        function selectNode(nodeName) {
+            const title = document.getElementById('selected-node-name');
+            title.textContent = `Selected: ${nodeName}`;
+            // In a real app, this would fetch and update the right panel data
+        }
+    </script>
+
+
+
+
+<footer class="bg-surface-container border-t border-outline-variant/30 py-8 px-gutter md:px-margin-site mt-auto"><div class="max-w-container-max mx-auto flex items-center space-x-3"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrgpqLYCeGakrxzepf7-ifcO0ooEB6xkSYsGF5YqwAj_d3BpA9Dwd6u70jmKkDDcC3H0rS_AWuXKEEJCgARR1akl-01IUeanda3O6l9gwpwtYNdh99RWTGseUMshMTMkdnNTgQgW0bEeQMMSJFEy4een4jsTfBbq_gZMXt2-45lCjdGBfupxsZNYhRTT8hMlQHHRx1QvGLmwINEyv6kOYClYA0iBLLxC6x42Cqbw-nQXOzcdLpE9bmNeJz_KA4UR_9kw" alt="Cerefy Logo" class="w-8 h-8 object-contain"><span class="font-headline text-lg font-bold tracking-tighter text-on-surface">Cerefy</span></div></footer></body></html>

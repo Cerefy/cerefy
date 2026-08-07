@@ -1,0 +1,418 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cerefy - Agent Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#e3e2e2",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-primary-container": "#737474",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-secondary-container": "#636361",
+                        "tertiary-fixed-dim": "#c8c9a3",
+                        "on-primary-fixed-variant": "#464747",
+                        "on-surface-variant": "#444748",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "secondary-container": "#e1dfdd",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-tertiary-fixed": "#1b1d05",
+                        "primary-container": "#fdfcfc",
+                        "surface-variant": "#e2e2e2",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "inverse-primary": "#c7c6c6",
+                        "outline": "#747879",
+                        "inverse-surface": "#303030",
+                        "on-secondary-fixed-variant": "#474746",
+                        "tertiary-fixed": "#e4e5bd",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f3f3f3",
+                        "on-tertiary-fixed-variant": "#47492c",
+                        "on-background": "#1b1b1b",
+                        "outline-variant": "#c4c7c8",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#dadada",
+                        "surface-tint": "#5e5e5f",
+                        "on-primary-fixed": "#1a1c1c",
+                        "surface-container-high": "#e8e8e8",
+                        "tertiary-container": "#feffd7",
+                        "tertiary": "#5e6141",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#e4e2e0",
+                        "surface-container": "#eeeeee",
+                        "surface": "#f9f9f9",
+                        "primary-fixed-dim": "#c7c6c6",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f9f9f9",
+                        "on-surface": "#1b1b1b",
+                        "secondary": "#5e5e5d",
+                        "on-tertiary-container": "#747655",
+                        "primary": "#5e5e5f",
+                        "surface-bright": "#f9f9f9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "display": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Geist"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+<style>
+        /* Base Styles */
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevent scroll on main body, handle in containers */
+        }
+
+        /* Shader Background Overlay (Simulated via CSS gradients since no placeholder provided) */
+        .shader-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, rgba(240,240,245,1) 0%, rgba(249,249,249,1) 100%);
+            /* Add subtle animation if desired via keyframes */
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(253, 252, 252, 0.7); /* primary-container with opacity */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(229, 229, 229, 0.5);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(196, 199, 200, 0.2); /* outline-variant */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.outline-variant');
+            border-radius: theme('borderRadius.full');
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+        
+        /* Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: theme('colors.on-surface');
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: theme('colors.surface-variant');
+            border-radius: theme('borderRadius.full');
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body class="antialiased flex h-screen w-screen overflow-hidden">
+<!-- Ambient Shader Background -->
+<div class="shader-bg"></div>
+<!-- Layout Container -->
+<div class="flex w-full h-full relative">
+<!-- ========================================== -->
+<!-- SIDE NAVIGATION (Shared Component)         -->
+<!-- ========================================== -->
+<nav class="h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/50 bg-surface-container-lowest z-40 flex flex-col py-6 space-y-2">
+<!-- Header Brand -->
+<div class="px-6 mb-8 flex items-center gap-3">
+<img alt="Cerefy Logo" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUsuUOeIV4nAERhQU5FIXA3r4St6TRhRGTRDa37ogRrB7OqJ4RQ7IQ8DTEEc5066Keui7HfESYeDyuXCrHjRpOdPbEXZao_nCR7yOkyM4MEUQg1h-_8P__lX2e2Qx8myKBrtCMC5NfVYQVNH_i5_m9Gp9PhktD0g_avKJhcPhs9dUr7zlS9k3elocgsv9Cs02L_Y35UGjTBjShypHx9p0gdyvytM-FIDNn62sMXqr6PXjkSMN6CusvlZm7WJqHTJtwvA">
+<div>
+<h1 class="font-headline text-headline-md font-bold text-on-surface text-xl">Cerefy</h1>
+<p class="font-body text-caption text-on-surface-variant">Enterprise Intelligence</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col gap-1 px-2">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer" href="#dashboard">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-body text-body-md">Dashboard</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg bg-secondary-container text-on-secondary-container font-medium cursor-pointer transition-all duration-200" href="#agent-studio">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span class="font-body text-body-md">Agent Studio</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer" href="#memory">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">database</span>
+<span class="font-body text-body-md">Enterprise Memory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer" href="#analytics">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">monitoring</span>
+<span class="font-body text-body-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer" href="#compliance">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">verified_user</span>
+<span class="font-body text-body-md">Compliance</span>
+</a>
+</div>
+<!-- Footer Links -->
+<div class="px-2 mt-auto flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">help</span>
+<span class="font-body text-body-md">Help</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">description</span>
+<span class="font-body text-body-md">Documentation</span>
+</a>
+</div>
+<div class="px-6 mt-4">
+<button class="w-full py-2 px-4 rounded-lg bg-surface-container text-on-surface font-label text-sm border border-outline-variant/30 hover:bg-surface-container-high transition-colors">
+                    Upgrade Plan
+                </button>
+</div>
+</nav>
+<!-- ========================================== -->
+<!-- MAIN CONTENT CANVAS                        -->
+<!-- ========================================== -->
+<main class="ml-64 flex-1 flex flex-col h-full overflow-hidden">
+<!-- TOP APP BAR (Contextual to Agent Studio) -->
+<header class="h-16 flex items-center justify-between px-8 border-b border-outline-variant/30 glass-panel z-30 shrink-0">
+<div class="flex items-center gap-4">
+<h2 class="font-headline text-lg font-semibold tracking-tight text-on-surface">Workspace: Finance Auditor</h2>
+<span class="px-2 py-0.5 rounded-full bg-surface-variant text-on-surface-variant font-label text-xs flex items-center gap-1 border border-outline-variant/50">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Draft
+                    </span>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-1.5 rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container-high transition-colors">
+                        Revert
+                    </button>
+<button class="px-4 py-1.5 rounded-lg text-sm font-medium bg-on-surface text-surface hover:bg-inverse-surface transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+                        Deploy Changes
+                    </button>
+</div>
+</header>
+<!-- THREE-COLUMN LAYOUT -->
+<div class="flex-1 flex overflow-hidden p-6 gap-6 h-[calc(100vh-64px)]">
+<!-- COLUMN 1: Workspace Sidebar (Active Agents) -->
+<aside class="w-64 shrink-0 flex flex-col gap-4 h-full">
+<div class="flex items-center justify-between px-2">
+<h3 class="font-headline text-sm font-semibold text-on-surface-variant uppercase tracking-wider">Active Agents</h3>
+<button class="text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-2 pr-2">
+<!-- Agent Item 1 -->
+<div class="p-3 rounded-lg border border-outline-variant/20 hover:bg-surface-container-low cursor-pointer transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md bg-primary-container border border-outline-variant/30 flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-lg">source</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body text-sm font-medium text-on-surface truncate">CEO Agent</p>
+<p class="font-label text-xs text-on-surface-variant truncate">v2.4 • Active</p>
+</div>
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+</div>
+</div>
+<!-- Agent Item 2 (Active Edit) -->
+<div class="p-3 rounded-lg border border-outline-variant/40 bg-surface-container-lowest shadow-sm cursor-pointer relative overflow-hidden">
+<div class="absolute inset-y-0 left-0 w-1 bg-on-surface"></div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-lg">account_balance</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body text-sm font-medium text-on-surface truncate">Finance Auditor</p>
+<p class="font-label text-xs text-on-surface-variant truncate">Draft Mode</p>
+</div>
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+</div>
+</div>
+<!-- Agent Item 3 -->
+<div class="p-3 rounded-lg border border-outline-variant/20 hover:bg-surface-container-low cursor-pointer transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md bg-primary-container border border-outline-variant/30 flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-lg">support_agent</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body text-sm font-medium text-on-surface truncate">Success Bot</p>
+<p class="font-label text-xs text-on-surface-variant truncate">v1.1 • Active</p>
+</div>
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+</div>
+</div>
+</div>
+</aside>
+<!-- COLUMN 2: Central Configuration Panel -->
+<section class="flex-1 max-w-2xl flex flex-col gap-6 h-full overflow-y-auto pr-2 pb-12">
+<!-- Core Persona Bento Card -->
+<div class="glass-card rounded-xl p-6 flex flex-col gap-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-on-surface-variant">psychology</span>
+<h3 class="font-headline text-lg font-semibold text-on-surface tracking-tight">Core Persona</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label text-xs text-on-surface-variant">Agent Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-2.5 text-sm font-body text-on-surface focus:border-on-surface focus:ring-0 transition-colors shadow-sm" type="text" value="Finance Auditor">
+</div>
+<div class="space-y-2">
+<label class="font-label text-xs text-on-surface-variant">Foundation Model</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-2.5 text-sm font-body text-on-surface focus:border-on-surface focus:ring-0 transition-colors shadow-sm appearance-none cursor-pointer">
+<option>Cerefy Enterprise-L (v4)</option>
+<option>Cerefy Fast-M (v4)</option>
+<option>Custom Fine-Tune: FinData</option>
+</select>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label text-xs text-on-surface-variant">Operational Objective (System Prompt)</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-sm font-body text-on-surface focus:border-on-surface focus:ring-0 transition-colors shadow-sm resize-none" rows="4">You are a meticulous financial auditor. Your primary objective is to review transaction logs, identify anomalies, and ensure compliance with GAAP standards. Maintain a formal, precise, and objective tone.</textarea>
+</div>
+</div>
+<!-- Parameter Controls Bento Card -->
+<div class="glass-card rounded-xl p-6 flex flex-col gap-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-on-surface-variant">tune</span>
+<h3 class="font-headline text-lg font-semibold text-on-surface tracking-tight">Kinetic Parameters</h3>
+</div>
+<div class="space-y-6">
+<!-- Slider 1 -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="font-label text-sm text-on-surface font-medium">Creativity (Temperature)</label>
+<span class="font-label text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded">0.2</span>
+</div>
+<input max="1" min="0" step="0.1" type="range" value="0.2">
+<div class="flex justify-between text-xs text-outline font-body">
+<span class="">Precise</span>
+<span class="">Creative</span>
+</div>
+</div>
+<hr class="border-outline-variant/20">
+<!-- Slider 2 -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="font-label text-sm text-on-surface font-medium">Self-Correction Intensity</label>
+<span class="font-label text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded">0.8</span>
+</div>
+<input max="1" min="0" step="0.1" type="range" value="0.8">
+<div class="flex justify-between text-xs text-outline font-body">
+<span class="">Lenient</span>
+<span class="">Strict</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Advanced Tooling Chips -->
+<div class="flex flex-wrap gap-2">
+<div class="px-3 py-1.5 rounded-full border border-outline-variant/30 bg-surface/50 backdrop-blur-sm flex items-center gap-2 cursor-pointer hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm">api</span>
+<span class="font-label text-xs">Enable API Access</span>
+</div>
+<div class="px-3 py-1.5 rounded-full border border-outline-variant/30 bg-surface/50 backdrop-blur-sm flex items-center gap-2 cursor-pointer hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm">memory</span>
+<span class="font-label text-xs">Attach Vector DB</span>
+</div>
+</div>
+</section>
+<!-- COLUMN 3: Live Preview / Evaluation -->
+<aside class="w-80 lg:w-96 shrink-0 h-full flex flex-col glass-card rounded-xl border border-outline-variant/30 overflow-hidden shadow-sm">
+<!-- Header -->
+<div class="px-4 py-3 border-b border-outline-variant/20 bg-surface-container-lowest/50 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-on-surface-variant">forum</span>
+<span class="font-label text-sm font-medium">Live Evaluation</span>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-sm">refresh</span>
+</button>
+</div>
+<!-- Chat Log -->
+<div class="flex-1 overflow-y-auto p-4 space-y-4 bg-surface-container-lowest/30">
+<!-- User Message -->
+<div class="flex justify-end">
+<div class="max-w-[85%] bg-surface-container rounded-2xl rounded-tr-sm px-4 py-2.5 shadow-sm">
+<p class="font-body text-sm text-on-surface">Review the Q3 Q4 transaction log for anomalous expense reports.</p>
+</div>
+</div>
+<!-- Agent Message -->
+<div class="flex justify-start gap-2">
+<div class="w-6 h-6 rounded bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-xs">account_balance</span>
+</div>
+<div class="max-w-[85%] bg-surface-container-lowest border border-outline-variant/20 rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm">
+<p class="font-body text-sm text-on-surface leading-relaxed">I have initiated a review of the Q3 and Q4 logs. Preliminary analysis indicates a deviation in Department B's travel expenditures, exceeding the baseline by 14.2%. Requesting access to detailed receipts for validation against policy limits.</p>
+<div class="mt-2 flex gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant text-outline font-label text-[10px]">Processing Time: 1.2s</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-variant text-outline font-label text-[10px]">Confidence: 94%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-3 border-t border-outline-variant/20 bg-surface-container-lowest">
+<div class="relative">
+<input class="w-full bg-surface-container border border-outline-variant/30 rounded-full pl-4 pr-10 py-2.5 text-sm font-body focus:border-on-surface focus:bg-surface-container-lowest transition-colors outline-none" placeholder="Test a prompt..." type="text">
+<button class="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-on-surface text-surface flex items-center justify-center hover:bg-inverse-surface transition-colors">
+<span class="material-symbols-outlined text-sm">arrow_upward</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+
+
+
+
+</body></html>

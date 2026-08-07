@@ -1,0 +1,273 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cerefy - Pricing</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@500&amp;family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config injected from Design System -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#dadada",
+                        "on-primary-container": "#737474",
+                        "inverse-surface": "#303030",
+                        "tertiary-container": "#feffd7",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "primary-container": "#fdfcfc",
+                        "surface-tint": "#5e5e5f",
+                        "on-tertiary-container": "#747655",
+                        "outline": "#747879",
+                        "secondary": "#5e5e5d",
+                        "on-secondary-fixed-variant": "#474746",
+                        "primary-fixed-dim": "#c7c6c6",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#5e6141",
+                        "on-background": "#1b1b1b",
+                        "on-tertiary-fixed-variant": "#47492c",
+                        "outline-variant": "#c4c7c8",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#464747",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#1b1d05",
+                        "inverse-primary": "#c7c6c6",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "surface-container": "#eeeeee",
+                        "on-surface-variant": "#444748",
+                        "primary-fixed": "#e3e2e2",
+                        "surface-variant": "#e2e2e2",
+                        "surface": "#f9f9f9",
+                        "surface-container-low": "#f3f3f3",
+                        "background": "#f9f9f9",
+                        "secondary-fixed": "#e4e2e0",
+                        "surface-bright": "#f9f9f9",
+                        "inverse-on-surface": "#f1f1f1",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#c8c9a3",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-container": "#636361",
+                        "tertiary-fixed": "#e4e5bd",
+                        "on-surface": "#1b1b1b",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "secondary-container": "#e1dfdd",
+                        "primary": "#5e5e5f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "sm": "0.25rem",
+                        "md": "0.75rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "margin-site": "64px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "sans-serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Geist", "monospace"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["72px", { lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "700" }],
+                        "display-lg-mobile": ["40px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "headline-md": ["32px", { lineHeight: "1.3", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", letterSpacing: "0em", fontWeight: "400" }],
+                        "body-md": ["16px", { lineHeight: "1.5", letterSpacing: "0em", fontWeight: "400" }],
+                        "label-mono": ["14px", { lineHeight: "1.2", letterSpacing: "0.05em", fontWeight: "500" }],
+                        "caption": ["12px", { lineHeight: "1.4", letterSpacing: "0.01em", fontWeight: "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #FDFCFC;
+            color: #1b1b1b;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(229, 229, 229, 0.5);
+        }
+        .glow-bg {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(94,94,95,0.05) 0%, rgba(253,252,252,0) 70%);
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="font-body antialiased relative min-h-screen flex flex-col">
+<div class="glow-bg"></div>
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-site max-w-container-max mx-auto h-20 bg-surface-container-lowest/80 backdrop-blur-md dark:bg-inverse-surface/80 border-b border-outline-variant/10 shadow-sm transition-all duration-300" id="topNav">
+<div class="flex items-center gap-4"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5kDtVBkI8nfOch2SScM1YpyHREhkVLZNrnpzWKF2P8BXzswe5U-DnGNIfFUnnaB3lXjTfwMKL_vBcWuKDy0AK5QbwzxFyCpgrt3bo9TWFKbMXZgHL96CKJM8fOca4l7R5WG7sElmey8vVUWCd8HPZ3vHXi_ByjlYOsjleVE0q4GCB9qexQSKdXXv934zQMxyNYj6hKhkieYCdMIjOxnHZtxJGF-QTlSBekto5kVNvK8tfV9jfahm9t3vZSVuo-NreLg" alt="Cerefy OS Logo" class="h-8 w-auto">
+<span class="text-display-lg-mobile font-headline tracking-tighter text-on-surface dark:text-inverse-on-surface">Cerefy</span></div>
+<div class="hidden md:flex items-center gap-8 font-body text-body-md">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors duration-300" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors duration-300" href="#">Mission Control</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors duration-300" href="#">Agent Studio</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors duration-300" href="#">Memory</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors duration-300" href="#">Analytics</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors duration-300" href="#">Marketplace</a>
+</div>
+<div class="flex items-center">
+<button class="bg-primary text-on-primary px-6 py-2 rounded font-body text-body-md hover:bg-surface-tint transition-colors scale-95 hover:scale-100 transition-transform">Book Demo</button>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow pt-32 pb-24 px-margin-mobile md:px-margin-site max-w-container-max mx-auto w-full z-10">
+<!-- Header -->
+<header class="text-center mb-24 max-w-3xl mx-auto">
+<h1 class="text-display-lg-mobile md:text-display-lg font-headline text-on-surface mb-6">Clear pricing for every stage of growth.</h1>
+<p class="text-body-lg text-on-surface-variant">Deploy enterprise-grade AI infrastructure without the enterprise overhead. Start building today, scale infinitely tomorrow.</p>
+</header>
+<!-- Pricing Cards (Bento) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-32 relative">
+<!-- Starter -->
+<div class="glass-card rounded-xl p-8 flex flex-col hover:shadow-lg transition-shadow duration-300">
+<div class="mb-8">
+<h3 class="text-headline-md font-headline text-on-surface mb-2">Starter</h3>
+<p class="text-body-md text-on-surface-variant mb-6 h-12">For small teams building their first intelligent workflows.</p>
+<div class="flex items-baseline gap-2">
+<span class="text-display-lg-mobile font-headline text-on-surface">$0</span>
+<span class="text-label-mono text-on-surface-variant">/ forever</span>
+</div>
+</div>
+<ul class="space-y-4 mb-10 flex-grow font-body text-body-md text-on-surface-variant">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        1 Knowledge Graph
+                    </li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        5 AI Agents
+                    </li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Community Support
+                    </li>
+</ul>
+<button class="w-full py-3 rounded border border-outline/20 text-on-surface font-body text-body-md hover:bg-surface-container-low transition-colors">Get Started</button>
+</div>
+<!-- Pro (Highlighted) -->
+<div class="glass-card rounded-xl p-8 flex flex-col relative transform md:-translate-y-4 shadow-xl border-outline/30 bg-surface-container-lowest">
+<div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+<span class="bg-on-surface text-surface-container-lowest font-label text-label-mono px-4 py-1 rounded-full uppercase tracking-wider">Most Popular</span>
+</div>
+<div class="mb-8 mt-4">
+<h3 class="text-headline-md font-headline text-on-surface mb-2">Pro</h3>
+<p class="text-body-md text-on-surface-variant mb-6 h-12">For high-growth firms requiring secure, scalable AI operations.</p>
+<div class="flex items-baseline gap-2">
+<span class="text-display-lg-mobile font-headline text-on-surface">$249</span>
+<span class="text-label-mono text-on-surface-variant">/ mo</span>
+</div>
+</div>
+<ul class="space-y-4 mb-10 flex-grow font-body text-body-md text-on-surface-variant">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Unlimited Graphs
+                    </li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        25 AI Agents
+                    </li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        SOC2 Compliance
+                    </li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Priority Support
+                    </li>
+</ul>
+<button class="w-full py-3 rounded bg-on-surface text-surface-container-lowest font-body text-body-md hover:bg-surface-tint transition-colors shadow-md">Upgrade to Pro</button>
+</div>
+<!-- Enterprise -->
+<div class="glass-card rounded-xl p-8 flex flex-col hover:shadow-lg transition-shadow duration-300">
+<div class="mb-8">
+<h3 class="text-headline-md font-headline text-on-surface mb-2">Enterprise</h3>
+<p class="text-body-md text-on-surface-variant mb-6 h-12">For global hegemony and ultimate operational control.</p>
+<div class="flex items-baseline gap-2">
+<span class="text-display-lg-mobile font-headline text-on-surface">Custom</span>
+</div>
+</div>
+<ul class="space-y-4 mb-10 flex-grow font-body text-body-md text-on-surface-variant">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Infinite Scaling
+                    </li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Dedicated Nodes
+                    </li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Solutions Architect
+                    </li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        On-Premise Deployment Options
+                    </li>
+</ul>
+<button class="w-full py-3 rounded border border-outline/20 text-on-surface font-body text-body-md hover:bg-surface-container-low transition-colors">Contact Sales</button>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-margin-mobile md:px-margin-site flex flex-col md:flex-row justify-between items-center gap-8 bg-surface-container dark:bg-surface-container-highest border-t border-outline-variant/30 mt-auto z-10">
+<div class="flex items-center gap-2 font-headline text-lg font-black text-on-surface"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCSKKEwjWo8F2XIPh70f-5IRqqmdnfoVeYEDvzBiz5hFVK1ElEszntPcd0dV6YLhWwZKwzd1r-V96QduYN3Jmn9sW0baDXWu0FZkeXYjeGlY3jlmN8pITe6wlijtzCb00UJVogy2Ln0fPn05Ow472hjX_ubCuuLVAvLeEd_NS2AKP0Q5sAhZcRL6YF9qCcg0SxJzRZZSN6_GNMbj-7nR5vp61Q2mM1WHMAbugU5du2EgrogH7-t4vb5Z62Kx5EneUEhw" alt="Cerefy Logo" class="h-6 w-auto">Cerefy</div>
+<div class="flex gap-6 font-body text-caption text-on-surface-variant">
+<a class="hover:text-on-surface transition-colors" href="#">Privacy</a>
+<a class="hover:text-on-surface transition-colors" href="#">Terms</a>
+<a class="hover:text-on-surface transition-colors" href="#">Security</a>
+<a class="hover:text-on-surface transition-colors" href="#">Status</a>
+</div>
+<div class="font-body text-caption text-on-surface-variant">
+            © 2024 Cerefy Enterprise AI. All rights reserved.
+        </div>
+</footer>
+<script>
+        // Simple scroll effect for TopNav
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('topNav');
+            if (window.scrollY > 20) {
+                nav.classList.add('shadow-md');
+                nav.classList.replace('bg-surface-container-lowest/80', 'bg-surface-container-lowest/95');
+            } else {
+                nav.classList.remove('shadow-md');
+                nav.classList.replace('bg-surface-container-lowest/95', 'bg-surface-container-lowest/80');
+            }
+        });
+    </script>
+
+
+
+
+</body></html>

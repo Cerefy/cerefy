@@ -1,0 +1,490 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cerefy - Export &amp; Reporting</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Design System Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#303030",
+                    "on-error": "#ffffff",
+                    "surface-bright": "#f9f9f9",
+                    "on-tertiary-fixed": "#1b1d05",
+                    "surface-dim": "#dadada",
+                    "on-background": "#1b1b1b",
+                    "on-surface": "#1b1b1b",
+                    "on-surface-variant": "#444748",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#47492c",
+                    "on-error-container": "#93000a",
+                    "surface-variant": "#e2e2e2",
+                    "on-secondary-container": "#636361",
+                    "secondary-fixed": "#e4e2e0",
+                    "outline": "#747879",
+                    "on-primary-fixed": "#1a1c1c",
+                    "tertiary-fixed": "#e4e5bd",
+                    "on-tertiary": "#ffffff",
+                    "outline-variant": "#c4c7c8",
+                    "primary-fixed-dim": "#c7c6c6",
+                    "on-primary-container": "#737474",
+                    "tertiary-fixed-dim": "#c8c9a3",
+                    "surface-container-low": "#f3f3f3",
+                    "primary": "#5e5e5f",
+                    "secondary-container": "#e1dfdd",
+                    "primary-fixed": "#e3e2e2",
+                    "secondary": "#5e5e5d",
+                    "on-primary-fixed-variant": "#464747",
+                    "surface-container-highest": "#e2e2e2",
+                    "primary-container": "#fdfcfc",
+                    "tertiary": "#5e6141",
+                    "inverse-primary": "#c7c6c6",
+                    "surface": "#f9f9f9",
+                    "error": "#ba1a1a",
+                    "surface-container-high": "#e8e8e8",
+                    "on-tertiary-container": "#747655",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed-variant": "#474746",
+                    "surface-tint": "#5e5e5f",
+                    "tertiary-container": "#feffd7",
+                    "on-secondary": "#ffffff",
+                    "inverse-on-surface": "#f1f1f1",
+                    "on-secondary-fixed": "#1b1c1b",
+                    "background": "#f9f9f9",
+                    "secondary-fixed-dim": "#c8c6c4",
+                    "surface-container": "#eeeeee"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.5rem",
+                    "sm": "0.25rem",
+                    "md": "0.75rem",
+                    "lg": "1rem",
+                    "xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "gutter": "24px",
+                    "margin-site": "64px",
+                    "margin-mobile": "20px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter", "sans-serif"],
+                    "display": ["Inter", "sans-serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Geist", "monospace"]
+            },
+            "fontSize": {
+                    "display-lg": ["72px", { lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "700" }],
+                    "display-lg-mobile": ["40px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+                    "headline-md": ["32px", { lineHeight: "1.3", letterSpacing: "-0.02em", fontWeight: "600" }],
+                    "body-lg": ["18px", { lineHeight: "1.6", letterSpacing: "0em", fontWeight: "400" }],
+                    "body-md": ["16px", { lineHeight: "1.5", letterSpacing: "0em", fontWeight: "400" }],
+                    "label-mono": ["14px", { lineHeight: "1.2", letterSpacing: "0.05em", fontWeight: "500" }],
+                    "caption": ["12px", { lineHeight: "1.4", letterSpacing: "0.01em", fontWeight: "500" }]
+            }
+          },
+        },
+      }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .glass-panel {
+                @apply bg-surface-container-lowest/80 backdrop-blur-xl border border-outline-variant/30;
+            }
+            .subtle-shadow {
+                box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.03);
+            }
+        }
+    </style>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@500&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+</head>
+<body class="bg-surface text-on-surface font-body overflow-x-hidden antialiased selection:bg-surface-variant selection:text-on-surface flex">
+<!-- JSON Component: SideNavBar -->
+<!-- Active state mapped to "Analytics" as it closest aligns with Reporting -->
+<nav class="hidden md:flex h-screen w-64 fixed left-0 top-0 flex-col py-6 space-y-2 bg-surface-container-lowest border-r border-outline-variant/50 z-40 shadow-sm">
+<div class="px-6 mb-8 flex items-center space-x-3"><div class="w-8 h-8 rounded overflow-hidden flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQNwO7Xrg8EMsIXeyCIalnhxtW31-Zk2AvfQVkprdy5r62sSjKqM2fW2JLtKMiWdSTkyll80sp6zQqUHJLRgTQ9_A2_7SunhjwfR1pA7yqQfr4QCPXTGJP58uFX7G2UzIMPXTeD6wjXSLGy8po1dccfJx6xne08MCM-PjMLJEfm6eKUrdVbUnwfFe2kNfMslLqWqTnYmu2KITwBJ2wOKEwiI4MPmRO3UrvJYwTBYbMYC_SojdzXfPA7RjSqNxRPPRCQQ" alt="Cerefy Logo" class="w-full h-full object-contain"></div><div><h1 class="font-headline text-headline-md font-bold text-on-surface text-lg leading-tight">Cerefy</h1><p class="font-body text-caption text-on-surface-variant">Enterprise Intelligence</p></div></div>
+<div class="flex-1 space-y-1">
+<!-- Inactive: Dashboard -->
+<a class="flex items-center space-x-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-body text-body-md font-medium">Dashboard</span>
+</a>
+<!-- Inactive: Agent Studio -->
+<a class="flex items-center space-x-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+<span class="font-body text-body-md font-medium">Agent Studio</span>
+</a>
+<!-- Inactive: Enterprise Memory -->
+<a class="flex items-center space-x-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">database</span>
+<span class="font-body text-body-md font-medium">Enterprise Memory</span>
+</a>
+<!-- Active: Analytics (Mapping Reporting here) -->
+<a class="flex items-center space-x-3 px-4 py-2.5 bg-secondary-container text-on-secondary-container rounded-lg mx-2 cursor-pointer transition-all duration-200 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+<span class="font-body text-body-md font-medium">Analytics</span>
+</a>
+<!-- Inactive: Compliance -->
+<a class="flex items-center space-x-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+<span class="font-body text-body-md font-medium">Compliance</span>
+</a>
+</div>
+<div class="px-4 mt-auto space-y-4">
+<button class="w-full py-2.5 px-4 bg-inverse-surface text-inverse-on-surface rounded-lg font-body text-body-md font-medium hover:opacity-90 transition-opacity flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined text-[18px]">upgrade</span>
+<span class="">Upgrade Plan</span>
+</button>
+<div class="border-t border-outline-variant/30 pt-4 space-y-1">
+<a class="flex items-center space-x-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+<span class="font-body text-caption">Help</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">description</span>
+<span class="font-body text-caption">Documentation</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 min-h-screen flex flex-col bg-surface relative z-0">
+<!-- Subtle Background Glow -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-96 bg-secondary-container/30 blur-[100px] rounded-full pointer-events-none -z-10"></div>
+<!-- Header -->
+<header class="px-6 md:px-gutter py-8 max-w-container-max mx-auto w-full flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="flex items-center space-x-2 mb-2">
+<span class="font-label text-label-mono text-on-surface-variant uppercase">Analytics Engine</span>
+<span class="text-outline-variant">/</span>
+<span class="font-label text-label-mono text-primary font-semibold">Reporting</span>
+</div>
+<h2 class="font-headline text-display-lg-mobile md:text-headline-md font-bold tracking-tight text-on-surface">Export &amp; Reporting</h2>
+</div>
+<div class="flex items-center space-x-3">
+<button class="px-4 py-2 rounded-lg border border-outline-variant/50 bg-surface-container-lowest text-on-surface font-body text-body-md font-medium hover:bg-surface-container transition-colors flex items-center space-x-2">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="">Saved Templates</span>
+</button>
+<button class="px-5 py-2 rounded-lg bg-inverse-surface text-inverse-on-surface font-body text-body-md font-medium hover:bg-on-surface transition-colors flex items-center space-x-2 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span class="">Generate Artifact</span>
+</button>
+</div>
+</header>
+<!-- Bento Grid Content -->
+<div class="px-6 md:px-gutter pb-16 max-w-container-max mx-auto w-full grid grid-cols-1 xl:grid-cols-12 gap-6 flex-1">
+<!-- Left Column: Configuration (4 cols) -->
+<div class="xl:col-span-4 flex flex-col space-y-6">
+<!-- Report Type Bento -->
+<section class="glass-panel rounded-xl p-6 subtle-shadow flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h3 class="font-headline text-body-lg font-semibold text-on-surface">Report Archetype</h3>
+<span class="material-symbols-outlined text-outline">tune</span>
+</div>
+<div class="flex flex-col gap-2">
+<label class="relative flex cursor-pointer rounded-lg border border-outline-variant/40 bg-surface p-4 hover:border-primary/50 transition-colors focus-within:ring-2 focus-within:ring-primary/20">
+<input checked="" class="peer sr-only" name="report_type" type="radio">
+<div class="flex w-full items-start justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center peer-checked:bg-inverse-surface peer-checked:text-inverse-on-surface transition-colors">
+<span class="material-symbols-outlined">query_stats</span>
+</div>
+<div>
+<p class="font-body text-body-md font-medium text-on-surface">Strategic Overview</p>
+<p class="font-body text-caption text-on-surface-variant">High-level ROI &amp; Impact</p>
+</div>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant peer-checked:border-inverse-surface peer-checked:bg-inverse-surface flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-surface-container-lowest hidden peer-checked:block"></div>
+</div>
+</div>
+</label>
+<label class="relative flex cursor-pointer rounded-lg border border-outline-variant/40 bg-surface p-4 hover:border-primary/50 transition-colors focus-within:ring-2 focus-within:ring-primary/20">
+<input class="peer sr-only" name="report_type" type="radio">
+<div class="flex w-full items-start justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center peer-checked:bg-inverse-surface peer-checked:text-inverse-on-surface transition-colors">
+<span class="material-symbols-outlined">speed</span>
+</div>
+<div>
+<p class="font-body text-body-md font-medium text-on-surface">Operational Velocity</p>
+<p class="font-body text-caption text-on-surface-variant">Decision speed metrics</p>
+</div>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant peer-checked:border-inverse-surface peer-checked:bg-inverse-surface flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-surface-container-lowest hidden peer-checked:block"></div>
+</div>
+</div>
+</label>
+<label class="relative flex cursor-pointer rounded-lg border border-outline-variant/40 bg-surface p-4 hover:border-primary/50 transition-colors focus-within:ring-2 focus-within:ring-primary/20">
+<input class="peer sr-only" name="report_type" type="radio">
+<div class="flex w-full items-start justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center peer-checked:bg-inverse-surface peer-checked:text-inverse-on-surface transition-colors">
+<span class="material-symbols-outlined">terminal</span>
+</div>
+<div>
+<p class="font-body text-body-md font-medium text-on-surface">Technical Load</p>
+<p class="font-body text-caption text-on-surface-variant">Autonomous system health</p>
+</div>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant peer-checked:border-inverse-surface peer-checked:bg-inverse-surface flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-surface-container-lowest hidden peer-checked:block"></div>
+</div>
+</div>
+</label>
+</div>
+</section>
+<!-- Temporal Scope Bento -->
+<section class="glass-panel rounded-xl p-6 subtle-shadow flex flex-col gap-4">
+<h3 class="font-headline text-body-lg font-semibold text-on-surface">Temporal Scope</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col space-y-1.5">
+<label class="font-label text-caption text-on-surface-variant uppercase">Start Date</label>
+<div class="relative">
+<input class="w-full bg-surface border border-outline-variant/50 rounded-lg px-3 py-2 font-body text-body-md text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-shadow" type="date" value="2023-10-01">
+</div>
+</div>
+<div class="flex flex-col space-y-1.5">
+<label class="font-label text-caption text-on-surface-variant uppercase">End Date</label>
+<div class="relative">
+<input class="w-full bg-surface border border-outline-variant/50 rounded-lg px-3 py-2 font-body text-body-md text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-shadow" type="date" value="2023-12-31">
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 pt-2">
+<button class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface font-label text-caption hover:bg-secondary-container transition-colors">Last 7 Days</button>
+<button class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface font-label text-caption hover:bg-secondary-container transition-colors">Q3 2023</button>
+<button class="px-3 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label text-caption">Q4 2023</button>
+<button class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface font-label text-caption hover:bg-secondary-container transition-colors">YTD</button>
+</div>
+</section>
+<!-- Data Dimensions Bento -->
+<section class="glass-panel rounded-xl p-6 subtle-shadow flex flex-col gap-4">
+<h3 class="font-headline text-body-lg font-semibold text-on-surface">Data Dimensions</h3>
+<div class="flex flex-col space-y-3">
+<!-- Toggle Item -->
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">payments</span>
+<span class="font-body text-body-md text-on-surface">ROI Impact Analysis</span>
+</div>
+<div class="relative">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-10 h-6 bg-surface-variant rounded-full peer peer-checked:bg-inverse-surface transition-colors"></div>
+<div class="absolute left-1 top-1 bg-surface-container-lowest w-4 h-4 rounded-full transition-transform peer-checked:translate-x-4 shadow-sm"></div>
+</div>
+</label>
+<!-- Toggle Item -->
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">offline_bolt</span>
+<span class="font-body text-body-md text-on-surface">Decision Velocity Metrics</span>
+</div>
+<div class="relative">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-10 h-6 bg-surface-variant rounded-full peer peer-checked:bg-inverse-surface transition-colors"></div>
+<div class="absolute left-1 top-1 bg-surface-container-lowest w-4 h-4 rounded-full transition-transform peer-checked:translate-x-4 shadow-sm"></div>
+</div>
+</label>
+<!-- Toggle Item -->
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">memory</span>
+<span class="font-body text-body-md text-on-surface">Autonomous Load Distribution</span>
+</div>
+<div class="relative">
+<input class="sr-only peer" type="checkbox">
+<div class="w-10 h-6 bg-surface-variant rounded-full peer peer-checked:bg-inverse-surface transition-colors"></div>
+<div class="absolute left-1 top-1 bg-surface-container-lowest w-4 h-4 rounded-full transition-transform peer-checked:translate-x-4 shadow-sm"></div>
+</div>
+</label>
+</div>
+</section>
+<!-- Output Format Bento -->
+<section class="glass-panel rounded-xl p-6 subtle-shadow flex flex-col gap-4">
+<h3 class="font-headline text-body-lg font-semibold text-on-surface">Output Format</h3>
+<div class="grid grid-cols-2 gap-3">
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="format" type="radio">
+<div class="flex flex-col items-center justify-center p-4 border border-outline-variant/50 rounded-lg bg-surface peer-checked:border-inverse-surface peer-checked:bg-surface-container transition-all hover:bg-surface-container/50">
+<span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-2">picture_as_pdf</span>
+<span class="font-label text-caption font-semibold">PDF Document</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="format" type="radio">
+<div class="flex flex-col items-center justify-center p-4 border border-outline-variant/50 rounded-lg bg-surface peer-checked:border-inverse-surface peer-checked:bg-surface-container transition-all hover:bg-surface-container/50">
+<span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-2">csv</span>
+<span class="font-label text-caption font-semibold">Raw CSV Data</span>
+</div>
+</label>
+</div>
+</section>
+</div>
+<!-- Right Column: Live Preview (8 cols) -->
+<div class="xl:col-span-8 h-full flex flex-col">
+<div class="flex items-center justify-between mb-4 px-2">
+<h3 class="font-label text-label-mono text-on-surface-variant uppercase tracking-widest">Document Preview</h3>
+<div class="flex items-center space-x-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+<span class="font-label text-caption">Live Canvas</span>
+</div>
+</div>
+<!-- The "Paper" Container -->
+<div class="flex-1 bg-surface-container-lowest rounded-xl shadow-[0_8px_40px_rgb(0,0,0,0.06)] border border-outline-variant/10 overflow-hidden flex flex-col relative">
+<!-- Top subtle accent bar -->
+<div class="h-1 w-full bg-gradient-to-r from-surface-variant via-primary-fixed to-surface-variant"></div>
+<div class="p-8 md:p-12 overflow-y-auto custom-scrollbar flex-1">
+<!-- Report Header -->
+<div class="border-b border-outline-variant/30 pb-8 mb-8 flex justify-between items-start">
+<div>
+<h1 class="font-headline text-[32px] font-bold text-on-surface tracking-tight mb-2">Strategic Impact Overview</h1>
+<p class="font-label text-label-mono text-on-surface-variant">Generated: Oct 24, 2023 • Ref: CRFY-8829</p>
+</div>
+<div class="text-right">
+<div class="w-10 h-10 rounded overflow-hidden flex items-center justify-center mb-2 ml-auto"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQNwO7Xrg8EMsIXeyCIalnhxtW31-Zk2AvfQVkprdy5r62sSjKqM2fW2JLtKMiWdSTkyll80sp6zQqUHJLRgTQ9_A2_7SunhjwfR1pA7yqQfr4QCPXTGJP58uFX7G2UzIMPXTeD6wjXSLGy8po1dccfJx6xne08MCM-PjMLJEfm6eKUrdVbUnwfFe2kNfMslLqWqTnYmu2KITwBJ2wOKEwiI4MPmRO3UrvJYwTBYbMYC_SojdzXfPA7RjSqNxRPPRCQQ" alt="Cerefy Logo" class="w-full h-full object-contain"></div>
+<p class="font-label text-caption text-on-surface-variant">Cerefy Enterprise</p>
+</div>
+</div>
+<!-- Executive Summary Grid -->
+<div class="grid grid-cols-3 gap-6 mb-10">
+<div class="p-5 bg-surface-container-low rounded-lg border border-outline-variant/20">
+<div class="flex items-center space-x-2 text-on-surface-variant mb-3">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+<span class="font-label text-caption uppercase tracking-wider">Total ROI</span>
+</div>
+<div class="font-headline text-[28px] font-bold text-on-surface mb-1">+$2.4M</div>
+<div class="font-body text-caption text-primary flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1">arrow_upward</span>
+                                    14% vs Prev Qtr
+                                </div>
+</div>
+<div class="p-5 bg-surface-container-low rounded-lg border border-outline-variant/20">
+<div class="flex items-center space-x-2 text-on-surface-variant mb-3">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span class="font-label text-caption uppercase tracking-wider">Decision Speed</span>
+</div>
+<div class="font-headline text-[28px] font-bold text-on-surface mb-1">1.2s</div>
+<div class="font-body text-caption text-primary flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1">arrow_downward</span>
+                                    -400ms latency
+                                </div>
+</div>
+<div class="p-5 bg-surface-container-low rounded-lg border border-outline-variant/20">
+<div class="flex items-center space-x-2 text-on-surface-variant mb-3">
+<span class="material-symbols-outlined text-[18px]">robot_2</span>
+<span class="font-label text-caption uppercase tracking-wider">Autonomy</span>
+</div>
+<div class="font-headline text-[28px] font-bold text-on-surface mb-1">87%</div>
+<div class="font-body text-caption text-on-surface-variant flex items-center">
+                                    Tasks resolved without human
+                                </div>
+</div>
+</div>
+<!-- Simulated Chart Area -->
+<div class="mb-10">
+<h3 class="font-headline text-body-lg font-semibold text-on-surface mb-6">Velocity vs. Impact Distribution</h3>
+<div class="h-64 w-full bg-surface-container-low rounded-lg border border-outline-variant/20 relative p-4 flex items-end justify-between space-x-2">
+<!-- CSS Bar Chart simulation -->
+<div class="w-full flex items-end justify-between h-full px-2">
+<div class="w-1/12 bg-primary/20 rounded-t-sm h-[30%] hover:bg-primary/40 transition-colors"></div>
+<div class="w-1/12 bg-primary/30 rounded-t-sm h-[45%] hover:bg-primary/50 transition-colors"></div>
+<div class="w-1/12 bg-primary/40 rounded-t-sm h-[60%] hover:bg-primary/60 transition-colors"></div>
+<div class="w-1/12 bg-primary/60 rounded-t-sm h-[40%] hover:bg-primary/80 transition-colors"></div>
+<div class="w-1/12 bg-inverse-surface rounded-t-sm h-[85%] hover:opacity-80 transition-opacity"></div>
+<div class="w-1/12 bg-primary/70 rounded-t-sm h-[70%] hover:bg-primary/90 transition-colors"></div>
+<div class="w-1/12 bg-primary/50 rounded-t-sm h-[55%] hover:bg-primary/70 transition-colors"></div>
+</div>
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none">
+<div class="w-full border-t border-outline-variant/10"></div>
+<div class="w-full border-t border-outline-variant/10"></div>
+<div class="w-full border-t border-outline-variant/10"></div>
+<div class="w-full border-t border-outline-variant/10"></div>
+<div class="w-full border-t border-outline-variant/40"></div>
+</div>
+</div>
+</div>
+<!-- Data Table Simulation -->
+<div>
+<h3 class="font-headline text-body-lg font-semibold text-on-surface mb-4">Key Agent Performances</h3>
+<div class="border border-outline-variant/30 rounded-lg overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label text-caption uppercase">
+<th class="p-3 font-medium">Agent Name</th>
+<th class="p-3 font-medium">Domain</th>
+<th class="p-3 font-medium text-right">Actions</th>
+<th class="p-3 font-medium text-right">Yield</th>
+</tr>
+</thead>
+<tbody class="font-body text-body-md text-on-surface divide-y divide-outline-variant/20">
+<tr>
+<td class="p-3 flex items-center space-x-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="">Nexus Alpha</span>
+</td>
+<td class="p-3 text-on-surface-variant text-sm">Supply Chain</td>
+<td class="p-3 text-right font-label">14,209</td>
+<td class="p-3 text-right font-label">+12%</td>
+</tr>
+<tr>
+<td class="p-3 flex items-center space-x-2">
+<div class="w-2 h-2 rounded-full bg-surface-variant"></div>
+<span class="">Echo Sentinel</span>
+</td>
+<td class="p-3 text-on-surface-variant text-sm">Security</td>
+<td class="p-3 text-right font-label">89,112</td>
+<td class="p-3 text-right font-label">--</td>
+</tr>
+<tr>
+<td class="p-3 flex items-center space-x-2">
+<div class="w-2 h-2 rounded-full bg-primary-fixed-dim"></div>
+<span class="">Aura Optimize</span>
+</td>
+<td class="p-3 text-on-surface-variant text-sm">Finance</td>
+<td class="p-3 text-right font-label">3,440</td>
+<td class="p-3 text-right font-label">+28%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<style>
+        /* Custom scrollbar for preview area to keep it clean */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #e2e2e2;
+            border-radius: 10px;
+        }
+    </style>
+
+
+
+
+</body></html>

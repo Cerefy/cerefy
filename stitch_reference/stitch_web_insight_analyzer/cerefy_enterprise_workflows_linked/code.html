@@ -1,0 +1,358 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Enterprise Workflows - Cerefy OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-container": "#fdfcfc",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#5e5e5d",
+                        "on-primary-fixed": "#1a1c1c",
+                        "surface-bright": "#f9f9f9",
+                        "on-background": "#1b1b1b",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#5e5e5f",
+                        "tertiary-container": "#feffd7",
+                        "outline": "#747879",
+                        "surface-container-highest": "#e2e2e2",
+                        "inverse-on-surface": "#f1f1f1",
+                        "inverse-primary": "#c7c6c6",
+                        "on-surface": "#1b1b1b",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#464747",
+                        "tertiary-fixed": "#e4e5bd",
+                        "surface-container": "#eeeeee",
+                        "tertiary-fixed-dim": "#c8c9a3",
+                        "surface-container-high": "#e8e8e8",
+                        "tertiary": "#5e6141",
+                        "primary-fixed": "#e3e2e2",
+                        "on-tertiary-container": "#747655",
+                        "outline-variant": "#c4c7c8",
+                        "background": "#f9f9f9",
+                        "on-error-container": "#93000a",
+                        "surface": "#f9f9f9",
+                        "on-primary-container": "#737474",
+                        "secondary-fixed": "#e4e2e0",
+                        "surface-variant": "#e2e2e2",
+                        "secondary-container": "#e1dfdd",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#1b1d05",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "on-tertiary-fixed-variant": "#47492c",
+                        "primary": "#5e5e5f",
+                        "surface-container-low": "#f3f3f3",
+                        "primary-fixed-dim": "#c7c6c6",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#444748",
+                        "inverse-surface": "#303030",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#636361",
+                        "on-secondary-fixed-variant": "#474746",
+                        "surface-dim": "#dadada"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "sans-serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Geist", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .dot-grid {
+            background-size: 20px 20px;
+            background-image: radial-gradient(circle, var(--tw-colors-outline-variant) 1px, transparent 1px);
+        }
+        
+        .glass-panel {
+            background: rgba(253, 252, 252, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(229, 229, 229, 0.6);
+        }
+        
+        .node-connector {
+            position: relative;
+        }
+        .node-connector::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border: 2px solid var(--tw-colors-outline);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .node-connector.right::after { right: -6px; }
+        .node-connector.left::after { left: -6px; }
+        .node-connector.top::after { top: -6px; left: 50%; transform: translateX(-50%); }
+        .node-connector.bottom::after { bottom: -6px; top: auto; left: 50%; transform: translateX(-50%); }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body overflow-hidden h-screen flex">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant/50 flex flex-col py-6 space-y-2 z-40">
+<div class="px-6 mb-8 flex items-center gap-3"><div class="w-10 h-10 shrink-0"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsBOx2W2VBvEzIPlvOi3cee3_VLRJy37bi_N4hc9FjI7Rt2yNDULqJneq_BO3IgJHETv6N05ZyvRIZyUUl-EsRSjzatCQ79zBsbNjK8qobJkcYWwZub9jMwZfh9AYa7Xr6MSqZy3SbYrRuVODfLHEwoojhRcOGtuTA54QQw1ylohcpD1H1M7JnTqgW8jZUWN0WGy7-karbjxlSnWsvtx9GTkHxYG49bhkTmgdjEXwD4KZqDK0T3rHOptEJmfD8XZZRQA" alt="Cerefy Logo" class="w-full h-full object-contain"></div><div><h1 class="font-headline text-headline-md font-bold text-on-surface text-lg leading-tight">Cerefy</h1><p class="font-body text-[10px] text-on-surface-variant uppercase tracking-wider">Enterprise Intelligence</p></div></div>
+<div class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-body text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary-container text-on-secondary-container font-medium mx-2 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+<span class="font-body text-sm">Agent Studio</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">database</span>
+<span class="font-body text-sm font-medium">Enterprise Memory</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">monitoring</span>
+<span class="font-body text-sm font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+<span class="font-body text-sm font-medium">Compliance</span>
+</a>
+</div>
+<div class="px-4 mt-auto space-y-1 mb-6">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all text-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+                Help
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all text-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">description</span>
+                Documentation
+            </a>
+</div>
+<div class="px-6">
+<button class="w-full py-2 bg-on-surface text-surface-container-lowest rounded-md font-medium text-sm hover:opacity-90 transition-opacity">
+                Upgrade Plan
+            </button>
+</div>
+</nav>
+<!-- Main Workspace -->
+<main class="ml-64 flex-1 h-screen flex flex-col bg-surface relative">
+<!-- Top Toolbar -->
+<header class="h-14 bg-surface-container-lowest border-b border-outline-variant/30 flex items-center justify-between px-6 z-20">
+<div class="flex items-center gap-4">
+<h2 class="font-headline font-semibold text-on-surface text-base">Cerefy - New Workflow</h2>
+<div class="flex items-center gap-1 bg-surface-container-low rounded p-1">
+<span class="px-2 py-0.5 text-xs font-label text-on-surface bg-surface-container-lowest shadow-sm rounded-sm">Design</span>
+<span class="px-2 py-0.5 text-xs font-label text-on-surface-variant hover:text-on-surface cursor-pointer">Test</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">undo</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">redo</span>
+</button>
+<div class="w-px h-4 bg-outline-variant/50 mx-1"></div>
+<button class="px-4 py-1.5 bg-surface-container text-on-surface rounded font-medium text-sm hover:bg-surface-container-high transition-colors">
+                    Save Draft
+                </button>
+<button class="px-4 py-1.5 bg-on-surface text-surface-container-lowest rounded font-medium text-sm hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                    Deploy Agent
+                </button>
+</div>
+</header>
+<!-- Canvas Area -->
+<div class="flex-1 flex overflow-hidden relative">
+<!-- Elements Sidebar (Left) -->
+<aside class="w-72 bg-surface-container-lowest border-r border-outline-variant/30 flex flex-col z-20 shadow-sm">
+<div class="p-4 border-b border-outline-variant/20">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full pl-9 pr-3 py-2 bg-surface-container-low border-none rounded text-sm focus:ring-1 focus:ring-outline placeholder:text-on-surface-variant/70" placeholder="Search nodes..." type="text">
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Triggers -->
+<div>
+<h3 class="text-xs font-label uppercase text-on-surface-variant tracking-wider mb-3">Triggers</h3>
+<div class="space-y-2">
+<div class="p-3 bg-surface border border-outline-variant/40 rounded-lg flex items-start gap-3 cursor-grab hover:border-outline hover:shadow-sm transition-all">
+<div class="w-8 h-8 rounded bg-secondary-container/50 flex items-center justify-center text-on-secondary-container shrink-0">
+<span class="material-symbols-outlined text-[18px]">webhook</span>
+</div>
+<div>
+<div class="text-sm font-medium text-on-surface">Webhook</div>
+<div class="text-xs text-on-surface-variant">Trigger on HTTP request</div>
+</div>
+</div>
+<div class="p-3 bg-surface border border-outline-variant/40 rounded-lg flex items-start gap-3 cursor-grab hover:border-outline hover:shadow-sm transition-all">
+<div class="w-8 h-8 rounded bg-secondary-container/50 flex items-center justify-center text-on-secondary-container shrink-0">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+</div>
+<div>
+<div class="text-sm font-medium text-on-surface">Schedule</div>
+<div class="text-xs text-on-surface-variant">Run at specified intervals</div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Agents -->
+<div>
+<h3 class="text-xs font-label uppercase text-on-surface-variant tracking-wider mb-3">AI Agents</h3>
+<div class="space-y-2">
+<div class="p-3 bg-surface border border-outline-variant/40 rounded-lg flex items-start gap-3 cursor-grab hover:border-outline hover:shadow-sm transition-all">
+<div class="w-8 h-8 rounded bg-primary-container border border-outline-variant/50 flex items-center justify-center text-primary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">analytics</span>
+</div>
+<div>
+<div class="text-sm font-medium text-on-surface">Analyst Agent</div>
+<div class="text-xs text-on-surface-variant">Data extraction &amp; synthesis</div>
+</div>
+</div>
+<div class="p-3 bg-surface border border-outline-variant/40 rounded-lg flex items-start gap-3 cursor-grab hover:border-outline hover:shadow-sm transition-all">
+<div class="w-8 h-8 rounded bg-primary-container border border-outline-variant/50 flex items-center justify-center text-primary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">translate</span>
+</div>
+<div>
+<div class="text-sm font-medium text-on-surface">Linguist Agent</div>
+<div class="text-xs text-on-surface-variant">Translation &amp; tone adjustment</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div>
+<h3 class="text-xs font-label uppercase text-on-surface-variant tracking-wider mb-3">Actions</h3>
+<div class="space-y-2">
+<div class="p-3 bg-surface border border-outline-variant/40 rounded-lg flex items-start gap-3 cursor-grab hover:border-outline hover:shadow-sm transition-all">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-on-surface shrink-0">
+<span class="material-symbols-outlined text-[18px]">api</span>
+</div>
+<div>
+<div class="text-sm font-medium text-on-surface">API Call</div>
+<div class="text-xs text-on-surface-variant">Send data to external service</div>
+</div>
+</div>
+<div class="p-3 bg-surface border border-outline-variant/40 rounded-lg flex items-start gap-3 cursor-grab hover:border-outline hover:shadow-sm transition-all">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-on-surface shrink-0">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+</div>
+<div>
+<div class="text-sm font-medium text-on-surface">Email</div>
+<div class="text-xs text-on-surface-variant">Send automated email</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Dotted Grid Canvas -->
+<div class="flex-1 dot-grid relative overflow-hidden bg-background">
+<!-- Decorative background elements -->
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<!-- SVG Lines connecting nodes (simulated) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+<path class="text-outline-variant/70" d="M 280 200 C 350 200, 350 200, 420 200" fill="none" stroke="currentColor" stroke-width="2"></path>
+<path class="text-outline-variant/70" d="M 680 200 C 750 200, 750 320, 820 320" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+<!-- Nodes -->
+<!-- Trigger Node -->
+<div class="absolute top-[160px] left-[80px] w-56 glass-panel rounded-lg shadow-sm z-10 node-connector right">
+<div class="p-3 border-b border-outline-variant/20 flex items-center gap-2 bg-surface-container-lowest/50 rounded-t-lg">
+<div class="w-6 h-6 rounded bg-secondary-container/50 flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[14px]">webhook</span>
+</div>
+<span class="font-medium text-sm">Incoming Request</span>
+<button class="ml-auto text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">more_vert</span></button>
+</div>
+<div class="p-3">
+<div class="text-xs text-on-surface-variant mb-2">Endpoint URL</div>
+<div class="bg-surface-container-low p-2 rounded text-xs font-label text-on-surface truncate border border-outline-variant/20">
+                            api.cerefy.os/wh/v1/a9x...
+                        </div>
+</div>
+</div>
+<!-- Agent Node -->
+<div class="absolute top-[160px] left-[420px] w-64 glass-panel rounded-lg shadow-md border-primary/20 z-10 node-connector left right">
+<!-- Soft glow for active agent -->
+<div class="absolute -inset-1 bg-gradient-to-r from-primary/10 to-transparent rounded-lg blur -z-10"></div>
+<div class="p-3 border-b border-outline-variant/20 flex items-center gap-2 bg-surface-container-lowest/80 rounded-t-lg">
+<div class="w-6 h-6 rounded bg-primary-container border border-outline-variant/50 flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[14px]">analytics</span>
+</div>
+<span class="font-medium text-sm">Financial Analyst</span>
+<div class="ml-auto flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="text-[10px] text-on-surface-variant font-label">Ready</span>
+</div>
+</div>
+<div class="p-3 space-y-3">
+<div>
+<div class="text-[10px] uppercase font-label text-on-surface-variant mb-1">Model</div>
+<div class="flex items-center gap-2 text-xs border border-outline-variant/30 rounded px-2 py-1 bg-surface-container-lowest">
+<span class="material-symbols-outlined text-[14px] text-primary">memory</span>
+                                Cerefy-Turbo-128k
+                            </div>
+</div>
+<div>
+<div class="text-[10px] uppercase font-label text-on-surface-variant mb-1">Prompt Template</div>
+<div class="text-xs text-on-surface bg-surface-container-low p-2 rounded border border-outline-variant/20 italic">
+                                "Extract Q3 revenue figures..."
+                            </div>
+</div>
+</div>
+</div>
+<!-- Action Node -->
+<div class="absolute top-[280px] left-[820px] w-56 glass-panel rounded-lg shadow-sm z-10 node-connector left">
+<div class="p-3 border-b border-outline-variant/20 flex items-center gap-2 bg-surface-container-lowest/50 rounded-t-lg">
+<div class="w-6 h-6 rounded bg-surface-container-high flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[14px]">api</span>
+</div>
+<span class="font-medium text-sm">Update CRM</span>
+<button class="ml-auto text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[16px]">more_vert</span></button>
+</div>
+<div class="p-3">
+<div class="flex justify-between text-xs mb-2">
+<span class="text-on-surface-variant">Method</span>
+<span class="font-label text-on-surface">POST</span>
+</div>
+<div class="bg-surface-container-low p-2 rounded text-xs font-label text-on-surface truncate border border-outline-variant/20">
+                            /api/salesforce/update
+                        </div>
+</div>
+</div>
+</div>
+<!-- Contextual Properties Panel (Right - Collapsed state hint) -->
+<div class="absolute right-0 top-0 bottom-0 w-12 bg-surface-container-lowest border-l border-outline-variant/30 flex flex-col items-center py-4 z-20">
+<button class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant mb-4">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+<button class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">info</span>
+</button>
+</div>
+</div>
+</main>
+
+
+
+
+</body></html>

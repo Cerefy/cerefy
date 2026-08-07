@@ -51,41 +51,21 @@ const WorkspaceLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#08080a] text-zinc-100 flex flex-col font-sans selection:bg-cyan-500/20 selection:text-cyan-100 antialiased">
-      {/* Top Fixed Header */}
+    <div className="min-h-screen bg-background text-on-background font-body antialiased">
+      {/* Top Navigation */}
       <Navbar />
 
-      {/* Main Layout Area */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar Navigation */}
-        <Sidebar />
+      {/* Sidebar Navigation */}
+      <Sidebar />
 
-        {/* Dynamic Workspace Tab Content */}
-        <main className="flex-1 p-6 overflow-y-auto max-w-7xl mx-auto w-full custom-scrollbar">
+      {/* Main Content Area */}
+      <main className="ml-64 pt-4 pb-8 px-8 min-h-[calc(100vh-4rem)]">
+        <div className="max-w-7xl mx-auto">
           <Outlet />
-        </main>
-      </div>
-
-      {/* Sticky Telemetry Bar */}
-      <footer className="h-9 border-t border-zinc-800/80 bg-[#08080a]/90 backdrop-blur-md font-mono text-[10px] text-zinc-500 flex items-center justify-between px-6 shrink-0 select-none">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 text-zinc-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> DB: CONNECTED
-          </span>
-          <span className="flex items-center gap-1.5 text-zinc-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> AI: ONLINE
-          </span>
-          <span className="hidden sm:inline text-zinc-700">|</span>
-          <span className="hidden sm:inline text-zinc-400">GATEWAY: 100% HEALTH</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span>CPU: 12%</span>
-          <span>MEM: 1.4GB</span>
-          <span className="text-cyan-400 font-bold">LATENCY: 24ms</span>
-        </div>
-      </footer>
+      </main>
 
-      {/* Global Command Palette (Cmd+K) Modal */}
+      {/* Command Palette */}
       <CommandPalette onSelectAction={handleCommandPaletteAction} />
     </div>
   );

@@ -1,0 +1,416 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Connectors Marketplace - Cerefy OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#fdfcfc",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#5e5e5d",
+                        "on-primary-fixed": "#1a1c1c",
+                        "surface-bright": "#f9f9f9",
+                        "on-background": "#1b1b1b",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#5e5e5f",
+                        "tertiary-container": "#feffd7",
+                        "outline": "#747879",
+                        "surface-container-highest": "#e2e2e2",
+                        "inverse-on-surface": "#f1f1f1",
+                        "inverse-primary": "#c7c6c6",
+                        "on-surface": "#1b1b1b",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#464747",
+                        "tertiary-fixed": "#e4e5bd",
+                        "surface-container": "#eeeeee",
+                        "tertiary-fixed-dim": "#c8c9a3",
+                        "surface-container-high": "#e8e8e8",
+                        "tertiary": "#5e6141",
+                        "primary-fixed": "#e3e2e2",
+                        "on-tertiary-container": "#747655",
+                        "outline-variant": "#c4c7c8",
+                        "background": "#f9f9f9",
+                        "on-error-container": "#93000a",
+                        "surface": "#f9f9f9",
+                        "on-primary-container": "#737474",
+                        "secondary-fixed": "#e4e2e0",
+                        "surface-variant": "#e2e2e2",
+                        "secondary-container": "#e1dfdd",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#1b1d05",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "on-tertiary-fixed-variant": "#47492c",
+                        "primary": "#5e5e5f",
+                        "surface-container-low": "#f3f3f3",
+                        "primary-fixed-dim": "#c7c6c6",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#444748",
+                        "inverse-surface": "#303030",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#636361",
+                        "on-secondary-fixed-variant": "#474746",
+                        "surface-dim": "#dadada"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "margin-site": "64px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "sans-serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Geist", "monospace"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["72px", { lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "700" }],
+                        "display-lg-mobile": ["40px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "headline-md": ["32px", { lineHeight: "1.3", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", letterSpacing: "0em", fontWeight: "400" }],
+                        "body-md": ["16px", { lineHeight: "1.5", letterSpacing: "0em", fontWeight: "400" }],
+                        "label-mono": ["14px", { lineHeight: "1.2", letterSpacing: "0.05em", fontWeight: "500" }],
+                        "caption": ["12px", { lineHeight: "1.4", letterSpacing: "0.01em", fontWeight: "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 229, 229, 0.5);
+        }
+        .bg-kinetic-glow {
+            background: radial-gradient(circle at top right, rgba(94, 94, 95, 0.08), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(225, 223, 221, 0.4), transparent 50%);
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #dadada;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c4c7c8;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased min-h-screen flex selection:bg-primary selection:text-on-primary">
+<!-- Ambient Background -->
+<div class="fixed inset-0 pointer-events-none bg-kinetic-glow z-0"></div>
+<!-- SideNavBar (Shared Component) -->
+<!-- Active semantic intent: "Enterprise Memory" as connectors feed data into memory -->
+<nav class="h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/50 bg-surface-container-lowest flex flex-col py-6 space-y-2 z-40 hidden md:flex">
+<!-- Header -->
+<div class="px-6 mb-6"><div class="flex items-center gap-3 mb-1"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfZLHfDnso4gJzsUbkHp2x9px3SYGtlaTHBiB53mcS3IlkZFs6lXkZ9BG4OI0Y3pnRUm_o-HWPziEetQSQeN8JqHEVtdo1-Bf1J2uKrf-js0J_-dyQepFN9OdN9ONFaBl2NRQOvV8wuhBBp0gQvBizg3_4fBz144Ak26hg7POa1jyHMwJVY5p1ZTGkJju5I6IYfN-QJYZQ2x_wRCQULYbc8KfWjHmgd-sJx6AGPWbns21dQR1crnAUKSIUx25orQzfWw" alt="Cerefy Logo" class="w-8 h-8 object-contain"><div class="font-headline text-[20px] font-bold text-on-surface tracking-tighter">Cerefy</div></div><div class="font-body text-caption text-on-surface-variant uppercase tracking-widest">Enterprise Intelligence</div></div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col space-y-1">
+<a class="flex items-center space-x-3 px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-body text-body-md font-medium">Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">smart_toy</span>
+<span class="font-body text-body-md font-medium">Agent Studio</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center space-x-3 px-4 py-3 mx-2 bg-secondary-container text-on-secondary-container rounded-lg transition-all duration-200 cursor-pointer" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">database</span>
+<span class="font-body text-body-md font-medium">Enterprise Memory</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">monitoring</span>
+<span class="font-body text-body-md font-medium">Analytics</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">verified_user</span>
+<span class="font-body text-body-md font-medium">Compliance</span>
+</a>
+</div>
+<!-- Footer Actions -->
+<div class="px-4 mt-auto space-y-4">
+<button class="w-full py-2 px-4 bg-primary text-on-primary rounded-lg font-body text-body-md font-medium hover:bg-inverse-surface transition-colors shadow-sm hover:shadow-lg">
+                Upgrade Plan
+            </button>
+<div class="flex flex-col space-y-1">
+<a class="flex items-center space-x-3 px-4 py-2 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">help</span>
+<span class="font-body text-caption font-medium">Help</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-2 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">description</span>
+<span class="font-body text-caption font-medium">Documentation</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 relative z-10 p-gutter md:p-margin-site max-w-[1600px] mx-auto w-full">
+<!-- Page Header & Actions -->
+<header class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+<div>
+<div class="flex items-center gap-3 mb-2"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOPy5aufD-2iFGca4gGXxXQ7zzusCEbtGMuWhnWjse01cffgnGiYlaX5c9pfIUPaPEg6GiViAZSmXMCM1upsAn4r32sP3MzXh4f8b3e5odC4uRJYLYt3uYW1LkDkRzVnteQQaoIxr3yR7ePCEmFpT7pRUh1sUmVUw-ehNnqBr0PMkmR0lmMZ0iXnvNTSsEP4udW51dKE7QnOYjqvgg5BW2n-BgwH5QaEkhhbJz6pRtd57Xi2qwfuYhWDFVe-WleTU_Jg" alt="Cerefy" class="w-10 h-10 object-contain"><span class="font-headline text-caption text-on-surface-variant uppercase tracking-widest">Cerefy</span></div><h1 class="font-headline text-display-lg-mobile md:text-headline-md font-bold text-on-surface tracking-tight mb-2">Connectors Marketplace</h1>
+<p class="font-body text-body-lg text-on-surface-variant max-w-2xl">Integrate and manage over 200+ native data sources to feed your Enterprise Memory architecture.</p>
+</div>
+<div class="flex items-center gap-4 w-full lg:w-auto">
+<div class="relative flex-1 lg:w-80 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg pl-10 pr-4 py-2.5 font-body text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" placeholder="Search integrations..." type="text">
+</div>
+<button aria-label="Filter" class="bg-surface-container-lowest border border-outline-variant/50 text-on-surface p-2.5 rounded-lg hover:bg-surface-container transition-colors shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</header>
+<!-- Status Dashboard (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<!-- Metric Card 1 -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-[20px]">cable</span>
+<h3 class="font-body text-caption uppercase tracking-wider font-semibold">Active Connections</h3>
+</div>
+<div class="flex items-baseline gap-3">
+<span class="font-headline text-display-lg-mobile font-bold text-on-surface">14</span>
+<span class="font-label text-label-mono text-tertiary">/ 246 Avail.</span>
+</div>
+</div>
+<!-- Metric Card 2 -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-[20px]">sync</span>
+<h3 class="font-body text-caption uppercase tracking-wider font-semibold">Global Sync Health</h3>
+</div>
+<div class="flex items-center gap-3 mt-1">
+<div class="w-full bg-surface-container-high rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 92%"></div>
+</div>
+<span class="font-label text-label-mono font-medium text-on-surface">92%</span>
+</div>
+</div>
+<!-- Metric Card 3 -->
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+<h3 class="font-body text-caption uppercase tracking-wider font-semibold">Avg System Latency</h3>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-display-lg-mobile font-bold text-on-surface">42</span>
+<span class="font-label text-label-mono text-on-surface-variant">ms</span>
+</div>
+</div>
+</section>
+<!-- Category Filters -->
+<div class="flex items-center gap-3 overflow-x-auto pb-4 mb-6 scrollbar-hide">
+<button class="px-4 py-1.5 rounded-full bg-on-surface text-surface font-label text-label-mono whitespace-nowrap shadow-sm">All Connectors</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:border-primary hover:text-on-surface transition-colors font-label text-label-mono whitespace-nowrap">CRM &amp; Sales</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:border-primary hover:text-on-surface transition-colors font-label text-label-mono whitespace-nowrap">ERP &amp; Finance</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:border-primary hover:text-on-surface transition-colors font-label text-label-mono whitespace-nowrap">Communication</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:border-primary hover:text-on-surface transition-colors font-label text-label-mono whitespace-nowrap">DevOps &amp; IT</button>
+</div>
+<!-- Connectors Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- Connected Card: Salesforce -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 flex flex-col h-full relative hover:shadow-lg transition-shadow duration-300 group">
+<div class="absolute top-0 right-0 p-4">
+<span class="flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-20"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-tertiary"></span>
+</span>
+</div>
+<div class="flex items-start gap-4 mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center border border-outline-variant/20 shadow-sm shrink-0 overflow-hidden">
+<img class="w-8 h-8 object-contain" data-alt="A clean, minimalist 2D vector logo representing a cloud computing or CRM software service, using light blue and white colors, set against a pristine white background in a modern tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2smtUhfVVA6W-OCvVY60UPRJfg2pg0R6GYK7EVK-z8sds3OUCdFSWIDPkUwoPMAk34-3F4Nd7bz-V68kC7IfW4ZiThrknQOEFT0JbPU0gr5a6-BY-weknHmK1pT_LcOp1MJXFwFRnSy4Iz2HDAs_iHsh-_pB54KEnILpBTy1Rgujg4RXclybXJpx54G9JXS5KwDKTp1z19QgtW9SPZT3-CZAqrTownM-2s6nPc3Gh5b5rCowlyB8k">
+</div>
+<div>
+<h3 class="font-headline text-body-lg font-bold text-on-surface leading-tight">Salesforce</h3>
+<span class="inline-block mt-1 px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant/20 font-label text-[10px] text-on-surface-variant uppercase tracking-wider">CRM</span>
+</div>
+</div>
+<p class="font-body text-caption text-on-surface-variant mb-6 flex-1">Sync customer records, opportunities, and interactions directly into the enterprise graph.</p>
+<div class="bg-surface rounded-lg p-3 border border-outline-variant/20 mb-4">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label text-caption text-on-surface-variant">Sync Health</span>
+<span class="font-label text-caption font-medium text-tertiary">99.9%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label text-caption text-on-surface-variant">Latency</span>
+<span class="font-label text-caption font-medium text-on-surface">32ms</span>
+</div>
+</div>
+<button class="w-full py-2 rounded-lg border border-outline-variant text-on-surface font-body text-body-md font-medium hover:bg-surface-container transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+                    Configure
+                </button>
+</div>
+<!-- Connected Card: Slack -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 flex flex-col h-full relative hover:shadow-lg transition-shadow duration-300 group">
+<div class="absolute top-0 right-0 p-4">
+<span class="flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-20"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-tertiary"></span>
+</span>
+</div>
+<div class="flex items-start gap-4 mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center border border-outline-variant/20 shadow-sm shrink-0 overflow-hidden">
+<img class="w-8 h-8 object-contain" data-alt="A vibrant, multi-colored geometric logo representing a modern team communication platform, clean and minimal styling, isolated on a pure white background in a corporate tech visual style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7VgU1556J_eWJh6ndb1h_4qssodJt4uWSpOXNpp35yHFuc3Vy8CBhc_Xpfef72o3bGRoOkbVO9ZalHQAZNu0_vNhUZFInSJNFiudboUL_7n8bwUtRYtvc7KMxYkEAlxRh89VG9MNP-Ejs7UCa9N6MpC20gzORTJIikxhH8m6mvof0xHnteo3Nsd5iVua9qP5GYjJC7Zm_bemdxWmn0HLLtPX8HvaD8Cq0VLVm7jtc0oAD3SaJfInS">
+</div>
+<div>
+<h3 class="font-headline text-body-lg font-bold text-on-surface leading-tight">Slack</h3>
+<span class="inline-block mt-1 px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant/20 font-label text-[10px] text-on-surface-variant uppercase tracking-wider">Communication</span>
+</div>
+</div>
+<p class="font-body text-caption text-on-surface-variant mb-6 flex-1">Ingest channel knowledge, threads, and automated alerts for AI context resolution.</p>
+<div class="bg-surface rounded-lg p-3 border border-outline-variant/20 mb-4">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label text-caption text-on-surface-variant">Sync Health</span>
+<span class="font-label text-caption font-medium text-tertiary">100%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label text-caption text-on-surface-variant">Latency</span>
+<span class="font-label text-caption font-medium text-on-surface">18ms</span>
+</div>
+</div>
+<button class="w-full py-2 rounded-lg border border-outline-variant text-on-surface font-body text-body-md font-medium hover:bg-surface-container transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+                    Configure
+                </button>
+</div>
+<!-- Disconnected Card: SAP -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 flex flex-col h-full relative hover:shadow-lg transition-shadow duration-300 group opacity-90">
+<div class="absolute top-0 right-0 p-4">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-outline-variant"></span>
+</div>
+<div class="flex items-start gap-4 mb-4 grayscale">
+<div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center border border-outline-variant/20 shadow-sm shrink-0 overflow-hidden">
+<img class="w-8 h-8 object-contain" data-alt="A solid, monolithic corporate logo representing enterprise resource planning software, using sharp geometric shapes, rendered in monochrome on a stark white background reflecting a precise, technical aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVU5Xp0XEH1B9IoegBkfCVPCewdmKT3sOFprqvZw-iBsVTGdkuJVz_4T4oInuv-nqjffWJT5kdXzCcPg49juBvk3gSKO0hHIXzl0t4v1qgGqxn6dx2cNSff8W1aqmSj_BY0dU9l6BWkx9mX6F-_lES1qdKMc6qnFPW5Qe5dcixQ2kfLrARG1bWgWGITaIeQ87YhhAdtp5uiscJp-OA5D1rjmBkUMadnZ2EDuc-2CpvGI4mmuY7PKWq">
+</div>
+<div>
+<h3 class="font-headline text-body-lg font-bold text-on-surface leading-tight">SAP S/4HANA</h3>
+<span class="inline-block mt-1 px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant/20 font-label text-[10px] text-on-surface-variant uppercase tracking-wider">ERP</span>
+</div>
+</div>
+<p class="font-body text-caption text-on-surface-variant mb-6 flex-1">Connect core operational data, supply chain metrics, and financial records.</p>
+<div class="bg-surface rounded-lg p-3 border border-outline-variant/20 mb-4 border-dashed">
+<div class="flex justify-center items-center py-1">
+<span class="font-label text-caption text-outline">Not Connected</span>
+</div>
+</div>
+<button class="w-full py-2 rounded-lg bg-on-surface text-surface font-body text-body-md font-medium hover:bg-inverse-surface transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add_link</span>
+                    Connect
+                </button>
+</div>
+<!-- Disconnected Card: GitHub -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 flex flex-col h-full relative hover:shadow-lg transition-shadow duration-300 group opacity-90">
+<div class="absolute top-0 right-0 p-4">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-outline-variant"></span>
+</div>
+<div class="flex items-start gap-4 mb-4 grayscale">
+<div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center border border-outline-variant/20 shadow-sm shrink-0 overflow-hidden">
+<img class="w-8 h-8 object-contain" data-alt="A minimalist black and white icon of a stylized cat silhouette used for software development platforms, highly simplified and geometric, displayed on a clean white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA37xM7EvY4CssqkBxhylsKf1WSR-gPMB4x7zj6in2OeqWWnlRHFUsOFHDyAs5-rzlmj8sa4er6bwpGb0sQ0qHhazCZ3924nAOmIBxcOIejc9cpjZ0vo7V0EbByXg4-tWaPUKTGA6VSUYGKbGvJKXFkotfECDCMEJ_kglEzwTPUTbfBaeE4iiar7dKK_xUmc7PpfdWoS6K34ErI0vuZQL2sXQkpGidTTD_hKkGZvk8cmwPyEo66oYPp">
+</div>
+<div>
+<h3 class="font-headline text-body-lg font-bold text-on-surface leading-tight">GitHub</h3>
+<span class="inline-block mt-1 px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant/20 font-label text-[10px] text-on-surface-variant uppercase tracking-wider">DevOps</span>
+</div>
+</div>
+<p class="font-body text-caption text-on-surface-variant mb-6 flex-1">Index code repositories, pull requests, and technical documentation for AI synthesis.</p>
+<div class="bg-surface rounded-lg p-3 border border-outline-variant/20 mb-4 border-dashed">
+<div class="flex justify-center items-center py-1">
+<span class="font-label text-caption text-outline">Not Connected</span>
+</div>
+</div>
+<button class="w-full py-2 rounded-lg bg-on-surface text-surface font-body text-body-md font-medium hover:bg-inverse-surface transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add_link</span>
+                    Connect
+                </button>
+</div>
+<!-- Generate a few more placeholders to fill the grid -->
+<!-- Disconnected Card: Zendesk -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 flex flex-col h-full relative hover:shadow-lg transition-shadow duration-300 group opacity-90">
+<div class="absolute top-0 right-0 p-4">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-outline-variant"></span>
+</div>
+<div class="flex items-start gap-4 mb-4 grayscale">
+<div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center border border-outline-variant/20 shadow-sm shrink-0 overflow-hidden">
+<span class="material-symbols-outlined text-outline text-[28px]">support_agent</span>
+</div>
+<div>
+<h3 class="font-headline text-body-lg font-bold text-on-surface leading-tight">Zendesk</h3>
+<span class="inline-block mt-1 px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant/20 font-label text-[10px] text-on-surface-variant uppercase tracking-wider">Support</span>
+</div>
+</div>
+<p class="font-body text-caption text-on-surface-variant mb-6 flex-1">Aggregate support tickets, resolution paths, and customer feedback loops.</p>
+<div class="bg-surface rounded-lg p-3 border border-outline-variant/20 mb-4 border-dashed">
+<div class="flex justify-center items-center py-1">
+<span class="font-label text-caption text-outline">Not Connected</span>
+</div>
+</div>
+<button class="w-full py-2 rounded-lg bg-on-surface text-surface font-body text-body-md font-medium hover:bg-inverse-surface transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add_link</span>
+                    Connect
+                </button>
+</div>
+<!-- Disconnected Card: Snowflake -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 flex flex-col h-full relative hover:shadow-lg transition-shadow duration-300 group opacity-90">
+<div class="absolute top-0 right-0 p-4">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-outline-variant"></span>
+</div>
+<div class="flex items-start gap-4 mb-4 grayscale">
+<div class="w-12 h-12 rounded-lg bg-surface flex items-center justify-center border border-outline-variant/20 shadow-sm shrink-0 overflow-hidden">
+<span class="material-symbols-outlined text-outline text-[28px]">ac_unit</span>
+</div>
+<div>
+<h3 class="font-headline text-body-lg font-bold text-on-surface leading-tight">Snowflake</h3>
+<span class="inline-block mt-1 px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant/20 font-label text-[10px] text-on-surface-variant uppercase tracking-wider">Data Warehouse</span>
+</div>
+</div>
+<p class="font-body text-caption text-on-surface-variant mb-6 flex-1">Direct query access to unstructured data lakes and analytical models.</p>
+<div class="bg-surface rounded-lg p-3 border border-outline-variant/20 mb-4 border-dashed">
+<div class="flex justify-center items-center py-1">
+<span class="font-label text-caption text-outline">Not Connected</span>
+</div>
+</div>
+<button class="w-full py-2 rounded-lg bg-on-surface text-surface font-body text-body-md font-medium hover:bg-inverse-surface transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add_link</span>
+                    Connect
+                </button>
+</div>
+</div>
+</main>
+
+
+
+
+</body></html>

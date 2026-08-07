@@ -1,0 +1,423 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cerefy - Settings</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS Setup -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#dadada",
+                        "on-primary-container": "#737474",
+                        "inverse-surface": "#303030",
+                        "tertiary-container": "#feffd7",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "primary-container": "#fdfcfc",
+                        "surface-tint": "#5e5e5f",
+                        "on-tertiary-container": "#747655",
+                        "outline": "#747879",
+                        "secondary": "#5e5e5d",
+                        "on-secondary-fixed-variant": "#474746",
+                        "primary-fixed-dim": "#c7c6c6",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#5e6141",
+                        "on-background": "#1b1b1b",
+                        "on-tertiary-fixed-variant": "#47492c",
+                        "outline-variant": "#c4c7c8",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#464747",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#1b1d05",
+                        "inverse-primary": "#c7c6c6",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "surface-container": "#eeeeee",
+                        "on-surface-variant": "#444748",
+                        "primary-fixed": "#e3e2e2",
+                        "surface-variant": "#e2e2e2",
+                        "surface": "#f9f9f9",
+                        "surface-container-low": "#f3f3f3",
+                        "background": "#f9f9f9",
+                        "secondary-fixed": "#e4e2e0",
+                        "surface-bright": "#f9f9f9",
+                        "inverse-on-surface": "#f1f1f1",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#c8c9a3",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-container": "#636361",
+                        "tertiary-fixed": "#e4e5bd",
+                        "on-surface": "#1b1b1b",
+                        "on-secondary-fixed": "#1b1c1b",
+                        "secondary-container": "#e1dfdd",
+                        "primary": "#5e5e5f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "display": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Geist"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #e2e2e2;
+            border-radius: 10px;
+        }
+        
+        /* Glass/Glow utilities */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .bento-glow::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(94, 94, 95, 0.1), transparent);
+            z-index: -1;
+        }
+        
+        /* Toggle Switch CSS */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #1b1b1b;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #1b1b1b;
+        }
+        .toggle-checkbox:checked + .toggle-label::after {
+            transform: translateX(100%);
+            border-color: #ffffff;
+        }
+    </style>
+<style>
+            @keyframes shimmer {
+                100% { transform: translateX(100%); }
+            }
+        </style><style>
+            @keyframes shimmer {
+                100% { transform: translateX(100%); }
+            }
+        </style></head>
+<body class="bg-background text-on-surface font-body antialiased flex h-screen overflow-hidden">
+<!-- Shared Component: SideNavBar -->
+<nav class="hidden md:flex w-64 bg-surface-container-low border-r border-outline-variant/20 flex-col h-screen p-4 gap-2 flex-shrink-0 z-40 relative">
+<!-- Header -->
+<div class="flex items-center gap-3 px-3 py-4 mb-4">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-outline-variant/30 flex-shrink-0">
+<img alt="Cerefy Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzciN8-t6GzRQcrL8Uoiu6zdZ1qjjaUf_TJGnxUpIww_th0bq0VL-xwx_Z4yUf1ZN8huVnTURb7LCpQx6c5wG4LcO1u8clMOKsQmrd9__aJe9WwhzaA9Pfufw7JuhGrI_Baqc326HeZ-8wYWeoOshHJUbFyejrAKgEd9CLmsEv5WgPCkJ0s_p6HjNr0nSzsWkNLw36kqVreqgaEP04ajP2v4HrClhFcNFVNLxZiddHWPBPpFeTTP7PZ8gNK3tpfAsxhw">
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-on-surface leading-tight text-sm">Cerefy</span>
+<span class="font-label text-label-mono text-on-surface-variant text-xs">Enterprise Tier</span>
+</div>
+</div>
+<!-- Main Nav Tabs -->
+<div class="flex-1 overflow-y-auto space-y-1 pr-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg hover:bg-surface-container-highest transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-105 transition-transform" data-icon="dashboard">dashboard</span>
+<span class="font-label text-label-mono text-sm tracking-wide">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg hover:bg-surface-container-highest transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-105 transition-transform" data-icon="smart_toy">smart_toy</span>
+<span class="font-label text-label-mono text-sm tracking-wide">Agent Studio</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg hover:bg-surface-container-highest transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-105 transition-transform" data-icon="database">database</span>
+<span class="font-label text-label-mono text-sm tracking-wide">Enterprise Memory</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg hover:bg-surface-container-highest transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-105 transition-transform" data-icon="analytics">analytics</span>
+<span class="font-label text-label-mono text-sm tracking-wide">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg hover:bg-surface-container-highest transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-105 transition-transform" data-icon="gavel">gavel</span>
+<span class="font-label text-label-mono text-sm tracking-wide">Compliance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg hover:bg-surface-container-highest transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-105 transition-transform" data-icon="account_tree">account_tree</span>
+<span class="font-label text-label-mono text-sm tracking-wide">Workflows</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg hover:bg-surface-container-highest transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-105 transition-transform" data-icon="storefront">storefront</span>
+<span class="font-label text-label-mono text-sm tracking-wide">Marketplace</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg hover:bg-surface-container-highest transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-105 transition-transform" data-icon="code">code</span>
+<span class="font-label text-label-mono text-sm tracking-wide">Developer Portal</span>
+</a>
+</div>
+<!-- Footer / Utility Tabs -->
+<div class="mt-auto pt-4 border-t border-outline-variant/20 space-y-1">
+<button class="w-full text-left px-4 py-2.5 mb-2 bg-on-surface text-on-primary rounded-lg font-label text-label-mono text-sm hover:opacity-90 transition-opacity flex justify-center items-center">
+                Upgrade Plan
+            </button>
+<!-- ACTIVE TAB LOGIC APPLIED HERE -->
+<a class="flex items-center gap-3 px-3 py-2.5 bg-secondary-container text-on-secondary-container rounded-lg font-bold translate-x-1 duration-200 shadow-sm border border-outline-variant/10" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings" data-weight="fill" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label text-label-mono text-sm tracking-wide">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg hover:bg-surface-container-highest transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-105 transition-transform" data-icon="help">help</span>
+<span class="font-label text-label-mono text-sm tracking-wide">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col h-screen overflow-y-auto bg-gradient-to-br from-surface to-surface-container-low relative">
+<!-- Subtle background atmospheric effect -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+<div class="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] rounded-full bg-primary-fixed/20 blur-[120px] opacity-60"></div>
+<div class="absolute top-[40%] -left-[10%] w-[40%] h-[50%] rounded-full bg-secondary-container/40 blur-[100px] opacity-40"></div>
+</div>
+<div class="max-w-[1280px] w-full mx-auto px-6 md:px-12 py-10 z-10 relative">
+<!-- Page Header -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+<div>
+<h1 class="font-headline text-3xl font-bold tracking-tight text-on-surface mb-2">Workspace Preferences</h1>
+<p class="font-body text-body-md text-on-surface-variant max-w-2xl">Manage your organizational identity, security protocols, and integration limits.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2.5 border border-outline-variant text-on-surface rounded-lg font-label text-sm font-medium hover:bg-surface-variant/50 transition-colors">Discard</button>
+<button class="px-5 py-2.5 bg-on-surface text-on-primary rounded-lg font-label text-sm font-medium hover:opacity-90 shadow-sm transition-opacity">Save Changes</button>
+</div>
+</header>
+<!-- Bento Grid Layout for Settings -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column (Profile & API) -->
+<div class="lg:col-span-7 flex flex-col gap-6">
+<!-- Section 1: Profile -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-8 shadow-sm bento-glow relative">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">person</span>
+<h2 class="font-headline text-lg font-semibold text-on-surface">Identity Profile</h2>
+</div>
+<div class="flex flex-col sm:flex-row gap-8 items-start">
+<div class="flex flex-col items-center gap-3">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-surface-container shadow-sm relative group cursor-pointer bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant text-3xl group-hover:hidden absolute z-10">add_photo_alternate</span>
+<img class="w-full h-full object-cover group-hover:opacity-50 transition-opacity absolute inset-0 z-0" data-alt="A high-fidelity, soft-lit abstract portrait placeholder image. Minimalist composition featuring smooth, curved geometric elements in soft shades of grey and white, suggesting a human form without being literal. Pristine light-mode corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDg4LOcioKFCa0qzbuEeYMe-7jmLheb8q-SNhqQATjaHBOtg_JmUCg_b5gtiTumxvkvgqNnV8JltSJoqRD5H7ESwforXal_-1Y43HzQtyqe_8GBKuNbHRpPd_lnT76_s89i06cHOWQ3iWz_B_AFTVHDvGQl0sdCcv9kiwpaWp3Wfa5R5XIUEDq_JUfMDCzxpATzVGZPq941346Wzi1YxkDSIR4RCd20W248bX8iEmjfC2ryY32ABv1b">
+</div>
+<span class="font-label text-xs text-on-surface-variant uppercase tracking-wider">Update Avatar</span>
+</div>
+<div class="flex-1 w-full space-y-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="font-label text-xs text-on-surface-variant ml-1">Full Name</label>
+<input class="w-full bg-background border border-outline-variant/50 rounded-lg px-4 py-2.5 text-sm font-body text-on-surface focus:border-on-surface focus:ring-1 focus:ring-on-surface outline-none transition-all" type="text" value="Dr. Aris Thorne">
+</div>
+<div class="space-y-1">
+<label class="font-label text-xs text-on-surface-variant ml-1">Work Email</label>
+<input class="w-full bg-surface-container-low border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm font-body text-on-surface-variant cursor-not-allowed" disabled="" type="email" value="a.thorne@cerefy.os">
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label text-xs text-on-surface-variant ml-1">System Role</label>
+<div class="w-full bg-surface-container-low border border-outline-variant/20 rounded-lg px-4 py-2.5 flex items-center justify-between">
+<span class="text-sm font-body text-on-surface">Enterprise Administrator</span>
+<span class="px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded text-[10px] font-label font-semibold uppercase tracking-wider">Verified</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: API Access -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-8 shadow-sm relative">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">key</span>
+<h2 class="font-headline text-lg font-semibold text-on-surface">API &amp; Telemetry</h2>
+</div>
+<button class="text-xs font-label text-primary hover:text-on-surface flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[16px]">description</span> Docs
+                            </button>
+</div>
+<div class="space-y-6">
+<div class="space-y-2">
+<label class="font-label text-xs text-on-surface-variant ml-1">Production Token</label>
+<div class="flex gap-2">
+<div class="flex-1 bg-background border border-outline-variant/50 rounded-lg px-4 py-2.5 flex items-center font-label text-sm text-on-surface-variant overflow-hidden">
+<span class="truncate">sk_live_9f8d7c6b5a4...</span>
+</div>
+<button class="px-4 py-2.5 border border-outline-variant text-on-surface rounded-lg hover:bg-surface-variant/50 transition-colors" title="Copy to clipboard">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+</div>
+<div class="flex justify-end">
+<button class="text-xs font-label text-on-surface-variant hover:text-on-surface underline decoration-outline-variant underline-offset-4">Revoke &amp; Regenerate</button>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/20">
+<div class="flex justify-between items-end mb-2">
+<span class="font-label text-xs text-on-surface-variant">Compute Quota (Current Cycle)</span>
+<span class="font-label text-sm font-medium text-on-surface">8.4M / 10M reqs</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-on-surface rounded-full w-[84%] transition-all duration-1000 relative overflow-hidden">
+<!-- Subtle gradient for active look -->
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+</div>
+</div>
+<p class="text-[11px] font-body text-on-surface-variant mt-2">Billing cycle resets in 12 days.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column (Security, Notifications, Workspace) -->
+<div class="lg:col-span-5 flex flex-col gap-6">
+<!-- Section 4: Security -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-8 shadow-sm">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">security</span>
+<h2 class="font-headline text-lg font-semibold text-on-surface">Access Security</h2>
+</div>
+<div class="space-y-5">
+<div class="flex items-center justify-between p-4 bg-surface rounded-lg border border-outline-variant/20">
+<div class="flex items-start gap-3">
+<div class="p-1.5 bg-tertiary-container rounded-md text-on-tertiary-container mt-0.5">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+</div>
+<div>
+<h3 class="font-body text-sm font-medium text-on-surface">Two-Factor Auth</h3>
+<p class="font-label text-[11px] text-on-surface-variant mt-0.5">Authenticator App configured</p>
+</div>
+</div>
+<span class="px-2.5 py-1 bg-surface-container-highest text-on-surface rounded-full text-xs font-label font-medium">Active</span>
+</div>
+<button class="w-full py-2.5 border border-outline-variant text-on-surface rounded-lg font-label text-sm hover:bg-surface-variant/50 transition-colors text-center">
+                                Change Passphrase
+                            </button>
+</div>
+</section>
+<!-- Section 3: Notifications -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-8 shadow-sm">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">notifications</span>
+<h2 class="font-headline text-lg font-semibold text-on-surface">Event Routing</h2>
+</div>
+<div class="space-y-4">
+<!-- Toggle Item 1 -->
+<div class="flex items-center justify-between group">
+<div>
+<h3 class="font-body text-sm text-on-surface">System Alerts</h3>
+<p class="font-label text-xs text-on-surface-variant">Core OS updates and downtime</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-10 h-5 bg-surface-container-high rounded-full peer peer-checked:bg-on-surface peer-focus:ring-2 peer-focus:ring-outline-variant transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
+</label>
+</div>
+<!-- Toggle Item 2 -->
+<div class="flex items-center justify-between group">
+<div>
+<h3 class="font-body text-sm text-on-surface">Agent Status</h3>
+<p class="font-label text-xs text-on-surface-variant">Task completion and anomalies</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-10 h-5 bg-surface-container-high rounded-full peer peer-checked:bg-on-surface peer-focus:ring-2 peer-focus:ring-outline-variant transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
+</label>
+</div>
+<!-- Toggle Item 3 -->
+<div class="flex items-center justify-between group">
+<div>
+<h3 class="font-body text-sm text-on-surface">Compliance Reports</h3>
+<p class="font-label text-xs text-on-surface-variant">Weekly automated auditing summaries</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox">
+<div class="w-10 h-5 bg-surface-container-high rounded-full peer peer-checked:bg-on-surface peer-focus:ring-2 peer-focus:ring-outline-variant transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
+</label>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Full Width Section (Workspace) -->
+<section class="mt-6 bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-8 shadow-sm bento-glow relative">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">domain</span>
+<h2 class="font-headline text-lg font-semibold text-on-surface">Workspace Aesthetics</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Logo Upload -->
+<div class="space-y-3">
+<label class="font-label text-xs text-on-surface-variant ml-1">Enterprise Insignia</label>
+<div class="border-2 border-dashed border-outline-variant/40 rounded-xl p-6 flex flex-col items-center justify-center text-center bg-surface hover:bg-surface-container-low transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-outline-variant text-3xl mb-2 group-hover:scale-110 transition-transform">upload_file</span>
+<p class="font-body text-sm text-on-surface font-medium">Click to upload SVG or PNG</p>
+<p class="font-label text-[11px] text-on-surface-variant mt-1">Recommended size: 256x256px. Max 2MB.</p>
+</div>
+</div>
+<!-- Color Picking (Simulated) -->
+<div class="space-y-4">
+<label class="font-label text-xs text-on-surface-variant ml-1">Primary Thematic Color</label>
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full bg-[#1b1b1b] border-2 border-surface shadow-[0_0_0_2px_#1b1b1b] cursor-pointer"></div>
+<div class="w-10 h-10 rounded-full bg-[#3b82f6] border border-outline-variant/30 cursor-pointer hover:scale-110 transition-transform"></div>
+<div class="w-10 h-10 rounded-full bg-[#10b981] border border-outline-variant/30 cursor-pointer hover:scale-110 transition-transform"></div>
+<div class="w-10 h-10 rounded-full bg-[#8b5cf6] border border-outline-variant/30 cursor-pointer hover:scale-110 transition-transform"></div>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center cursor-pointer hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">colorize</span>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/20 mt-4">
+<div class="flex items-center justify-between">
+<span class="font-body text-sm text-on-surface">Custom CSS Injection</span>
+<span class="px-2 py-0.5 bg-surface-variant text-on-surface-variant rounded text-[10px] font-label font-semibold uppercase">Pro Feature</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer Spacer -->
+<div class="h-12"></div>
+</div>
+</main>
+<script>
+        // Simple inline script for the active state shimmer effect in progress bar
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shimmer {
+                100% { transform: translateX(100%); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
+
+
+
+</body></html>

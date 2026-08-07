@@ -1,0 +1,319 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cerefy | Executive Mission Control</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-primary": "#c7c6c6",
+                    "on-tertiary-container": "#747655",
+                    "on-primary-fixed": "#1a1c1c",
+                    "outline": "#747879",
+                    "on-tertiary-fixed-variant": "#47492c",
+                    "on-secondary-fixed": "#1b1c1b",
+                    "surface-container": "#eeeeee",
+                    "on-background": "#1b1b1b",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#444748",
+                    "secondary-container": "#e1dfdd",
+                    "on-secondary-fixed-variant": "#474746",
+                    "tertiary-container": "#feffd7",
+                    "tertiary-fixed": "#e4e5bd",
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#f1f1f1",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#e2e2e2",
+                    "secondary-fixed": "#e4e2e0",
+                    "surface": "#f9f9f9",
+                    "primary-fixed": "#e3e2e2",
+                    "primary-fixed-dim": "#c7c6c6",
+                    "secondary": "#5e5e5d",
+                    "surface-tint": "#5e5e5f",
+                    "on-primary-container": "#737474",
+                    "on-surface": "#1b1b1b",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-variant": "#e2e2e2",
+                    "primary": "#5e5e5f",
+                    "tertiary": "#5e6141",
+                    "inverse-surface": "#303030",
+                    "background": "#f9f9f9",
+                    "primary-container": "#fdfcfc",
+                    "surface-dim": "#dadada",
+                    "tertiary-fixed-dim": "#c8c9a3",
+                    "secondary-fixed-dim": "#c8c6c4",
+                    "surface-container-low": "#f3f3f3",
+                    "surface-bright": "#f9f9f9",
+                    "on-tertiary-fixed": "#1b1d05",
+                    "surface-container-high": "#e8e8e8",
+                    "outline-variant": "#c4c7c8",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#464747",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-container": "#636361"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": ["Inter", "sans-serif"],
+                    "display": ["Inter", "sans-serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Geist", "monospace"]
+            },
+            "fontSize": {}
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-label-mono { font-family: 'Geist', monospace; }
+        .glass-panel {
+            background: rgba(253, 252, 252, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 229, 229, 0.5);
+        }
+        .bento-card {
+            background: #FDFCFC;
+            border: 1px solid #E5E5E5;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low dark:bg-surface-dim border-r border-outline-variant/20 flex flex-col p-4 gap-2 z-50">
+<!-- Header -->
+<div class="mb-8 px-4 flex items-center gap-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 overflow-hidden bg-white"><img alt="Cerefy Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwU9b2THEX-9PidalVVP4F6R-OhBCURfptHEegMjST_7RwgeOm5QEDMPxrnyYSMJM7pC4XHMmQySwf69sbTTtm-eRxZNZ7U710eSGwI7sw_sYo0wNq9tSvBoktNDc7hMSnQXs-DydL0r9_5BrpeCD6KXrlxg3uJmAHIUiIGjPL6UGNr3ZZ8j8gUbl8oMoWkZZFOV7IkgmlXYnIgixYU-yJX9oiHG5nHT7eZchip---Liheb9cZk6TiV43j6BIuo8kwQg"></div><div><h1 class="text-lg font-bold text-on-surface font-headline leading-tight">Cerefy</h1><p class="text-[10px] text-on-surface-variant font-label-mono uppercase tracking-widest">Enterprise Node 01</p></div></div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 bg-white dark:bg-surface-container-highest text-on-surface rounded-lg px-4 py-3 shadow-sm font-label-mono text-[14px] uppercase tracking-widest" href="#dashboard">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all rounded-lg font-label-mono text-[14px] uppercase tracking-widest" href="#agent-studio">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+<span class="">Agent Studio</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all rounded-lg font-label-mono text-[14px] uppercase tracking-widest" href="#memory">
+<span class="material-symbols-outlined">database</span>
+<span class="">Enterprise Memory</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all rounded-lg font-label-mono text-[14px] uppercase tracking-widest" href="#analytics">
+<span class="material-symbols-outlined">analytics</span>
+<span class="">Analytics</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all rounded-lg font-label-mono text-[14px] uppercase tracking-widest" href="#compliance">
+<span class="material-symbols-outlined">gavel</span>
+<span class="">Compliance</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all rounded-lg font-label-mono text-[14px] uppercase tracking-widest" href="#workflows"><span class="material-symbols-outlined">account_tree</span><span class="">Workflows</span></a><a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all rounded-lg font-label-mono text-[14px] uppercase tracking-widest" href="#marketplace"><span class="material-symbols-outlined">storefront</span><span class="">Marketplace</span></a><a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all rounded-lg font-label-mono text-[14px] uppercase tracking-widest" href="#developer-portal"><span class="material-symbols-outlined">terminal</span><span class="">Developer Portal</span></a></div>
+<!-- CTA -->
+<button class="w-full bg-on-surface text-surface py-3 rounded-lg font-label-mono text-[14px] uppercase tracking-widest mb-4 hover:bg-on-surface-variant transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            New Agent
+        </button>
+<!-- Footer Links -->
+<div class="flex flex-col gap-1 mt-auto pt-4 border-t border-outline-variant/20">
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all rounded-lg font-label-mono text-[14px] uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="">Settings</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high transition-all rounded-lg font-label-mono text-[14px] uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen relative overflow-hidden bg-background">
+<!-- TopNavBar (System Monitor) -->
+<header class="fixed top-0 right-0 left-64 z-40 bg-surface-container-lowest/70 backdrop-blur-md border-b border-outline-variant/30 flat flex justify-between items-center px-6 h-14 font-label-mono text-[12px]">
+<div class="flex items-center gap-4 text-on-surface-variant">
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-[16px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-[12px] p-0 w-48 placeholder-on-surface-variant/50" placeholder="Search operations..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full border border-surface-container-lowest"></span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">settings_heart</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant/30 cursor-pointer">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate executive in a modern, well-lit office environment. The lighting is bright and clean, reflecting a high-end corporate aesthetic with soft white tones and subtle grey shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-iOVJCXG8WEu_RPe9HYu_rahrxGL0q8iMx16VA5RvSnILwt0qA3kG34JR-3036bFp9mLKBoycwxqDQs_EGzVzQ-DfYngbkUt2G71M_snTMSHGMSC9yclas1TLu8e_tgGjR6pO1yXM0id1W0rJEiZpADnMWx8_oxCcaAymCxr_Jqw9GvH015f_CZrLr71S8T0yRGPQM_97xpxy-_ZWmbusL9N5FxxASz0ojLTyEF6KYnRzXFqPIeT8">
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="pt-24 px-8 pb-12 max-w-[1400px] mx-auto w-full flex-1 flex flex-col gap-6 relative z-10">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-4">
+<div>
+<h2 class="font-headline text-[32px] font-semibold tracking-tight text-on-surface leading-[1.3] mb-1">Executive Mission Control</h2>
+<p class="text-on-surface-variant text-[16px] font-body">Strategic overview for active AI operations.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 border border-outline-variant/50 rounded-lg text-on-surface text-[14px] font-medium hover:bg-surface-container-low transition-colors">Export Report</button>
+<button class="px-4 py-2 bg-on-surface text-surface rounded-lg text-[14px] font-medium hover:bg-on-surface-variant transition-colors">Manage Core</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6 flex-1">
+<!-- Main Metrics Row -->
+<div class="col-span-12 grid grid-cols-3 gap-6">
+<div class="bento-card rounded-xl p-6 flex flex-col relative overflow-hidden group">
+<div class="absolute -right-12 -top-12 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all duration-500"></div>
+<span class="text-on-surface-variant font-label-mono text-[12px] uppercase tracking-widest mb-4">ROI Impact</span>
+<div class="flex items-baseline gap-2 mt-auto">
+<span class="font-display text-[40px] font-bold tracking-tight text-on-surface leading-none">$2.4M</span>
+<span class="text-[14px] text-tertiary font-medium bg-tertiary-container px-2 py-0.5 rounded-full flex items-center"><span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +12.4%</span>
+</div>
+</div>
+<div class="bento-card rounded-xl p-6 flex flex-col relative overflow-hidden group">
+<div class="absolute -right-12 -top-12 w-32 h-32 bg-secondary/5 rounded-full blur-2xl group-hover:bg-secondary/10 transition-all duration-500"></div>
+<span class="text-on-surface-variant font-label-mono text-[12px] uppercase tracking-widest mb-4">Decision Velocity</span>
+<div class="flex items-baseline gap-2 mt-auto">
+<span class="font-display text-[40px] font-bold tracking-tight text-on-surface leading-none">1.2s</span>
+<span class="text-[14px] text-tertiary font-medium bg-tertiary-container px-2 py-0.5 rounded-full flex items-center"><span class="material-symbols-outlined text-[14px] mr-1">speed</span> Optimal</span>
+</div>
+</div>
+<div class="bento-card rounded-xl p-6 flex flex-col relative overflow-hidden group">
+<div class="absolute -right-12 -top-12 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all duration-500"></div>
+<span class="text-on-surface-variant font-label-mono text-[12px] uppercase tracking-widest mb-4">Autonomous Load</span>
+<div class="flex items-baseline gap-2 mt-auto">
+<span class="font-display text-[40px] font-bold tracking-tight text-on-surface leading-none">88%</span>
+<span class="text-[14px] text-on-surface-variant font-medium bg-surface-container-high px-2 py-0.5 rounded-full flex items-center">Target: 90%</span>
+</div>
+</div>
+</div>
+<!-- Neural Core Vis & Log -->
+<div class="col-span-12 lg:col-span-8 flex flex-col">
+<div class="glass-panel rounded-xl p-8 flex-1 flex flex-col relative overflow-hidden shadow-sm h-[500px]">
+<!-- Decorative background glow -->
+<div class="absolute inset-0 bg-gradient-to-br from-surface to-surface-container-low opacity-50"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="relative z-10 flex justify-between items-center mb-6">
+<div>
+<h3 class="font-headline text-[20px] font-semibold text-on-surface">Neural Core Status</h3>
+<p class="text-on-surface-variant text-[14px] font-body mt-1">Live visualization of processing node topology.</p>
+</div>
+<div class="flex gap-2">
+<span class="bg-white/60 border border-outline-variant/30 text-on-surface px-3 py-1 rounded-full font-label-mono text-[12px] flex items-center gap-1.5 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span> Active
+                                </span>
+</div>
+</div>
+<!-- Core Visualization Area -->
+<div class="flex-1 w-full relative bg-white/40 rounded-lg border border-outline-variant/20 overflow-hidden flex items-center justify-center">
+<!-- Placeholder for complex visualization, using structural elements to suggest it -->
+<div class="relative w-full h-full flex items-center justify-center p-8">
+<div class="w-48 h-48 rounded-full border border-primary/20 flex items-center justify-center relative">
+<div class="w-32 h-32 rounded-full border border-primary/30 flex items-center justify-center animate-[spin_10s_linear_infinite]">
+<div class="w-2 h-2 bg-primary rounded-full absolute -top-1"></div>
+<div class="w-2 h-2 bg-primary rounded-full absolute -bottom-1"></div>
+</div>
+<div class="w-16 h-16 rounded-full bg-primary/10 backdrop-blur flex items-center justify-center z-10 animate-pulse">
+<span class="material-symbols-outlined text-primary text-[24px]">network_node</span>
+</div>
+<!-- Connecting nodes suggestion -->
+<div class="absolute w-full h-px bg-primary/20 top-1/2 -left-full"></div>
+<div class="absolute w-full h-px bg-primary/20 top-1/2 -right-full"></div>
+<div class="absolute w-px h-full bg-primary/20 left-1/2 -top-full"></div>
+</div>
+</div>
+<div class="absolute bottom-4 right-4 bg-white/70 backdrop-blur border border-outline-variant/20 rounded p-2 text-right">
+<div class="font-label-mono text-[10px] text-on-surface-variant mb-1 uppercase">Load Distribution</div>
+<div class="font-headline text-[14px] font-medium text-on-surface">Balanced</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Decision Log -->
+<div class="col-span-12 lg:col-span-4 flex flex-col">
+<div class="bento-card rounded-xl p-6 flex-1 flex flex-col h-[500px]">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline text-[18px] font-semibold text-on-surface">Autonomous Log</h3>
+<button class="text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 space-y-4">
+<!-- Log Item 1 -->
+<div class="flex gap-4 items-start p-3 rounded-lg hover:bg-surface-container-low transition-colors border border-transparent hover:border-outline-variant/10">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface">inventory_2</span>
+</div>
+<div>
+<div class="flex justify-between items-baseline mb-1">
+<span class="font-medium text-[14px] text-on-surface">Inventory Rebalance</span>
+<span class="font-label-mono text-[10px] text-on-surface-variant">2m ago</span>
+</div>
+<p class="text-[13px] text-on-surface-variant leading-snug mb-2">Shifted 400 units to East Coast DC based on predictive weather modeling.</p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-label-mono uppercase tracking-wider text-tertiary bg-tertiary-container px-2 py-0.5 rounded">Impact: High</span>
+<span class="text-[10px] font-label-mono uppercase tracking-wider text-on-surface-variant border border-outline-variant/30 px-2 py-0.5 rounded">Auto</span>
+</div>
+</div>
+</div>
+<!-- Log Item 2 -->
+<div class="flex gap-4 items-start p-3 rounded-lg hover:bg-surface-container-low transition-colors border border-transparent hover:border-outline-variant/10">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface">campaign</span>
+</div>
+<div>
+<div class="flex justify-between items-baseline mb-1">
+<span class="font-medium text-[14px] text-on-surface">Ad Spend Optimization</span>
+<span class="font-label-mono text-[10px] text-on-surface-variant">14m ago</span>
+</div>
+<p class="text-[13px] text-on-surface-variant leading-snug mb-2">Reduced bid on keyword group 'B' by 12% due to dropping conversion rate.</p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-label-mono uppercase tracking-wider text-primary bg-surface-container-high px-2 py-0.5 rounded">Impact: Med</span>
+<span class="text-[10px] font-label-mono uppercase tracking-wider text-on-surface-variant border border-outline-variant/30 px-2 py-0.5 rounded">Auto</span>
+</div>
+</div>
+</div>
+<!-- Log Item 3 -->
+<div class="flex gap-4 items-start p-3 rounded-lg hover:bg-surface-container-low transition-colors border border-transparent hover:border-outline-variant/10">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface">security</span>
+</div>
+<div>
+<div class="flex justify-between items-baseline mb-1">
+<span class="font-medium text-[14px] text-on-surface">Security Protocol</span>
+<span class="font-label-mono text-[10px] text-on-surface-variant">42m ago</span>
+</div>
+<p class="text-[13px] text-on-surface-variant leading-snug mb-2">Flagged unusual login pattern from Node 4; required 2FA step-up.</p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-label-mono uppercase tracking-wider text-primary bg-surface-container-high px-2 py-0.5 rounded">Impact: Med</span>
+<span class="text-[10px] font-label-mono uppercase tracking-wider text-on-surface-variant border border-outline-variant/30 px-2 py-0.5 rounded">Supervised</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+
+
+
+</body></html>
