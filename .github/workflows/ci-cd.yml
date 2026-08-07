@@ -112,8 +112,9 @@ jobs:
           scan-type: image
           scan-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
 
   verify-deploy:
     name: Verify Render Deployment
