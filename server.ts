@@ -235,6 +235,21 @@ const requireTenant = (req: AuthenticatedRequest, res: Response, next: NextFunct
 
 app.use('/api/v1', apiRateLimiter);
 
+// ─── Simple User Store (replace with database in production) ──────────────────
+interface StoredUser {
+  id: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  organizationId: string;
+  organizationName: string;
+  createdAt: string;
+}
+
+const userStore = new Map<string, StoredUser>();
+
 // ─── Auth Routes (no requireAuth - used for authentication) ──────────────────
 app.post('/api/v1/auth/register', authRateLimiter, async (req: Request, res: Response) => {
   const { email, password, firstName, lastName, organizationName } = req.body;
@@ -242,39 +257,44 @@ app.post('/api/v1/auth/register', authRateLimiter, async (req: Request, res: Res
     res.status(400).json({ error: 'Email, password, first name and last name are required' });
     return;
   }
-  try {
-    const userRecord = await getFirebaseAdmin().auth().createUser({ email, password, displayName: `${firstName} ${lastName}` });
-    const orgId = `org_${crypto.randomBytes(8).toString('hex')}`;
-    await getFirebaseAdmin().auth().setCustomUserClaims(userRecord.uid, { role: 'admin', organizationId: orgId, organizationName: organizationName || `${firstName}'s Organization` });
-    const accessToken = await getFirebaseAdmin().auth().createCustomToken(userRecord.uid);
-    const refreshToken = crypto.randomBytes(32).toString('hex');
-    res.json({
-      user: { id: userRecord.uid, email, firstName, lastName, role: 'admin', organizationId: orgId, organizationName: organizationName || `${firstName}'s Organization`, avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName + ' ' + lastName)}&background=111827&color=00ffff`, createdAt: new Date().toISOString() },
-      tokens: { accessToken, refreshToken },
-    });
-  } catch (error: any) {
-    logger.error('Registration failed', { error: error.message, email });
-    if (error.code === 'auth/email-already-exists') { res.status(409).json({ error: 'Email already registered' }); }
-    else { res.status(500).json({ error: 'Registration failed' }); }
+  const normalizedEmail = String(email).toLowerCase();
+  if (userStore.has(normalizedEmail)) {
+    res.status(409).json({ error: 'Email already registered' });
+    return;
   }
+  const newUser: StoredUser = {
+    id: `user_${crypto.randomBytes(8).toString('hex')}`,
+    email: normalizedEmail,
+    password, // NOTE: In production, hash with bcrypt
+    firstName,
+    lastName,
+    role: 'admin',
+    organizationId: `org_${crypto.randomBytes(8).toString('hex')}`,
+    organizationName: organizationName || `${firstName}'s Organization`,
+    createdAt: new Date().toISOString(),
+  };
+  userStore.set(normalizedEmail, newUser);
+  const accessToken = crypto.randomBytes(32).toString('hex');
+  const refreshToken = crypto.randomBytes(32).toString('hex');
+  logger.info('User registered', { email: normalizedEmail, orgId: newUser.organizationId });
+  res.json({
+    user: { id: newUser.id, email: newUser.email, firstName, lastName, role: newUser.role, organizationId: newUser.organizationId, organizationName: newUser.organizationName, avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName + ' ' + lastName)}&background=111827&color=00ffff`, createdAt: newUser.createdAt },
+    tokens: { accessToken, refreshToken },
+  });
 });
 
 app.post('/api/v1/auth/login', authRateLimiter, async (req: Request, res: Response) => {
   const { email, password } = req.body;
   if (!email || !password) { res.status(400).json({ error: 'Email and password are required' }); return; }
-  try {
-    const userRecord = await getFirebaseAdmin().auth().getUserByEmail(email);
-    const accessToken = await getFirebaseAdmin().auth().createCustomToken(userRecord.uid);
-    const refreshToken = crypto.randomBytes(32).toString('hex');
-    const claims = userRecord.customClaims || {};
-    res.json({
-      user: { id: userRecord.uid, email: userRecord.email || email, firstName: userRecord.displayName?.split(' ')[0] || '', lastName: userRecord.displayName?.split(' ').slice(1).join(' ') || '', role: claims.role || 'member', organizationId: claims.organizationId || '', organizationName: claims.organizationName || '', avatarUrl: userRecord.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userRecord.displayName || email)}&background=111827&color=00ffff`, createdAt: userRecord.metadata.creationTime || new Date().toISOString() },
-      tokens: { accessToken, refreshToken },
-    });
-  } catch (error: any) {
-    logger.error('Login failed', { error: error.message, email });
-    res.status(401).json({ error: 'Invalid email or password' });
-  }
+  const normalizedEmail = String(email).toLowerCase();
+  const user = userStore.get(normalizedEmail);
+  if (!user || user.password !== password) { res.status(401).json({ error: 'Invalid email or password' }); return; }
+  const accessToken = crypto.randomBytes(32).toString('hex');
+  const refreshToken = crypto.randomBytes(32).toString('hex');
+  res.json({
+    user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role, organizationId: user.organizationId, organizationName: user.organizationName, avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.firstName + ' ' + user.lastName)}&background=111827&color=00ffff`, createdAt: user.createdAt },
+    tokens: { accessToken, refreshToken },
+  });
 });
 
 app.post('/api/v1/auth/refresh', async (_req: Request, res: Response) => {
