@@ -31,6 +31,8 @@ import { SystemTelemetryView } from './components/SystemTelemetryView';
 import { PublicMarketingSite } from './components/PublicMarketingSite';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
+import { PricingPage } from './components/PricingPage';
+import { FeaturesPage } from './components/FeaturesPage';
 import { AICanvasView } from './components/AICanvasView';
 import { BPMNWorkspaceView } from './components/BPMNWorkspaceView';
 import { GovernanceDashboardView } from './components/GovernanceDashboardView';
@@ -127,6 +129,8 @@ function AppRoutes() {
         <Route path="/" element={<PublicMarketingSite />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/features" element={<FeaturesPage />} />
 
         {/* Protected Workspace Routes */}
         <Route path="/workspace" element={<RequireAuth><WorkspaceLayout /></RequireAuth>}>
