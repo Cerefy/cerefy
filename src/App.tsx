@@ -4,6 +4,7 @@ import { Routes, Route, Outlet, useNavigate, Navigate } from 'react-router-dom';
 import { useAgentStore } from './store/useAgentStore';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import NotFound from './components/NotFound';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
@@ -175,8 +176,10 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

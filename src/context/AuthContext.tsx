@@ -39,27 +39,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       try {
-        // Add timeout to prevent long waiting on slow backend
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        // Try to get user profile from token
         const profile = await authApi.me();
-        clearTimeout(timeoutId);
         setUser(profile);
-        socketService.connect();
         setCurrentUser(profile);
       } catch {
-        // Token expired — try refresh
-        try {
-          await authApi.refresh();
-          const profile = await authApi.me();
-          setUser(profile);
-          socketService.connect();
-          setCurrentUser(profile);
-        } catch {
-          localStorage.removeItem('cerefy_access_token');
-          localStorage.removeItem('cerefy_refresh_token');
-          setCurrentUser(null);
-        }
+        // Token expired or invalid - clear storage
+        localStorage.removeItem('cerefy_access_token');
+        localStorage.removeItem('cerefy_refresh_token');
+        setCurrentUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -69,7 +57,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Listen for forced logout events from axios interceptor
     const handleForcedLogout = () => {
       setUser(null);
-      socketService.disconnect();
       setCurrentUser(null);
     };
     window.addEventListener('cerefy:auth:logout', handleForcedLogout);
@@ -84,7 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await authApi.login({ email, password });
       setUser(response.user);
-      socketService.connect();
       setCurrentUser(response.user);
     } catch (err: unknown) {
       const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Login failed. Please check your credentials.';
@@ -101,7 +87,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await authApi.register({ email, password, firstName, lastName, organizationName });
       setUser(response.user);
-      socketService.connect();
       setCurrentUser(response.user);
     } catch (err: unknown) {
       const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Registration failed.';
@@ -117,7 +102,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await authApi.logout();
     } finally {
       setUser(null);
-      socketService.disconnect();
       setCurrentUser(null);
     }
   }, []);
