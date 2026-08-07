@@ -223,7 +223,7 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       ...parallelState,
       documents: discoveryResult.documents || parallelState.documents,
       requirements: analystResult.requirements || parallelState.requirements,
-      decisions: analystResult.decisions || parallelState.decisions,
+      decisions: (analystResult as any).decisions || parallelState.decisions,
       confidence: Math.max(memoryResult.output ? 55 : 0, discoveryResult.confidence || 0, analystResult.confidence || 0),
       nextAgent: 'governance',
       discoveryComplete: true,
@@ -235,7 +235,7 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
         ...discoveryResult.history.slice(-1),
         ...analystResult.history.slice(-1),
       ],
-    });
+    } as CerefyGraphState);
 
     emitAgentLifecycle(io, executionId, 'governance', 'started', { stepIndex: 3, totalSteps: 4 });
     emitAgentLifecycle(io, executionId, 'governance', 'progress', {
@@ -254,7 +254,7 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       currentAgent: finalState.nextAgent || 'complete',
       confidence,
       output,
-      errors: finalState.errors || [],
+      errors: (finalState as any).errors || [],
       completedAt: finalState.governanceComplete ? new Date() : null,
     });
 
