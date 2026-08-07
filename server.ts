@@ -91,7 +91,6 @@ function getGeminiClient(): GoogleGenAI | null {
   return aiClient;
 }
 
-let firebaseApp: any | null = null;
 let socketServer: SocketIOServer | null = null;
 
 interface DevAuthUser {
@@ -199,7 +198,7 @@ function getExecutiveKPIs() { return { totalProjects: devProjects.length, active
 function getAgentPerformance() { return devAgents.map((agent) => ({ agentId: agent.id, agentName: agent.name, tasksCompleted: 118 + Math.floor(Math.random() * 50), avgLatencyMs: 320 + Math.floor(Math.random() * 180), successRate: 85 + Math.floor(Math.random() * 10), tokensUsed: 14230 + Math.floor(Math.random() * 4200), costIncurred: `$${(Math.random() * 12 + 8).toFixed(1)}K`, lastActive: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24).toISOString() })); }
 function getMemoryResults(query: string) { return [{ id: `mem_${crypto.randomBytes(4).toString('hex')}`, content: `Insight about ${query}: Cerefy learns from historical workflows and recommends next-best actions.`, source: 'Knowledge Graph', score: 0.92, type: 'vector', metadata: { topic: 'workflow', relevance: 'high' } }, { id: `mem_${crypto.randomBytes(4).toString('hex')}`, content: `Document snippet related to ${query}: Use the integrated agent pipeline for real-time decision automation.`, source: 'Document Store', score: 0.84, type: 'relational', metadata: { topic: 'automation', relevance: 'medium' } }]; }
 function getMemoryDocuments() { return [{ id: 'doc_01', title: 'Cerefy Governance Framework', updatedAt: new Date().toISOString(), summary: 'Policy-first AI workflow governance', source: 'Knowledge Base' }, { id: 'doc_02', title: 'Agent Runbooks', updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(), summary: 'Standard operating procedures for agent orchestration', source: 'Documentation Hub' }]; }
-function getFirebaseAdmin() { if (!firebaseApp) { try { firebaseApp = admin.initializeApp(); logger.info('Firebase Admin initialized'); } catch (err) { logger.error('Failed to initialize Firebase Admin', { error: err }); } } return firebaseApp; }
+
 async function verifyBearerToken(token: string): Promise<DevAuthUser | DecodedIdToken | null> { const localUser = getUserFromAccessToken(token); if (localUser) return localUser as any; try { const firebaseAdmin = getFirebaseAdmin(); if (!firebaseAdmin) return null; return await firebaseAdmin.auth().verifyIdToken(token); } catch (error) { logger.warn('Token verification failed', { error: error instanceof Error ? error.message : String(error) }); return null; } }
 
 export interface AuthenticatedRequest extends Request { user?: DecodedIdToken; tenantId?: string; }
