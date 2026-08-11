@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, uuid, customType, real, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, integer, uuid, customType, real, jsonb, boolean } from 'drizzle-orm/pg-core';
 
 // Custom pgvector type for Drizzle
 const vector = customType<{ data: number[]; driverData: string }>({
@@ -86,5 +86,67 @@ export const agentRegistry = pgTable('agent_registry', {
   status: text('status').default('ACTIVE').notNull(),
   executionHistory: jsonb('execution_history').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const aiQueries = pgTable('ai_queries', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull(),
+  userId: text('user_id').notNull(),
+  type: text('type').notNull(),
+  modelVersion: text('model_version'),
+  promptVersion: text('prompt_version'),
+  tokensInput: integer('tokens_input').default(0).notNull(),
+  tokensOutput: integer('tokens_output').default(0).notNull(),
+  costUsd: real('cost_usd').default(0).notNull(),
+  status: text('status').default('RUNNING').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const aiAnswers = pgTable('ai_answers', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull(),
+  queryId: uuid('query_id').references(() => aiQueries.id, { onDelete: 'set null' }),
+  modelVersion: text('model_version').notNull(),
+  promptVersion: text('prompt_version').notNull(),
+  confidence: real('confidence').default(0).notNull(),
+  output: jsonb('output').notNull(),
+  humanReviewStatus: text('human_review_status').default('PENDING').notNull(),
+  humanEdited: boolean('human_edited').default(false).notNull(),
+  humanReviewNote: text('human_review_note'),
+  reviewedBy: text('reviewed_by'),
+  reviewedAt: timestamp('reviewed_at'),
+  sources: jsonb('sources').default([]).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+/** §7 durable audit trail — tenant-scoped, append-only-by-convention. */
+export const auditLogs = pgTable('audit_log', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull(),
+  action: text('action').notNull(),
+  actorId: text('actor_id').notNull(),
+  actorRole: text('actor_role').notNull(),
+  resource: text('resource'),
+  detail: jsonb('detail').default({}).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Arabic Intelligence: per-organization AI profile. One row per tenant —
+// Country + Industry + Language + Dialect + response style used to compose
+// Arabic-aware context. Tenant-scoped like every other row in this schema.
+export const organizationIntelligenceProfiles = pgTable('organization_intelligence_profiles', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull().unique(),
+  country: text('country'), // ISO 3166 alpha-2, e.g. 'SA'
+  marketId: text('market_id'), // references MAP_MARKET_CATALOG id
+  industryId: text('industry_id'), // references INDUSTRIES id
+  language: text('language').default('en'), // 'ar' | 'en' | 'both'
+  dialect: text('dialect').default('msa'),
+  responseStyle: text('response_style').default('formal'), // 'formal' | 'concise' | 'detailed'
+  terminology: jsonb('terminology').$type<string[]>().default([]), // extra org-specific Arabic terms
+  policies: jsonb('policies').$type<string[]>().default([]), // naming-only policy refs, never raw instructions
+  dataResidency: text('data_residency').default('MENA'),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

@@ -149,70 +149,70 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 selection:bg-indigo-500/30 font-sans text-gray-900">
-      <div className="bg-white border border-gray-200 rounded-3xl max-w-4xl w-full grid grid-cols-1 md:grid-cols-12 overflow-hidden shadow-2xl relative">
+    <div className="fixed inset-0 bg-scrim/80 backdrop-blur-md z-50 flex items-center justify-center p-4 selection:bg-indigo-signal/30 font-sans text-gray-deep">
+      <div className="bg-surface-container-lowest border border-gray-panel rounded-3xl max-w-4xl w-full grid grid-cols-1 md:grid-cols-12 overflow-hidden shadow-2xl relative">
         {onClose && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors cursor-pointer text-xs"
+            className="absolute top-4 right-4 z-10 p-2 text-gray-muted-strong hover:text-gray-deep rounded-full hover:bg-gray-panel-soft transition-colors cursor-pointer text-xs"
           >
             ✕
           </button>
         )}
 
         {/* Left Side (Dark Hero Enterprise Branding) - 5 cols */}
-        <div className="md:col-span-5 bg-[#080E38] p-8 text-white flex flex-col justify-between space-y-8 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="md:col-span-5 bg-brand-navy p-8 text-surface-container-lowest flex flex-col justify-between space-y-8 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-indigo-signal/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="space-y-6">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-white/10 border border-white/20">
-                <LogoIcon className="h-6 w-6 text-white" />
+              <div className="p-2 rounded-xl bg-surface-container-lowest/10 border border-surface-container-lowest/20">
+                <LogoIcon className="h-6 w-6 text-surface-container-lowest" />
               </div>
-              <span className="font-extrabold text-lg text-white font-sans tracking-tight">Cerefy</span>
+              <span className="font-extrabold text-lg text-surface-container-lowest font-sans tracking-tight">Cerefy</span>
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-bold tracking-tight text-white leading-snug">
+              <h2 className="text-xl font-bold tracking-tight text-surface-container-lowest leading-snug">
                 Unified Intelligence for the Enterprise
               </h2>
-              <p className="text-xs text-indigo-200 leading-relaxed font-sans">
+              <p className="text-xs text-indigo-signal-tint leading-relaxed font-sans">
                 Access your organization's multi-agent orchestrator, vector RAG memory, and real-time operational telemetry.
               </p>
             </div>
 
-            <div className="space-y-2.5 font-sans text-xs text-indigo-100">
+            <div className="space-y-2.5 font-sans text-xs text-indigo-signal-faint">
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+                <Check className="h-4 w-4 text-emerald-signal-strong shrink-0" />
                 <span>Multi-Agent Autonomous Orchestration</span>
               </div>
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+                <Check className="h-4 w-4 text-emerald-signal-strong shrink-0" />
                 <span>SOC2 Type II &amp; EU GDPR Sovereign Guardrails</span>
               </div>
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+                <Check className="h-4 w-4 text-emerald-signal-strong shrink-0" />
                 <span>Distributed Vector &amp; Graph Memory RAG</span>
               </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-indigo-900/60 flex items-center gap-2 text-[10px] font-mono text-indigo-300">
-            <ShieldCheck className="h-4 w-4 text-emerald-400" />
+          <div className="pt-4 border-t border-indigo-signal-ink-soft/60 flex items-center gap-2 text-[10px] font-mono text-indigo-signal-soft">
+            <ShieldCheck className="h-4 w-4 text-emerald-signal-strong" />
             <span>Postgres RLS Row Security Enforced</span>
           </div>
         </div>
 
         {/* Right Side (Auth Form) - 7 cols */}
-        <div className="md:col-span-7 p-8 space-y-6 bg-white flex flex-col justify-between">
+        <div className="md:col-span-7 p-8 space-y-6 bg-surface-container-lowest flex flex-col justify-between">
           <div className="space-y-5">
             {/* Tab Switcher */}
-            <div className="flex bg-gray-100 p-1 rounded-xl font-sans text-xs">
+            <div className="flex bg-gray-panel-soft p-1 rounded-xl font-sans text-xs">
               <button
                 type="button"
                 onClick={() => setAuthMode('signin')}
                 className={`flex-1 py-2 rounded-lg font-bold transition-all cursor-pointer ${
-                  authMode === 'signin' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                  authMode === 'signin' ? 'bg-surface-container-lowest text-gray-deep shadow-sm' : 'text-gray-muted hover:text-gray-deep'
                 }`}
               >
                 Sign In
@@ -221,7 +221,7 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
                 type="button"
                 onClick={() => setAuthMode('signup')}
                 className={`flex-1 py-2 rounded-lg font-bold transition-all cursor-pointer ${
-                  authMode === 'signup' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                  authMode === 'signup' ? 'bg-surface-container-lowest text-gray-deep shadow-sm' : 'text-gray-muted hover:text-gray-deep'
                 }`}
               >
                 Create Account
@@ -230,7 +230,7 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
                 type="button"
                 onClick={() => setAuthMode('demo')}
                 className={`flex-1 py-2 rounded-lg font-bold transition-all cursor-pointer ${
-                  authMode === 'demo' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                  authMode === 'demo' ? 'bg-surface-container-lowest text-gray-deep shadow-sm' : 'text-gray-muted hover:text-gray-deep'
                 }`}
               >
                 Demo Pass
@@ -239,15 +239,15 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
 
             {/* Error / Success Messages */}
             {errorMsg && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 font-sans text-xs flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
+              <div className="p-3 bg-rose-signal-faint border border-rose-signal-tint rounded-xl text-rose-signal-muted font-sans text-xs flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 shrink-0 text-rose-signal-deep" />
                 <span>{errorMsg}</span>
               </div>
             )}
 
             {successMsg && (
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 font-sans text-xs flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+              <div className="p-3 bg-emerald-signal-faint border border-emerald-signal-tint rounded-xl text-emerald-signal-muted font-sans text-xs flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-signal-deep" />
                 <span>{successMsg}</span>
               </div>
             )}
@@ -258,7 +258,7 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className="py-2.5 px-3 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+                className="py-2.5 px-3 bg-surface-container-lowest border border-gray-panel hover:bg-gray-panel-faint rounded-xl text-xs font-semibold text-gray-strong flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24">
                   <path
@@ -285,33 +285,33 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className="py-2.5 px-3 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+                className="py-2.5 px-3 bg-surface-container-lowest border border-gray-panel hover:bg-gray-panel-faint rounded-xl text-xs font-semibold text-gray-strong flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
               >
-                <Github className="h-4 w-4 text-gray-900" />
+                <Github className="h-4 w-4 text-gray-deep" />
                 <span>GitHub</span>
               </button>
             </div>
 
-            <div className="flex items-center gap-3 text-[10px] font-mono text-gray-400 my-2">
-              <div className="flex-1 h-px bg-gray-200" />
+            <div className="flex items-center gap-3 text-[10px] font-mono text-gray-muted-strong my-2">
+              <div className="flex-1 h-px bg-gray-panel" />
               <span>OR CONTINUE WITH EMAIL</span>
-              <div className="flex-1 h-px bg-gray-200" />
+              <div className="flex-1 h-px bg-gray-panel" />
             </div>
 
             {/* Form */}
             {authMode === 'demo' ? (
-              <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3 font-sans text-xs">
-                <div className="flex items-center gap-2 text-indigo-600 font-bold">
+              <div className="p-4 bg-gray-panel-faint border border-gray-panel rounded-xl space-y-3 font-sans text-xs">
+                <div className="flex items-center gap-2 text-indigo-signal-deep font-bold">
                   <Sparkles className="h-4 w-4" /> Instant Demo Session
                 </div>
-                <p className="text-gray-600 text-[11px] leading-relaxed">
+                <p className="text-gray-soft text-[11px] leading-relaxed">
                   Log in directly as an authenticated tenant administrator with simulated enterprise permissions.
                 </p>
                 <button
                   type="button"
                   onClick={handleDemoAnonymousAuth}
                   disabled={loading}
-                  className="w-full py-2.5 bg-gray-900 hover:bg-black text-white font-semibold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow"
+                  className="w-full py-2.5 bg-gray-deep hover:bg-scrim text-surface-container-lowest font-semibold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow"
                 >
                   <span>Launch Demo Session</span>
                   <ArrowRight className="h-4 w-4" />
@@ -321,39 +321,39 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
               <form onSubmit={handleEmailAuth} className="space-y-3 font-sans text-xs">
                 {authMode === 'signup' && (
                   <div>
-                    <label className="block text-gray-600 mb-1 font-semibold">Full Name</label>
+                    <label className="block text-gray-soft mb-1 font-semibold">Full Name</label>
                     <input
                       type="text"
                       required
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       placeholder="Montaser Executive"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-gray-900 outline-none focus:border-indigo-500 font-sans"
+                      className="w-full bg-gray-panel-faint border border-gray-panel rounded-xl px-3 py-2 text-gray-deep outline-none focus:border-indigo-signal font-sans"
                     />
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-gray-600 mb-1 font-semibold">Work Email</label>
+                  <label className="block text-gray-soft mb-1 font-semibold">Work Email</label>
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="executive@cerefy.ai"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-gray-900 outline-none focus:border-indigo-500 font-sans"
+                    className="w-full bg-gray-panel-faint border border-gray-panel rounded-xl px-3 py-2 text-gray-deep outline-none focus:border-indigo-signal font-sans"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-600 mb-1 font-semibold">Password</label>
+                  <label className="block text-gray-soft mb-1 font-semibold">Password</label>
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-gray-900 outline-none focus:border-indigo-500 font-sans"
+                    className="w-full bg-gray-panel-faint border border-gray-panel rounded-xl px-3 py-2 text-gray-deep outline-none focus:border-indigo-signal font-sans"
                   />
                 </div>
 
@@ -363,9 +363,9 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
                     id="terms"
                     checked={agreedTerms}
                     onChange={(e) => setAgreedTerms(e.target.checked)}
-                    className="accent-indigo-600 cursor-pointer"
+                    className="accent-indigo-signal-deep cursor-pointer"
                   />
-                  <label htmlFor="terms" className="text-[11px] text-gray-500 cursor-pointer">
+                  <label htmlFor="terms" className="text-[11px] text-gray-muted cursor-pointer">
                     I agree to the Terms of Service and Privacy Policy
                   </label>
                 </div>
@@ -373,7 +373,7 @@ export const FirebaseAuthModal: React.FC<FirebaseAuthModalProps> = ({ onSuccess,
                 <button
                   type="submit"
                   disabled={loading || !agreedTerms}
-                  className="w-full py-3 bg-[#18181b] hover:bg-[#27272a] text-white font-semibold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+                  className="w-full py-3 bg-dark-surface-raised hover:bg-dark-surface-hover text-surface-container-lowest font-semibold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
                 >
                   <span>{loading ? 'Authenticating...' : authMode === 'signup' ? 'Create Account' : 'Sign In'}</span>
                   <ArrowRight className="h-4 w-4" />

@@ -16,23 +16,23 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  info: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  success: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  warning: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  error: 'bg-red-500/10 text-red-400 border-red-500/20',
-  cyan: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-  indigo: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-  neutral: 'bg-zinc-800 text-zinc-400 border-zinc-700',
+  info: 'bg-blue-signal/10 text-blue-signal-strong border-blue-signal/20',
+  success: 'bg-emerald-signal/10 text-emerald-signal-strong border-emerald-signal/20',
+  warning: 'bg-amber-signal/10 text-amber-signal-strong border-amber-signal/20',
+  error: 'bg-rose-signal/10 text-rose-signal-strong border-rose-signal/20',
+  cyan: 'bg-cyan-signal/10 text-cyan-signal-strong border-cyan-signal/20',
+  indigo: 'bg-indigo-signal/10 text-indigo-signal-strong border-indigo-signal/20',
+  neutral: 'bg-dark-panel-raised text-dark-muted border-dark-border',
 };
 
 const dotColors: Record<BadgeVariant, string> = {
-  info: 'bg-blue-400',
-  success: 'bg-emerald-400',
-  warning: 'bg-amber-400',
-  error: 'bg-red-400',
-  cyan: 'bg-cyan-400',
-  indigo: 'bg-indigo-400',
-  neutral: 'bg-zinc-500',
+  info: 'bg-blue-signal-strong',
+  success: 'bg-emerald-signal-strong',
+  warning: 'bg-amber-signal-strong',
+  error: 'bg-rose-signal-strong',
+  cyan: 'bg-cyan-signal-strong',
+  indigo: 'bg-indigo-signal-strong',
+  neutral: 'bg-dark-muted',
 };
 
 const sizeStyles: Record<BadgeSize, string> = {

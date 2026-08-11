@@ -47,19 +47,19 @@ export const TasksKanbanView: React.FC = () => {
   return (
     <div className="space-y-6 font-sans">
       {/* Banner */}
-      <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-slate-panel border border-slate-panel-raised p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-indigo-400 font-mono text-xs font-bold uppercase mb-1">
+          <div className="flex items-center gap-2 text-indigo-signal-strong font-mono text-xs font-bold uppercase mb-1">
             <CheckSquare className="h-4 w-4" /> Multi-Agent Approval &amp; Execution Kanban
           </div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Tasks &amp; Board Approvals</h2>
-          <p className="text-xs text-slate-400 font-mono">
+          <h2 className="text-xl font-bold text-dark-text-bright tracking-tight">Tasks &amp; Board Approvals</h2>
+          <p className="text-xs text-slate-muted-strong font-mono">
             Track automated AI tasks, human-in-the-loop approvals, and deployment pipelines.
           </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-mono font-bold text-xs rounded-xl shadow-md flex items-center gap-2 cursor-pointer"
+          className="px-4 py-2.5 bg-gradient-to-r from-indigo-signal-deep to-cyan-signal-deep text-dark-text-bright font-mono font-bold text-xs rounded-xl shadow-md flex items-center gap-2 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>New Kanban Task</span>
@@ -71,34 +71,34 @@ export const TasksKanbanView: React.FC = () => {
         {columns.map((col) => {
           const colTasks = tasks.filter((t) => t.status === col.id);
           return (
-            <div key={col.id} className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-3">
-              <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                <span className="font-bold text-slate-200 uppercase text-[11px]">{col.label}</span>
-                <span className="px-2 py-0.5 bg-slate-950 text-indigo-400 rounded-md font-bold text-[10px]">
+            <div key={col.id} className="bg-slate-panel/80 border border-slate-panel-raised rounded-2xl p-4 space-y-3">
+              <div className="flex justify-between items-center border-b border-slate-panel-raised pb-2">
+                <span className="font-bold text-slate-text uppercase text-[11px]">{col.label}</span>
+                <span className="px-2 py-0.5 bg-slate-deep text-indigo-signal-strong rounded-md font-bold text-[10px]">
                   {colTasks.length}
                 </span>
               </div>
 
               <div className="space-y-2.5">
                 {colTasks.map((t) => (
-                  <div key={t.id} className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2 hover:border-indigo-500/50 transition-all">
+                  <div key={t.id} className="bg-slate-deep p-3.5 rounded-xl border border-slate-panel-raised space-y-2 hover:border-indigo-signal/50 transition-all">
                     <div className="flex justify-between items-center text-[10px]">
                       <span className={`px-1.5 py-0.5 rounded font-bold ${
-                        t.priority === 'URGENT' ? 'bg-red-500/20 text-red-300' : 'bg-indigo-500/20 text-indigo-300'
+                        t.priority === 'URGENT' ? 'bg-rose-signal/20 text-rose-signal-soft' : 'bg-indigo-signal/20 text-indigo-signal-soft'
                       }`}>
                         {t.priority}
                       </span>
-                      <span className="text-slate-500">{t.dueDate}</span>
+                      <span className="text-slate-muted">{t.dueDate}</span>
                     </div>
-                    <h4 className="text-xs font-bold text-white font-sans leading-snug">{t.title}</h4>
-                    <div className="pt-2 border-t border-slate-900 flex justify-between items-center text-[10px]">
-                      <span className="text-slate-400">
+                    <h4 className="text-xs font-bold text-dark-text-bright font-sans leading-snug">{t.title}</h4>
+                    <div className="pt-2 border-t border-slate-panel flex justify-between items-center text-[10px]">
+                      <span className="text-slate-muted-strong">
                         Assignee: {(t.assigneeAgentId || t.assignee || 'agent_cto').replace('agent_', '').toUpperCase()}
                       </span>
                       <select
                         value={t.status}
                         onChange={(e) => updateTaskStatus(t.id, e.target.value as any)}
-                        className="bg-slate-900 text-slate-300 text-[10px] rounded px-1.5 py-0.5 outline-none border border-slate-800 cursor-pointer"
+                        className="bg-slate-panel text-slate-text-muted text-[10px] rounded px-1.5 py-0.5 outline-none border border-slate-panel-raised cursor-pointer"
                       >
                         <option value="BACKLOG">Backlog</option>
                         <option value="IN_PROGRESS">Progress</option>
@@ -116,20 +116,20 @@ export const TasksKanbanView: React.FC = () => {
 
       {/* New Task Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 font-mono text-xs">
+        <div className="fixed inset-0 bg-slate-deep/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-panel border border-slate-panel-raised rounded-2xl p-6 max-w-md w-full space-y-4 font-mono text-xs">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-white uppercase">Add New Task</h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-white cursor-pointer">✕</button>
+              <h3 className="text-sm font-bold text-dark-text-bright uppercase">Add New Task</h3>
+              <button onClick={() => setShowModal(false)} className="text-slate-muted-strong hover:text-dark-text-bright cursor-pointer">✕</button>
             </div>
             <form onSubmit={handleCreate} className="space-y-3">
               <div>
-                <label className="block text-slate-400 mb-1">Task Title</label>
-                <input required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Verify pgvector index partitioning" className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none focus:border-indigo-500" />
+                <label className="block text-slate-muted-strong mb-1">Task Title</label>
+                <input required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Verify pgvector index partitioning" className="w-full bg-slate-deep border border-slate-panel-raised rounded-lg p-2.5 text-dark-text-bright outline-none focus:border-indigo-signal" />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1">Assignee AI Agent</label>
-                <select value={assignee} onChange={(e) => setAssignee(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none">
+                <label className="block text-slate-muted-strong mb-1">Assignee AI Agent</label>
+                <select value={assignee} onChange={(e) => setAssignee(e.target.value)} className="w-full bg-slate-deep border border-slate-panel-raised rounded-lg p-2.5 text-dark-text-bright outline-none">
                   <option value="agent_cto">CTO Architecture AI</option>
                   <option value="agent_ceo">CEO Executive AI</option>
                   <option value="agent_pm">Product Manager AI</option>
@@ -137,7 +137,7 @@ export const TasksKanbanView: React.FC = () => {
                   <option value="agent_qa">QA &amp; Security AI</option>
                 </select>
               </div>
-              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl cursor-pointer">
+              <button type="submit" className="w-full py-3 bg-indigo-signal-deep hover:bg-indigo-signal text-dark-text-bright font-bold rounded-xl cursor-pointer">
                 Create &amp; Dispatch Task
               </button>
             </form>

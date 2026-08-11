@@ -20,13 +20,13 @@ export const MeetingsView: React.FC = () => {
   return (
     <div className="space-y-6 font-sans">
       {/* Banner */}
-      <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-slate-panel border border-slate-panel-raised p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-indigo-400 font-mono text-xs font-bold uppercase mb-1">
+          <div className="flex items-center gap-2 text-indigo-signal-strong font-mono text-xs font-bold uppercase mb-1">
             <CalendarDays className="h-4 w-4" /> AI Audio &amp; Video Transcript Intelligence
           </div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Meetings &amp; Transcripts Hub</h2>
-          <p className="text-xs text-slate-400 font-mono">
+          <h2 className="text-xl font-bold text-dark-text-bright tracking-tight">Meetings &amp; Transcripts Hub</h2>
+          <p className="text-xs text-slate-muted-strong font-mono">
             Automated transcript processing, key decision highlights, and task extraction.
           </p>
         </div>
@@ -42,15 +42,15 @@ export const MeetingsView: React.FC = () => {
                 key={meet.id}
                 onClick={() => setSelectedMeetingId(meet.id)}
                 className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                  isSelected ? 'bg-indigo-950/60 border-indigo-500 shadow-md' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+                  isSelected ? 'bg-indigo-signal-ink/60 border-indigo-signal shadow-md' : 'bg-slate-panel border-slate-panel-raised hover:border-slate-panel-soft'
                 }`}
               >
-                <div className="flex justify-between items-center text-[10px] text-slate-400 mb-1">
+                <div className="flex justify-between items-center text-[10px] text-slate-muted-strong mb-1">
                   <span>{meet.date}</span>
                   <span>{meet.durationMinutes} mins</span>
                 </div>
-                <h4 className="text-xs font-bold text-white font-sans mb-1">{meet.title}</h4>
-                <p className="text-[10px] text-indigo-300">Participants: {meet.participants.join(', ')}</p>
+                <h4 className="text-xs font-bold text-dark-text-bright font-sans mb-1">{meet.title}</h4>
+                <p className="text-[10px] text-indigo-signal-soft">Participants: {meet.participants.join(', ')}</p>
               </div>
             );
           })}
@@ -58,31 +58,31 @@ export const MeetingsView: React.FC = () => {
 
         {/* Meeting Transcript & Actions Detail */}
         {selectedMeeting && (
-          <div className="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-5">
-            <div className="border-b border-slate-800 pb-4">
-              <span className="text-xs text-indigo-400 font-mono font-bold uppercase">{selectedMeeting.date} • {selectedMeeting.durationMinutes} mins</span>
-              <h3 className="text-base font-bold text-white font-sans mt-1">{selectedMeeting.title}</h3>
+          <div className="lg:col-span-2 bg-slate-panel/90 border border-slate-panel-raised rounded-2xl p-6 space-y-5">
+            <div className="border-b border-slate-panel-raised pb-4">
+              <span className="text-xs text-indigo-signal-strong font-mono font-bold uppercase">{selectedMeeting.date} • {selectedMeeting.durationMinutes} mins</span>
+              <h3 className="text-base font-bold text-dark-text-bright font-sans mt-1">{selectedMeeting.title}</h3>
             </div>
 
             <div className="space-y-2">
-              <span className="text-xs font-mono font-bold text-slate-400 uppercase">AI Transcript Summary</span>
-              <p className="p-4 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 leading-relaxed font-sans text-xs">
+              <span className="text-xs font-mono font-bold text-slate-muted-strong uppercase">AI Transcript Summary</span>
+              <p className="p-4 bg-slate-deep border border-slate-panel-raised rounded-xl text-slate-text leading-relaxed font-sans text-xs">
                 {selectedMeeting.transcriptSummary}
               </p>
             </div>
 
             <div className="space-y-2 font-mono text-xs">
-              <span className="text-xs font-bold text-slate-400 uppercase flex items-center gap-1.5">
-                <ListTodo className="h-4 w-4 text-emerald-400" /> Extracted Action Items
+              <span className="text-xs font-bold text-slate-muted-strong uppercase flex items-center gap-1.5">
+                <ListTodo className="h-4 w-4 text-emerald-signal-strong" /> Extracted Action Items
               </span>
               <div className="space-y-2">
                 {(selectedMeeting.actionItems || []).map((act, idx) => {
                   const taskText = typeof act === 'string' ? act : act?.task || String(act);
                   const assigneeText = typeof act === 'string' ? 'CEO Agent' : act?.assignee || 'Assigned';
                   return (
-                    <div key={idx} className="p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between">
-                      <span className="text-slate-200 font-sans text-xs">{taskText}</span>
-                      <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 rounded text-[10px] shrink-0 ml-2">
+                    <div key={idx} className="p-3 bg-slate-deep border border-slate-panel-raised rounded-xl flex items-center justify-between">
+                      <span className="text-slate-text font-sans text-xs">{taskText}</span>
+                      <span className="px-2 py-0.5 bg-indigo-signal/20 text-indigo-signal-soft rounded text-[10px] shrink-0 ms-2">
                         Assignee: {assigneeText}
                       </span>
                     </div>

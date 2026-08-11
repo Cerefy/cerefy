@@ -58,10 +58,10 @@ const riskColors: Record<string, { badge: 'error' | 'warning' | 'info' | 'succes
 };
 
 const statusConfig: Record<string, { icon: React.FC<{ className?: string; size?: number }>; color: string }> = {
-  pending: { icon: Clock, color: 'text-amber-400' },
-  approved: { icon: CheckCircle2, color: 'text-emerald-400' },
-  rejected: { icon: XCircle, color: 'text-red-400' },
-  review: { icon: Eye, color: 'text-indigo-400' },
+  pending: { icon: Clock, color: 'text-amber-signal-strong' },
+  approved: { icon: CheckCircle2, color: 'text-emerald-signal-strong' },
+  rejected: { icon: XCircle, color: 'text-rose-signal-strong' },
+  review: { icon: Eye, color: 'text-indigo-signal-strong' },
 };
 
 export const GovernanceDashboardView: React.FC = () => {
@@ -82,11 +82,11 @@ export const GovernanceDashboardView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <Scale className="h-5 w-5 text-cyan-400" />
+          <h1 className="text-xl font-bold text-dark-text-bright flex items-center gap-2">
+            <Scale className="h-5 w-5 text-cyan-signal-strong" />
             Decision Governance Center
           </h1>
-          <p className="text-zinc-500 text-xs font-mono mt-1">
+          <p className="text-dark-muted text-xs font-mono mt-1">
             AI-POWERED COMPLIANCE · RISK ASSESSMENT · APPROVAL WORKFLOWS
           </p>
         </div>
@@ -99,10 +99,10 @@ export const GovernanceDashboardView: React.FC = () => {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-3">
         {[
-          { label: 'PENDING REVIEW', value: stats.pending, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
-          { label: 'APPROVED', value: stats.approved, icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-          { label: 'REJECTED', value: stats.rejected, icon: XCircle, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20' },
-          { label: 'CRITICAL RISK', value: stats.critical, icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20' },
+          { label: 'PENDING REVIEW', value: stats.pending, icon: Clock, color: 'text-amber-signal-strong', bg: 'bg-amber-signal/10', border: 'border-amber-signal/20' },
+          { label: 'APPROVED', value: stats.approved, icon: CheckCircle2, color: 'text-emerald-signal-strong', bg: 'bg-emerald-signal/10', border: 'border-emerald-signal/20' },
+          { label: 'REJECTED', value: stats.rejected, icon: XCircle, color: 'text-rose-signal-strong', bg: 'bg-rose-signal/10', border: 'border-rose-signal/20' },
+          { label: 'CRITICAL RISK', value: stats.critical, icon: AlertTriangle, color: 'text-rose-signal-strong', bg: 'bg-rose-signal/10', border: 'border-rose-signal/20' },
         ].map((stat) => {
           const Icon = stat.icon;
           return (
@@ -113,7 +113,7 @@ export const GovernanceDashboardView: React.FC = () => {
               className={`${stat.bg} border ${stat.border} rounded-xl px-4 py-3`}
             >
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">{stat.label}</p>
+                <p className="text-[10px] font-mono text-dark-muted uppercase tracking-widest">{stat.label}</p>
                 <Icon className={`h-4 w-4 ${stat.color}`} />
               </div>
               <p className={`text-2xl font-bold font-mono ${stat.color} mt-1`}>{stat.value}</p>
@@ -123,15 +123,15 @@ export const GovernanceDashboardView: React.FC = () => {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-1 bg-zinc-900/50 border border-zinc-800/60 rounded-xl p-1">
+      <div className="flex items-center gap-1 bg-dark-panel/50 border border-dark-panel-raised/60 rounded-xl p-1">
         {['all', 'pending', 'review', 'approved', 'rejected'].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               filter === f
-                ? 'bg-zinc-800 text-white border border-zinc-700/80'
-                : 'text-zinc-500 hover:text-zinc-300'
+                ? 'bg-dark-panel-raised text-dark-text-bright border border-dark-panel-soft/80'
+                : 'text-dark-muted hover:text-dark-text-muted'
             }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -151,59 +151,59 @@ export const GovernanceDashboardView: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
               className={`
-                bg-zinc-900/50 border border-zinc-800/60 rounded-xl p-4 cursor-pointer
-                hover:border-zinc-700/80 transition-all group
-                ${selectedDecision?.id === decision.id ? 'border-cyan-500/30 bg-cyan-500/5' : ''}
+                bg-dark-panel/50 border border-dark-panel-raised/60 rounded-xl p-4 cursor-pointer
+                hover:border-dark-panel-soft/80 transition-all group
+                ${selectedDecision?.id === decision.id ? 'border-cyan-signal/30 bg-cyan-signal/5' : ''}
               `}
               onClick={() => setSelectedDecision(decision)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">
-                  <div className={`mt-0.5 p-1.5 rounded-lg ${decision.status === 'approved' ? 'bg-emerald-500/10' : decision.status === 'rejected' ? 'bg-red-500/10' : 'bg-zinc-800/60'}`}>
+                  <div className={`mt-0.5 p-1.5 rounded-lg ${decision.status === 'approved' ? 'bg-emerald-signal/10' : decision.status === 'rejected' ? 'bg-rose-signal/10' : 'bg-dark-panel-raised/60'}`}>
                     <StatusIcon className={`h-4 w-4 ${statusConfig[decision.status].color}`} size={16} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[10px] font-mono text-zinc-500">{decision.id}</span>
+                      <span className="text-[10px] font-mono text-dark-muted">{decision.id}</span>
                       <Badge variant={risk.badge} size="xs">{risk.label}</Badge>
                       <Badge variant="neutral" size="xs">{decision.type}</Badge>
                     </div>
-                    <h3 className="text-sm font-medium text-white group-hover:text-cyan-300 transition-colors">{decision.title}</h3>
-                    <p className="text-xs text-zinc-500 mt-1">{decision.impact}</p>
-                    <div className="flex items-center gap-3 mt-2 text-[10px] font-mono text-zinc-500">
+                    <h3 className="text-sm font-medium text-dark-text-bright group-hover:text-cyan-signal-soft transition-colors">{decision.title}</h3>
+                    <p className="text-xs text-dark-muted mt-1">{decision.impact}</p>
+                    <div className="flex items-center gap-3 mt-2 text-[10px] font-mono text-dark-muted">
                       <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {decision.requestedBy}</span>
                       <span>→</span>
                       <span>{decision.assignedTo}</span>
-                      <span className="text-zinc-700">·</span>
+                      <span className="text-dark-panel-soft">·</span>
                       <span>{decision.createdAt}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* AI Recommendation */}
-                <div className="flex flex-col items-end gap-2 ml-4">
-                  <div className="text-right">
-                    <p className="text-[9px] font-mono text-zinc-500 uppercase">AI RECOMMENDATION</p>
+                <div className="flex flex-col items-end gap-2 ms-4">
+                  <div className="text-end">
+                    <p className="text-[9px] font-mono text-dark-muted uppercase">AI RECOMMENDATION</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      {decision.aiRecommendation === 'approve' && <ThumbsUp className="h-3 w-3 text-emerald-400" />}
-                      {decision.aiRecommendation === 'reject' && <ThumbsDown className="h-3 w-3 text-red-400" />}
-                      {decision.aiRecommendation === 'review' && <Eye className="h-3 w-3 text-indigo-400" />}
+                      {decision.aiRecommendation === 'approve' && <ThumbsUp className="h-3 w-3 text-emerald-signal-strong" />}
+                      {decision.aiRecommendation === 'reject' && <ThumbsDown className="h-3 w-3 text-rose-signal-strong" />}
+                      {decision.aiRecommendation === 'review' && <Eye className="h-3 w-3 text-indigo-signal-strong" />}
                       <span className={`text-xs font-medium ${
-                        decision.aiRecommendation === 'approve' ? 'text-emerald-400' :
-                        decision.aiRecommendation === 'reject' ? 'text-red-400' : 'text-indigo-400'
+                        decision.aiRecommendation === 'approve' ? 'text-emerald-signal-strong' :
+                        decision.aiRecommendation === 'reject' ? 'text-rose-signal-strong' : 'text-indigo-signal-strong'
                       }`}>
                         {decision.aiRecommendation.toUpperCase()}
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="w-16 h-1.5 bg-dark-panel-raised rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded-full"
+                        className="h-full bg-gradient-to-r from-cyan-signal-deep to-cyan-signal-strong rounded-full"
                         style={{ width: `${decision.aiConfidence * 100}%` }}
                       />
                     </div>
-                    <span className="text-[10px] font-mono text-cyan-400">{Math.round(decision.aiConfidence * 100)}%</span>
+                    <span className="text-[10px] font-mono text-cyan-signal-strong">{Math.round(decision.aiConfidence * 100)}%</span>
                   </div>
                 </div>
               </div>
@@ -213,7 +213,7 @@ export const GovernanceDashboardView: React.FC = () => {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-3 pt-3 border-t border-zinc-800/60 flex items-center gap-2"
+                  className="mt-3 pt-3 border-t border-dark-panel-raised/60 flex items-center gap-2"
                 >
                   <Button variant="primary" size="xs" icon={<ThumbsUp size={12} />}>Approve</Button>
                   <Button variant="danger" size="xs" icon={<ThumbsDown size={12} />}>Reject</Button>

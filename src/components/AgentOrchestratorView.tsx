@@ -185,18 +185,18 @@ export const AgentOrchestratorView: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-6 text-slate-100 shadow-xl select-none">
+    <div className="bg-slate-deep border border-slate-panel-raised rounded-xl p-5 space-y-6 text-slate-text-bright shadow-xl select-none">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="flex items-center justify-between border-b border-slate-panel-raised pb-3">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <div className="p-2 rounded-lg bg-blue-signal/10 text-blue-signal-strong border border-blue-signal/20">
             <Bot className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-slate-200">
+            <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-slate-text">
               Multi-Agent Orchestrator Suite
             </h3>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-muted-strong">
               FastAPI + LangGraph Execution Graph with Self-Correction Reflection
             </p>
           </div>
@@ -205,25 +205,25 @@ export const AgentOrchestratorView: React.FC = () => {
         {executionPlan && (
           <button
             onClick={exportTraceJson}
-            className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-3 py-1.5 rounded-lg text-xs font-mono transition-colors"
+            className="flex items-center gap-1.5 bg-slate-panel hover:bg-slate-panel-raised text-slate-text-muted border border-slate-panel-raised px-3 py-1.5 rounded-lg text-xs font-mono transition-colors"
           >
-            <Download className="h-3.5 w-3.5 text-blue-400" />
+            <Download className="h-3.5 w-3.5 text-blue-signal-strong" />
             <span>Export Trace JSON</span>
           </button>
         )}
       </div>
 
       {/* Query Input & Preset Selector */}
-      <form onSubmit={handleRunOrchestration} className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-          <span className="text-xs font-mono font-bold text-slate-200 uppercase flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-amber-400" /> Dispatch Workflow Prompt
+      <form onSubmit={handleRunOrchestration} className="bg-slate-panel/90 border border-slate-panel-raised rounded-xl p-4 space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-panel-raised pb-2">
+          <span className="text-xs font-mono font-bold text-slate-text uppercase flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5 text-amber-signal-strong" /> Dispatch Workflow Prompt
           </span>
-          <span className="text-[10px] font-mono text-slate-500">Gemini 3.6 Flash Powered</span>
+          <span className="text-[10px] font-mono text-slate-muted">Gemini 3.6 Flash Powered</span>
         </div>
 
         <div>
-          <label className="block text-slate-400 font-mono text-xs mb-1">
+          <label className="block text-slate-muted-strong font-mono text-xs mb-1">
             Enterprise Analysis Query
           </label>
           <textarea
@@ -231,23 +231,23 @@ export const AgentOrchestratorView: React.FC = () => {
             onChange={(e) => setQuery(e.target.value)}
             rows={3}
             placeholder="Describe analysis query for multi-agent planner..."
-            className="w-full p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-slate-100 outline-none focus:border-blue-500 leading-relaxed"
+            className="w-full p-3 bg-slate-deep border border-slate-panel-raised rounded-lg text-xs font-mono text-slate-text-bright outline-none focus:border-blue-signal leading-relaxed"
             required
           />
         </div>
 
         {/* Prompt Presets */}
         <div className="space-y-1.5">
-          <div className="text-[10px] font-mono text-slate-500 uppercase">Quick Presets:</div>
+          <div className="text-[10px] font-mono text-slate-muted uppercase">Quick Presets:</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {presets.map((preset, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => setQuery(preset)}
-                className="p-2 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 rounded-lg text-left text-[11px] font-mono text-slate-400 hover:text-slate-200 truncate transition-colors flex items-center gap-1.5"
+                className="p-2 bg-slate-deep hover:bg-slate-panel-raised border border-slate-panel-raised/80 rounded-lg text-start text-[11px] font-mono text-slate-muted-strong hover:text-slate-text truncate transition-colors flex items-center gap-1.5"
               >
-                <ArrowRight className="h-3 w-3 text-blue-400 shrink-0" />
+                <ArrowRight className="h-3 w-3 text-blue-signal-strong shrink-0" />
                 <span className="truncate">{preset}</span>
               </button>
             ))}
@@ -257,11 +257,11 @@ export const AgentOrchestratorView: React.FC = () => {
         <button
           type="submit"
           disabled={isExecuting}
-          className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-mono font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-colors disabled:opacity-50 cursor-pointer"
+          className="w-full py-3 bg-blue-signal-deep hover:bg-blue-signal text-dark-text-bright rounded-lg font-mono font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-signal-deep/20 transition-colors disabled:opacity-50 cursor-pointer"
         >
           {isExecuting ? (
             <>
-              <RefreshCw className="h-4 w-4 animate-spin text-white" />
+              <RefreshCw className="h-4 w-4 animate-spin text-dark-text-bright" />
               <span>Orchestrating Agents...</span>
             </>
           ) : (

@@ -1,5 +1,5 @@
 import { desc, eq } from 'drizzle-orm';
-import { withTenantContext } from '../../db';
+import { isDatabaseReachable, withTenantContext } from '../../db';
 import { decisions, documentChunks, documents } from '../../db/schema';
 
 export interface VectorMemoryContext {
@@ -14,6 +14,10 @@ export async function loadVectorMemoryContext(params: {
   limit?: number;
 }) : Promise<VectorMemoryContext> {
   const limit = params.limit ?? 5;
+
+  if (!(await isDatabaseReachable())) {
+    return { documentSummary: '', chunkSnippets: [], decisionHistory: [] };
+  }
 
   return withTenantContext(params.tenantId, async (tx) => {
     const [documentRow] = params.documentId

@@ -1,29 +1,57 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAgentStore } from '../store/useAgentStore';
-import {
-  Search,
-  Bot,
-  Network,
-  FileText,
-  ShieldAlert,
-  Building2,
-  X,
-  Zap,
-} from 'lucide-react';
+import { useI18n } from '../lib/i18n';
+import { MsIcon } from './kinetic/primitives';
 
 interface CommandPaletteProps {
   onSelectAction?: (actionType: string, payload?: any) => void;
 }
 
-export const CommandPalette: React.FC<CommandPaletteProps> = ({ onSelectAction }) => {
-  const {
-    commandPaletteOpen,
-    setCommandPaletteOpen,
-    tenants,
-    setActiveTenantId,
-    activeTenantId,
-  } = useAgentStore();
+/* Real route index derived from the same IA as the sidebar — searching pages
+ * here always matches what navigation actually links to. */
+const PAGE_INDEX: Array<{ title: string; group: string; path: string; icon: string }> = [
+  { title: 'Dashboard', group: 'Overview', path: '/workspace/dashboard', icon: 'dashboard' },
+  { title: 'Mission Control', group: 'Overview', path: '/workspace/command-center', icon: 'dashboard_customize' },
+  { title: 'AI Workspace', group: 'Intelligence', path: '/workspace/ai', icon: 'psychology' },
+  { title: 'Conversations', group: 'Intelligence', path: '/workspace/conversations', icon: 'forum' },
+  { title: 'Agent Studio', group: 'Intelligence', path: '/workspace/agents', icon: 'precision_manufacturing' },
+  { title: 'Autonomous Workflows', group: 'Intelligence', path: '/workspace/workflows', icon: 'account_tree' },
+  { title: 'Decision Center', group: 'Intelligence', path: '/workspace/decisions', icon: 'gavel' },
+  { title: 'Documents', group: 'Knowledge', path: '/workspace/documents', icon: 'description' },
+  { title: 'Enterprise Memory', group: 'Knowledge', path: '/workspace/memory', icon: 'database' },
+  { title: 'Knowledge Graph', group: 'Knowledge', path: '/workspace/graph', icon: 'hub' },
+  { title: 'Countries', group: 'MENA', path: '/workspace/mena/countries', icon: 'flag' },
+  { title: 'Markets', group: 'MENA', path: '/workspace/mena/markets', icon: 'public' },
+  { title: 'Industries', group: 'MENA', path: '/workspace/mena/industries', icon: 'domain' },
+  { title: 'Projects', group: 'Business', path: '/workspace/projects', icon: 'folder_copy' },
+  { title: 'Analytics', group: 'Business', path: '/workspace/analytics', icon: 'monitoring' },
+  { title: 'CRM', group: 'Business', path: '/workspace/crm', icon: 'groups' },
+  { title: 'Finance', group: 'Business', path: '/workspace/finance', icon: 'account_balance' },
+  { title: 'HR', group: 'Business', path: '/workspace/hr', icon: 'badge' },
+  { title: 'Integrations', group: 'Automation', path: '/workspace/integrations', icon: 'storefront' },
+  { title: 'Orchestrator', group: 'Automation', path: '/workspace/orchestrator', icon: 'sync_alt' },
+  { title: 'Automations', group: 'Automation', path: '/workspace/automations', icon: 'bolt' },
+  { title: 'Compliance', group: 'Governance', path: '/workspace/governance', icon: 'verified_user' },
+  { title: 'Audit Log', group: 'Governance', path: '/workspace/audit', icon: 'fact_check' },
+  { title: 'Security', group: 'Governance', path: '/workspace/security', icon: 'shield_lock' },
+  { title: 'Members', group: 'Organization', path: '/workspace/organization/members', icon: 'groups' },
+  { title: 'Roles & Permissions', group: 'Organization', path: '/workspace/organization/roles', icon: 'admin_panel_settings' },
+  { title: 'Workspaces', group: 'Organization', path: '/workspace/organization/workspaces', icon: 'workspaces' },
+  { title: 'Models & Providers', group: 'AI Platform', path: '/workspace/ai/models', icon: 'dns' },
+  { title: 'AI Settings', group: 'AI Platform', path: '/workspace/ai/settings', icon: 'tune' },
+  { title: 'Agent Builder', group: 'AI Platform', path: '/workspace/ai/agents/builder', icon: 'add_box' },
+  { title: 'Executions', group: 'Observability', path: '/workspace/observability/executions', icon: 'activity_zone' },
+  { title: 'System Health', group: 'Observability', path: '/workspace/system/health', icon: 'monitor_heart' },
+  { title: 'Settings', group: 'Tenant', path: '/workspace/settings', icon: 'settings' },
+  { title: 'Billing & Usage', group: 'Tenant', path: '/workspace/billing', icon: 'payments' },
+  { title: 'Developer Portal', group: 'Tenant', path: '/workspace/developer', icon: 'terminal' },
+];
 
+export const CommandPalette: React.FC<CommandPaletteProps> = ({ onSelectAction }) => {
+  const navigate = useNavigate();
+  const { t } = useI18n();
+  const { commandPaletteOpen, setCommandPaletteOpen, tenants, setActiveTenantId, activeTenantId } = useAgentStore();
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -40,147 +68,157 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ onSelectAction }
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [commandPaletteOpen, setCommandPaletteOpen]);
 
+  const trimmed = search.trim().toLowerCase();
+
+  const pages = useMemo(() => {
+    if (!trimmed) return PAGE_INDEX;
+    return PAGE_INDEX.filter(
+      (p) => p.title.toLowerCase().includes(trimmed) || p.group.toLowerCase().includes(trimmed) || p.path.includes(trimmed),
+    );
+  }, [trimmed]);
+
   if (!commandPaletteOpen) return null;
 
-  const actions = [
+  const goTo = (path: string) => {
+    setCommandPaletteOpen(false);
+    navigate(path);
+  };
+
+  const runAction = (type: string, payload?: any) => {
+    onSelectAction?.(type, payload);
+    setCommandPaletteOpen(false);
+  };
+
+  const quickCommands: Array<{ title: string; icon: string; run: () => void }> = [
     {
-      id: 'action_audit',
       title: 'Execute Security Audit Workflow',
-      category: 'Agent Workflows',
-      icon: ShieldAlert,
-      handler: () => {
-        onSelectAction?.('run_query', 'Audit SOC2 compliance for tenant vector store and WebAuthn MFA.');
-        setCommandPaletteOpen(false);
-      },
+      icon: 'shield_lock',
+      run: () => runAction('run_query', 'Audit SOC2 compliance for tenant vector store and WebAuthn MFA.'),
     },
     {
-      id: 'action_graph_query',
       title: 'Query Contract & Policy Knowledge Graph',
-      category: 'Knowledge Graph',
-      icon: Network,
-      handler: () => {
-        onSelectAction?.('switch_tab', 'graph');
-        setCommandPaletteOpen(false);
-      },
+      icon: 'hub',
+      run: () => runAction('switch_tab', 'graph'),
     },
     {
-      id: 'action_ingest_soc2',
-      title: 'Ingest Enterprise Security Policy Document',
-      category: 'Ingestion Engine',
-      icon: FileText,
-      handler: () => {
-        onSelectAction?.('switch_tab', 'ingestion');
-        setCommandPaletteOpen(false);
-      },
+      title: 'Open AI Orchestrator',
+      icon: 'account_tree',
+      run: () => runAction('switch_tab', 'orchestrator'),
     },
   ];
 
-  const filteredActions = actions.filter(
-    (a) =>
-      a.title.toLowerCase().includes(search.toLowerCase()) ||
-      a.category.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
-    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-start justify-center pt-20 p-4 select-none animate-in fade-in duration-150">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-xl overflow-hidden shadow-2xl shadow-blue-950/30">
-        {/* Search Input Bar */}
-        <div className="flex items-center px-4 border-b border-slate-800 bg-slate-950/60">
-          <Search className="h-4 w-4 text-slate-400 shrink-0 mr-3" />
+    <div
+      className="fixed inset-0 bg-on-surface/40 backdrop-blur-sm z-50 flex items-start justify-center pt-24 p-4 select-none"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) setCommandPaletteOpen(false);
+      }}
+    >
+      <div className="bento-card rounded-xl w-full max-w-xl overflow-hidden shadow-float border border-outline-variant/50">
+        {/* Search Input */}
+        <div className="flex items-center px-4 border-b border-outline-variant/30 bg-surface-container-lowest">
+          <span className="material-symbols-outlined text-on-surface-variant shrink-0 me-3" style={{ fontSize: 18 }} aria-hidden="true">
+            search
+          </span>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Type a command, query knowledge graph, or switch tenant..."
-            className="w-full py-3.5 bg-transparent text-sm text-slate-100 placeholder-slate-500 outline-none font-medium"
+            placeholder={t('search.placeholder')}
+            className="w-full py-3.5 bg-transparent text-sm text-on-surface placeholder:text-on-surface-variant/60 outline-none font-body"
             autoFocus
           />
-          <button
-            onClick={() => setCommandPaletteOpen(false)}
-            className="p-1 rounded hover:bg-slate-800 text-slate-500 hover:text-slate-300"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <kbd className="px-1.5 py-0.5 rounded bg-surface-container-high font-label text-[10px] text-on-surface-variant">
+            ESC
+          </kbd>
         </div>
 
-        {/* Command Items List */}
+        {/* Results */}
         <div className="max-h-80 overflow-y-auto p-2 space-y-3">
-          {/* Tenant Quick Switch */}
-          <div className="px-2">
-            <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-500 mb-1 flex items-center gap-1.5">
-              <Building2 className="h-3 w-3 text-blue-400" /> Switch Active Tenant
+          {tenants.length > 0 && (
+            <div className="px-2">
+              <div className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1.5 flex items-center gap-1.5">
+                Switch Tenant
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                {tenants.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => {
+                      setActiveTenantId(t.id);
+                      setCommandPaletteOpen(false);
+                    }}
+                    className={`px-2.5 py-1.5 rounded-lg text-xs text-start border transition-all ${
+                      t.id === activeTenantId
+                        ? 'bg-on-surface text-surface border-on-surface'
+                        : 'bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container border-outline-variant/40'
+                    }`}
+                  >
+                    <div className="truncate font-body font-medium text-[11px]">{t.name}</div>
+                    <div className="text-[9px] opacity-70 truncate font-label">{t.domain}</div>
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
-              {tenants.map((t) => (
+          )}
+
+          <div>
+            <div className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant px-2 mb-1 flex items-center gap-1.5">
+              Quick Commands
+            </div>
+            <div className="space-y-1">
+              {quickCommands.map((c) => (
                 <button
-                  key={t.id}
-                  onClick={() => {
-                    setActiveTenantId(t.id);
-                    setCommandPaletteOpen(false);
-                  }}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs text-left font-mono border transition-all ${
-                    t.id === activeTenantId
-                      ? 'bg-blue-600/20 text-blue-300 border-blue-500/40 font-semibold'
-                      : 'bg-slate-950 text-slate-400 hover:text-slate-200 border-slate-800 hover:border-slate-700'
-                  }`}
+                  key={c.title}
+                  onClick={c.run}
+                  className="w-full flex items-center gap-3 p-2.5 hover:bg-surface-container-low rounded-lg text-start transition-colors group cursor-pointer"
                 >
-                  <div className="truncate font-sans font-medium text-[11px]">{t.name}</div>
-                  <div className="text-[9px] text-slate-500 truncate">{t.domain}</div>
+                  <div className="p-1.5 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+                    <MsIcon name={c.icon} size={16} />
+                  </div>
+                  <span className="text-xs font-medium text-on-surface truncate">{c.title}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Action List */}
           <div>
-            <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-500 px-2 mb-1 flex items-center gap-1.5">
-              <Zap className="h-3 w-3 text-amber-400" /> Quick Commands
+            <div className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant px-2 mb-1 flex items-center gap-1.5">
+              Pages
             </div>
-
-            {filteredActions.length === 0 ? (
-              <div className="p-4 text-xs text-slate-500 text-center font-mono">
-                No matching enterprise commands found.
+            {pages.length === 0 ? (
+              <div className="p-4 text-xs text-on-surface-variant text-center font-body">
+                No matching pages found.
               </div>
             ) : (
               <div className="space-y-1">
-                {filteredActions.map((action) => {
-                  const Icon = action.icon;
-                  return (
-                    <button
-                      key={action.id}
-                      onClick={action.handler}
-                      className="w-full flex items-center justify-between p-2.5 hover:bg-slate-800/80 rounded-lg text-left transition-colors group cursor-pointer"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-lg bg-slate-800 group-hover:bg-blue-600/20 text-slate-400 group-hover:text-blue-400 transition-colors">
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-medium text-slate-200 group-hover:text-white">
-                            {action.title}
-                          </div>
-                          <div className="text-[10px] text-slate-500 font-mono">
-                            {action.category}
-                          </div>
-                        </div>
+                {pages.map((p) => (
+                  <button
+                    key={p.path}
+                    onClick={() => goTo(p.path)}
+                    className="w-full flex items-center justify-between p-2.5 hover:bg-surface-container-low rounded-lg text-start transition-colors group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="p-1.5 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+                        <MsIcon name={p.icon} size={16} />
                       </div>
-                      <span className="text-[10px] text-slate-500 font-mono group-hover:text-slate-400">
-                        Run ↵
-                      </span>
-                    </button>
-                  );
-                })}
+                      <div className="min-w-0">
+                        <div className="text-xs font-medium text-on-surface truncate">{p.title}</div>
+                        <div className="text-[10px] text-on-surface-variant font-label uppercase tracking-wider">{p.group}</div>
+                      </div>
+                    </div>
+                    <span className="text-[10px] text-on-surface-variant font-label">Go ↵</span>
+                  </button>
+                ))}
               </div>
             )}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2 bg-slate-950/80 border-t border-slate-800 text-[10px] font-mono text-slate-500 flex justify-between items-center">
-          <span>
-            Press <kbd className="px-1 bg-slate-800 text-slate-400 rounded">ESC</kbd> to close
-          </span>
-          <span className="text-blue-400">Enterprise Intelligence Gateway</span>
+        <div className="px-4 py-2 border-t border-outline-variant/30 bg-surface-container-lowest text-[10px] font-label text-on-surface-variant flex justify-between items-center">
+          <span>⌘K to open · ESC to close</span>
+          <span className="text-on-surface">Cerefy Enterprise Intelligence</span>
         </div>
       </div>
     </div>

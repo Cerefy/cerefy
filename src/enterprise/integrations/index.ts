@@ -23,7 +23,7 @@ export abstract class BaseConnector {
   abstract type: string;
   abstract name: string;
 
-  constructor(protected config: ConnectorConfig) {}
+  constructor(public readonly config: ConnectorConfig) {}
 
   abstract connect(): Promise<boolean>;
   abstract disconnect(): Promise<void>;

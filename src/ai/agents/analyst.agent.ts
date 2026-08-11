@@ -1,13 +1,6 @@
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import type { CerefyGraphState } from '../graph/state';
 import { appendAgentExecutionEvent, updateAgentExecutionRecord } from '../tools/databaseTool';
-
-function getLLM() {
-  return new ChatGoogleGenerativeAI({
-    model: process.env.GEMINI_MODEL || 'gemini-1.5-pro',
-    apiKey: process.env.GEMINI_API_KEY,
-  });
-}
+import { runAgentLlm, provenanceFrom, type AgentProvenance } from '../llm';
 
 export async function analystAgent(state: CerefyGraphState) {
   const discovery = state.output.discovery as Record<string, unknown> | undefined;
@@ -41,18 +34,25 @@ export async function analystAgent(state: CerefyGraphState) {
     }));
   }
 
+  // Real signal: requirements grounded in actual discovered processes/entities.
+  const evidenceConfidence = processes.length === 0 && entities.length === 0 ? 0 : Math.min(0.9, 0.4 + (processes.length + entities.length) * 0.08);
+
+  let usedProvenance: AgentProvenance | undefined = undefined;
+
   if (process.env.GEMINI_API_KEY) {
-    try {
-      const llm = getLLM();
-      const response = await llm.invoke(
-        `You are the Business Analyst Agent for Cerefy. Convert the following discovery output into JSON with requirements, userStories, acceptanceCriteria, and risks.\n\nDiscovery:\n${JSON.stringify(discovery ?? {}, null, 2)}`,
-      );
-      const parsed = safeParseJson(String(response.content));
+    const call = await runAgentLlm({
+      promptVersion: 'analyst_v1',
+      instruction:
+        'You are the Business Analyst Agent for Cerefy. Convert the supplied discovery output into JSON with ' +
+        'requirements, userStories, acceptanceCriteria, and risks.',
+      retrieved: [{ id: 'discovery_output', content: JSON.stringify(discovery ?? {}) }],
+    });
+    usedProvenance = provenanceFrom(call);
+    if (call.result) {
+      const parsed = safeParseJson(call.result.text);
       if (parsed) {
         requirements = Array.isArray(parsed.requirements) ? (parsed.requirements as typeof requirements) : requirements;
       }
-    } catch {
-      // fallback preserved
     }
   }
 
@@ -61,24 +61,23 @@ export async function analystAgent(state: CerefyGraphState) {
     requirements,
     analystComplete: true,
     governanceComplete: state.governanceComplete,
-    confidence: Math.max(state.confidence, 74),
+    confidence: Math.max(state.confidence, evidenceConfidence),
     summary: 'Business analysis completed.',
     output: {
       ...state.output,
-      analysis: {
-        requirements,
-      },
+      analysis: { requirements },
+      _provenance: usedProvenance,
     },
     history: [...state.history, { agent: 'analyst', output: requirements }],
   };
 
   if (state.executionId) {
-    await appendAgentExecutionEvent(state.executionId, {
+    await appendAgentExecutionEvent(state.tenantId, state.executionId, {
       event: 'agent.progress',
       payload: { agent: 'analyst', output: requirements, confidence: nextState.confidence },
       timestamp: new Date().toISOString(),
     });
-    await updateAgentExecutionRecord(state.executionId, {
+    await updateAgentExecutionRecord(state.tenantId, state.executionId, {
       currentAgent: 'analyst',
       confidence: nextState.confidence,
       output: nextState.output,

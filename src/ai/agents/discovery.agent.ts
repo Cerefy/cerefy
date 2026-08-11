@@ -1,16 +1,9 @@
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import type { CerefyGraphState } from '../graph/state';
 import { loadKnowledgeGraphContext } from '../memory/knowledgeGraph';
 import { loadVectorMemoryContext } from '../memory/vectorMemory';
 import { extractDocumentSignals } from '../tools/documentTool';
 import { appendAgentExecutionEvent, updateAgentExecutionRecord } from '../tools/databaseTool';
-
-function getLLM() {
-  return new ChatGoogleGenerativeAI({
-    model: process.env.GEMINI_MODEL || 'gemini-1.5-pro',
-    apiKey: process.env.GEMINI_API_KEY,
-  });
-}
+import { runAgentLlm, provenanceFrom, type AgentProvenance } from '../llm';
 
 export async function discoveryAgent(state: CerefyGraphState) {
   const [vectorMemory, graphMemory] = await Promise.all([
@@ -27,6 +20,11 @@ export async function discoveryAgent(state: CerefyGraphState) {
     ].join('\n'),
   });
 
+  // Real evidence coverage: how much actual retrieved content exists. Confidence
+  // is derived from this real signal — never a fixed floor (audit LLM-ops #5).
+  const coverage = vectorMemory.chunkSnippets.length + graphMemory.triples.length;
+  const evidenceConfidence = coverage === 0 ? 0 : Math.min(0.9, 0.4 + coverage * 0.1);
+
   let reasoning = {
     entities: documentSignals.entities,
     processes: documentSignals.processes,
@@ -38,31 +36,25 @@ export async function discoveryAgent(state: CerefyGraphState) {
     },
   };
 
+  let usedProvenance: AgentProvenance | undefined = undefined;
+
   if (process.env.GEMINI_API_KEY) {
-    try {
-      const llm = getLLM();
-      const response = await llm.invoke(
-        `You are the Discovery Agent for Cerefy.
-Analyze the following business context and return valid JSON with entities, processes, stakeholders, assumptions, and gaps.\n\nContext:\n${JSON.stringify(
-          {
-            documentSummary: vectorMemory.documentSummary,
-            chunks: vectorMemory.chunkSnippets,
-            graph: graphMemory.summary,
-          },
-          null,
-          2,
-        )}`,
-      );
-      const content = String(response.content);
-      const parsed = safeParseJson(content);
+    const call = await runAgentLlm({
+      promptVersion: 'discovery_v1',
+      instruction:
+        'You are the Discovery Agent for Cerefy. Analyze the supplied business context and return valid JSON ' +
+        'with entities, processes, stakeholders, assumptions, and gaps.',
+      retrieved: [
+        ...vectorMemory.chunkSnippets.map((content, i) => ({ id: `chunk_${i}`, content })),
+        ...graphMemory.triples.map((t, i) => ({ id: `triple_${i}`, content: String(t) })),
+      ],
+    });
+    usedProvenance = provenanceFrom(call);
+    if (call.result) {
+      const parsed = safeParseJson(call.result.text);
       if (parsed) {
-        reasoning = {
-          ...reasoning,
-          ...parsed,
-        };
+        reasoning = { ...reasoning, ...parsed };
       }
-    } catch {
-      // deterministic fallback already prepared
     }
   }
 
@@ -71,7 +63,7 @@ Analyze the following business context and return valid JSON with entities, proc
     documents: state.documents,
     requirements: state.requirements,
     decisions: state.decisions,
-    confidence: Math.max(state.confidence, 62),
+    confidence: Math.max(state.confidence, evidenceConfidence),
     discoveryComplete: true,
     analystComplete: state.analystComplete,
     governanceComplete: state.governanceComplete,
@@ -79,17 +71,19 @@ Analyze the following business context and return valid JSON with entities, proc
     output: {
       ...state.output,
       discovery: reasoning,
+      _provenance: usedProvenance,
+      _evidenceConfidence: evidenceConfidence,
     },
     history: [...state.history, { agent: 'discovery', output: reasoning }],
   };
 
   if (state.executionId) {
-    await appendAgentExecutionEvent(state.executionId, {
+    await appendAgentExecutionEvent(state.tenantId, state.executionId, {
       event: 'agent.progress',
       payload: { agent: 'discovery', output: reasoning, confidence: nextState.confidence },
       timestamp: new Date().toISOString(),
     });
-    await updateAgentExecutionRecord(state.executionId, {
+    await updateAgentExecutionRecord(state.tenantId, state.executionId, {
       currentAgent: 'discovery',
       confidence: nextState.confidence,
       output: nextState.output,

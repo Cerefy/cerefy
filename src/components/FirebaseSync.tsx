@@ -64,8 +64,8 @@ export const FirebaseSync: React.FC = () => {
 
   if (authLoading) {
     return (
-      <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full font-mono text-xs text-zinc-400">
-        <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+      <div className="flex items-center gap-2 px-3 py-1 bg-dark-panel border border-dark-panel-raised rounded-full font-mono text-xs text-dark-muted-strong">
+        <span className="h-2 w-2 rounded-full bg-amber-signal-strong animate-ping" />
         <span>Firebase Auth...</span>
       </div>
     );
@@ -75,22 +75,22 @@ export const FirebaseSync: React.FC = () => {
     <>
       <div className="flex items-center gap-2 font-mono text-xs">
         {currentUser ? (
-          <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full pl-3 pr-1 py-1">
+          <div className="flex items-center gap-2 bg-dark-panel border border-dark-panel-raised rounded-full pl-3 pr-1 py-1">
             <div
               className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => setShowAuthModal(true)}
             >
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-white font-bold max-w-[120px] truncate" title={currentUser.email || ''}>
+              <span className="h-2 w-2 rounded-full bg-emerald-signal-strong animate-pulse" />
+              <span className="text-dark-text-bright font-bold max-w-[120px] truncate" title={currentUser.email || ''}>
                 {currentUser.displayName || currentUser.email || 'Authenticated'}
               </span>
-              <span className="text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-500/30">
+              <span className="text-[9px] bg-indigo-signal/20 text-indigo-signal-soft px-1.5 py-0.5 rounded border border-indigo-signal/30">
                 Firebase
               </span>
             </div>
             <button
               onClick={handleSignOut}
-              className="p-1 hover:bg-zinc-800 rounded-full text-zinc-400 hover:text-white transition-colors cursor-pointer ml-1"
+              className="p-1 hover:bg-dark-panel-raised rounded-full text-dark-muted-strong hover:text-dark-text-bright transition-colors cursor-pointer ml-1"
               title="Sign Out of Firebase"
             >
               <LogOut className="h-3.5 w-3.5" />
@@ -99,7 +99,7 @@ export const FirebaseSync: React.FC = () => {
         ) : (
           <button
             onClick={() => setShowAuthModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-full transition-all shadow-md cursor-pointer text-xs"
+            className="flex items-center gap-1.5 px-3 py-1 bg-indigo-signal-deep hover:bg-indigo-signal text-dark-text-bright font-bold rounded-full transition-all shadow-md cursor-pointer text-xs"
           >
             <LogIn className="h-3.5 w-3.5" />
             <span>Sign In / Demo</span>

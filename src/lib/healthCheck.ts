@@ -3,6 +3,7 @@
 
 import { Request, Response } from 'express';
 import { getNeo4jDriver } from './neo4j';
+import { pool as dbPool } from '../db';
 
 interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -27,15 +28,12 @@ async function checkDatabase(): Promise<ComponentHealth> {
   }
 
   try {
-    const { Pool } = await import('pg');
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL, connectionTimeoutMillis: 3000 });
     const start = Date.now();
-    const client = await pool.connect();
+    const client = await dbPool.connect();
     try {
       await client.query('SELECT 1');
     } finally {
       client.release();
-      await pool.end();
     }
     return { status: 'up', latencyMs: Date.now() - start };
   } catch (err: any) {

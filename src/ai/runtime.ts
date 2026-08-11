@@ -8,6 +8,7 @@ import { memoryAgent } from './agents/memory.agent';
 import { supervisorAgent } from './graph/supervisor';
 import { appendAgentExecutionError, appendAgentExecutionEvent, createAgentExecutionRecord, updateAgentExecutionRecord } from './tools/databaseTool';
 import { ensureCoreAgentsRegistered, recordAgentExecution } from './registry';
+import { mergeProvenance, type AgentProvenance } from './llm';
 
 export interface RunExecutionResult {
   executionId: string;
@@ -20,16 +21,18 @@ function now() {
   return new Date().toISOString();
 }
 
-function emit(io: SocketIOServer | null, event: string, payload: Record<string, unknown>) {
-  io?.emit(event, payload);
+function emit(io: SocketIOServer | null, tenantId: string, event: string, payload: Record<string, unknown>) {
+  // Tenant-scoped broadcast only — never io.emit() globally (audit RLS #10:
+  // a cross-tenant io.emit would leak one tenant's execution to every socket).
+  io?.to(`tenant:${tenantId}`).emit(event, payload);
   const executionId = typeof payload.executionId === 'string' ? payload.executionId : null;
   if (executionId) {
     io?.to(`execution:${executionId}`).emit(event, payload);
   }
 }
 
-function emitAgentLifecycle(io: SocketIOServer | null, executionId: string, agentName: string, status: string, payload: Record<string, unknown> = {}) {
-  emit(io, `agent.${status}`, {
+function emitAgentLifecycle(io: SocketIOServer | null, tenantId: string, executionId: string, agentName: string, status: string, payload: Record<string, unknown> = {}) {
+  emit(io, tenantId, `agent.${status}`, {
     executionId,
     agentId: agentName,
     agentName,
@@ -39,8 +42,8 @@ function emitAgentLifecycle(io: SocketIOServer | null, executionId: string, agen
   });
 }
 
-function emitToolCall(io: SocketIOServer | null, executionId: string, agentName: string, tools: string[]) {
-  emit(io, 'agent.tool.called', {
+function emitToolCall(io: SocketIOServer | null, tenantId: string, executionId: string, agentName: string, tools: string[]) {
+  emit(io, tenantId, 'agent.tool.called', {
     executionId,
     agentId: agentName,
     agentName,
@@ -77,26 +80,26 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
     type: input.type,
   };
 
-  emit(io, 'agent.execution.started', {
+  emit(io, input.tenantId, 'agent.execution.started', {
     ...basePayload,
     status: 'running',
     timestamp: now(),
   });
 
-  emitAgentLifecycle(io, executionId, 'supervisor', 'started', {
+  emitAgentLifecycle(io, input.tenantId, executionId, 'supervisor', 'started', {
     status: 'running',
     stepIndex: 1,
     totalSteps: 4,
     plan: supervisorPlan,
   });
 
-  await appendAgentExecutionEvent(executionId, {
+  await appendAgentExecutionEvent(input.tenantId, executionId, {
     event: 'agent.execution.started',
     payload: basePayload,
     timestamp: now(),
   });
 
-  await updateAgentExecutionRecord(executionId, {
+  await updateAgentExecutionRecord(input.tenantId, executionId, {
     currentAgent: 'supervisor',
     status: 'RUNNING',
     confidence: 0,
@@ -127,29 +130,29 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       ],
     });
 
-    emitAgentLifecycle(io, executionId, 'supervisor', 'completed', {
+    emitAgentLifecycle(io, input.tenantId, executionId, 'supervisor', 'completed', {
       stepIndex: 1,
       totalSteps: 4,
       output: { plan: supervisorPlan },
     });
-    await appendAgentExecutionEvent(executionId, {
-      event: 'agent.completed',
-      payload: { agent: 'supervisor', plan: supervisorPlan },
-      timestamp: now(),
-    });
+await appendAgentExecutionEvent(input.tenantId, executionId, {
+    event: 'agent.execution.agentStarted',
+    payload: { ...basePayload, agent: 'memory' },
+    timestamp: now(),
+  });
     await recordAgentExecution('supervisor', {
       executionId,
       status: 'COMPLETED',
       plan: supervisorPlan,
     });
 
-    emitAgentLifecycle(io, executionId, 'memory', 'started', { stepIndex: 2, totalSteps: 4 });
-    emitAgentLifecycle(io, executionId, 'discovery', 'started', { stepIndex: 2, totalSteps: 4 });
-    emitAgentLifecycle(io, executionId, 'analyst', 'started', { stepIndex: 2, totalSteps: 4 });
+    emitAgentLifecycle(io, input.tenantId, executionId, 'memory', 'started', { stepIndex: 2, totalSteps: 4 });
+    emitAgentLifecycle(io, input.tenantId, executionId, 'discovery', 'started', { stepIndex: 2, totalSteps: 4 });
+    emitAgentLifecycle(io, input.tenantId, executionId, 'analyst', 'started', { stepIndex: 2, totalSteps: 4 });
 
-    emitToolCall(io, executionId, 'memory', ['vectorMemory', 'knowledgeGraph']);
-    emitToolCall(io, executionId, 'discovery', ['documentTool', 'vectorMemory', 'knowledgeGraph']);
-    emitToolCall(io, executionId, 'analyst', ['reasoningPrompt', 'recommendationSynthesis']);
+    emitToolCall(io, input.tenantId, executionId, 'memory', ['vectorMemory', 'knowledgeGraph']);
+    emitToolCall(io, input.tenantId, executionId, 'discovery', ['documentTool', 'vectorMemory', 'knowledgeGraph']);
+    emitToolCall(io, input.tenantId, executionId, 'analyst', ['reasoningPrompt', 'recommendationSynthesis']);
 
     const [memoryResult, discoveryResult, analystResult] = await Promise.all([
       memoryAgent(parallelState),
@@ -157,36 +160,41 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       analystAgent(parallelState),
     ]);
 
-    emitAgentLifecycle(io, executionId, 'memory', 'progress', {
+    const memoryProvenance: AgentProvenance | undefined = (memoryResult.output as any)?._provenance;
+    const discoveryProvenance: AgentProvenance | undefined = (discoveryResult.output as any)?._provenance;
+    const analystProvenance: AgentProvenance | undefined = (analystResult.output as any)?._provenance;
+    const stageProvenance = mergeProvenance(memoryProvenance, discoveryProvenance, analystProvenance);
+
+    emitAgentLifecycle(io, input.tenantId, executionId, 'memory', 'progress', {
       stepIndex: 2,
       totalSteps: 4,
       output: memoryResult.output,
     });
-    emitAgentLifecycle(io, executionId, 'discovery', 'progress', {
+    emitAgentLifecycle(io, input.tenantId, executionId, 'discovery', 'progress', {
       stepIndex: 2,
       totalSteps: 4,
       confidence: discoveryResult.confidence,
       output: discoveryResult.output,
     });
-    emitAgentLifecycle(io, executionId, 'analyst', 'progress', {
+    emitAgentLifecycle(io, input.tenantId, executionId, 'analyst', 'progress', {
       stepIndex: 2,
       totalSteps: 4,
       confidence: analystResult.confidence,
       output: analystResult.output,
     });
 
-    emitAgentLifecycle(io, executionId, 'memory', 'completed', {
+    emitAgentLifecycle(io, input.tenantId, executionId, 'memory', 'completed', {
       stepIndex: 2,
       totalSteps: 4,
       output: memoryResult.output,
     });
-    emitAgentLifecycle(io, executionId, 'discovery', 'completed', {
+    emitAgentLifecycle(io, input.tenantId, executionId, 'discovery', 'completed', {
       stepIndex: 2,
       totalSteps: 4,
       confidence: discoveryResult.confidence,
       output: discoveryResult.output,
     });
-    emitAgentLifecycle(io, executionId, 'analyst', 'completed', {
+    emitAgentLifecycle(io, input.tenantId, executionId, 'analyst', 'completed', {
       stepIndex: 2,
       totalSteps: 4,
       confidence: analystResult.confidence,
@@ -217,6 +225,9 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       memory: memoryResult.output?.memory ?? memoryResult.output,
       discovery: discoveryResult.output?.discovery ?? discoveryResult.output,
       analysis: analystResult.output?.analysis ?? analystResult.output,
+      sources: Array.isArray((memoryResult.output as any)?._sources) ? (memoryResult.output as any)._sources : [],
+      provenance: stageProvenance,
+      evidenceConfidence: Number((discoveryResult.output as any)?._evidenceConfidence ?? 0),
     };
 
     const governanceState = buildParallelState({
@@ -224,7 +235,7 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       documents: discoveryResult.documents || parallelState.documents,
       requirements: analystResult.requirements || parallelState.requirements,
       decisions: (analystResult as any).decisions || parallelState.decisions,
-      confidence: Math.max(memoryResult.output ? 55 : 0, discoveryResult.confidence || 0, analystResult.confidence || 0),
+      confidence: mergedOutput.evidenceConfidence,
       nextAgent: 'governance',
       discoveryComplete: true,
       analystComplete: true,
@@ -237,45 +248,47 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       ],
     } as CerefyGraphState);
 
-    emitAgentLifecycle(io, executionId, 'governance', 'started', { stepIndex: 3, totalSteps: 4 });
-    emitAgentLifecycle(io, executionId, 'governance', 'progress', {
+    emitAgentLifecycle(io, input.tenantId, executionId, 'governance', 'started', { stepIndex: 3, totalSteps: 4 });
+    emitAgentLifecycle(io, input.tenantId, executionId, 'governance', 'progress', {
       stepIndex: 3,
       totalSteps: 4,
       output: mergedOutput,
     });
-    emitToolCall(io, executionId, 'governance', ['enterpriseRules', 'riskScoring', 'approvalPolicy']);
+    emitToolCall(io, input.tenantId, executionId, 'governance', ['enterpriseRules', 'riskScoring', 'approvalPolicy']);
 
     const finalState = await governanceAgent(governanceState);
     const output = finalState.output || mergedOutput;
+    const governanceProvenance: AgentProvenance | undefined = (finalState.output as any)?._provenance;
+    const provenance = mergeProvenance(governanceProvenance, stageProvenance);
     const confidence = finalState.confidence || governanceState.confidence || 0;
 
-    await updateAgentExecutionRecord(executionId, {
+    await updateAgentExecutionRecord(input.tenantId, executionId, {
       status: finalState.governanceComplete ? 'COMPLETED' : 'RUNNING',
       currentAgent: finalState.nextAgent || 'complete',
       confidence,
-      output,
+      output: { ...output, provenance },
       errors: (finalState as any).errors || [],
       completedAt: finalState.governanceComplete ? new Date() : null,
     });
 
-    await appendAgentExecutionEvent(executionId, {
+    await appendAgentExecutionEvent(input.tenantId, executionId, {
       event: 'workflow.completed',
       payload: { output, confidence, status: 'COMPLETED' },
       timestamp: now(),
     });
 
-    emitAgentLifecycle(io, executionId, 'governance', 'completed', {
+    emitAgentLifecycle(io, input.tenantId, executionId, 'governance', 'completed', {
       stepIndex: 4,
       totalSteps: 4,
       confidence,
       output: finalState.output,
     });
 
-    emit(io, 'workflow.completed', {
+    emit(io, input.tenantId, 'workflow.completed', {
       ...basePayload,
       status: 'completed',
       confidence,
-      output,
+      output: { ...output, provenance },
       timestamp: now(),
     });
 
@@ -283,26 +296,26 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       executionId,
       status: 'COMPLETED',
       confidence,
-      output,
+      output: { ...output, provenance },
     });
 
     return {
       executionId,
       status: 'COMPLETED',
-      output,
+      output: { ...output, provenance },
       confidence,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    await appendAgentExecutionError(executionId, message);
-    await updateAgentExecutionRecord(executionId, {
+    await appendAgentExecutionError(input.tenantId, executionId, message);
+    await updateAgentExecutionRecord(input.tenantId, executionId, {
       status: 'FAILED',
       currentAgent: 'supervisor',
       errors: [message],
       completedAt: null,
     });
 
-    emit(io, 'agent.failed', {
+    emit(io, input.tenantId, 'agent.failed', {
       ...basePayload,
       agentId: 'supervisor',
       agentName: 'Supervisor',
@@ -310,14 +323,14 @@ export async function runCerefyAIPipeline(input: CerefyExecutionInput, io: Socke
       error: message,
       timestamp: now(),
     });
-    emit(io, 'workflow.completed', {
+    emit(io, input.tenantId, 'workflow.completed', {
       ...basePayload,
       status: 'failed',
       error: message,
       timestamp: now(),
     });
 
-    await appendAgentExecutionEvent(executionId, {
+    await appendAgentExecutionEvent(input.tenantId, executionId, {
       event: 'agent.failed',
       payload: { error: message },
       timestamp: now(),

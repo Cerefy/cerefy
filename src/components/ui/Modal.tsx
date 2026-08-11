@@ -65,7 +65,7 @@ export const Modal: React.FC<ModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-scrim/70 backdrop-blur-sm"
             onClick={closeOnOverlay ? onClose : undefined}
           />
 
@@ -77,8 +77,8 @@ export const Modal: React.FC<ModalProps> = ({
             transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
             className={`
               relative w-full ${sizeStyles[size]}
-              bg-zinc-900/90 backdrop-blur-xl border border-zinc-800/60
-              rounded-2xl shadow-2xl shadow-black/50
+              bg-dark-panel/90 backdrop-blur-xl border border-dark-panel-raised/60
+              rounded-2xl shadow-overlay
               overflow-hidden
             `}
           >
@@ -86,13 +86,13 @@ export const Modal: React.FC<ModalProps> = ({
             {(title || showCloseButton) && (
               <div className="flex items-start justify-between px-6 pt-6 pb-2">
                 <div>
-                  {title && <h2 className="text-lg font-semibold text-white">{title}</h2>}
-                  {subtitle && <p className="text-sm text-zinc-500 mt-0.5">{subtitle}</p>}
+                  {title && <h2 className="text-lg font-semibold text-dark-text">{title}</h2>}
+                  {subtitle && <p className="text-sm text-dark-muted mt-0.5">{subtitle}</p>}
                 </div>
                 {showCloseButton && (
                   <button
                     onClick={onClose}
-                    className="text-zinc-500 hover:text-zinc-300 transition-colors p-1 hover:bg-zinc-800 rounded-lg"
+                    className="text-dark-muted hover:text-dark-text-muted transition-colors p-1 hover:bg-dark-panel-raised rounded-lg"
                   >
                     <X size={18} />
                   </button>
@@ -107,7 +107,7 @@ export const Modal: React.FC<ModalProps> = ({
 
             {/* Footer */}
             {footer && (
-              <div className="px-6 py-4 border-t border-zinc-800/60 flex items-center justify-end gap-3">
+              <div className="px-6 py-4 border-t border-dark-panel-raised/60 flex items-center justify-end gap-3">
                 {footer}
               </div>
             )}

@@ -4,9 +4,32 @@ import * as schema from './schema';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgres://cerefy:cerefy_password@localhost:5432/cerefy',
+  connectionTimeoutMillis: 3000,
+  max: 10,
 });
 
+export { pool };
+
 export const db = drizzle(pool, { schema });
+
+// Memoized reachability probe: lets DB-backed supporting services (agent
+// registry, execution records) degrade gracefully when Postgres is not
+// reachable, instead of crashing the request path with an unhandled
+// rejection. The probe itself is cheap; the memo holds for the process
+// lifetime, which is correct for the cases that use it (dev fallback,
+// CI unit-mode, degraded pilot).
+let dbReachable: boolean | null = null;
+
+export async function isDatabaseReachable(): Promise<boolean> {
+  if (dbReachable !== null) return dbReachable;
+  try {
+    await pool.query('SELECT 1');
+    dbReachable = true;
+  } catch {
+    dbReachable = false;
+  }
+  return dbReachable;
+}
 
 // Helper to execute queries with RLS context
 export async function withTenantContext<T>(tenantId: string, operation: (tx: any) => Promise<T>): Promise<T> {

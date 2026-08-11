@@ -14,11 +14,11 @@ interface CardProps extends HTMLMotionProps<'div'> {
 }
 
 const variantStyles: Record<string, string> = {
-  default: 'bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/60',
-  elevated: 'bg-zinc-900/70 backdrop-blur-xl border border-zinc-800/60 shadow-2xl shadow-black/40',
-  outlined: 'bg-transparent border border-zinc-800/80',
-  'glow-cyan': 'bg-zinc-900/50 backdrop-blur-xl border border-cyan-500/20 shadow-[0_0_20px_rgba(0,216,246,0.08)]',
-  'glow-indigo': 'bg-zinc-900/50 backdrop-blur-xl border border-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.08)]',
+  default: 'bg-dark-panel/50 backdrop-blur-xl border border-dark-panel-raised/60',
+  elevated: 'bg-dark-panel/70 backdrop-blur-xl border border-dark-panel-raised/60 shadow-raised',
+  outlined: 'bg-transparent border border-dark-panel-raised/80',
+  'glow-cyan': 'bg-dark-panel/50 backdrop-blur-xl border border-cyan-signal/20 shadow-glow-cyan',
+  'glow-indigo': 'bg-dark-panel/50 backdrop-blur-xl border border-indigo-signal/20 shadow-glow-indigo',
 };
 
 const paddingStyles: Record<string, string> = {
@@ -44,13 +44,13 @@ export const Card: React.FC<CardProps> = ({
       className={`
         rounded-2xl transition-all duration-250
         ${variantStyles[variant]}
-        ${hover ? 'hover:border-zinc-700/80 hover:shadow-lg cursor-pointer' : ''}
+        ${hover ? 'hover:border-dark-panel-soft/80 hover:shadow-lg cursor-pointer' : ''}
         ${className}
       `}
       {...props}
     >
       {header && (
-        <div className="px-6 py-4 border-b border-zinc-800/60">
+        <div className="px-6 py-4 border-b border-dark-panel-raised/60">
           {header}
         </div>
       )}
@@ -58,7 +58,7 @@ export const Card: React.FC<CardProps> = ({
         {children}
       </div>
       {footer && (
-        <div className="px-6 py-4 border-t border-zinc-800/60">
+        <div className="px-6 py-4 border-t border-dark-panel-raised/60">
           {footer}
         </div>
       )}

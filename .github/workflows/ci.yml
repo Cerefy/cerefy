@@ -7,8 +7,25 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  quality:
+    name: Typecheck + Tests + Eval Gates
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: cerefy_test
+          POSTGRES_PASSWORD: cerefy_test
+          POSTGRES_DB: cerefy_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cerefy_test -d cerefy_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL_TEST: postgres://cerefy_test:cerefy_test@localhost:5432/cerefy_test
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -17,12 +34,52 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: npm ci
-      - name: Lint / Typecheck
+      - name: Typecheck
         run: npm run typecheck
-      - name: Build
+      - name: Unit + integration tests (lib layers)
+        run: node --test --import tsx "src/lib/**/*.test.ts"
+      - name: RLS tenant-isolation integration tests (real Postgres — §2)
+        run: node --test --import tsx "src/db/__tests__/rls-integration.test.ts"
+      - name: AI eval gate (golden set — §2.1)
+        run: node --import tsx -e "
+          import('node:assert/strict').then(async ({ default: assert }) => {
+            const { GOLDEN_SET, scoreAnswer, summarize } = await import('./src/lib/llm/eval.ts');
+            const results = GOLDEN_SET.map((c) => scoreAnswer(c, { answer: c.goldenAnswer, sources: c.goldenSources, confidence: 0.95 }));
+            const s = summarize(results);
+            assert.equal(s.total, GOLDEN_SET.length, 'every golden case must be scored');
+            assert.ok(s.factual >= s.total, 'factual parity');
+            assert.ok(s.citation >= s.total, 'citation parity');
+            assert.ok(results.every((r) => r.citationScore !== undefined), 'citation slices computed');
+            console.log(JSON.stringify(s));
+          });
+        "
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+      - name: Dependency audit (high/critical)
+        run: npm audit --audit-level=high
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build frontend + backend bundle
+        env:
+          NODE_ENV: production
         run: npm run build
-      - name: Build Docker image (optional)
-        if: env.REGISTRY != ''
-        run: |
-          echo "REGISTRY=${{ env.REGISTRY }}"
-          docker build -t ${{ env.REGISTRY }}/cerefy-enterprise-ai:latest .
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7

@@ -58,15 +58,15 @@ export const PricingPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] pt-24 pb-16">
+    <div className="min-h-screen bg-surface pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
-          <h1 className="text-5xl font-bold text-zinc-900 mb-4">Simple, Transparent Pricing</h1>
-          <p className="text-xl text-zinc-600 max-w-2xl mx-auto">
+          <h1 className="text-5xl font-bold text-on-surface mb-4">Simple, Transparent Pricing</h1>
+          <p className="text-xl text-on-surface-variant max-w-2xl mx-auto">
             Choose the plan that fits your team. All plans include a 14-day free trial.
           </p>
         </motion.div>
@@ -80,32 +80,32 @@ export const PricingPage: React.FC = () => {
               transition={{ delay: idx * 0.1 }}
               className={`relative rounded-2xl p-8 ${
                 tier.popular
-                  ? 'bg-zinc-900 text-white ring-4 ring-cyan-500 scale-105'
-                  : 'bg-white border border-zinc-200'
+                  ? 'bg-on-surface text-surface-container-lowest ring-4 ring-cyan-signal scale-105'
+                  : 'bg-surface-container-lowest border border-outline-soft'
               }`}
             >
               {tier.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-cyan-500 text-white text-sm font-semibold px-4 py-1 rounded-full">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-cyan-signal text-surface-container-lowest text-sm font-semibold px-4 py-1 rounded-full">
                   Most Popular
                 </div>
               )}
-              <h3 className={`text-2xl font-bold mb-2 ${tier.popular ? 'text-white' : 'text-zinc-900'}`}>
+              <h3 className={`text-2xl font-bold mb-2 ${tier.popular ? 'text-surface-container-lowest' : 'text-on-surface'}`}>
                 {tier.name}
               </h3>
               <div className="mb-4">
-                <span className={`text-4xl font-bold ${tier.popular ? 'text-white' : 'text-zinc-900'}`}>
+                <span className={`text-4xl font-bold ${tier.popular ? 'text-surface-container-lowest' : 'text-on-surface'}`}>
                   {tier.price}
                 </span>
-                <span className={tier.popular ? 'text-zinc-300' : 'text-zinc-500'}>{tier.period}</span>
+                <span className={tier.popular ? 'text-outline-variant' : 'text-on-surface-muted'}>{tier.period}</span>
               </div>
-              <p className={`mb-6 ${tier.popular ? 'text-zinc-300' : 'text-zinc-600'}`}>
+              <p className={`mb-6 ${tier.popular ? 'text-outline-variant' : 'text-on-surface-variant'}`}>
                 {tier.description}
               </p>
               <ul className="space-y-3 mb-8">
                 {tier.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-2">
-                    <CheckCircle className={`w-5 h-5 ${tier.popular ? 'text-cyan-400' : 'text-cyan-600'}`} />
-                    <span className={tier.popular ? 'text-zinc-200' : 'text-zinc-700'}>{feature}</span>
+                    <CheckCircle className={`w-5 h-5 ${tier.popular ? 'text-cyan-signal-strong' : 'text-cyan-signal-deep'}`} />
+                    <span className={tier.popular ? 'text-outline-soft' : 'text-on-surface-variant'}>{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -113,8 +113,8 @@ export const PricingPage: React.FC = () => {
                 onClick={() => navigate('/register')}
                 className={`w-full py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors ${
                   tier.popular
-                    ? 'bg-cyan-500 text-white hover:bg-cyan-600'
-                    : 'bg-zinc-900 text-white hover:bg-zinc-800'
+                    ? 'bg-cyan-signal text-surface-container-lowest hover:bg-cyan-signal-deep'
+                    : 'bg-on-surface text-surface-container-lowest hover:bg-on-surface-muted-strong'
                 }`}
               >
                 {tier.cta}

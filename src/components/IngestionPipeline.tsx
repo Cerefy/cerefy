@@ -41,25 +41,25 @@ export const IngestionPipeline: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-6 text-slate-100 shadow-xl select-none">
+    <div className="bg-slate-deep border border-slate-panel-raised rounded-xl p-5 space-y-6 text-slate-text-bright shadow-xl select-none">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="flex items-center justify-between border-b border-slate-panel-raised pb-3">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <div className="p-2 rounded-lg bg-emerald-signal/10 text-emerald-signal-strong border border-emerald-signal/20">
             <FileCode className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-slate-200">
+            <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-slate-text">
               Document Ingestion & Chunking Pipeline
             </h3>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-muted-strong">
               Recursive Text Splitter & pgvector (1536-dim) Embedding Engine
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 font-mono text-xs text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
-          <Database className="h-3.5 w-3.5 text-emerald-400" />
+        <div className="flex items-center gap-2 font-mono text-xs text-slate-muted-strong bg-slate-panel border border-slate-panel-raised px-3 py-1.5 rounded-lg">
+          <Database className="h-3.5 w-3.5 text-emerald-signal-strong" />
           <span>{tenantChunks.length} Chunks Vectorized</span>
         </div>
       </div>
@@ -67,31 +67,31 @@ export const IngestionPipeline: React.FC = () => {
       {/* Main Grid: Form + Chunking Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Document Ingestion Form */}
-        <form onSubmit={handleIngest} className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-            <span className="text-xs font-mono font-bold text-slate-200 uppercase flex items-center gap-1.5">
-              <FileText className="h-3.5 w-3.5 text-blue-400" /> Ingest Raw Document
+        <form onSubmit={handleIngest} className="bg-slate-panel/90 border border-slate-panel-raised rounded-xl p-4 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-panel-raised pb-2">
+            <span className="text-xs font-mono font-bold text-slate-text uppercase flex items-center gap-1.5">
+              <FileText className="h-3.5 w-3.5 text-blue-signal-strong" /> Ingest Raw Document
             </span>
           </div>
 
           <div className="space-y-3 text-xs font-mono">
             <div>
-              <label className="block text-slate-400 mb-1">Document Title / File Name</label>
+              <label className="block text-slate-muted-strong mb-1">Document Title / File Name</label>
               <input
                 type="text"
                 value={docTitle}
                 onChange={(e) => setDocTitle(e.target.value)}
                 placeholder="e.g., SOC2_Type_II_Security_Standard_2026.txt"
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 outline-none focus:border-emerald-500"
+                className="w-full p-2.5 bg-slate-deep border border-slate-panel-raised rounded-lg text-slate-text outline-none focus:border-emerald-signal"
                 required
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-slate-400 mb-1 flex items-center justify-between">
+                <label className="block text-slate-muted-strong mb-1 flex items-center justify-between">
                   <span>Chunk Size</span>
-                  <span className="text-emerald-400">{chunkSize} chars</span>
+                  <span className="text-emerald-signal-strong">{chunkSize} chars</span>
                 </label>
                 <input
                   type="range"
@@ -100,14 +100,14 @@ export const IngestionPipeline: React.FC = () => {
                   step="50"
                   value={chunkSize}
                   onChange={(e) => setChunkSize(Number(e.target.value))}
-                  className="w-full accent-emerald-500 cursor-pointer"
+                  className="w-full accent-emerald-signal cursor-pointer"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 flex items-center justify-between">
+                <label className="block text-slate-muted-strong mb-1 flex items-center justify-between">
                   <span>Chunk Overlap</span>
-                  <span className="text-blue-400">{chunkOverlap} chars</span>
+                  <span className="text-blue-signal-strong">{chunkOverlap} chars</span>
                 </label>
                 <input
                   type="range"
@@ -116,19 +116,19 @@ export const IngestionPipeline: React.FC = () => {
                   step="10"
                   value={chunkOverlap}
                   onChange={(e) => setChunkOverlap(Number(e.target.value))}
-                  className="w-full accent-blue-500 cursor-pointer"
+                  className="w-full accent-blue-signal cursor-pointer"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1">Raw Content Body</label>
+              <label className="block text-slate-muted-strong mb-1">Raw Content Body</label>
               <textarea
                 value={docContent}
                 onChange={(e) => setDocContent(e.target.value)}
                 placeholder="Paste enterprise policy text, security compliance guidelines, or legal contracts..."
                 rows={5}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 outline-none focus:border-emerald-500 leading-relaxed font-mono"
+                className="w-full p-2.5 bg-slate-deep border border-slate-panel-raised rounded-lg text-slate-text outline-none focus:border-emerald-signal leading-relaxed font-mono"
                 required
               />
             </div>
@@ -137,7 +137,7 @@ export const IngestionPipeline: React.FC = () => {
           <button
             type="submit"
             disabled={isIngestionInFlight(isIngesting)}
-            className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-mono font-semibold text-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+            className="w-full py-2.5 bg-emerald-signal-deep hover:bg-emerald-signal text-dark-text-bright rounded-lg font-mono font-semibold text-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
           >
             <Cpu className="h-4 w-4" />
             <span>Chunk & Generate pgvector Embeddings</span>
@@ -145,39 +145,39 @@ export const IngestionPipeline: React.FC = () => {
         </form>
 
         {/* Existing Documents & Chunk Inspection */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-            <span className="text-xs font-mono font-bold text-slate-200 uppercase flex items-center gap-1.5">
-              <Sliders className="h-3.5 w-3.5 text-emerald-400" /> Vectorized Document Store
+        <div className="bg-slate-panel/90 border border-slate-panel-raised rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-panel-raised pb-2">
+            <span className="text-xs font-mono font-bold text-slate-text uppercase flex items-center gap-1.5">
+              <Sliders className="h-3.5 w-3.5 text-emerald-signal-strong" /> Vectorized Document Store
             </span>
-            <span className="text-[10px] text-slate-500 font-mono">
+            <span className="text-[10px] text-slate-muted font-mono">
               {tenantDocs.length} Documents Ingested
             </span>
           </div>
 
-          <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+          <div className="space-y-3 max-h-80 overflow-y-auto pe-1">
             {tenantDocs.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-500 font-mono">
+              <div className="p-8 text-center text-xs text-slate-muted font-mono">
                 No documents ingested for this tenant yet.
               </div>
             ) : (
               tenantDocs.map((doc) => (
                 <div
                   key={doc.id}
-                  className="p-3 bg-slate-950 rounded-lg border border-slate-800 space-y-2 text-xs font-mono"
+                  className="p-3 bg-slate-deep rounded-lg border border-slate-panel-raised space-y-2 text-xs font-mono"
                 >
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-slate-200 truncate">{doc.title}</span>
-                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded">
+                    <span className="font-semibold text-slate-text truncate">{doc.title}</span>
+                    <span className="text-[10px] bg-emerald-signal/10 text-emerald-signal-strong border border-emerald-signal/20 px-1.5 py-0.5 rounded">
                       {doc.chunkCount} Chunks
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed bg-slate-900/80 p-2 rounded">
+                  <p className="text-[11px] text-slate-muted-strong line-clamp-2 leading-relaxed bg-slate-panel/80 p-2 rounded">
                     "{doc.rawContent}"
                   </p>
 
-                  <div className="text-[10px] text-slate-500 flex justify-between items-center">
+                  <div className="text-[10px] text-slate-muted flex justify-between items-center">
                     <span>MIME: {doc.mimeType}</span>
                     <span>Created: {new Date(doc.createdAt).toLocaleTimeString()}</span>
                   </div>
@@ -189,12 +189,12 @@ export const IngestionPipeline: React.FC = () => {
       </div>
 
       {/* Semantic Search Sandbox */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-          <span className="text-xs font-mono font-bold text-slate-200 uppercase flex items-center gap-1.5">
-            <Search className="h-3.5 w-3.5 text-blue-400" /> Vector Similarity Query Sandbox
+      <div className="bg-slate-panel/90 border border-slate-panel-raised rounded-xl p-4 space-y-3">
+        <div className="flex items-center justify-between border-b border-slate-panel-raised pb-2">
+          <span className="text-xs font-mono font-bold text-slate-text uppercase flex items-center gap-1.5">
+            <Search className="h-3.5 w-3.5 text-blue-signal-strong" /> Vector Similarity Query Sandbox
           </span>
-          <span className="text-[10px] font-mono text-slate-500">Cosine Distance Matches</span>
+          <span className="text-[10px] font-mono text-slate-muted">Cosine Distance Matches</span>
         </div>
 
         <form onSubmit={handleSearchVectorStore} className="flex gap-2">
@@ -203,11 +203,11 @@ export const IngestionPipeline: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Type semantic query e.g., 'What are the MFA requirements for OAuth tokens?'"
-            className="flex-1 p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-slate-200 outline-none focus:border-blue-500"
+            className="flex-1 p-2.5 bg-slate-deep border border-slate-panel-raised rounded-lg text-xs font-mono text-slate-text outline-none focus:border-blue-signal"
           />
           <button
             type="submit"
-            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-mono text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="px-4 py-2.5 bg-blue-signal-deep hover:bg-blue-signal text-dark-text-bright rounded-lg font-mono text-xs font-semibold flex items-center gap-1.5 transition-colors"
           >
             <Sparkles className="h-3.5 w-3.5" />
             <span>Search pgvector</span>
@@ -216,7 +216,7 @@ export const IngestionPipeline: React.FC = () => {
 
         {searchResultChunks.length > 0 && (
           <div className="space-y-2 pt-2">
-            <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
+            <div className="text-[10px] font-mono text-slate-muted-strong uppercase tracking-wider">
               Top Similarity Search Results
             </div>
 
@@ -224,18 +224,18 @@ export const IngestionPipeline: React.FC = () => {
               {searchResultChunks.map((c) => (
                 <div
                   key={c.id}
-                  className="p-3 bg-slate-950 rounded-lg border border-blue-500/30 space-y-1.5 font-mono text-xs"
+                  className="p-3 bg-slate-deep rounded-lg border border-blue-signal/30 space-y-1.5 font-mono text-xs"
                 >
                   <div className="flex justify-between items-center text-[10px]">
-                    <span className="text-blue-400 font-semibold">Chunk #{c.chunkIndex}</span>
-                    <span className="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
+                    <span className="text-blue-signal-strong font-semibold">Chunk #{c.chunkIndex}</span>
+                    <span className="text-emerald-signal-strong bg-emerald-signal/10 border border-emerald-signal/20 px-1.5 py-0.5 rounded">
                       Score: {c.similarityScore}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-300 leading-relaxed bg-slate-900 p-2 rounded">
+                  <p className="text-[11px] text-slate-text-muted leading-relaxed bg-slate-panel p-2 rounded">
                     "{c.content}"
                   </p>
-                  <div className="text-[9px] text-slate-500">
+                  <div className="text-[9px] text-slate-muted">
                     Vector Sample: [{c.embedding.slice(0, 4).map((n: number) => n.toFixed(2)).join(', ')}, ...]
                   </div>
                 </div>

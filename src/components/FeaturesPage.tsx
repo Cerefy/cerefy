@@ -18,15 +18,15 @@ export const FeaturesPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] pt-24 pb-16">
+    <div className="min-h-screen bg-surface pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
-          <h1 className="text-5xl font-bold text-zinc-900 mb-4">Everything You Need</h1>
-          <p className="text-xl text-zinc-600 max-w-2xl mx-auto">
+          <h1 className="text-5xl font-bold text-on-surface mb-4">Everything You Need</h1>
+          <p className="text-xl text-on-surface-variant max-w-2xl mx-auto">
             A complete AI operating system for modern enterprises.
           </p>
         </motion.div>
@@ -38,11 +38,11 @@ export const FeaturesPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className="bg-white rounded-xl p-6 border border-zinc-200 hover:border-cyan-300 hover:shadow-lg transition-all"
+              className="bg-surface-container-lowest rounded-xl p-6 border border-outline-soft hover:border-cyan-signal-soft hover:shadow-lg transition-all"
             >
-              <feature.icon className="w-10 h-10 text-cyan-600 mb-4" />
-              <h3 className="text-lg font-semibold text-zinc-900 mb-2">{feature.title}</h3>
-              <p className="text-zinc-600 text-sm">{feature.desc}</p>
+              <feature.icon className="w-10 h-10 text-cyan-signal-deep mb-4" />
+              <h3 className="text-lg font-semibold text-on-surface mb-2">{feature.title}</h3>
+              <p className="text-on-surface-variant text-sm">{feature.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -54,7 +54,7 @@ export const FeaturesPage: React.FC = () => {
         >
           <button
             onClick={() => navigate('/register')}
-            className="bg-zinc-900 text-white px-8 py-4 rounded-lg font-semibold inline-flex items-center gap-2 hover:bg-zinc-800 transition-colors"
+            className="bg-on-surface text-surface-container-lowest px-8 py-4 rounded-lg font-semibold inline-flex items-center gap-2 hover:bg-on-surface-muted-strong transition-colors"
           >
             Get Started Free
             <ArrowRight className="w-5 h-5" />

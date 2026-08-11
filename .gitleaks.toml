@@ -1,0 +1,45 @@
+title = "Cerefy secret scanning config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "cerefy-generic-credential"
+description = "Generic Credential"
+regex = '''(?i)(api[_-]?key|secret|token|password|client[_-]?secret)['" ]*[:=]['" ]*[A-Za-z0-9_\-]{20,}'''
+secret-group = 1
+entropy = 3.5
+keywords = ["api_key", "secret", "token", "password", "client_secret"]
+
+[[rules]]
+id = "cerefy-private-key"
+description = "Private key block"
+regex = '''-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----'''
+
+[[rules]]
+id = "cerefy-stripe"
+description = "Stripe API key"
+regex = '''\bsk_(live|test)_[A-Za-z0-9]{16,}\b'''
+
+[[rules]]
+id = "cerefy-openai"
+description = "OpenAI API key"
+regex = '''\bsk-[A-Za-z0-9]{20,}\b'''
+
+[[rules]]
+id = "cerefy-aws"
+description = "AWS access key"
+regex = '''\bAKIA[0-9A-Z]{16}\b'''
+
+[[rules]]
+id = "cerefy-google"
+description = "Google API key"
+regex = '''\bAIza[0-9A-Za-z_\-]{35}\b'''
+
+[allowlist]
+paths = [
+  "src/lib/security/__tests__/fixture.unsafe.env",
+  "src/**/__tests__/**",
+  "**/__tests__/**",
+  "ELASTICSEARCH_API_KEY",
+]

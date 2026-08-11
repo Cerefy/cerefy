@@ -1,5 +1,5 @@
 import { desc, eq } from 'drizzle-orm';
-import { db } from '../db';
+import { db, isDatabaseReachable } from '../db';
 import { agentRegistry } from '../db/schema';
 
 export type AgentStatus = 'ACTIVE' | 'DISABLED' | 'DEGRADED';
@@ -20,6 +20,7 @@ export const coreAgentDefinitions: AgentDefinition[] = [
 ];
 
 export async function ensureCoreAgentsRegistered() {
+  if (!(await isDatabaseReachable())) return [];
   const results = [] as Array<Record<string, unknown>>;
   for (const definition of coreAgentDefinitions) {
     results.push(await upsertAgentDefinition(definition));
@@ -28,6 +29,7 @@ export async function ensureCoreAgentsRegistered() {
 }
 
 export async function upsertAgentDefinition(definition: AgentDefinition) {
+  if (!(await isDatabaseReachable())) return null;
   const [existing] = await db.select().from(agentRegistry).where(eq(agentRegistry.name, definition.name)).limit(1);
 
   if (existing) {
@@ -60,6 +62,7 @@ export async function upsertAgentDefinition(definition: AgentDefinition) {
 }
 
 export async function recordAgentExecution(agentName: string, execution: Record<string, unknown>) {
+  if (!(await isDatabaseReachable())) return null;
   const [existing] = await db.select().from(agentRegistry).where(eq(agentRegistry.name, agentName)).limit(1);
 
   if (!existing) {
@@ -85,5 +88,6 @@ export async function recordAgentExecution(agentName: string, execution: Record<
 }
 
 export async function listAgentDefinitions() {
+  if (!(await isDatabaseReachable())) return [];
   return db.select().from(agentRegistry).orderBy(desc(agentRegistry.updatedAt));
 }

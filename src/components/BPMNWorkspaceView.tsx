@@ -81,10 +81,10 @@ const nodeTypeIcon: Record<string, React.FC<{ className?: string; size?: number 
 };
 
 const nodeStatusColor: Record<string, string> = {
-  pending: 'border-zinc-700/50 bg-zinc-800/40',
-  active: 'border-cyan-500/40 bg-cyan-500/10 shadow-[0_0_15px_rgba(0,216,246,0.1)]',
-  completed: 'border-emerald-500/30 bg-emerald-500/10',
-  error: 'border-red-500/30 bg-red-500/10',
+  pending: 'border-dark-panel-soft/50 bg-dark-panel-raised/40',
+  active: 'border-cyan-signal/40 bg-cyan-signal/10 shadow-glow-cyan-sm',
+  completed: 'border-emerald-signal/30 bg-emerald-signal/10',
+  error: 'border-rose-signal/30 bg-rose-signal/10',
 };
 
 export const BPMNWorkspaceView: React.FC = () => {
@@ -101,11 +101,11 @@ export const BPMNWorkspaceView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <Workflow className="h-5 w-5 text-cyan-400" />
+          <h1 className="text-xl font-bold text-dark-text-bright flex items-center gap-2">
+            <Workflow className="h-5 w-5 text-cyan-signal-strong" />
             BPMN Process Workspace
           </h1>
-          <p className="text-zinc-500 text-xs font-mono mt-1">
+          <p className="text-dark-muted text-xs font-mono mt-1">
             VISUAL PROCESS MODELING · AI-POWERED PROCESS INTELLIGENCE
           </p>
         </div>
@@ -122,13 +122,13 @@ export const BPMNWorkspaceView: React.FC = () => {
         <div className="w-72 shrink-0 space-y-3">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-dark-muted" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search processes..."
-              className="w-full bg-zinc-900/50 border border-zinc-800/60 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/40"
+              className="w-full bg-dark-panel/50 border border-dark-panel-raised/60 rounded-lg pl-9 pr-3 py-2 text-xs text-dark-text-bright placeholder-dark-border focus:outline-none focus:border-cyan-signal/40"
             />
           </div>
 
@@ -141,8 +141,8 @@ export const BPMNWorkspaceView: React.FC = () => {
                 className={`
                   w-full text-left px-3 py-2.5 rounded-xl text-xs transition-all cursor-pointer
                   ${selectedProcess.id === proc.id
-                    ? 'bg-zinc-800 border border-zinc-700/80 text-white'
-                    : 'hover:bg-zinc-900/60 text-zinc-400 border border-transparent'
+                    ? 'bg-dark-panel-raised border border-dark-panel-soft/80 text-dark-text-bright'
+                    : 'hover:bg-dark-panel/60 text-dark-muted-strong border border-transparent'
                   }
                 `}
               >
@@ -155,7 +155,7 @@ export const BPMNWorkspaceView: React.FC = () => {
                     {proc.status}
                   </Badge>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500">
+                <div className="flex items-center gap-2 text-[10px] font-mono text-dark-muted">
                   <span>{proc.version}</span>
                   <span>·</span>
                   <span>{proc.nodeCount} nodes</span>
@@ -174,12 +174,12 @@ export const BPMNWorkspaceView: React.FC = () => {
         {/* Canvas Area */}
         <div className="flex-1 space-y-3">
           {/* Process Info Bar */}
-          <div className="bg-zinc-900/50 border border-zinc-800/60 rounded-xl px-4 py-3 flex items-center justify-between">
+          <div className="bg-dark-panel/50 border border-dark-panel-raised/60 rounded-xl px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <GitBranch className="h-4 w-4 text-cyan-400" />
+              <GitBranch className="h-4 w-4 text-cyan-signal-strong" />
               <div>
-                <p className="text-sm font-medium text-white">{selectedProcess.name}</p>
-                <p className="text-[10px] font-mono text-zinc-500">
+                <p className="text-sm font-medium text-dark-text-bright">{selectedProcess.name}</p>
+                <p className="text-[10px] font-mono text-dark-muted">
                   {selectedProcess.version} · Owner: {selectedProcess.owner} · Modified: {selectedProcess.lastModified}
                 </p>
               </div>
@@ -191,10 +191,10 @@ export const BPMNWorkspaceView: React.FC = () => {
           </div>
 
           {/* BPMN Canvas */}
-          <div className="bg-zinc-900/30 border border-zinc-800/60 rounded-2xl relative overflow-hidden min-h-[420px] bg-grid-pattern">
+          <div className="bg-dark-panel/30 border border-dark-panel-raised/60 rounded-2xl relative overflow-hidden min-h-[420px] bg-grid-pattern">
             {/* Ambient glow */}
             <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-1/2 left-1/3 w-[250px] h-[250px] rounded-full bg-cyan-500/3 blur-[80px]" />
+              <div className="absolute top-1/2 left-1/3 w-[250px] h-[250px] rounded-full bg-cyan-signal/3 blur-[80px]" />
             </div>
 
             {/* Connection Lines */}
@@ -238,29 +238,29 @@ export const BPMNWorkspaceView: React.FC = () => {
                     absolute cursor-pointer rounded-lg border p-2 backdrop-blur-sm transition-all
                     ${nodeStatusColor[node.status]}
                     ${node.type === 'start' || node.type === 'end' ? 'rounded-full w-10 h-10 flex items-center justify-center p-0' : 'min-w-[140px]'}
-                    ${selectedNode?.id === node.id ? 'ring-1 ring-cyan-500/50' : ''}
-                    hover:border-cyan-500/40
+                    ${selectedNode?.id === node.id ? 'ring-1 ring-cyan-signal/50' : ''}
+                    hover:border-cyan-signal/40
                   `}
                   style={{ left: node.x, top: node.y, zIndex: 1 }}
                   onClick={() => setSelectedNode(node)}
                 >
                   {node.type === 'start' || node.type === 'end' ? (
-                    <Icon className={`h-4 w-4 ${node.status === 'completed' ? 'text-emerald-400' : 'text-zinc-400'}`} size={16} />
+                    <Icon className={`h-4 w-4 ${node.status === 'completed' ? 'text-emerald-signal-strong' : 'text-dark-muted-strong'}`} size={16} />
                   ) : node.type === 'gateway' ? (
                     <div className="flex items-center justify-center">
-                      <Diamond className={`h-5 w-5 ${node.status === 'active' ? 'text-cyan-400' : 'text-zinc-500'}`} />
-                      <span className="text-[9px] font-mono text-zinc-400 ml-1">{node.label}</span>
+                      <Diamond className={`h-5 w-5 ${node.status === 'active' ? 'text-cyan-signal-strong' : 'text-dark-muted'}`} />
+                      <span className="text-[9px] font-mono text-dark-muted-strong ml-1">{node.label}</span>
                     </div>
                   ) : (
                     <div>
-                      <p className="text-[10px] font-medium text-white truncate">{node.label}</p>
+                      <p className="text-[10px] font-medium text-dark-text-bright truncate">{node.label}</p>
                       {node.assignee && (
-                        <p className="text-[9px] font-mono text-zinc-500 flex items-center gap-1 mt-0.5">
+                        <p className="text-[9px] font-mono text-dark-muted flex items-center gap-1 mt-0.5">
                           <Cpu className="h-2.5 w-2.5" /> {node.assignee}
                         </p>
                       )}
                       {node.duration && (
-                        <p className="text-[9px] font-mono text-cyan-400 mt-0.5">{node.duration}</p>
+                        <p className="text-[9px] font-mono text-cyan-signal-strong mt-0.5">{node.duration}</p>
                       )}
                     </div>
                   )}
@@ -270,17 +270,17 @@ export const BPMNWorkspaceView: React.FC = () => {
           </div>
 
           {/* Bottom Toolbar */}
-          <div className="flex items-center justify-between bg-zinc-900/50 border border-zinc-800/60 rounded-xl px-4 py-2">
-            <div className="flex items-center gap-4 text-[10px] font-mono text-zinc-500">
-              <span className="flex items-center gap-1"><Circle className="h-3 w-3 text-zinc-500" /> Start Event</span>
-              <span className="flex items-center gap-1"><Square className="h-3 w-3 text-zinc-500" /> Task</span>
-              <span className="flex items-center gap-1"><Diamond className="h-3 w-3 text-zinc-500" /> Gateway</span>
-              <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-zinc-500" /> End Event</span>
+          <div className="flex items-center justify-between bg-dark-panel/50 border border-dark-panel-raised/60 rounded-xl px-4 py-2">
+            <div className="flex items-center gap-4 text-[10px] font-mono text-dark-muted">
+              <span className="flex items-center gap-1"><Circle className="h-3 w-3 text-dark-muted" /> Start Event</span>
+              <span className="flex items-center gap-1"><Square className="h-3 w-3 text-dark-muted" /> Task</span>
+              <span className="flex items-center gap-1"><Diamond className="h-3 w-3 text-dark-muted" /> Gateway</span>
+              <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-dark-muted" /> End Event</span>
             </div>
             <div className="flex items-center gap-2 text-[10px] font-mono">
-              <span className="text-zinc-500">{sampleNodes.length} nodes</span>
-              <span className="text-zinc-700">·</span>
-              <span className="text-emerald-400">Process: RUNNING</span>
+              <span className="text-dark-muted">{sampleNodes.length} nodes</span>
+              <span className="text-dark-panel-soft">·</span>
+              <span className="text-emerald-signal-strong">Process: RUNNING</span>
             </div>
           </div>
         </div>

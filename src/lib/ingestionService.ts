@@ -29,44 +29,47 @@ export async function processDocument(
   logger.info(`🛠️ Chunking completed: ${cleanChunks.length} chunks generated for document '${title}'.`);
 
   // 2. Generate Embeddings & Save to PostgreSQL
+  // Insert the document in one short tenant-scoped tx, then run the embedding
+  // LLM calls OUTSIDE any DB transaction (network I/O must never hold a
+  // Postgres tx open), then batch the chunk inserts in a second tx.
   const documentId = await withTenantContext(tenantId, async (tx) => {
-    // Insert document
-    const [doc] = await tx.insert(documents).values({
-      tenantId,
-      title,
-      mimeType: 'text/plain',
-      rawContent: content,
-      status: 'processed'
-    }).returning({ id: documents.id });
+    const [doc] = await tx
+      .insert(documents)
+      .values({ tenantId, title, mimeType: 'text/plain', rawContent: content, status: 'processed' })
+      .returning({ id: documents.id });
+    return doc.id;
+  });
 
-    // Generate embeddings and insert chunks
-    for (let i = 0; i < cleanChunks.length; i++) {
-      const chunkText = cleanChunks[i];
-      let embedding: number[] = [];
-      
+  const embeddings: Array<number[] | null> = await Promise.all(
+    cleanChunks.map(async (chunkText) => {
       try {
         const response = await aiClient.models.embedContent({
           model: 'text-embedding-004',
           contents: chunkText,
         });
-        // @google/genai returns embeddings[0].values
-        embedding = response.embeddings?.[0]?.values || [];
+        return response.embeddings?.[0]?.values || null;
       } catch (e) {
-        logger.error('Embedding failed for chunk', i, e);
+        logger.error('Embedding failed for chunk', e);
+        return null;
       }
+    }),
+  );
 
-      await tx.insert(documentChunks).values({
-        tenantId,
-        documentId: doc.id,
-        chunkIndex: i,
-        content: chunkText,
-        embedding: embedding.length > 0 ? embedding : null
-      });
+  await withTenantContext(tenantId, async (tx) => {
+    if (embeddings.length > 0) {
+      await tx.insert(documentChunks).values(
+        cleanChunks.map((chunkText, i) => ({
+          tenantId,
+          documentId,
+          chunkIndex: i,
+          content: chunkText,
+          embedding: embeddings[i] ?? null,
+        })),
+      );
     }
-
-    logger.info(`🔗 Document ID ${doc.id} created and ${cleanChunks.length} chunks saved.`);
-    return doc.id;
   });
+
+  logger.info(`🔗 Document ID ${documentId} created and ${cleanChunks.length} chunks saved.`);
 
   // 3. Extract Entities & Insert into Neo4j
   try {

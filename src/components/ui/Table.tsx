@@ -10,7 +10,7 @@ export interface TableColumn<T> {
   render?: (row: T, index: number) => React.ReactNode;
   sortable?: boolean;
   width?: string;
-  align?: 'left' | 'center' | 'right';
+  align?: 'start' | 'center' | 'end';
 }
 
 interface TableProps<T> {
@@ -62,17 +62,17 @@ export function Table<T extends Record<string, unknown>>({
   const cellPadding = compact ? 'px-3 py-2' : 'px-4 py-3';
 
   return (
-    <div className={`overflow-x-auto rounded-xl border border-zinc-800/60 ${className}`}>
+    <div className={`overflow-x-auto rounded-xl border border-dark-panel-raised/60 ${className}`}>
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-zinc-800/60 bg-zinc-900/50">
+          <tr className="border-b border-dark-panel-raised/60 bg-dark-panel/50">
             {columns.map((col) => (
               <th
                 key={col.key}
                 className={`
-                  ${cellPadding} text-left text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-500
-                  ${col.sortable ? 'cursor-pointer hover:text-zinc-300 select-none' : ''}
-                  ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}
+                  ${cellPadding} text-start text-[10px] font-mono font-bold uppercase tracking-widest text-dark-muted
+                  ${col.sortable ? 'cursor-pointer hover:text-dark-text-muted select-none' : ''}
+                  ${col.align === 'center' ? 'text-center' : col.align === 'end' ? 'text-end' : ''}
                 `}
                 style={col.width ? { width: col.width } : undefined}
                 onClick={col.sortable ? () => handleSort(col.key) : undefined}
@@ -94,16 +94,16 @@ export function Table<T extends Record<string, unknown>>({
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={columns.length} className={`${cellPadding} text-center text-zinc-500`}>
+              <td colSpan={columns.length} className={`${cellPadding} text-center text-dark-muted`}>
                 <div className="flex items-center justify-center gap-2">
-                  <div className="h-4 w-4 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" />
+                  <div className="h-4 w-4 border-2 border-cyan-signal/30 border-t-cyan-signal rounded-full animate-spin" />
                   Loading...
                 </div>
               </td>
             </tr>
           ) : sortedData.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className={`${cellPadding} text-center text-zinc-600`}>
+              <td colSpan={columns.length} className={`${cellPadding} text-center text-dark-muted`}>
                 {emptyMessage}
               </td>
             </tr>
@@ -112,9 +112,9 @@ export function Table<T extends Record<string, unknown>>({
               <tr
                 key={keyExtractor(row)}
                 className={`
-                  border-b border-zinc-800/30
-                  ${idx % 2 === 0 ? 'bg-transparent' : 'bg-zinc-900/20'}
-                  ${onRowClick ? 'cursor-pointer hover:bg-zinc-800/40 transition-colors' : ''}
+                  border-b border-dark-panel-raised/30
+                  ${idx % 2 === 0 ? 'bg-transparent' : 'bg-dark-panel/20'}
+                  ${onRowClick ? 'cursor-pointer hover:bg-dark-panel-raised/40 transition-colors' : ''}
                 `}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
@@ -122,8 +122,8 @@ export function Table<T extends Record<string, unknown>>({
                   <td
                     key={col.key}
                     className={`
-                      ${cellPadding} text-zinc-300
-                      ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}
+                      ${cellPadding} text-dark-text-muted
+                      ${col.align === 'center' ? 'text-center' : col.align === 'end' ? 'text-end' : ''}
                     `}
                   >
                     {col.render ? col.render(row, idx) : String(row[col.key] ?? '')}

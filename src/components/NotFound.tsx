@@ -1,18 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ErrorState } from './design-system';
 
 const NotFound: React.FC = () => {
+  const navigate = useNavigate();
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#08080a] text-zinc-100 font-sans">
-      <div className="text-center">
-        <h1 className="text-6xl font-bold text-indigo-400 mb-4">404</h1>
-        <p className="text-xl mb-6">Page not found</p>
-        <a
-          href="/"
-          className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors"
-        >
-          Go Home
-        </a>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-surface-container-lowest p-6">
+      <ErrorState
+        variant="404"
+        message="The route you opened does not exist in the workspace."
+        action={<button onClick={() => navigate('/workspace/dashboard')} className="mt-2 inline-flex items-center gap-2 rounded-lg bg-on-surface text-surface px-4 py-2 text-sm font-medium hover:bg-inverse-surface transition-colors">Go to Dashboard</button>}
+      />
     </div>
   );
 };

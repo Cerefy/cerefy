@@ -98,31 +98,31 @@ export const AIStudioWorkflowView: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6 font-sans text-zinc-300 selection:bg-indigo-500/30">
+    <div className="space-y-6 font-sans text-dark-text-muted selection:bg-indigo-signal/30">
       {/* Top Bar with Mode Switcher & Navigation */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 shadow-sm backdrop-blur-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-dark-panel/50 border border-dark-panel-raised/80 rounded-2xl p-4 shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
+          <div className="p-2 bg-indigo-signal/10 text-indigo-signal-strong rounded-xl border border-indigo-signal/20">
             <Bot className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white tracking-tight font-sans">
+            <h2 className="text-lg font-bold text-dark-text-bright tracking-tight font-sans">
               Agent Studio &amp; Workflow Automations
             </h2>
-            <p className="text-xs text-zinc-500 font-sans">
+            <p className="text-xs text-dark-muted font-sans">
               Configure autonomous agent personas, inference power, and multi-node execution graphs.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex bg-zinc-950 p-1 rounded-xl font-mono text-xs border border-zinc-800">
+          <div className="flex bg-dark-panel-deep p-1 rounded-xl font-mono text-xs border border-dark-panel-raised">
             <button
               onClick={() => setViewMode('AGENT_STUDIO')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-sans ${
                 viewMode === 'AGENT_STUDIO'
-                  ? 'bg-zinc-800 font-bold text-white shadow-sm'
-                  : 'text-zinc-500 hover:text-zinc-300'
+                  ? 'bg-dark-panel-raised font-bold text-dark-text-bright shadow-sm'
+                  : 'text-dark-muted hover:text-dark-text-muted'
               }`}
             >
               Agent Studio
@@ -131,8 +131,8 @@ export const AIStudioWorkflowView: React.FC = () => {
               onClick={() => setViewMode('WORKFLOW_BUILDER')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-sans ${
                 viewMode === 'WORKFLOW_BUILDER'
-                  ? 'bg-zinc-800 font-bold text-white shadow-sm'
-                  : 'text-zinc-500 hover:text-zinc-300'
+                  ? 'bg-dark-panel-raised font-bold text-dark-text-bright shadow-sm'
+                  : 'text-dark-muted hover:text-dark-text-muted'
               }`}
             >
               Workflow Automations
@@ -141,9 +141,9 @@ export const AIStudioWorkflowView: React.FC = () => {
 
           <button
             onClick={() => alert(`Agent ${agentName} deployed to active production environment!`)}
-            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold rounded-xl transition-all shadow-sm flex items-center gap-2 cursor-pointer border border-zinc-700"
+            className="px-4 py-2 bg-dark-panel-raised hover:bg-dark-panel-soft text-dark-text-bright text-xs font-semibold rounded-xl transition-all shadow-sm flex items-center gap-2 cursor-pointer border border-dark-panel-soft"
           >
-            <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
+            <Sparkles className="h-3.5 w-3.5 text-cyan-signal-strong" />
             <span>Deploy Agent</span>
           </button>
         </div>
@@ -153,14 +153,14 @@ export const AIStudioWorkflowView: React.FC = () => {
         /* 3-Column Agent Studio Layout (Image 4) */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Column 1: Agents List (3 cols) */}
-          <div className="lg:col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 shadow-sm space-y-4 backdrop-blur-sm">
+          <div className="lg:col-span-3 bg-dark-panel/50 border border-dark-panel-raised/80 rounded-2xl p-4 shadow-sm space-y-4 backdrop-blur-sm">
             <div className="flex justify-between items-center">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 font-mono">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-dark-muted font-mono">
                 Agents
               </h3>
               <button
                 onClick={() => alert('New agent draft created.')}
-                className="p-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-colors cursor-pointer"
+                className="p-1 bg-dark-panel-raised hover:bg-dark-panel-soft text-dark-text-muted rounded-lg transition-colors cursor-pointer"
                 title="Create New Agent"
               >
                 <Plus className="h-4 w-4" />
@@ -168,13 +168,13 @@ export const AIStudioWorkflowView: React.FC = () => {
             </div>
 
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+              <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-dark-muted" />
               <input
                 type="text"
                 value={agentSearch}
                 onChange={(e) => setAgentSearch(e.target.value)}
                 placeholder="Search agents..."
-                className="w-full pl-9 pr-3 py-1.5 bg-zinc-950 border border-zinc-800 rounded-xl text-xs outline-none focus:border-indigo-500 text-zinc-200 font-sans"
+                className="w-full ps-9 pe-3 py-1.5 bg-dark-panel-deep border border-dark-panel-raised rounded-xl text-xs outline-none focus:border-indigo-signal text-dark-text font-sans"
               />
             </div>
 
@@ -188,17 +188,17 @@ export const AIStudioWorkflowView: React.FC = () => {
                       setSelectedAgentId(ag.id);
                       setAgentName(ag.name);
                     }}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    className={`p-3 rounded-xl border text-start transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-indigo-500/10 border-indigo-500/50 ring-1 ring-indigo-500/20'
-                        : 'bg-transparent border-transparent hover:bg-zinc-800/50 hover:border-zinc-800'
+                        ? 'bg-indigo-signal/10 border-indigo-signal/50 ring-1 ring-indigo-signal/20'
+                        : 'bg-transparent border-transparent hover:bg-dark-panel-raised/50 hover:border-dark-panel-raised'
                     }`}
                   >
                     <div className="flex justify-between items-center">
-                      <span className={`font-bold text-xs font-sans ${isSelected ? 'text-indigo-400' : 'text-zinc-200'}`}>{ag.name}</span>
-                      <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                      <span className={`font-bold text-xs font-sans ${isSelected ? 'text-indigo-signal-strong' : 'text-dark-text'}`}>{ag.name}</span>
+                      <span className="h-2 w-2 rounded-full bg-emerald-signal shadow-glow-emerald-xs" />
                     </div>
-                    <div className="text-[10px] text-zinc-500 font-sans mt-0.5">{ag.role}</div>
+                    <div className="text-[10px] text-dark-muted font-sans mt-0.5">{ag.role}</div>
                   </div>
                 );
               })}
@@ -206,18 +206,18 @@ export const AIStudioWorkflowView: React.FC = () => {
           </div>
 
           {/* Column 2: Agent Configuration / Persona Editor (5 cols) */}
-          <div className="lg:col-span-5 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 shadow-sm space-y-6 backdrop-blur-sm">
-            <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
+          <div className="lg:col-span-5 bg-dark-panel/50 border border-dark-panel-raised/80 rounded-2xl p-6 shadow-sm space-y-6 backdrop-blur-sm">
+            <div className="flex justify-between items-center border-b border-dark-panel-raised pb-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white font-sans">{agentName}</h3>
-                <span className="px-2 py-0.5 bg-zinc-800 text-zinc-400 font-mono text-[10px] rounded font-bold border border-zinc-700">
+                <h3 className="text-base font-bold text-dark-text-bright font-sans">{agentName}</h3>
+                <span className="px-2 py-0.5 bg-dark-panel-raised text-dark-muted-strong font-mono text-[10px] rounded font-bold border border-dark-panel-soft">
                   DRAFT
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => alert('Agent configuration saved successfully.')}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-indigo-signal-deep hover:bg-indigo-signal text-dark-text-bright text-xs font-semibold rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
                 >
                   <Save className="h-3.5 w-3.5" /> Save
                 </button>
@@ -225,15 +225,15 @@ export const AIStudioWorkflowView: React.FC = () => {
             </div>
 
             {/* Sub-navigation tabs */}
-            <div className="flex border-b border-zinc-800 text-xs font-sans">
+            <div className="flex border-b border-dark-panel-raised text-xs font-sans">
               {(['Identity', 'Knowledge', 'Tools', 'Guardrails'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setSubTab(tab)}
                   className={`px-4 py-2 font-semibold border-b-2 transition-colors cursor-pointer ${
                     subTab === tab
-                      ? 'border-indigo-500 text-indigo-400'
-                      : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                      ? 'border-indigo-signal text-indigo-signal-strong'
+                      : 'border-transparent text-dark-muted hover:text-dark-text-muted'
                   }`}
                 >
                   {tab}
@@ -242,46 +242,46 @@ export const AIStudioWorkflowView: React.FC = () => {
             </div>
 
             {/* Core Persona Form */}
-            <div className="space-y-4 text-xs font-sans text-zinc-300">
-              <h4 className="font-bold text-zinc-500 uppercase tracking-wider font-mono text-[11px]">
+            <div className="space-y-4 text-xs font-sans text-dark-text-muted">
+              <h4 className="font-bold text-dark-muted uppercase tracking-wider font-mono text-[11px]">
                 Core Persona
               </h4>
 
               <div>
-                <label className="block text-zinc-500 mb-1 font-semibold">AGENT NAME</label>
+                <label className="block text-dark-muted mb-1 font-semibold">AGENT NAME</label>
                 <input
                   type="text"
                   value={agentName}
                   onChange={(e) => setAgentName(e.target.value)}
-                  className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white font-semibold outline-none focus:border-indigo-500"
+                  className="w-full p-2.5 bg-dark-panel-deep border border-dark-panel-raised rounded-xl text-dark-text-bright font-semibold outline-none focus:border-indigo-signal"
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-500 mb-1 font-semibold">OPERATIONAL OBJECTIVE</label>
+                <label className="block text-dark-muted mb-1 font-semibold">OPERATIONAL OBJECTIVE</label>
                 <textarea
                   rows={4}
                   value={objective}
                   onChange={(e) => setObjective(e.target.value)}
-                  className="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-300 text-xs leading-relaxed outline-none focus:border-indigo-500 font-sans"
+                  className="w-full p-2.5 bg-dark-panel-deep border border-dark-panel-raised rounded-xl text-dark-text-muted text-xs leading-relaxed outline-none focus:border-indigo-signal font-sans"
                 />
               </div>
 
               {/* Inference Power Card */}
-              <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl space-y-2">
+              <div className="p-4 bg-indigo-signal/10 border border-indigo-signal/20 rounded-xl space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="font-bold text-indigo-300">Inference Power</span>
-                  <span className="font-mono text-xs font-bold text-indigo-400">Score: 98.4</span>
+                  <span className="font-bold text-indigo-signal-soft">Inference Power</span>
+                  <span className="font-mono text-xs font-bold text-indigo-signal-strong">Score: 98.4</span>
                 </div>
-                <p className="text-[11px] text-zinc-400 leading-snug">
+                <p className="text-[11px] text-dark-muted-strong leading-snug">
                   Optimized for high-level decision logic with server-side Gemini 2.5 Pro architecture.
                 </p>
-                <div className="flex items-center gap-2 pt-1 font-mono text-[10px] text-zinc-500">
+                <div className="flex items-center gap-2 pt-1 font-mono text-[10px] text-dark-muted">
                   <span>MODEL:</span>
                   <select
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
-                    className="bg-zinc-900 border border-zinc-800 rounded px-2 py-0.5 text-zinc-200 font-semibold outline-none focus:border-indigo-500"
+                    className="bg-dark-panel border border-dark-panel-raised rounded px-2 py-0.5 text-dark-text font-semibold outline-none focus:border-indigo-signal"
                   >
                     <option value="Cerefy-Elite-X">Cerefy-Elite-X</option>
                     <option value="Gemini-2.5-Pro">Gemini-2.5-Pro</option>
@@ -293,9 +293,9 @@ export const AIStudioWorkflowView: React.FC = () => {
               {/* Controls Grid */}
               <div className="space-y-4 pt-2">
                 <div>
-                  <div className="flex justify-between text-zinc-500 font-semibold mb-1">
+                  <div className="flex justify-between text-dark-muted font-semibold mb-1">
                     <span>TEMPERATURE ({temperature})</span>
-                    <span className="font-mono text-[10px] text-zinc-600">
+                    <span className="font-mono text-[10px] text-dark-border">
                       {temperature < 0.4 ? 'CONSERVATIVE' : 'CREATIVE'}
                     </span>
                   </div>
@@ -306,38 +306,38 @@ export const AIStudioWorkflowView: React.FC = () => {
                     step="0.05"
                     value={temperature}
                     onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                    className="w-full accent-indigo-500 cursor-pointer"
+                    className="w-full accent-indigo-signal cursor-pointer"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-zinc-950 border border-zinc-800 rounded-xl space-y-1">
-                    <div className="text-[10px] font-mono text-zinc-600 font-bold uppercase">
+                  <div className="p-3 bg-dark-panel-deep border border-dark-panel-raised rounded-xl space-y-1">
+                    <div className="text-[10px] font-mono text-dark-border font-bold uppercase">
                       SELF-CORRECTION
                     </div>
-                    <div className="text-xs font-bold text-zinc-200">LEVEL {selfCorrectionLevel}</div>
-                    <div className="text-[9px] text-zinc-500">Frequency of internal passes</div>
+                    <div className="text-xs font-bold text-dark-text">LEVEL {selfCorrectionLevel}</div>
+                    <div className="text-[9px] text-dark-muted">Frequency of internal passes</div>
                   </div>
 
-                  <div className="p-3 bg-zinc-950 border border-zinc-800 rounded-xl space-y-1">
-                    <div className="text-[10px] font-mono text-zinc-600 font-bold uppercase">
+                  <div className="p-3 bg-dark-panel-deep border border-dark-panel-raised rounded-xl space-y-1">
+                    <div className="text-[10px] font-mono text-dark-border font-bold uppercase">
                       PRIVACY TIER
                     </div>
-                    <div className="text-xs font-bold text-indigo-400">{privacyTier}</div>
-                    <div className="text-[9px] text-zinc-500">PII masking enabled</div>
+                    <div className="text-xs font-bold text-indigo-signal-strong">{privacyTier}</div>
+                    <div className="text-[9px] text-dark-muted">PII masking enabled</div>
                   </div>
                 </div>
               </div>
 
               {/* Knowledge Sources Card */}
-              <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-xl flex justify-between items-center">
+              <div className="p-4 bg-dark-panel-deep border border-dark-panel-raised rounded-xl flex justify-between items-center">
                 <div>
-                  <div className="font-bold text-xs text-white">Knowledge Sources</div>
-                  <div className="text-[10px] text-zinc-500">Connect enterprise docs, CRM data, real-time APIs...</div>
+                  <div className="font-bold text-xs text-dark-text-bright">Knowledge Sources</div>
+                  <div className="text-[10px] text-dark-muted">Connect enterprise docs, CRM data, real-time APIs...</div>
                 </div>
                 <button
                   onClick={() => navigate('/workspace/memory')}
-                  className="px-3 py-1.5 bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-200 font-semibold rounded-lg text-xs transition-colors cursor-pointer shrink-0"
+                  className="px-3 py-1.5 bg-dark-panel-raised border border-dark-panel-soft hover:bg-dark-panel-soft text-dark-text font-semibold rounded-lg text-xs transition-colors cursor-pointer shrink-0"
                 >
                   Manage Data
                 </button>
@@ -346,17 +346,17 @@ export const AIStudioWorkflowView: React.FC = () => {
           </div>
 
           {/* Column 3: Live Preview Interactive Chat Simulator (4 cols) */}
-          <div className="lg:col-span-4 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 shadow-sm flex flex-col justify-between h-[640px] backdrop-blur-sm">
+          <div className="lg:col-span-4 bg-dark-panel/50 border border-dark-panel-raised/80 rounded-2xl p-6 shadow-sm flex flex-col justify-between h-[640px] backdrop-blur-sm">
             <div>
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+              <div className="flex items-center justify-between border-b border-dark-panel-raised pb-3 mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                  <h3 className="text-sm font-bold text-white font-sans">LIVE PREVIEW</h3>
+                  <span className="h-2 w-2 rounded-full bg-emerald-signal animate-pulse shadow-glow-emerald-xs" />
+                  <h3 className="text-sm font-bold text-dark-text-bright font-sans">LIVE PREVIEW</h3>
                 </div>
-                <span className="text-[10px] font-mono text-zinc-500">Simulated Sandbox</span>
+                <span className="text-[10px] font-mono text-dark-muted">Simulated Sandbox</span>
               </div>
 
-              <div className="space-y-3 max-h-[460px] overflow-y-auto pr-1 custom-scrollbar">
+              <div className="space-y-3 max-h-[460px] overflow-y-auto pe-1 custom-scrollbar">
                 {chatMessages.map((msg, idx) => (
                   <div
                     key={idx}
@@ -367,35 +367,35 @@ export const AIStudioWorkflowView: React.FC = () => {
                     <div
                       className={`max-w-[88%] p-3 rounded-2xl text-xs leading-relaxed font-sans shadow-sm ${
                         msg.sender === 'user'
-                          ? 'bg-indigo-600 text-white rounded-br-xs shadow-[0_0_15px_rgba(79,70,229,0.2)]'
-                          : 'bg-zinc-800 text-zinc-200 rounded-bl-xs border border-zinc-700/80'
+                          ? 'bg-indigo-signal-deep text-dark-text-bright rounded-br-xs shadow-glow-indigo'
+                          : 'bg-dark-panel-raised text-dark-text rounded-bl-xs border border-dark-panel-soft/80'
                       }`}
                     >
                       {msg.text}
                     </div>
-                    <span className="text-[9px] text-zinc-500 font-mono px-1">{msg.time}</span>
+                    <span className="text-[9px] text-dark-muted font-mono px-1">{msg.time}</span>
                   </div>
                 ))}
 
                 {isTyping && (
-                  <div className="flex items-center gap-2 p-3 bg-zinc-800 rounded-2xl text-zinc-400 text-xs w-28">
+                  <div className="flex items-center gap-2 p-3 bg-dark-panel-raised rounded-2xl text-dark-muted-strong text-xs w-28">
                     <span className="animate-pulse">Reasoning...</span>
                   </div>
                 )}
               </div>
             </div>
 
-            <form onSubmit={handleSendTestMessage} className="pt-3 border-t border-zinc-800 flex gap-2">
+            <form onSubmit={handleSendTestMessage} className="pt-3 border-t border-dark-panel-raised flex gap-2">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Test the agent..."
-                className="flex-1 px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-xs text-white outline-none focus:border-indigo-500 font-sans"
+                className="flex-1 px-3 py-2 bg-dark-panel-deep border border-dark-panel-raised rounded-xl text-xs text-dark-text-bright outline-none focus:border-indigo-signal font-sans"
               />
               <button
                 type="submit"
-                className="p-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-colors cursor-pointer shadow-[0_0_15px_rgba(79,70,229,0.3)]"
+                className="p-2.5 bg-indigo-signal-deep hover:bg-indigo-signal text-dark-text-bright rounded-xl transition-colors cursor-pointer shadow-glow-indigo-sm"
               >
                 <Send className="h-4 w-4" />
               </button>
@@ -404,13 +404,13 @@ export const AIStudioWorkflowView: React.FC = () => {
         </div>
       ) : (
         /* Workflow Automations Visual Node Mode (Image 7) */
-        <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 shadow-sm space-y-6 backdrop-blur-sm">
-          <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
+        <div className="bg-dark-panel/50 border border-dark-panel-raised/80 rounded-2xl p-6 shadow-sm space-y-6 backdrop-blur-sm">
+          <div className="flex justify-between items-center border-b border-dark-panel-raised pb-4">
             <div>
-              <h3 className="text-base font-bold text-white font-sans">
+              <h3 className="text-base font-bold text-dark-text-bright font-sans">
                 Visual Workflow Automations Pipeline
               </h3>
-              <p className="text-xs text-zinc-500 font-sans">
+              <p className="text-xs text-dark-muted font-sans">
                 Multi-step node graphs connecting triggers, Gemini reasoning, and webhook execution.
               </p>
             </div>
@@ -419,7 +419,7 @@ export const AIStudioWorkflowView: React.FC = () => {
                 setIsExecuting(true);
                 setTimeout(() => setIsExecuting(false), 1200);
               }}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-colors flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2 bg-emerald-signal-deep hover:bg-emerald-signal text-dark-text-bright font-semibold text-xs rounded-xl shadow-glow-emerald transition-colors flex items-center gap-2 cursor-pointer"
             >
               <Play className="h-4 w-4 fill-white" />
               <span>Run Pipeline Simulation</span>
@@ -430,25 +430,25 @@ export const AIStudioWorkflowView: React.FC = () => {
             {workflows.map((wf) => (
               <div
                 key={wf.id}
-                className="p-5 bg-zinc-950 border border-zinc-800 rounded-2xl space-y-4 hover:border-zinc-700 transition-all shadow-sm"
+                className="p-5 bg-dark-panel-deep border border-dark-panel-raised rounded-2xl space-y-4 hover:border-dark-panel-soft transition-all shadow-sm"
               >
                 <div className="flex justify-between items-center">
-                  <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[9px] font-mono font-bold rounded uppercase border border-indigo-500/20">
+                  <span className="px-2 py-0.5 bg-indigo-signal/10 text-indigo-signal-strong text-[9px] font-mono font-bold rounded uppercase border border-indigo-signal/20">
                     {wf.triggerType}
                   </span>
-                  <span className="text-xs font-mono text-zinc-500">{wf.nodes.length} Nodes</span>
+                  <span className="text-xs font-mono text-dark-muted">{wf.nodes.length} Nodes</span>
                 </div>
-                <h4 className="text-sm font-bold text-white font-sans">{wf.name}</h4>
-                <div className="space-y-2 pt-2 border-t border-zinc-800">
+                <h4 className="text-sm font-bold text-dark-text-bright font-sans">{wf.name}</h4>
+                <div className="space-y-2 pt-2 border-t border-dark-panel-raised">
                   {wf.nodes.map((n, i) => (
                     <div
                       key={n.id}
-                      className="p-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-sans flex items-center justify-between hover:bg-zinc-800 transition-colors"
+                      className="p-2.5 bg-dark-panel border border-dark-panel-raised rounded-xl text-xs font-sans flex items-center justify-between hover:bg-dark-panel-raised transition-colors"
                     >
-                      <span className="font-semibold text-zinc-200">
+                      <span className="font-semibold text-dark-text">
                         {i + 1}. {n.label}
                       </span>
-                      <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
+                      <span className="text-[10px] font-mono text-indigo-signal-strong bg-indigo-signal/10 px-1.5 py-0.5 rounded border border-indigo-signal/20">
                         {n.type}
                       </span>
                     </div>

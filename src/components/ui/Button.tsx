@@ -20,15 +20,15 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white shadow-lg shadow-cyan-500/20 border border-cyan-500/30',
+    'bg-gradient-to-r from-cyan-signal-deep to-cyan-signal hover:from-cyan-signal hover:to-cyan-signal-strong text-dark-text-bright shadow-lg shadow-cyan-signal/20 border border-cyan-signal/30',
   secondary:
-    'bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 border border-zinc-700/60 hover:border-zinc-600',
+    'bg-dark-panel-raised/80 hover:bg-dark-panel-soft/80 text-dark-text-muted border border-dark-border/60 hover:border-dark-border',
   ghost:
-    'bg-transparent hover:bg-zinc-800/60 text-zinc-400 hover:text-zinc-200 border border-transparent',
+    'bg-transparent hover:bg-dark-panel-soft/60 text-dark-muted hover:text-dark-text-muted border border-transparent',
   danger:
-    'bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-500/30',
+    'bg-rose-signal/10 hover:bg-rose-signal/20 text-rose-signal-strong hover:text-rose-signal-soft border border-rose-signal/20 hover:border-rose-signal/30',
   'cyan-outline':
-    'bg-transparent hover:bg-cyan-500/10 text-cyan-400 hover:text-cyan-300 border border-cyan-500/30 hover:border-cyan-500/50',
+    'bg-transparent hover:bg-cyan-signal/10 text-cyan-signal-strong hover:text-cyan-signal-soft border border-cyan-signal/30 hover:border-cyan-signal/50',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

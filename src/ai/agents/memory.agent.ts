@@ -17,18 +17,27 @@ export async function memoryAgent(state: CerefyGraphState) {
     graphTriples: graphMemory.triples,
   };
 
+  // Real retrieved sources (content + ids) that flow into the guardrail's
+  // citation verification — audit BLOCKER-4: the answer path previously fed
+  // `sources: []` so hallucination checks were unreachable.
+  const sources = [
+    ...vectorMemory.chunkSnippets.map((content, i) => ({ id: `chunk_${i}`, content })),
+    ...graphMemory.triples.map((t, i) => ({ id: `triple_${i}`, content: String(t) })),
+  ];
+
   const nextState = {
     ...state,
     nextAgent: 'discovery',
     output: {
       ...state.output,
       memory: memoryContext,
+      _sources: sources,
     },
     history: [...state.history, { agent: 'memory', output: memoryContext }],
   };
 
   if (state.executionId) {
-    await appendAgentExecutionEvent(state.executionId, {
+    await appendAgentExecutionEvent(state.tenantId, state.executionId, {
       event: 'agent.tool.called',
       payload: {
         agent: 'memory',
@@ -37,7 +46,7 @@ export async function memoryAgent(state: CerefyGraphState) {
       timestamp: new Date().toISOString(),
     });
 
-    await updateAgentExecutionRecord(state.executionId, {
+    await updateAgentExecutionRecord(state.tenantId, state.executionId, {
       currentAgent: 'memory',
       output: nextState.output,
     });

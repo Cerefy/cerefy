@@ -60,11 +60,11 @@ const agentIcons: Record<string, React.FC<{ className?: string }>> = {
 };
 
 const statusColors: Record<string, { bg: string; text: string; border: string; glow: string }> = {
-  idle: { bg: 'bg-zinc-800/60', text: 'text-zinc-400', border: 'border-zinc-700/50', glow: '' },
-  running: { bg: 'bg-cyan-500/10', text: 'text-cyan-400', border: 'border-cyan-500/30', glow: 'shadow-[0_0_20px_rgba(0,216,246,0.15)]' },
-  completed: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/30', glow: '' },
-  error: { bg: 'bg-red-500/10', text: 'text-red-400', border: 'border-red-500/30', glow: '' },
-  waiting: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/30', glow: '' },
+  idle: { bg: 'bg-dark-panel-raised/60', text: 'text-dark-muted-strong', border: 'border-dark-panel-soft/50', glow: '' },
+  running: { bg: 'bg-cyan-signal/10', text: 'text-cyan-signal-strong', border: 'border-cyan-signal/30', glow: 'shadow-glow-cyan' },
+  completed: { bg: 'bg-emerald-signal/10', text: 'text-emerald-signal-strong', border: 'border-emerald-signal/30', glow: '' },
+  error: { bg: 'bg-rose-signal/10', text: 'text-rose-signal-strong', border: 'border-rose-signal/30', glow: '' },
+  waiting: { bg: 'bg-amber-signal/10', text: 'text-amber-signal-strong', border: 'border-amber-signal/30', glow: '' },
 };
 
 const initialNodes: AgentNode[] = [
@@ -107,11 +107,11 @@ export const AICanvasView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-cyan-400" />
+          <h1 className="text-xl font-bold text-dark-text-bright flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-cyan-signal-strong" />
             AI Agent Canvas
           </h1>
-          <p className="text-zinc-500 text-xs font-mono mt-1">
+          <p className="text-dark-muted text-xs font-mono mt-1">
             MULTI-AGENT ORCHESTRATION · REAL-TIME EXECUTION GRAPH
           </p>
         </div>
@@ -124,7 +124,7 @@ export const AICanvasView: React.FC = () => {
           >
             −
           </Button>
-          <span className="text-zinc-500 text-xs font-mono w-12 text-center">{Math.round(zoom * 100)}%</span>
+          <span className="text-dark-muted text-xs font-mono w-12 text-center">{Math.round(zoom * 100)}%</span>
           <Button
             variant="ghost"
             size="sm"
@@ -133,7 +133,7 @@ export const AICanvasView: React.FC = () => {
           >
             +
           </Button>
-          <div className="w-px h-6 bg-zinc-800 mx-1" />
+          <div className="w-px h-6 bg-dark-panel-raised mx-1" />
           <Button
             variant={isRunning ? 'secondary' : 'primary'}
             size="sm"
@@ -154,13 +154,13 @@ export const AICanvasView: React.FC = () => {
       {/* Stats Bar */}
       <div className="grid grid-cols-4 gap-3">
         {[
-          { label: 'ACTIVE AGENTS', value: `${activeAgents}/${nodes.length}`, color: 'text-cyan-400' },
-          { label: 'COMPLETED', value: `${completedAgents}/${nodes.length}`, color: 'text-emerald-400' },
-          { label: 'TOTAL PROGRESS', value: `${totalProgress}%`, color: 'text-white' },
-          { label: 'AVG CONFIDENCE', value: `${Math.round((nodes.filter((n) => n.confidence).reduce((s, n) => s + (n.confidence || 0), 0) / Math.max(nodes.filter((n) => n.confidence).length, 1)) * 100)}%`, color: 'text-indigo-400' },
+          { label: 'ACTIVE AGENTS', value: `${activeAgents}/${nodes.length}`, color: 'text-cyan-signal-strong' },
+          { label: 'COMPLETED', value: `${completedAgents}/${nodes.length}`, color: 'text-emerald-signal-strong' },
+          { label: 'TOTAL PROGRESS', value: `${totalProgress}%`, color: 'text-dark-text-bright' },
+          { label: 'AVG CONFIDENCE', value: `${Math.round((nodes.filter((n) => n.confidence).reduce((s, n) => s + (n.confidence || 0), 0) / Math.max(nodes.filter((n) => n.confidence).length, 1)) * 100)}%`, color: 'text-indigo-signal-strong' },
         ].map((stat) => (
-          <div key={stat.label} className="bg-zinc-900/50 border border-zinc-800/60 rounded-xl px-4 py-3">
-            <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">{stat.label}</p>
+          <div key={stat.label} className="bg-dark-panel/50 border border-dark-panel-raised/60 rounded-xl px-4 py-3">
+            <p className="text-[10px] font-mono text-dark-muted uppercase tracking-widest">{stat.label}</p>
             <p className={`text-lg font-bold font-mono ${stat.color}`}>{stat.value}</p>
           </div>
         ))}
@@ -169,11 +169,11 @@ export const AICanvasView: React.FC = () => {
       {/* Canvas */}
       <div className="flex gap-4">
         {/* Graph Area */}
-        <div className="flex-1 bg-zinc-900/30 border border-zinc-800/60 rounded-2xl p-6 relative overflow-hidden min-h-[500px] bg-grid-pattern">
+        <div className="flex-1 bg-dark-panel/30 border border-dark-panel-raised/60 rounded-2xl p-6 relative overflow-hidden min-h-[500px] bg-grid-pattern">
           {/* Grid Background */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] rounded-full bg-cyan-500/3 blur-[100px]" />
-            <div className="absolute bottom-1/4 right-1/3 w-[200px] h-[200px] rounded-full bg-indigo-500/3 blur-[80px]" />
+            <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] rounded-full bg-cyan-signal/3 blur-[100px]" />
+            <div className="absolute bottom-1/4 right-1/3 w-[200px] h-[200px] rounded-full bg-indigo-signal/3 blur-[80px]" />
           </div>
 
           <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top left', transition: 'transform 0.2s ease' }}>
@@ -225,8 +225,8 @@ export const AICanvasView: React.FC = () => {
                     absolute w-[200px] cursor-pointer
                     ${colors.bg} border ${colors.border} rounded-xl p-4
                     backdrop-blur-sm transition-all duration-200
-                    hover:border-cyan-500/40 ${colors.glow}
-                    ${selectedNode?.id === node.id ? 'ring-1 ring-cyan-500/40' : ''}
+                    hover:border-cyan-signal/40 ${colors.glow}
+                    ${selectedNode?.id === node.id ? 'ring-1 ring-cyan-signal/40' : ''}
                   `}
                   style={{ left: node.x, top: node.y, zIndex: 1 }}
                   onClick={() => setSelectedNode(node)}
@@ -234,17 +234,17 @@ export const AICanvasView: React.FC = () => {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Icon className={`h-4 w-4 ${colors.text}`} />
-                      <span className="text-xs font-medium text-white truncate">{node.name}</span>
+                      <span className="text-xs font-medium text-dark-text-bright truncate">{node.name}</span>
                     </div>
-                    {node.status === 'running' && <Loader2 className="h-3 w-3 text-cyan-400 animate-spin" />}
-                    {node.status === 'completed' && <CheckCircle2 className="h-3 w-3 text-emerald-400" />}
-                    {node.status === 'error' && <AlertTriangle className="h-3 w-3 text-red-400" />}
+                    {node.status === 'running' && <Loader2 className="h-3 w-3 text-cyan-signal-strong animate-spin" />}
+                    {node.status === 'completed' && <CheckCircle2 className="h-3 w-3 text-emerald-signal-strong" />}
+                    {node.status === 'error' && <AlertTriangle className="h-3 w-3 text-rose-signal-strong" />}
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="h-1 bg-zinc-800 rounded-full overflow-hidden mb-2">
+                  <div className="h-1 bg-dark-panel-raised rounded-full overflow-hidden mb-2">
                     <motion.div
-                      className={`h-full rounded-full ${node.status === 'completed' ? 'bg-emerald-500' : node.status === 'running' ? 'bg-cyan-500' : 'bg-zinc-700'}`}
+                      className={`h-full rounded-full ${node.status === 'completed' ? 'bg-emerald-signal' : node.status === 'running' ? 'bg-cyan-signal' : 'bg-dark-panel-soft'}`}
                       initial={{ width: 0 }}
                       animate={{ width: `${node.progress}%` }}
                       transition={{ duration: 0.5 }}
@@ -252,9 +252,9 @@ export const AICanvasView: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase">{node.status}</span>
+                    <span className="text-[10px] font-mono text-dark-muted uppercase">{node.status}</span>
                     {node.confidence && (
-                      <span className="text-[10px] font-mono text-indigo-400">{Math.round(node.confidence * 100)}% conf</span>
+                      <span className="text-[10px] font-mono text-indigo-signal-strong">{Math.round(node.confidence * 100)}% conf</span>
                     )}
                   </div>
                 </motion.div>
@@ -273,10 +273,10 @@ export const AICanvasView: React.FC = () => {
               className="w-80 shrink-0"
             >
               <Card variant="default" padding="none">
-                <div className="p-4 border-b border-zinc-800/60">
+                <div className="p-4 border-b border-dark-panel-raised/60">
                   <div className="flex items-center gap-2 mb-1">
-                    {React.createElement(agentIcons[selectedNode.type] || Bot, { className: 'h-5 w-5 text-cyan-400' })}
-                    <h3 className="text-sm font-semibold text-white">{selectedNode.name}</h3>
+                    {React.createElement(agentIcons[selectedNode.type] || Bot, { className: 'h-5 w-5 text-cyan-signal-strong' })}
+                    <h3 className="text-sm font-semibold text-dark-text-bright">{selectedNode.name}</h3>
                   </div>
                   <Badge variant={selectedNode.status === 'completed' ? 'success' : selectedNode.status === 'running' ? 'cyan' : selectedNode.status === 'error' ? 'error' : 'neutral'} dot pulse={selectedNode.status === 'running'}>
                     {selectedNode.status.toUpperCase()}
@@ -286,27 +286,27 @@ export const AICanvasView: React.FC = () => {
                 <div className="p-4 space-y-3">
                   {selectedNode.confidence !== undefined && (
                     <div>
-                      <p className="text-[10px] font-mono text-zinc-500 uppercase mb-1">Confidence Score</p>
+                      <p className="text-[10px] font-mono text-dark-muted uppercase mb-1">Confidence Score</p>
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded-full" style={{ width: `${selectedNode.confidence * 100}%` }} />
+                        <div className="flex-1 h-2 bg-dark-panel-raised rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-cyan-signal-deep to-cyan-signal-strong rounded-full" style={{ width: `${selectedNode.confidence * 100}%` }} />
                         </div>
-                        <span className="text-xs font-mono text-cyan-400">{Math.round(selectedNode.confidence * 100)}%</span>
+                        <span className="text-xs font-mono text-cyan-signal-strong">{Math.round(selectedNode.confidence * 100)}%</span>
                       </div>
                     </div>
                   )}
 
                   {selectedNode.duration && (
                     <div>
-                      <p className="text-[10px] font-mono text-zinc-500 uppercase mb-1">Execution Time</p>
-                      <p className="text-sm font-mono text-white">{selectedNode.duration}</p>
+                      <p className="text-[10px] font-mono text-dark-muted uppercase mb-1">Execution Time</p>
+                      <p className="text-sm font-mono text-dark-text-bright">{selectedNode.duration}</p>
                     </div>
                   )}
 
                   {selectedNode.output && (
                     <div>
-                      <p className="text-[10px] font-mono text-zinc-500 uppercase mb-1">Output</p>
-                      <p className="text-xs text-zinc-300 bg-zinc-800/50 rounded-lg p-3 font-mono leading-relaxed">{selectedNode.output}</p>
+                      <p className="text-[10px] font-mono text-dark-muted uppercase mb-1">Output</p>
+                      <p className="text-xs text-dark-text-muted bg-dark-panel-raised/50 rounded-lg p-3 font-mono leading-relaxed">{selectedNode.output}</p>
                     </div>
                   )}
 

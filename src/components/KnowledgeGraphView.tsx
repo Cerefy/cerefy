@@ -142,18 +142,18 @@ export const KnowledgeGraphView: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-4 text-slate-100 shadow-xl select-none">
+    <div className="bg-slate-deep border border-slate-panel-raised rounded-xl p-5 space-y-4 text-slate-text-bright shadow-xl select-none">
       {/* Top Header Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-panel-raised pb-3">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+          <div className="p-2 rounded-lg bg-indigo-signal/10 text-indigo-signal-strong border border-indigo-signal/20">
             <Network className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-slate-200">
+            <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-slate-text">
               Knowledge Graph Topology
             </h3>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-muted-strong">
               Neo4j Graph Database Entity-Relation Visualizer
             </p>
           </div>
@@ -165,7 +165,7 @@ export const KnowledgeGraphView: React.FC = () => {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="bg-slate-900 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg border border-slate-800 outline-none"
+            className="bg-slate-panel text-slate-text-muted text-xs px-2.5 py-1.5 rounded-lg border border-slate-panel-raised outline-none"
           >
             <option value="ALL">All Types ({tenantNodes.length})</option>
             <option value="Tenant">Tenant</option>
@@ -177,20 +177,20 @@ export const KnowledgeGraphView: React.FC = () => {
           </select>
 
           {/* Zoom Buttons */}
-          <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
+          <div className="flex items-center bg-slate-panel border border-slate-panel-raised rounded-lg p-0.5">
             <button
               onClick={() => setZoom((z) => Math.min(1.5, z + 0.1))}
-              className="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-white"
+              className="p-1.5 hover:bg-slate-panel-raised rounded text-slate-muted-strong hover:text-dark-text-bright"
               title="Zoom In"
             >
               <ZoomIn className="h-3.5 w-3.5" />
             </button>
-            <span className="text-[10px] font-mono px-1.5 text-slate-400">
+            <span className="text-[10px] font-mono px-1.5 text-slate-muted-strong">
               {Math.round(zoom * 100)}%
             </span>
             <button
               onClick={() => setZoom((z) => Math.max(0.6, z - 0.1))}
-              className="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-white"
+              className="p-1.5 hover:bg-slate-panel-raised rounded text-slate-muted-strong hover:text-dark-text-bright"
               title="Zoom Out"
             >
               <ZoomOut className="h-3.5 w-3.5" />
@@ -199,7 +199,7 @@ export const KnowledgeGraphView: React.FC = () => {
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium shadow-sm transition-colors"
+            className="flex items-center gap-1.5 bg-indigo-signal-deep hover:bg-indigo-signal text-dark-text-bright text-xs px-3 py-1.5 rounded-lg font-medium shadow-sm transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Add Entity</span>
@@ -209,49 +209,49 @@ export const KnowledgeGraphView: React.FC = () => {
 
       {/* Main Graph Stage + Metadata Side Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        <div className="lg:col-span-3 bg-slate-900/80 border border-slate-800 rounded-xl p-2 relative overflow-hidden flex items-center justify-center min-h-[320px]">
+        <div className="lg:col-span-3 bg-slate-panel/80 border border-slate-panel-raised rounded-xl p-2 relative overflow-hidden flex items-center justify-center min-h-[320px]">
           <canvas
             ref={canvasRef}
             width={620}
             height={320}
             onClick={handleCanvasClick}
-            className="w-full h-full cursor-pointer rounded bg-slate-950"
+            className="w-full h-full cursor-pointer rounded bg-slate-deep"
           />
 
-          <div className="absolute bottom-3 left-3 bg-slate-950/80 border border-slate-800 px-2.5 py-1 rounded text-[10px] font-mono text-slate-400 backdrop-blur-sm">
+          <div className="absolute bottom-3 left-3 bg-slate-deep/80 border border-slate-panel-raised px-2.5 py-1 rounded text-[10px] font-mono text-slate-muted-strong backdrop-blur-sm">
             Click node to view details | {tenantNodes.length} Entities • {tenantEdges.length} Relations
           </div>
         </div>
 
         {/* Selected Entity Details Panel */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-            <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-              <Info className="h-3.5 w-3.5 text-indigo-400" /> Entity Metadata
+        <div className="bg-slate-panel/90 border border-slate-panel-raised rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-panel-raised pb-2">
+            <span className="text-xs font-mono font-bold text-slate-text-muted uppercase tracking-wider flex items-center gap-1.5">
+              <Info className="h-3.5 w-3.5 text-indigo-signal-strong" /> Entity Metadata
             </span>
           </div>
 
           {selectedNode ? (
             <div className="space-y-3 text-xs">
-              <div className="p-2.5 bg-slate-950 rounded border border-slate-800 space-y-1">
-                <div className="text-slate-400 text-[10px] font-mono">Entity Label</div>
-                <div className="font-semibold text-slate-100 font-mono">{selectedNode.label}</div>
+              <div className="p-2.5 bg-slate-deep rounded border border-slate-panel-raised space-y-1">
+                <div className="text-slate-muted-strong text-[10px] font-mono">Entity Label</div>
+                <div className="font-semibold text-slate-text-bright font-mono">{selectedNode.label}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                <div className="p-2 bg-slate-950 rounded border border-slate-800">
-                  <div className="text-slate-500 text-[9px]">TYPE</div>
-                  <div className="text-indigo-400 font-bold">{selectedNode.type}</div>
+                <div className="p-2 bg-slate-deep rounded border border-slate-panel-raised">
+                  <div className="text-slate-muted text-[9px]">TYPE</div>
+                  <div className="text-indigo-signal-strong font-bold">{selectedNode.type}</div>
                 </div>
-                <div className="p-2 bg-slate-950 rounded border border-slate-800">
-                  <div className="text-slate-500 text-[9px]">ID</div>
-                  <div className="text-slate-300 truncate">{selectedNode.id}</div>
+                <div className="p-2 bg-slate-deep rounded border border-slate-panel-raised">
+                  <div className="text-slate-muted text-[9px]">ID</div>
+                  <div className="text-slate-text-muted truncate">{selectedNode.id}</div>
                 </div>
               </div>
 
               <div className="space-y-1">
-                <div className="text-[10px] font-mono text-slate-400">Connected Relations</div>
-                <div className="space-y-1 max-h-28 overflow-y-auto pr-1">
+                <div className="text-[10px] font-mono text-slate-muted-strong">Connected Relations</div>
+                <div className="space-y-1 max-h-28 overflow-y-auto pe-1">
                   {tenantEdges
                     .filter((e) => e.source === selectedNode.id || e.target === selectedNode.id)
                     .map((edge) => {
@@ -260,10 +260,10 @@ export const KnowledgeGraphView: React.FC = () => {
                       return (
                         <div
                           key={edge.id}
-                          className="p-1.5 bg-slate-950 rounded border border-slate-800 text-[10px] font-mono flex items-center justify-between text-slate-300"
+                          className="p-1.5 bg-slate-deep rounded border border-slate-panel-raised text-[10px] font-mono flex items-center justify-between text-slate-text-muted"
                         >
-                          <span className="text-indigo-400 font-semibold">{edge.relation}</span>
-                          <span className="text-slate-400 truncate">{other?.label || otherId}</span>
+                          <span className="text-indigo-signal-strong font-semibold">{edge.relation}</span>
+                          <span className="text-slate-muted-strong truncate">{other?.label || otherId}</span>
                         </div>
                       );
                     })}
@@ -275,15 +275,15 @@ export const KnowledgeGraphView: React.FC = () => {
                   deleteGraphNode(selectedNode.id);
                   setSelectedNode(null);
                 }}
-                className="w-full flex items-center justify-center gap-1.5 p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg font-mono text-xs transition-colors"
+                className="w-full flex items-center justify-center gap-1.5 p-2 bg-rose-signal/10 hover:bg-rose-signal/20 text-rose-signal-strong border border-rose-signal/30 rounded-lg font-mono text-xs transition-colors"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 <span>Delete Entity</span>
               </button>
             </div>
           ) : (
-            <div className="p-6 text-center text-slate-500 font-mono text-xs space-y-2">
-              <Layers className="h-6 w-6 mx-auto text-slate-700" />
+            <div className="p-6 text-center text-slate-muted font-mono text-xs space-y-2">
+              <Layers className="h-6 w-6 mx-auto text-slate-panel-soft" />
               <p>Select any node on the graph canvas to inspect properties and relationships.</p>
             </div>
           )}
@@ -292,19 +292,19 @@ export const KnowledgeGraphView: React.FC = () => {
 
       {/* Add Entity Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-deep/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <form
             onSubmit={handleAddEntity}
-            className="bg-slate-900 border border-slate-800 rounded-xl p-5 w-full max-w-md space-y-4 shadow-2xl"
+            className="bg-slate-panel border border-slate-panel-raised rounded-xl p-5 w-full max-w-md space-y-4 shadow-2xl"
           >
-            <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-              <h4 className="text-xs font-bold font-mono text-slate-200 uppercase">
+            <div className="flex justify-between items-center border-b border-slate-panel-raised pb-2">
+              <h4 className="text-xs font-bold font-mono text-slate-text uppercase">
                 Create Knowledge Graph Entity
               </h4>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="text-slate-500 hover:text-slate-300 text-xs font-mono"
+                className="text-slate-muted hover:text-slate-text-muted text-xs font-mono"
               >
                 Cancel
               </button>
@@ -312,23 +312,23 @@ export const KnowledgeGraphView: React.FC = () => {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 font-mono mb-1">Entity Label Name</label>
+                <label className="block text-slate-muted-strong font-mono mb-1">Entity Label Name</label>
                 <input
                   type="text"
                   value={newLabel}
                   onChange={(e) => setNewLabel(e.target.value)}
                   placeholder="e.g., FIDO2 MFA Security Policy"
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 font-mono outline-none focus:border-indigo-500"
+                  className="w-full p-2.5 bg-slate-deep border border-slate-panel-raised rounded-lg text-slate-text font-mono outline-none focus:border-indigo-signal"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 font-mono mb-1">Entity Type</label>
+                <label className="block text-slate-muted-strong font-mono mb-1">Entity Type</label>
                 <select
                   value={newType}
                   onChange={(e) => setNewType(e.target.value as KGNode['type'])}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 font-mono outline-none"
+                  className="w-full p-2.5 bg-slate-deep border border-slate-panel-raised rounded-lg text-slate-text font-mono outline-none"
                 >
                   <option value="Policy">Policy</option>
                   <option value="Document">Document</option>
@@ -340,11 +340,11 @@ export const KnowledgeGraphView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-400 font-mono mb-1">Connect To Existing Node</label>
+                <label className="block text-slate-muted-strong font-mono mb-1">Connect To Existing Node</label>
                 <select
                   value={connectToNodeId}
                   onChange={(e) => setConnectToNodeId(e.target.value)}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 font-mono outline-none"
+                  className="w-full p-2.5 bg-slate-deep border border-slate-panel-raised rounded-lg text-slate-text font-mono outline-none"
                 >
                   <option value="">None (Standalone Node)</option>
                   {tenantNodes.map((n) => (
@@ -357,11 +357,11 @@ export const KnowledgeGraphView: React.FC = () => {
 
               {connectToNodeId && (
                 <div>
-                  <label className="block text-slate-400 font-mono mb-1">Relationship Type</label>
+                  <label className="block text-slate-muted-strong font-mono mb-1">Relationship Type</label>
                   <select
                     value={relationType}
                     onChange={(e) => setRelationType(e.target.value as KGEdge['relation'])}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 font-mono outline-none"
+                    className="w-full p-2.5 bg-slate-deep border border-slate-panel-raised rounded-lg text-slate-text font-mono outline-none"
                   >
                     <option value="GOVERNS">GOVERNS</option>
                     <option value="ACCESSES">ACCESSES</option>
@@ -375,7 +375,7 @@ export const KnowledgeGraphView: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-mono font-semibold text-xs transition-colors"
+              className="w-full py-2.5 bg-indigo-signal-deep hover:bg-indigo-signal text-dark-text-bright rounded-lg font-mono font-semibold text-xs transition-colors"
             >
               Upsert Entity to Graph
             </button>

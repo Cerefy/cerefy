@@ -1,25 +1,26 @@
 /* Cerefy Enterprise Design System */
 /* Standard CSS - Compatible with Tailwind CSS v4 */
+/* All colors/spacing route through the tokens in src/index.css (@theme). */
 
 /* Glass Panel - Premium frosted glass effect */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
+  background: color-mix(in srgb, var(--color-surface-container-lowest) 70%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(116, 120, 121, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 10%, transparent);
 }
 
 /* Enterprise Card */
 .enterprise-card {
-  border-radius: 0.75rem;
-  border: 1px solid rgba(196, 199, 200, 0.2);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 20%, transparent);
+  box-shadow: var(--shadow-lift);
   transition: all 0.3s ease;
-  background: #ffffff;
+  background: var(--color-surface-container-lowest);
 }
 
 .enterprise-card:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Navigation Item */
@@ -30,17 +31,17 @@
   padding: 0.625rem 1rem;
   border-radius: 0.5rem;
   transition: all 0.2s ease;
-  color: #444748;
+  color: var(--color-on-surface-variant);
   text-decoration: none;
 }
 
 .nav-item:hover {
-  background: #e8e8e8;
+  background: var(--color-surface-container-high);
 }
 
 .nav-item.active {
-  background: #e1dfdd;
-  color: #636361;
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
   font-weight: 500;
 }
 
@@ -54,8 +55,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: #1b1b1b;
-  color: #ffffff;
+  background: var(--color-on-surface);
+  color: var(--color-surface-container-lowest);
   border: none;
   cursor: pointer;
 }
@@ -73,14 +74,14 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border: 1px solid rgba(196, 199, 200, 0.3);
-  color: #1b1b1b;
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 30%, transparent);
+  color: var(--color-on-surface);
   background: transparent;
   cursor: pointer;
 }
 
 .btn-secondary:hover {
-  background: #eeeeee;
+  background: var(--color-surface-container);
 }
 
 /* Badge */
@@ -92,13 +93,13 @@
 }
 
 .badge-success {
-  background: #feffd7;
-  color: #747655;
+  background: var(--color-tertiary-container);
+  color: var(--color-on-tertiary-container);
 }
 
 .badge-error {
-  background: #ffdad6;
-  color: #93000a;
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
 }
 
 /* Animations */
@@ -135,7 +136,7 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #c4c7c8;
+  background: var(--color-outline-variant);
   border-radius: 10px;
 }
 
@@ -144,7 +145,7 @@
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(94, 94, 95, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-on-surface) 15%, transparent) 0%, transparent 70%);
   border-radius: 50%;
   z-index: -1;
   pointer-events: none;
@@ -156,7 +157,7 @@
   font-size: 3rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #1b1b1b;
+  color: var(--color-on-surface);
 }
 
 .metric-label {
@@ -164,5 +165,5 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 500;
-  color: #444748;
+  color: var(--color-on-surface-variant);
 }
