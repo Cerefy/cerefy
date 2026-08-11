@@ -54,7 +54,7 @@ class SocketService {
     if (this.socket?.connected) return;
 
     const token = localStorage.getItem('cerefy_access_token');
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'https://cerefy.onrender.com';
 
     this.socket = io(socketUrl, {
       auth: { token },
