@@ -41,7 +41,7 @@ export const CAPABILITIES = {
   decisions: {
     status: 'partial',
     endpoints: ['/api/v1/decisions', '/api/v1/decisions/:id/approve', '/api/v1/decisions/:id/reject'],
-    note: 'Decision CRUD + approve/reject via Express + Drizzle. SIMULATE is NOT implemented — no real simulation backend exists; endpoint removed until a real one ships.',
+    note: 'Decision CRUD + approve/reject via Express + Drizzle. SIMULATE returns honest 501 — no real simulation backend exists; UI must not fabricate a simulation result.',
   },
   aiPipeline: {
     status: 'partial',
@@ -50,8 +50,8 @@ export const CAPABILITIES = {
   },
   agents: {
     status: 'partial',
-    endpoints: ['/api/v1/agents/execute'],
-    note: 'Agent execution via /ai/run is real. Registry listing endpoint is NOT implemented (GET /api/v1/agents returns 501 in prod). Agent marketplace planned.',
+    endpoints: ['/api/v1/agents', '/api/v1/agents/:agentId', '/api/v1/agents/execute'],
+    note: 'Registry listing real (agent_registry rows + real execution history success rate via analyticsService). Execution via /ai/run real. Agent marketplace planned.',
   },
   ingestion: {
     status: 'implemented',
@@ -59,19 +59,19 @@ export const CAPABILITIES = {
     note: 'Document chunking + embeddings via Gemini; tenant-scoped.',
   },
   knowledgeGraph: {
-    status: 'not_implemented',
-    endpoints: [],
-    note: 'No graph backend exposed: /api/v1/graph/cypher returns 501 in prod. Neo4j remains a planned surface.',
+    status: 'partial',
+    endpoints: ['/api/v1/graph/cypher'],
+    note: 'POST /api/v1/graph/cypher is real: reads tenant-scoped graph_entities + graph_entity_links persisted at ingestion time. Cypher string is honored as a label filter only (no full cypher execution).',
   },
   memory: {
-    status: 'not_implemented',
-    endpoints: [],
-    note: 'No memory backend exposed: both memory endpoints return 501 in prod. Multi-tier memory UI surfaces local state only — EmptyState until a real API ships.',
+    status: 'partial',
+    endpoints: ['/api/v1/ai/memory/query', '/api/v1/memory/documents'],
+    note: 'Query backed by real vector memory context (pgvector chunks) + decision history. Documents list real from documents table. Multi-tier memory UI shows real results; EmptyState when tenant has no docs.',
   },
   analytics: {
-    status: 'not_implemented',
-    endpoints: [],
-    note: 'All analytics endpoints are dev-fallback only (501 in prod). Full analytics platform planned.',
+    status: 'partial',
+    endpoints: ['/api/v1/analytics/executive-kpis', '/api/v1/analytics/agent-performance', '/api/v1/analytics/projects/:projectId'],
+    note: 'Real aggregates over projects/agents/decisions/queries/answers. Some dashboard tiles still render local fallbacks — individual tiles checked against the flag.',
   },
   arabicIntelligence: {
     status: 'not_implemented',
@@ -101,9 +101,9 @@ export const CAPABILITIES = {
   voiceIntelligence: { status: 'planned', endpoints: [], note: 'Voice agent planned.' },
   ocr: { status: 'not_implemented', endpoints: ['/api/v1/ingestion/chunk'], note: 'OCR proper not implemented; text ingestion is real.' },
   governance: {
-    status: 'not_implemented',
-    endpoints: [],
-    note: '/api/v1/audit route does not exist in server.ts. Governance UI renders honest empty state until a real audit API ships.',
+    status: 'partial',
+    endpoints: ['/api/v1/audit'],
+    note: 'GET /api/v1/audit real (requirePermission read:audit) returning tenant-filtered audit_log rows. Governance UI renders honest empty state until more governance endpoints ship.',
   },
   audit: {
     status: 'partial',

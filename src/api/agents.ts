@@ -68,4 +68,9 @@ export const agentsApi = {
     });
     return response.data;
   },
+
+  async executeAgent(agentId: string): Promise<AgentExecutionResponse> {
+    const response = await api.post<AgentExecutionResponse>('/api/v1/agents/execute', { agentId });
+    return response.data;
+  },
 };

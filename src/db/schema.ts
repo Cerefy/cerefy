@@ -81,12 +81,85 @@ export const agentExecutions = pgTable('agent_executions', {
 export const agentRegistry = pgTable('agent_registry', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
+  role: text('role'),
+  department: text('department'),
+  description: text('description'),
   capabilities: jsonb('capabilities').notNull(),
   tools: jsonb('tools').notNull(),
+  permissions: jsonb('permissions').default([]).notNull(),
+  monthlyCost: text('monthly_cost'),
   status: text('status').default('ACTIVE').notNull(),
   executionHistory: jsonb('execution_history').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+/** Organizations — one row per tenant. `tenantId` is the public tenant key carried by JWTs. */
+export const organizations = pgTable('organizations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull().unique(),
+  name: text('name').notNull(),
+  plan: text('plan').default('trial').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+/** Users — global identity table. RLS exposes a row to its own tenant context, or to the
+ *  pre-auth email lookup (`app.auth_email` session setting) so login/register can resolve
+ *  an account by email before any tenant context exists. Global email uniqueness is
+ *  enforced by the unique index; a duplicate surfaces as a constraint violation -> 409. */
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull(),
+  email: text('email').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  role: text('role').default('admin').notNull(),
+  avatarUrl: text('avatar_url'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+/** Organization membership — extra users inside an organization (invitees later). */
+export const organizationMembers = pgTable('organization_members', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  role: text('role').default('member').notNull(),
+  invitedBy: uuid('invited_by'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+/** Refresh-token sessions — server-side revocation. Tenant-scoped like every row. */
+export const sessions = pgTable('sessions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  refreshHash: text('refresh_hash').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  revokedAt: timestamp('revoked_at'),
+  lastUsedAt: timestamp('last_used_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+/** Knowledge graph entities — real, persisted at ingestion time (Postgres-backed). */
+export const graphEntities = pgTable('graph_entities', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull(),
+  name: text('name').notNull(),
+  label: text('label'),
+  documentId: uuid('document_id').references(() => documents.id, { onDelete: 'set null' }),
+  source: text('source').default('ingestion').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const graphEntityLinks = pgTable('graph_entity_links', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull(),
+  sourceEntityId: uuid('source_entity_id').references(() => graphEntities.id, { onDelete: 'cascade' }),
+  targetEntityId: uuid('target_entity_id').references(() => graphEntities.id, { onDelete: 'cascade' }),
+  relation: text('relation').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
 export const aiQueries = pgTable('ai_queries', {

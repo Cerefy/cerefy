@@ -30,6 +30,13 @@ import { reconstructAnswer } from './src/lib/reconstruction/provenance';
 import { MODEL_INVENTORY } from './src/lib/llm/modelInventory';
 import { linkToRunbook } from './src/lib/observability/runbooks';
 import { featureFlags } from './src/lib/featureFlags';
+import * as authService from './src/lib/auth/authService';
+import { verifyAccessToken } from './src/lib/auth/tokens';
+import * as analyticsService from './src/lib/analyticsService';
+import * as graphService from './src/lib/graphService';
+import { listAgentDefinitions, getAgentDefinitionById } from './src/ai/registry';
+import { loadVectorMemoryContext } from './src/ai/memory/vectorMemory';
+import * as serializers from './src/lib/serializers';
 
 // ─── Initialize Firebase Admin ───────────────────────────────────────────────
 let firebaseApp: App | null = null;
@@ -231,7 +238,38 @@ function getAgentPerformance() { return devAgents.map((agent) => ({ agentId: age
 function getMemoryResults(query: string) { return [{ id: `mem_${crypto.randomBytes(4).toString('hex')}`, content: `Insight about ${query}: Cerefy learns from historical workflows and recommends next-best actions.`, source: 'Knowledge Graph', score: 0.92, type: 'vector', metadata: { topic: 'workflow', relevance: 'high' } }, { id: `mem_${crypto.randomBytes(4).toString('hex')}`, content: `Document snippet related to ${query}: Use the integrated agent pipeline for real-time decision automation.`, source: 'Document Store', score: 0.84, type: 'relational', metadata: { topic: 'automation', relevance: 'medium' } }]; }
 function getMemoryDocuments() { return [{ id: 'doc_01', title: 'Cerefy Governance Framework', updatedAt: new Date().toISOString(), summary: 'Policy-first AI workflow governance', source: 'Knowledge Base' }, { id: 'doc_02', title: 'Agent Runbooks', updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(), summary: 'Standard operating procedures for agent orchestration', source: 'Documentation Hub' }]; }
 
-async function verifyBearerToken(token: string): Promise<DevAuthUser | DecodedIdToken | null> { const localUser = getUserFromAccessToken(token); if (localUser) return localUser as any; try { const firebaseAdmin = getFirebaseAdmin(); if (!firebaseAdmin) return null; return await getAuth(firebaseAdmin).verifyIdToken(token); } catch (error) { logger.warn('Token verification failed', { error: error instanceof Error ? error.message : String(error) }); return null; } }
+async function verifyBearerToken(token: string): Promise<DevAuthUser | DecodedIdToken | null> {
+  // 1) Cerefy JWTs (durable auth) — access tokens issued by authService.
+  const claims = verifyAccessToken(token);
+  if (claims) {
+    return {
+      uid: claims.sub,
+      id: claims.sub,
+      email: claims.email,
+      name: claims.name,
+      role: claims.role,
+      tenantId: claims.tid,
+      organizationId: claims.tid,
+      organizationName: claims.org,
+      createdAt: new Date().toISOString(),
+      __jwt: true,
+    } as unknown as DevAuthUser;
+  }
+  // 2) Local dev-fallback opaque tokens.
+  if (isLocalDevFallback()) {
+    const localUser = getUserFromAccessToken(token);
+    if (localUser) return localUser as any;
+  }
+  // 3) Firebase ID tokens.
+  try {
+    const firebaseAdmin = getFirebaseAdmin();
+    if (!firebaseAdmin) return null;
+    return await getAuth(firebaseAdmin).verifyIdToken(token);
+  } catch (error) {
+    logger.warn('Token verification failed', { error: error instanceof Error ? error.message : String(error) });
+    return null;
+  }
+}
 
 export interface AuthenticatedRequest extends Request { user?: DecodedIdToken; tenantId?: string; }
 const requireAuth = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => { const authHeader = req.headers.authorization; const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.split('Bearer ')[1] : authHeader; if (!bearerToken) { res.status(401).json({ error: 'Unauthorized: Missing or invalid Authorization header' }); return; } const user = await verifyBearerToken(bearerToken); if (!user) { res.status(403).json({ error: 'Unauthorized: Invalid token' }); return; } req.user = user as any; next(); };
@@ -311,6 +349,18 @@ app.post('/api/v1/ai/answers/:answerId/outcome', requireAuth, requireTenant, req
   res.json({ data: { answerId: req.params.answerId, achieved, recorded: true }, meta: { requestId: req.headers['x-request-id'], tenantId: req.tenantId } });
 });
 
+// ─── §7 audit trail read surface (gated read:audit) ─────────────────────────
+// Real tenant-scoped rows from the Postgres `audit_log` table, newest first.
+app.get('/api/v1/audit', requireAuth, requireTenant, requirePermission('read:audit', 'audit.log'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const rows = await auditLog.list(req.tenantId!);
+    res.json({ data: rows });
+  } catch (error) {
+    logger.error('Failed to read audit log', { error });
+    res.status(500).json({ status: 'error', message: 'Failed to read audit log' });
+  }
+});
+
 app.use('/api/v1', apiRateLimiter);
 
 // ─── Simple User Store (replace with database in production) ──────────────────
@@ -329,75 +379,116 @@ interface StoredUser {
 const userStore = new Map<string, StoredUser>();
 
 // ─── Auth Routes (no requireAuth - used for authentication) ──────────────────
+// Durable auth in production: Postgres-backed users/orgs/sessions with scrypt
+// password hashing and real JWT access tokens (authService). The in-memory dev
+// store is used ONLY under DEV_LOCAL_FALLBACK so local development keeps working
+// without a database — never in production.
 app.post('/api/v1/auth/register', authRateLimiter, async (req: Request, res: Response) => {
   const { email, password, firstName, lastName, organizationName } = req.body;
   if (!email || !password || !firstName || !lastName) {
     res.status(400).json({ error: 'Email, password, first name and last name are required' });
     return;
   }
-  const normalizedEmail = String(email).toLowerCase();
-  if (userStore.has(normalizedEmail)) {
-    res.status(409).json({ error: 'Email already registered' });
+  if (isLocalDevFallback()) {
+    const normalizedEmail = String(email).toLowerCase();
+    if (userStore.has(normalizedEmail)) { res.status(409).json({ error: 'Email already registered' }); return; }
+    const newUser: StoredUser = {
+      id: `user_${crypto.randomBytes(8).toString('hex')}`,
+      email: normalizedEmail,
+      password, // NOTE: dev-fallback only; production hashes via authService
+      firstName,
+      lastName,
+      role: 'admin',
+      organizationId: `org_${crypto.randomBytes(8).toString('hex')}`,
+      organizationName: organizationName || `${firstName}'s Organization`,
+      createdAt: new Date().toISOString(),
+    };
+    userStore.set(normalizedEmail, newUser);
+    const profile: DevAuthUser = {
+      id: newUser.id, email: newUser.email, firstName: newUser.firstName, lastName: newUser.lastName, role: newUser.role,
+      organizationId: newUser.organizationId, organizationName: newUser.organizationName,
+      avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(newUser.firstName + ' ' + newUser.lastName)}&background=111827&color=00ffff`,
+      createdAt: newUser.createdAt,
+    };
+    devUsersByEmail.set(normalizedEmail, { profile, password });
+    const { accessToken, refreshToken } = createAuthTokens(profile);
+    logger.info('User registered (dev fallback)', { email: normalizedEmail });
+    res.json({ user: profile, tokens: { accessToken, refreshToken } });
     return;
   }
-  const newUser: StoredUser = {
-    id: `user_${crypto.randomBytes(8).toString('hex')}`,
-    email: normalizedEmail,
-    password, // NOTE: In production, hash with bcrypt
-    firstName,
-    lastName,
-    role: 'admin',
-    organizationId: `org_${crypto.randomBytes(8).toString('hex')}`,
-    organizationName: organizationName || `${firstName}'s Organization`,
-    createdAt: new Date().toISOString(),
-  };
-  userStore.set(normalizedEmail, newUser);
-  const profile: DevAuthUser = {
-    id: newUser.id,
-    email: newUser.email,
-    firstName: newUser.firstName,
-    lastName: newUser.lastName,
-    role: newUser.role,
-    organizationId: newUser.organizationId,
-    organizationName: newUser.organizationName,
-    avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(newUser.firstName + ' ' + newUser.lastName)}&background=111827&color=00ffff`,
-    createdAt: newUser.createdAt,
-  };
-  devUsersByEmail.set(normalizedEmail, { profile, password });
-  const { accessToken, refreshToken } = createAuthTokens(profile);
-  logger.info('User registered', { email: normalizedEmail, orgId: newUser.organizationId });
-  res.json({
-    user: { id: newUser.id, email: newUser.email, firstName, lastName, role: newUser.role, organizationId: newUser.organizationId, organizationName: newUser.organizationName, avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName + ' ' + lastName)}&background=111827&color=00ffff`, createdAt: newUser.createdAt },
-    tokens: { accessToken, refreshToken },
-  });
+  try {
+    const { user, tokens } = await authService.register({ email, password, firstName, lastName, organizationName });
+    logger.info('User registered', { email: user.email, orgId: user.organizationId });
+    auditLog.log({ action: 'user.registered', actorId: user.id, actorRole: user.role, tenantId: user.organizationId, resource: 'user', detail: { email: user.email } }).catch(() => {});
+    res.json({ user, tokens });
+  } catch (err: any) {
+    const status = err instanceof authService.DatabaseUnavailableError ? 503 : err?.status || 500;
+    const message = err instanceof authService.DatabaseUnavailableError
+      ? 'Registration temporarily unavailable (database not reachable). Please try again shortly.'
+      : err?.status ? err.message : 'Registration failed.';
+    res.status(status).json({ error: message });
+  }
 });
 
 app.post('/api/v1/auth/login', authRateLimiter, async (req: Request, res: Response) => {
   const { email, password } = req.body;
   if (!email || !password) { res.status(400).json({ error: 'Email and password are required' }); return; }
-  const normalizedEmail = String(email).toLowerCase();
-  const user = userStore.get(normalizedEmail);
-  const stored = devUsersByEmail.get(normalizedEmail) ?? (userStore.has(normalizedEmail) ? { profile: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role, organizationId: user.organizationId, organizationName: user.organizationName, avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.firstName + ' ' + user.lastName)}&background=111827&color=00ffff`, createdAt: user.createdAt }, password: user.password } : null);
-  if (!user || !stored || stored.password !== password) { res.status(401).json({ error: 'Invalid email or password' }); return; }
-  const { accessToken, refreshToken } = createAuthTokens(stored.profile);
-  res.json({
-    user: { id: stored.profile.id, email: stored.profile.email, firstName: stored.profile.firstName, lastName: stored.profile.lastName, role: stored.profile.role, organizationId: stored.profile.organizationId, organizationName: stored.profile.organizationName, avatarUrl: stored.profile.avatarUrl, createdAt: stored.profile.createdAt },
-    tokens: { accessToken, refreshToken },
-  });
+  if (isLocalDevFallback()) {
+    const normalizedEmail = String(email).toLowerCase();
+    const user = userStore.get(normalizedEmail);
+    const stored = devUsersByEmail.get(normalizedEmail) ?? (userStore.has(normalizedEmail) ? { profile: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role, organizationId: user.organizationId, organizationName: user.organizationName, avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.firstName + ' ' + user.lastName)}&background=111827&color=00ffff`, createdAt: user.createdAt }, password: user.password } : null);
+    if (!user || !stored || stored.password !== password) { res.status(401).json({ error: 'Invalid email or password' }); return; }
+    const { accessToken, refreshToken } = createAuthTokens(stored.profile);
+    res.json({ user: stored.profile, tokens: { accessToken, refreshToken } });
+    return;
+  }
+  try {
+    const { user, tokens } = await authService.login({ email, password });
+    res.json({ user, tokens });
+  } catch (err: any) {
+    const status = err instanceof authService.DatabaseUnavailableError ? 503 : err?.status || 500;
+    const message = err instanceof authService.DatabaseUnavailableError
+      ? 'Login temporarily unavailable (database not reachable). Please try again shortly.'
+      : err?.status ? err.message : 'Login failed.';
+    res.status(status).json({ error: message });
+  }
 });
 
-app.post('/api/v1/auth/refresh', async (_req: Request, res: Response) => {
-  const newAccessToken = crypto.randomBytes(32).toString('hex');
-  res.json({ accessToken: newAccessToken, refreshToken: crypto.randomBytes(32).toString('hex') });
+app.post('/api/v1/auth/refresh', async (req: Request, res: Response) => {
+  const { refreshToken } = req.body ?? {};
+  if (!refreshToken || typeof refreshToken !== 'string') { res.status(400).json({ error: 'refreshToken is required' }); return; }
+  if (isLocalDevFallback()) {
+    const newAccessToken = crypto.randomBytes(32).toString('hex');
+    res.json({ accessToken: newAccessToken, refreshToken: crypto.randomBytes(32).toString('hex') });
+    return;
+  }
+  try {
+    const { user, tokens } = await authService.refresh(refreshToken);
+    res.json({ user, ...tokens });
+  } catch (err: any) {
+    const status = err instanceof authService.DatabaseUnavailableError ? 503 : err?.status || 401;
+    res.status(status).json({ error: err?.status ? err.message : 'Invalid or expired refresh token' });
+  }
 });
 
-app.post('/api/v1/auth/logout', async (_req: Request, res: Response) => {
+app.post('/api/v1/auth/logout', async (req: Request, res: Response) => {
+  const { refreshToken } = req.body ?? {};
+  if (isLocalDevFallback()) { res.json({ status: 'success' }); return; }
+  if (typeof refreshToken === 'string') await authService.logout(refreshToken);
   res.json({ status: 'success' });
 });
 
 app.get('/api/v1/auth/me', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
   const user = req.user as any;
-  res.json({ id: user.uid || user.id, email: user.email, firstName: user.name?.split(' ')[0] || '', lastName: user.name?.split(' ').slice(1).join(' ') || '', role: user.role || 'member', organizationId: user.organizationId || '', organizationName: user.organizationName || '', avatarUrl: user.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.email)}&background=111827&color=00ffff`, createdAt: new Date().toISOString() });
+  if (user?.__jwt) {
+    try {
+      const profile = await authService.meFromClaims(user);
+      if (profile) { res.json(profile); return; }
+    } catch {
+      // fall through to token-derived response below rather than crashing /me
+    }
+  }
+  res.json({ id: user.uid || user.id, email: user.email, firstName: user.name?.split(' ')[0] || '', lastName: user.name?.split(' ').slice(1).join(' ') || '', role: user.role || 'member', organizationId: user.organizationId || '', organizationName: user.organizationName || '', avatarUrl: user.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.email)}&background=111827&color=00ffff`, createdAt: user.createdAt || new Date().toISOString() });
 });
 
 // ─── Projects Routes ──────────────────────────────────────────────────────────
@@ -405,27 +496,56 @@ app.get('/api/v1/projects', requireAuth, requireTenant, async (req: Authenticate
   const tenantId = req.tenantId!;
   try {
     if (isLocalDevFallback()) { res.json({ status: 'success', data: devProjects }); return; }
-    const projects = await projectService.getAllProjects(tenantId);
-    res.json({ status: 'success', data: projects });
+    const rows = await projectService.getAllProjects(tenantId);
+    res.json({ status: 'success', data: rows.map(serializers.serializeProject) });
   } catch (error) { logger.error('Failed to fetch projects', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to fetch projects' }); }
 });
 
 app.post('/api/v1/projects', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = req.tenantId!;
-  try { if (isLocalDevFallback()) { res.json({ status: 'success', data: createProject(req.body) }); return; } const project = await projectService.createProject(tenantId, req.body); res.json({ status: 'success', data: project }); } catch (error) { logger.error('Failed to create project', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to create project' }); }
+  try {
+    if (isLocalDevFallback()) { res.json({ status: 'success', data: createProject(req.body) }); return; }
+    const body = req.body ?? {};
+    // Frontend create contract sends { title, department, budget, dueDate }. The
+    // table requires a code — derive a stable slug from the title instead of
+    // inventing data, and default status/progress to their real column defaults.
+    const payload = {
+      title: body.title,
+      code: body.code || String(body.title || 'project').toUpperCase().replace(/[^A-Z0-9]+/g, '-').slice(0, 12) || `PRJ-${Date.now().toString().slice(-4)}`,
+      department: body.department,
+      status: body.status ?? 'Planning',
+      progress: body.progress ?? 0,
+      budget: body.budget,
+      dueDate: body.dueDate,
+    };
+    const row = await projectService.createProject(tenantId, payload);
+    res.json({ status: 'success', data: serializers.serializeProject(row) });
+  } catch (error) { logger.error('Failed to create project', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to create project' }); }
 });
 
 app.get('/api/v1/decisions', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = req.tenantId!;
-  try { if (isLocalDevFallback()) { res.json({ status: 'success', data: devDecisions }); return; } const results = await decisionService.getAllDecisions(tenantId); res.json({ status: 'success', data: results }); } catch (error) { logger.error('Failed to fetch decisions', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to fetch decisions' }); }
+  try { if (isLocalDevFallback()) { res.json({ status: 'success', data: devDecisions }); return; } const rows = await decisionService.getAllDecisions(tenantId); res.json({ status: 'success', data: rows.map(serializers.serializeDecision) }); } catch (error) { logger.error('Failed to fetch decisions', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to fetch decisions' }); }
 });
 
 app.post('/api/v1/decisions', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = req.tenantId!;
-  try { if (isLocalDevFallback()) { res.json({ status: 'success', data: createDecision(req.body) }); return; } const decision = await decisionService.createDecision(tenantId, req.body); res.json({ status: 'success', data: decision }); } catch (error) { logger.error('Failed to create decision', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to create decision' }); }
+  try {
+    if (isLocalDevFallback()) { res.json({ status: 'success', data: createDecision(req.body) }); return; }
+    const body = req.body ?? {};
+    // Frontend create contract sends { title, question, category }. Defaults to
+    // real column defaults; no fabricated risk/ROI/confidence values.
+    const payload = {
+      title: body.title,
+      question: body.question,
+      status: 'OPEN',
+    };
+    const row = await decisionService.createDecision(tenantId, payload);
+    res.json({ status: 'success', data: serializers.serializeDecision(row) });
+  } catch (error) { logger.error('Failed to create decision', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to create decision' }); }
 });
 
-app.get('/api/v1/projects/:projectId', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => { const projectId = req.params.projectId; if (isLocalDevFallback()) { const project = getProjectById(projectId); if (!project) { res.status(404).json({ status: 'error', message: 'Project not found' }); return; } res.json({ status: 'success', data: project }); return; } try { const tenantId = req.tenantId!; const project = await projectService.getProjectById(tenantId, projectId); res.json({ status: 'success', data: project }); } catch (error) { logger.error('Failed to fetch project', { error, projectId }); res.status(500).json({ status: 'error', message: 'Failed to fetch project' }); } });
+app.get('/api/v1/projects/:projectId', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => { const projectId = req.params.projectId; if (isLocalDevFallback()) { const project = getProjectById(projectId); if (!project) { res.status(404).json({ status: 'error', message: 'Project not found' }); return; } res.json({ status: 'success', data: project }); return; } try { const tenantId = req.tenantId!; const project = await projectService.getProjectById(tenantId, projectId); res.json({ status: 'success', data: serializers.serializeProject(project) }); } catch (error) { logger.error('Failed to fetch project', { error, projectId }); res.status(500).json({ status: 'error', message: 'Failed to fetch project' }); } });
 app.patch('/api/v1/projects/:projectId', requireAuth, requireTenant, requirePermission('edit:project', 'project'), async (req: AuthenticatedRequest, res: Response) => { const projectId = req.params.projectId; if (isLocalDevFallback()) { const project = updateProject(projectId, req.body); if (!project) { res.status(404).json({ status: 'error', message: 'Project not found' }); return; } res.json({ status: 'success', data: project }); return; } try { const tenantId = req.tenantId!; const project = await projectService.updateProject(tenantId, projectId, req.body); await auditLog.log({ action: 'project.update', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'project', detail: { projectId } }).catch(() => {}); res.json({ status: 'success', data: project }); } catch (error) { logger.error('Failed to update project', { error, projectId }); res.status(500).json({ status: 'error', message: 'Failed to update project' }); } });
 app.delete('/api/v1/projects/:projectId', requireAuth, requireTenant, requirePermission('delete:project', 'project'), async (req: AuthenticatedRequest, res: Response) => { const projectId = req.params.projectId; if (isLocalDevFallback()) { if (!deleteProject(projectId)) { res.status(404).json({ status: 'error', message: 'Project not found' }); return; } res.status(204).send(); return; } try { const tenantId = req.tenantId!; await projectService.deleteProject(tenantId, projectId); await auditLog.log({ action: 'project.delete', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'project', detail: { projectId } }).catch(() => {}); res.status(204).send(); } catch (error) { logger.error('Failed to delete project', { error, projectId }); res.status(500).json({ status: 'error', message: 'Failed to delete project' }); } });
 
@@ -433,8 +553,35 @@ app.post('/api/v1/decisions/:decisionId/approve', requireAuth, requireTenant, re
 app.post('/api/v1/decisions/:decisionId/reject', requireAuth, requireTenant, requirePermission('reject:decision', 'decision'), async (req: AuthenticatedRequest, res: Response) => { const decisionId = req.params.decisionId; const reason = req.body.reason || 'No reason provided'; if (isLocalDevFallback()) { const decision = updateDecision(decisionId, { status: 'REJECTED', aiRecommendation: `Rejected: ${reason}` }); if (!decision) { res.status(404).json({ status: 'error', message: 'Decision not found' }); return; } await auditLog.log({ action: 'decision.reject', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId || '', resource: 'decision', detail: { decisionId, reason } }).catch(() => {}); res.json({ data: decision }); return; } try { const tenantId = req.tenantId!; const decision = await decisionService.rejectDecision(tenantId, decisionId, reason); await auditLog.log({ action: 'decision.reject', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'decision', detail: { decisionId, reason } }).catch(() => {}); res.json({ data: decision }); } catch (error) { logger.error('Failed to reject decision', { error, decisionId }); res.status(500).json({ status: 'error', message: 'Failed to reject decision' }); } });
 app.post('/api/v1/decisions/:decisionId/simulate', requireAuth, requireTenant, requirePermission('simulate:decision', 'decision'), async (_req: AuthenticatedRequest, res: Response) => { res.status(501).json({ status: 'error', message: 'Decision simulation is not implemented — no real simulation backend exists yet' }); });
 
-app.get('/api/v1/agents', requireAuth, async (_req: AuthenticatedRequest, res: Response) => { if (isLocalDevFallback()) { res.json({ data: devAgents }); return; } res.status(501).json({ status: 'error', message: 'Agent listing is not available without backend support' }); });
-app.get('/api/v1/agents/:agentId', requireAuth, async (req: AuthenticatedRequest, res: Response) => { const agentId = req.params.agentId; if (isLocalDevFallback()) { const agent = devAgents.find((item) => item.id === agentId); if (!agent) { res.status(404).json({ status: 'error', message: 'Agent not found' }); return; } res.json({ data: agent }); return; } res.status(501).json({ status: 'error', message: 'Agent details are not available without backend support' }); });
+app.get('/api/v1/agents', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  if (isLocalDevFallback()) { res.json({ data: devAgents }); return; }
+  try {
+    const rows = await listAgentDefinitions();
+    const executions = await analyticsService.getTenantExecutions((req as any).tenantId || (req.user as any)?.tenantId || '');
+    res.json({ data: rows.map((agent: any) => serializers.serializeAgent(agent, executions)) });
+  } catch (error) {
+    logger.error('Failed to list agents', { error });
+    res.status(500).json({ status: 'error', message: 'Failed to list agents' });
+  }
+});
+app.get('/api/v1/agents/:agentId', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  const agentId = req.params.agentId;
+  if (isLocalDevFallback()) {
+    const agent = devAgents.find((item) => item.id === agentId);
+    if (!agent) { res.status(404).json({ status: 'error', message: 'Agent not found' }); return; }
+    res.json({ data: agent });
+    return;
+  }
+  try {
+    const agent: any = await getAgentDefinitionById(agentId);
+    if (!agent) { res.status(404).json({ status: 'error', message: 'Agent not found' }); return; }
+    const executions = await analyticsService.getTenantExecutions((req as any).tenantId || (req.user as any)?.tenantId || '');
+    res.json({ data: serializers.serializeAgent(agent, executions) });
+  } catch (error) {
+    logger.error('Failed to fetch agent', { error, agentId });
+    res.status(500).json({ status: 'error', message: 'Failed to fetch agent' });
+  }
+});
 
 app.post('/api/v1/ai/run', requireAuth, requireTenant, requirePermission('query:run', 'ai.workspace'), aiRateLimiter, async (req: AuthenticatedRequest, res: Response) => { const tenantId = req.tenantId!; const userId = (req.user as any)?.uid || (req.user as any)?.id || 'user_admin_01'; const { type, documentId, projectId, documents = [], requirements = [], decisions = [], metadata = {} } = req.body || {}; if (!type || typeof type !== 'string') { res.status(400).json({ error: 'type is required' }); return; } const result = await runCerefyAIPipeline({ type, tenantId, userId, projectId, documentId, documents, requirements, decisions, metadata: { ...metadata, requestedBy: userId } }, socketServer); const confidence = result.confidence ?? null; if (confidence != null) observeAiConfidence(tenantId, confidence); const outputSources = Array.isArray(result.output?.sources) ? result.output.sources.filter((s: { id?: string; content?: string }) => s && typeof s.content === 'string') : []; const answerText = typeof result.output?.answer === 'string' && result.output.answer.trim().length > 0 ? result.output.answer : (typeof result.output?.summary === 'string' ? result.output.summary : ''); const provenance = (result.output?.provenance ?? {}) as { modelId?: string; promptVersion?: string; tokensInput?: number; tokensOutput?: number; costUsd?: number }; const modelVersion = String(provenance.modelId || result.output?.modelVersion || process.env.LLM_MODEL || 'gemini-2.5-flash'); const promptVersion = String(provenance.promptVersion || result.output?.promptVersion || 'analysis_v1'); const tokensInput = provenance.tokensInput ?? 0; const tokensOutput = provenance.tokensOutput ?? 0; const costUsd = provenance.costUsd ?? 0; const realSources = outputSources.map((s: { id?: string; content?: string }) => ({ id: s.id ?? 'unknown', content: s.content ?? '' })); if (result.status !== 'FAILED') {
   const recordedQuery = await provenanceStore.recordQuery({ tenantId, userId, type, tokensInput, tokensOutput, costUsd });
@@ -454,29 +601,85 @@ app.post('/api/v1/ai/run', requireAuth, requireTenant, requirePermission('query:
 app.post('/api/v1/ai/pipeline/run', requireAuth, requireTenant, requirePermission('run:pipeline', 'ai.workspace'), aiRateLimiter, async (req: AuthenticatedRequest, res: Response) => { const { pipelineId } = req.body; if (!pipelineId) { res.status(400).json({ error: 'pipelineId is required' }); return; } const result = await runCerefyAIPipeline({ type: 'pipeline_run', tenantId: req.tenantId!, userId: (req.user as any)?.uid || 'user_admin_01', metadata: { pipelineId } }, socketServer); res.status(result.status === 'FAILED' ? 500 : 202).json({ executionId: result.executionId, status: result.status, output: result.output, confidence: result.confidence }); });
 app.post('/api/v1/agents/execute', requireAuth, requireTenant, requirePermission('execute:agents', 'ai.workspace'), aiRateLimiter, async (req: AuthenticatedRequest, res: Response) => { const { query, sessionId = 'sess_default' } = req.body; if (!query || typeof query !== 'string' || query.trim().length === 0) { res.status(400).json({ error: 'Query parameter is required' }); return; } const result = await runCerefyAIPipeline({ type: 'agent_execute', tenantId: req.tenantId!, userId: (req.user as any)?.uid || 'user_admin_01', metadata: { query, sessionId } }, socketServer); res.status(result.status === 'FAILED' ? 500 : 202).json({ status: result.status === 'FAILED' ? 'error' : 'success', sessionId, executionId: result.executionId, latencyMs: 0, response: result.output ?? { query }, timestamp: new Date().toISOString() }); });
 
-// The following endpoints have no real backend implementation (vector
-// memory search, executive KPI aggregation, per-agent performance
-// telemetry, per-project analytics). They previously returned hardcoded
-// objects and Math.random()-based fake metrics unconditionally. They now
-// only serve the illustrative dev-fallback data in local development, and
-// return 501 Not Implemented in production so fabricated numbers are never
-// presented to real customers as if they were real analytics.
-app.post('/api/v1/ai/memory/query', requireAuth, requireTenant, requirePermission('query:run', 'ai.workspace'), async (req: AuthenticatedRequest, res: Response) => { const { query } = req.body; if (!query || typeof query !== 'string') { res.status(400).json({ error: 'Query parameter is required' }); return; } if (!isLocalDevFallback()) { res.status(501).json({ status: 'error', message: 'Memory query is not available without backend support' }); return; } res.json({ data: getMemoryResults(query) }); });
-app.get('/api/v1/memory/documents', requireAuth, requireTenant, async (_req: AuthenticatedRequest, res: Response) => { if (!isLocalDevFallback()) { res.status(501).json({ status: 'error', message: 'Memory documents are not available without backend support' }); return; } res.json({ data: getMemoryDocuments() }); });
-app.get('/api/v1/analytics/executive-kpis', requireAuth, requireTenant, async (_req: AuthenticatedRequest, res: Response) => { if (!isLocalDevFallback()) { res.status(501).json({ status: 'error', message: 'Executive KPI analytics is not available without backend support' }); return; } res.json(getExecutiveKPIs()); });
-app.get('/api/v1/analytics/agent-performance', requireAuth, requireTenant, async (_req: AuthenticatedRequest, res: Response) => { if (!isLocalDevFallback()) { res.status(501).json({ status: 'error', message: 'Agent performance analytics is not available without backend support' }); return; } res.json({ data: getAgentPerformance() }); });
-app.get('/api/v1/analytics/projects/:projectId', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => { if (!isLocalDevFallback()) { res.status(501).json({ status: 'error', message: 'Project analytics is not available without backend support' }); return; } res.json(getAnalyticsForProject(req.params.projectId)); });
+// Memory + analytics endpoints are DB-backed: vector memory context is loaded
+// from real document chunks/decisions, executive KPIs and agent performance are
+// aggregated from real persisted rows, and graph queries read the real
+// Postgres-backed knowledge graph. The former Math.random()/hardcoded stubs now
+// only exist in the local dev-fallback branch.
+app.post('/api/v1/ai/memory/query', requireAuth, requireTenant, requirePermission('query:run', 'ai.workspace'), async (req: AuthenticatedRequest, res: Response) => {
+  const { query } = req.body;
+  if (!query || typeof query !== 'string') { res.status(400).json({ error: 'Query parameter is required' }); return; }
+  if (isLocalDevFallback()) { res.json({ data: getMemoryResults(query) }); return; }
+  try {
+    const tenantId = req.tenantId!;
+    const context = await loadVectorMemoryContext({ tenantId, limit: 8 });
+    const data = [
+      ...context.chunkSnippets.map((content, i) => ({ id: `chunk_${i}`, content, source: 'Document Store', score: 0, type: 'vector', metadata: {} })),
+      ...context.decisionHistory.slice(0, 3).map((d: any, i) => ({ id: `dec_${i}`, content: d.question ?? d.title ?? '', source: 'Decision History', score: 0, type: 'relational', metadata: { status: d.status } })),
+    ];
+    res.json({ data });
+  } catch (error) {
+    logger.error('Memory query failed', { error });
+    res.status(500).json({ status: 'error', message: 'Memory query failed' });
+  }
+});
+app.get('/api/v1/memory/documents', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
+  if (isLocalDevFallback()) { res.json({ data: getMemoryDocuments() }); return; }
+  try {
+    const data = await analyticsService.getMemoryDocuments(req.tenantId!);
+    res.json({ data });
+  } catch (error) {
+    logger.error('Failed to list memory documents', { error });
+    res.status(500).json({ status: 'error', message: 'Failed to list memory documents' });
+  }
+});
+app.get('/api/v1/analytics/executive-kpis', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
+  if (isLocalDevFallback()) { res.json(getExecutiveKPIs()); return; }
+  try {
+    const kpis = await analyticsService.getExecutiveKPIs(req.tenantId!);
+    res.json(kpis);
+  } catch (error: any) {
+    logger.error('Failed to compute executive KPIs', { error });
+    res.status(Number(error?.status) || 500).json({ status: 'error', message: 'Failed to compute executive KPIs' });
+  }
+});
+app.get('/api/v1/analytics/agent-performance', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
+  if (isLocalDevFallback()) { res.json({ data: getAgentPerformance() }); return; }
+  try {
+    const data = await analyticsService.getAgentPerformance(req.tenantId!);
+    res.json({ data });
+  } catch (error) {
+    logger.error('Failed to compute agent performance', { error });
+    res.status(500).json({ status: 'error', message: 'Failed to compute agent performance' });
+  }
+});
+app.get('/api/v1/analytics/projects/:projectId', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
+  if (isLocalDevFallback()) { res.json(getAnalyticsForProject(req.params.projectId)); return; }
+  try {
+    const data = await analyticsService.getProjectAnalytics(req.tenantId!, req.params.projectId);
+    res.json(data);
+  } catch (error: any) {
+    logger.error('Failed to compute project analytics', { error, projectId: req.params.projectId });
+    res.status(Number(error?.status) || 500).json({ status: 'error', message: error?.status ? error.message : 'Failed to compute project analytics' });
+  }
+});
 app.post('/api/v1/ingestion/chunk', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => { const tenantId = req.tenantId!; const { content, chunkSize = 300, chunkOverlap = 40, title = 'Document' } = req.body; if (!content) { res.status(400).json({ error: 'Content string is required' }); return; } const aiClientInst = getGeminiClient(); if (!aiClientInst) { res.status(500).json({ error: 'AI Client not initialized. Check GEMINI_API_KEY.' }); return; } try { const result = await ingestionService.processDocument(tenantId, title, content, aiClientInst, chunkSize, chunkOverlap); res.json({ status: 'success', title, documentId: result.documentId, chunkCount: result.chunkCount }); } catch (error: any) { logger.error('Ingestion error', { error: error?.message, tenantId }); res.status(500).json({ error: 'Failed to process document' }); } });
-// NOTE: this endpoint previously accepted an arbitrary `tenantId` in the
-// request body and returned hardcoded fake graph records. There is no real
-// Neo4j-backed Cypher execution wired into this Express server, so rather
-// than expose fabricated "graph results" as if they were live data, this
-// now returns 501 in production. Local/dev fallback keeps the illustrative
-// stub so the UI remains usable while the frontend is being built.
-app.post('/api/v1/graph/cypher', requireAuth, requireTenant, (req: AuthenticatedRequest, res: Response) => {
-  if (!isLocalDevFallback()) { res.status(501).json({ status: 'error', message: 'Knowledge graph querying is not available without backend support' }); return; }
-  const { cypher } = req.body;
-  res.json({ status: 'success', query: cypher || 'MATCH (e:Entity) RETURN e LIMIT 10', tenantId: req.tenantId, executedInMs: 8.4, nodesMatched: 6, records: [{ id: 'node_tenant_core', label: 'Cerefy Core Tenant', type: 'Tenant' }, { id: 'node_auth_policy', label: 'OAuth MFA Policy', type: 'Policy' }] });
+// Knowledge graph reads are backed by the real Postgres graph tables (entities +
+// links persisted at ingestion time), not by a fabricated cypher stub.
+app.post('/api/v1/graph/cypher', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
+  if (isLocalDevFallback()) {
+    const { cypher } = req.body;
+    res.json({ status: 'success', query: cypher || 'MATCH (e:Entity) RETURN e LIMIT 10', tenantId: req.tenantId, executedInMs: 8.4, nodesMatched: 6, records: [{ id: 'node_tenant_core', label: 'Cerefy Core Tenant', type: 'Tenant' }, { id: 'node_auth_policy', label: 'OAuth MFA Policy', type: 'Policy' }] });
+    return;
+  }
+  try {
+    const { cypher } = req.body ?? {};
+    const result = await graphService.queryGraph(req.tenantId!, typeof cypher === 'string' ? cypher : undefined);
+    res.json({ status: 'success', ...result });
+  } catch (error) {
+    logger.error('Graph query failed', { error });
+    res.status(500).json({ status: 'error', message: 'Knowledge graph querying failed' });
+  }
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => { logger.error('Unhandled error', { error: err.message, stack: err.stack, url: req.url, method: req.method }); res.status(500).json({ error: 'Internal server error', requestId: req.headers['x-request-id'] }); });

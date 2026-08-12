@@ -104,7 +104,7 @@ after(async () => {
   if (!url) return;
   const admin = new pg.Client({ connectionString: url });
   await admin.connect();
-  await admin.query('DROP TABLE IF EXISTS ai_answers, ai_queries, agent_registry, agent_executions, decisions, document_chunks, documents, projects, organization_intelligence_profiles CASCADE');
+  await admin.query('DROP TABLE IF EXISTS graph_entity_links, graph_entities, sessions, organization_members, users, organizations, ai_answers, ai_queries, agent_registry, agent_executions, decisions, document_chunks, documents, projects, organization_intelligence_profiles CASCADE');
   await admin.query('DROP FUNCTION IF EXISTS app.current_tenant_id()');
   await admin.query(`REVOKE ALL ON ALL TABLES IN SCHEMA public FROM "${APP_ROLE}"`).catch(() => {});
   await admin.query(`REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM "${APP_ROLE}"`).catch(() => {});
@@ -294,6 +294,55 @@ test('RLS §5: agent_executions tenant isolation + write-reject', async (t) => {
     b.q("INSERT INTO agent_executions (id, tenant_id, type, status, current_agent, confidence, input, event_log, errors) VALUES ('00000000-0000-0000-0000-000000000062', 'ten_a', 'analysis', 'RUNNING', 'supervisor', 0, '{}', '[]', '[]')"),
     /row-level security/,
     'cross-tenant execution insert must be rejected',
+  );
+  await b.end();
+});
+
+test('RLS §5: users are invisible across tenants without an auth_email lookup context', async (t) => {
+  if (!url) return t.skip('no DATABASE_URL_TEST');
+  if (!ready) return t.skip('non-superuser role not provisioned');
+  const seedA = tenantSession('ten_a');
+  await seedA.q("INSERT INTO users (id, tenant_id, email, password_hash, first_name, last_name, role) VALUES ('00000000-0000-0000-0000-000000000071', 'ten_a', 'a@cerefy.test', 'hash', 'A', 'User', 'admin') ON CONFLICT DO NOTHING");
+  await seedA.end();
+  const seedB = tenantSession('ten_b');
+  await seedB.q("INSERT INTO users (id, tenant_id, email, password_hash, first_name, last_name, role) VALUES ('00000000-0000-0000-0000-000000000072', 'ten_b', 'b@cerefy.test', 'hash', 'B', 'User', 'admin') ON CONFLICT DO NOTHING");
+  await seedB.end();
+
+  // ten_b without any auth_email setting must NOT see ten_a's user row.
+  const b = tenantSession('ten_b');
+  const all = await b.q("SELECT email FROM users");
+  assert.equal(all.rowCount, 1, 'ten_b sees only its own user under tenant context');
+  assert.equal(all.rows[0].email, 'b@cerefy.test');
+  await b.end();
+
+  // The pre-auth email lookup path (app.auth_email set) can resolve an account
+  // by email across the boundary — this is what login needs before a tenant
+  // context exists.
+  const lookup = tenantSession('ten_b');
+  await lookup.q("SELECT set_config('app.auth_email', 'a@cerefy.test', false)");
+  const found = await lookup.q("SELECT id, tenant_id FROM users WHERE email = 'a@cerefy.test'");
+  assert.equal(found.rowCount, 1);
+  assert.equal(found.rows[0].tenant_id, 'ten_a');
+  await lookup.end();
+});
+
+test('RLS §5: sessions + graph_entities tenant isolation (read + write-reject)', async (t) => {
+  if (!url) return t.skip('no DATABASE_URL_TEST');
+  if (!ready) return t.skip('non-superuser role not provisioned');
+  const seedA = tenantSession('ten_a');
+  await seedA.q("INSERT INTO sessions (id, tenant_id, user_id, refresh_hash, expires_at) VALUES ('00000000-0000-0000-0000-000000000081', 'ten_a', '00000000-0000-0000-0000-000000000071', 'h1', now() + interval '1 day') ON CONFLICT DO NOTHING");
+  await seedA.q("INSERT INTO graph_entities (id, tenant_id, name, label) VALUES ('00000000-0000-0000-0000-000000000082', 'ten_a', 'Entity A', 'Policy') ON CONFLICT DO NOTHING");
+  await seedA.end();
+
+  const b = tenantSession('ten_b');
+  const sessions = await b.q("SELECT id FROM sessions");
+  const entities = await b.q("SELECT name FROM graph_entities");
+  assert.equal(sessions.rowCount, 0, 'ten_b must not read ten_a sessions');
+  assert.equal(entities.rowCount, 0, 'ten_b must not read ten_a graph entities');
+  await assert.rejects(
+    b.q("INSERT INTO graph_entities (id, tenant_id, name, label) VALUES ('00000000-0000-0000-0000-000000000083', 'ten_a', 'sneak', 'Policy')"),
+    /row-level security/,
+    'cross-tenant graph entity insert must be rejected',
   );
   await b.end();
 });

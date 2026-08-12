@@ -91,3 +91,9 @@ export async function listAgentDefinitions() {
   if (!(await isDatabaseReachable())) return [];
   return db.select().from(agentRegistry).orderBy(desc(agentRegistry.updatedAt));
 }
+
+export async function getAgentDefinitionById(agentId: string) {
+  if (!(await isDatabaseReachable())) return null;
+  const [row] = await db.select().from(agentRegistry).where(eq(agentRegistry.id, agentId as any)).limit(1);
+  return row ?? null;
+}

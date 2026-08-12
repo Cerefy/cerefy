@@ -29,6 +29,34 @@
       "when": 1795694400000,
       "tag": "0003_ai_queries_answers_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795694400004,
+      "tag": "0004_org_intelligence_profiles",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795694400005,
+      "tag": "0005_audit_log",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795694400006,
+      "tag": "0006_auth_members_graph",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795694400007,
+      "tag": "0007_ai_answers_human_review",
+      "breakpoints": true
     }
   ]
 }

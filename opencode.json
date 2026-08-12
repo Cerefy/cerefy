@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "vercel/xai/grok-4.5",
+  "provider": {
+    "vercel": {
+      "models": {
+        "xai/grok-4.5": {
+          "options": {
+            "order": ["xai"]
+          }
+        }
+      }
+    }
+  }
+}

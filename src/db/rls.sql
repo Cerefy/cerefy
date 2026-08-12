@@ -9,6 +9,12 @@ ALTER TABLE agent_registry ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ai_queries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ai_answers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE organization_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE graph_entities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE graph_entity_links ENABLE ROW LEVEL SECURITY;
 
 -- Create policies that enforce tenant_id matches the current session tenant.
 -- Each tenant-scoped table gets BOTH a select USING policy (existing reads)
@@ -58,6 +64,60 @@ CREATE POLICY tenant_isolation_audit_log ON audit_log
 -- silently locked all non-owner readers out. Replace with an explicit
 -- global-read policy so the catalog behaves as documented.
 ALTER TABLE agent_registry DISABLE ROW LEVEL SECURITY;
+
+-- organizations: tenant-scoped. Register inserts the new org row under that
+-- org's own tenant context, so the WITH CHECK passes; other tenants can never
+-- see it.
+DROP POLICY IF EXISTS tenant_isolation_organizations ON organizations;
+CREATE POLICY tenant_isolation_organizations ON organizations
+    USING (tenant_id = current_setting('app.current_tenant', true))
+    WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
+
+-- users: global identity. A row is visible to its own tenant context AND to the
+-- pre-auth email lookup, which runs with the `app.auth_email` session setting
+-- set (login/register must resolve an account by email before a tenant context
+-- exists). Cross-tenant reads without either context return nothing.
+DROP POLICY IF EXISTS tenant_isolation_users ON users;
+CREATE POLICY tenant_isolation_users ON users
+    USING (
+        tenant_id = current_setting('app.current_tenant', true)
+        OR email = current_setting('app.auth_email', true)
+    )
+    WITH CHECK (
+        tenant_id = current_setting('app.current_tenant', true)
+        OR email = current_setting('app.auth_email', true)
+    );
+
+-- organization_members: tenant-scoped.
+DROP POLICY IF EXISTS tenant_isolation_organization_members ON organization_members;
+CREATE POLICY tenant_isolation_organization_members ON organization_members
+    USING (tenant_id = current_setting('app.current_tenant', true))
+    WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
+
+-- sessions: tenant-scoped. Login/register know the tenant BEFORE a session is
+-- created (they resolve the account first), and refresh/logout/me resolve the
+-- tenant from the verified token, so every session operation runs under a real
+-- tenant context. The refresh flow additionally exposes a row to its own
+-- refresh-token hash (server-generated, unguessable) so the token can be
+-- resolved before its tenant is known; mutations still happen under the
+-- resolved tenant context.
+DROP POLICY IF EXISTS tenant_isolation_sessions ON sessions;
+CREATE POLICY tenant_isolation_sessions ON sessions
+    USING (
+        tenant_id = current_setting('app.current_tenant', true)
+        OR refresh_hash = current_setting('app.auth_refresh_hash', true)
+    )
+    WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
+
+-- graph_entities / graph_entity_links: tenant-scoped knowledge graph.
+DROP POLICY IF EXISTS tenant_isolation_graph_entities ON graph_entities;
+CREATE POLICY tenant_isolation_graph_entities ON graph_entities
+    USING (tenant_id = current_setting('app.current_tenant', true))
+    WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
+DROP POLICY IF EXISTS tenant_isolation_graph_entity_links ON graph_entity_links;
+CREATE POLICY tenant_isolation_graph_entity_links ON graph_entity_links
+    USING (tenant_id = current_setting('app.current_tenant', true))
+    WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
 
 -- Helper used by the application. Runner sets once per request/transaction:
 --   SELECT set_config('app.current_tenant', :tenantId, false)
