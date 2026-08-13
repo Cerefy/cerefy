@@ -17,6 +17,7 @@ if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) {
 
 const pool = new Pool({
   connectionString: databaseUrl,
+  ssl: databaseUrl.includes('localhost') || databaseUrl.includes('127.0.0.1') ? false : true,
   max: 2,
   connectionTimeoutMillis: 10_000,
   idleTimeoutMillis: 10_000,

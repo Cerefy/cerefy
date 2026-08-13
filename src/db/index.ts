@@ -2,8 +2,10 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import * as schema from './schema';
 
+const databaseUrl = process.env.DATABASE_URL || 'postgres://cerefy:cerefy_password@localhost:5432/cerefy';
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://cerefy:cerefy_password@localhost:5432/cerefy',
+  connectionString: databaseUrl,
+  ssl: databaseUrl.includes('localhost') || databaseUrl.includes('127.0.0.1') ? false : true,
   connectionTimeoutMillis: 3000,
   max: 10,
 });
