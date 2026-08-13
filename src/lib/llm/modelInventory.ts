@@ -18,7 +18,7 @@ export interface ModelInventoryEntry {
  */
 export const MODEL_INVENTORY: ModelInventoryEntry[] = [
   {
-    version: 'gemini-2.5-flash',
+    version: 'gemini-3.6-flash',
     promptVersion: 'analysis_v1',
     purpose: 'AI Workspace analysis (Understand→Retrieve→Plan→Analyze→Answer)',
     status: 'active',
@@ -33,7 +33,7 @@ export const MODEL_INVENTORY: ModelInventoryEntry[] = [
     ],
   },
   {
-    version: 'gemini-2.5-flash',
+    version: 'gemini-3.6-flash',
     promptVersion: 'decision_v1',
     purpose: 'Decision recommendation + simulation reasoning',
     status: 'active',

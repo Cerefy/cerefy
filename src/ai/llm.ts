@@ -11,7 +11,7 @@ import { providerRegistry } from '../lib/llm/registry';
 import { isolateRetrievedContent, type RetrievedDocument } from '../lib/guardrails/injection';
 
 export interface AgentLlmCall {
-  /** Real model actually invoked (gemini-2.5-flash via registry default). */
+  /** Real model actually invoked (gemini-3.6-flash via registry default). */
   modelId: string;
   /** Version of the deterministic prompt template this agent used. */
   promptVersion: string;
@@ -74,7 +74,7 @@ export async function runAgentLlm(input: {
   ];
   try {
     const result = await provider.complete({
-      modelId: 'gemini-2.5-flash',
+      modelId: 'gemini-3.6-flash',
       messages,
       temperature: input.temperature ?? 0.2,
       maxTokens: input.maxTokens ?? 2048,

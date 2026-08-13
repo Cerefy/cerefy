@@ -61,7 +61,7 @@ async function checkGemini(): Promise<ComponentHealth> {
     const provider = new GeminiProvider(process.env.GEMINI_API_KEY);
     await Promise.race([
       provider.complete({
-        modelId: 'gemini-2.5-flash',
+        modelId: 'gemini-3.6-flash',
         messages: [{ role: 'user', content: 'Reply with the single word OK.' }],
         temperature: 0,
         maxTokens: 1,

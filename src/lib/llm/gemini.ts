@@ -11,7 +11,7 @@ export class GeminiProvider implements LlmProvider {
 
   constructor(
     private readonly apiKey: string,
-    private readonly defaultModelId = 'gemini-2.5-flash',
+    private readonly defaultModelId = 'gemini-3.6-flash',
   ) {}
 
   private async call(modelId: string, body: Record<string, unknown>): Promise<GeminiApiResponse> {

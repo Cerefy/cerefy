@@ -15,7 +15,7 @@ export const AgentState = Annotation.Root({
 });
 
 const getLLM = () => new ChatGoogleGenerativeAI({
-  model: 'gemini-1.5-pro',
+  model: 'gemini-3.6-flash',
   apiKey: process.env.GEMINI_API_KEY,
 });
 

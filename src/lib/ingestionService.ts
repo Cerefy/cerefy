@@ -77,7 +77,7 @@ export async function processDocument(
 Text: "${content.substring(0, 3000)}"`;
     
     const entityRes = await aiClient.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-3.6-flash',
       contents: extractionPrompt
     });
     
