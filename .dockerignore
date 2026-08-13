@@ -35,9 +35,7 @@ __tests__
 .DS_Store
 Thumbs.db
 
-# Scripts
-scripts
-*.sh
+# Runtime migration and release entrypoint scripts must remain in the Docker build context.
 
 # Deprecated backend stacks
 /deprecated
