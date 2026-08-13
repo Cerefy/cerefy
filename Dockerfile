@@ -50,18 +50,26 @@ RUN addgroup --system --gid 1001 cerefy \
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Install only production dependencies
+# Install psql for release-time Drizzle/RLS migrations and production dependencies
+RUN apk add --no-cache postgresql-client
 COPY package*.json ./
 RUN npm ci --omit=dev --ignore-scripts --audit=false && npm cache clean --force
 
-# Copy built artifacts
+# Copy built artifacts and release-time migration assets
 COPY --from=backend-builder /app/dist ./dist
 COPY --chown=cerefy:cerefy --from=backend-builder /app/dist ./dist
+COPY --from=backend-builder /app/drizzle ./drizzle
+COPY --from=backend-builder /app/src/db/schema.ts ./src/db/schema.ts
+COPY --from=backend-builder /app/src/db/rls.sql ./src/db/rls.sql
+COPY --from=backend-builder /app/drizzle.config.ts ./drizzle.config.ts
+COPY --from=backend-builder /app/scripts/db-migrate.sh ./scripts/db-migrate.sh
+COPY --from=backend-builder /app/scripts/release-migrate-and-start.sh ./scripts/release-migrate-and-start.sh
 
 # Create logs directory
 RUN mkdir -p logs && chown cerefy:cerefy logs
 
-# Switch to non-root user
+# Make the release entrypoint executable and switch to non-root user
+RUN chmod +x /app/scripts/release-migrate-and-start.sh
 USER cerefy
 
 EXPOSE 3000
@@ -70,4 +78,4 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000/health/live', (r) => process.exit(r.statusCode === 200 ? 0 : 1))" || exit 1
 
-CMD ["node", "dist/server.cjs"]
+CMD ["/app/scripts/release-migrate-and-start.sh"]

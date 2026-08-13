@@ -13,14 +13,16 @@ fi
 
 echo "✅ DATABASE_URL configured"
 
-# Check if drizzle-kit is available and run push
-if npx drizzle-kit --version > /dev/null 2>&1; then
-  echo "🔄 Running Drizzle migrations..."
-  npx drizzle-kit push --config=drizzle.config.ts
-  echo "✅ Drizzle migrations complete"
-else
-  echo "⚠️  drizzle-kit not found, skipping migrations"
+# Drizzle-kit is a release-time requirement: never skip or swallow a migration failure.
+DRIZZLE_KIT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/node_modules/.bin/drizzle-kit"
+if [ ! -x "$DRIZZLE_KIT" ]; then
+  echo "❌ ERROR: drizzle-kit is required for release-time migrations"
+  exit 1
 fi
+
+echo "🔄 Running Drizzle migrations..."
+"$DRIZZLE_KIT" push --config="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/drizzle.config.ts"
+echo "✅ Drizzle migrations complete"
 
 # Apply Row Level Security policies. RLS must run AFTER schema push so every
 # table referenced by src/db/rls.sql exists (audit BLOCKER-1: previously no
