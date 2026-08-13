@@ -65,6 +65,7 @@ COPY --from=backend-builder /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=backend-builder /app/scripts/db-migrate.sh ./scripts/db-migrate.sh
 COPY --from=backend-builder /app/scripts/release-migrate-and-start.sh ./scripts/release-migrate-and-start.sh
 COPY --from=backend-builder /app/scripts/migration-bootstrap.cjs ./scripts/migration-bootstrap.cjs
+COPY --from=backend-builder /app/scripts/run-drizzle-migrations.cjs ./scripts/run-drizzle-migrations.cjs
 
 # Create logs directory
 RUN mkdir -p logs && chown cerefy:cerefy logs

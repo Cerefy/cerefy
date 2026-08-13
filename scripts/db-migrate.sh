@@ -22,26 +22,18 @@ echo "🔎 Ensuring pgvector extension is enabled..."
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS vector;"
 echo "✅ pgvector extension verified"
 
-# Drizzle-kit is a release-time requirement: never skip or swallow a migration failure.
-# Use the generated SQL journal in ./drizzle. `push` performs live schema
-# introspection and can fail or hang on a constrained hosted database.
-DRIZZLE_KIT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/node_modules/.bin/drizzle-kit"
-if [ ! -x "$DRIZZLE_KIT" ]; then
-  echo "❌ ERROR: drizzle-kit is required for release-time migrations"
+# Run Drizzle ORM's direct PostgreSQL migrator instead of the drizzle-kit CLI.
+# This preserves the generated migration journal while avoiding CLI spinner/process
+# behavior that has been non-diagnostic on Render's constrained Free runtime.
+APP_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+MIGRATION_RUNNER="$APP_DIR/scripts/run-drizzle-migrations.cjs"
+if [ ! -f "$MIGRATION_RUNNER" ]; then
+  echo "❌ ERROR: direct Drizzle migration runner is required for release-time migrations" >&2
   exit 1
 fi
 
 echo "🔄 Running Drizzle migrations..."
-MIGRATION_LOG="$(mktemp)"
-if ! CI=1 "$DRIZZLE_KIT" migrate --config="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/drizzle.config.ts" >"$MIGRATION_LOG" 2>&1; then
-  echo "❌ ERROR: Drizzle migrations failed; full diagnostics follow:" >&2
-  cat "$MIGRATION_LOG" >&2
-  rm -f "$MIGRATION_LOG"
-  exit 1
-fi
-cat "$MIGRATION_LOG"
-rm -f "$MIGRATION_LOG"
-echo "✅ Drizzle migrations complete"
+node "$MIGRATION_RUNNER"
 
 # Apply Row Level Security policies. RLS must run AFTER generated migrations so every
 # table referenced by src/db/rls.sql exists (audit BLOCKER-1: previously no
