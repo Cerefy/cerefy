@@ -25,8 +25,27 @@ if [ ! -f "$APP_DIR/scripts/db-migrate.sh" ]; then
   exit 1
 fi
 
+if [ ! -f "$APP_DIR/scripts/migration-bootstrap.cjs" ]; then
+  echo "ERROR: scripts/migration-bootstrap.cjs is required for release-time migrations" >&2
+  exit 1
+fi
+
+# Render Free expects the container to answer its liveness probe while a cold
+# database connection and migrations are starting. This bootstrap is not the
+# application: it exposes only /health/live and is killed before server start.
+node "$APP_DIR/scripts/migration-bootstrap.cjs" &
+BOOTSTRAP_PID=$!
+cleanup() {
+  kill "$BOOTSTRAP_PID" 2>/dev/null || true
+  wait "$BOOTSTRAP_PID" 2>/dev/null || true
+}
+trap cleanup EXIT INT TERM
+
+# Any migration or RLS failure exits non-zero; the real server is never started.
 echo "Running release-time database migration before server start..."
 sh "$APP_DIR/scripts/db-migrate.sh"
 echo "Release-time database migration complete."
 
+cleanup
+trap - EXIT INT TERM
 exec node "$APP_DIR/dist/server.cjs"
