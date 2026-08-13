@@ -45,5 +45,15 @@
   "common.notImplemented": "غير متوفر بعد",
   "common.anyMenaMarket": "أي سوق",
   "common.anyIndustry": "أي قطاع",
-  "common.plannedRoadmap": "جزء من المعمارية المستهدفة — يضيء عند اكتمال القدرة الخلفية المقابلة."
+  "common.plannedRoadmap": "جزء من المعمارية المستهدفة — يضيء عند اكتمال القدرة الخلفية المقابلة.",
+  "projects.title": "المشاريع",
+  "projects.description": "تُعرض المشاريع من واجهة برمجة تطبيقات مساحة العمل.",
+  "projects.emptyTitle": "لا توجد مشاريع بعد",
+  "projects.emptyDescription": "أنشئ مشروعًا عبر سير عمل متاح في مساحة العمل ليظهر هنا.",
+  "projects.errorTitle": "تعذر تحميل المشاريع",
+  "projects.code": "الرمز",
+  "projects.department": "القسم",
+  "projects.progress": "التقدم",
+  "projects.dueDate": "تاريخ الاستحقاق",
+  "projects.notScheduled": "غير مجدول"
 }

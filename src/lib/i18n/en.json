@@ -45,5 +45,15 @@
   "common.notImplemented": "Not implemented yet",
   "common.anyMenaMarket": "Any MENA market",
   "common.anyIndustry": "Any industry",
-  "common.plannedRoadmap": "Part of the target architecture — lights up when the matching backend capability ships."
+  "common.plannedRoadmap": "Part of the target architecture — lights up when the matching backend capability ships.",
+  "projects.title": "Projects",
+  "projects.description": "Projects are shown from the workspace API.",
+  "projects.emptyTitle": "No projects yet",
+  "projects.emptyDescription": "Create a project through an available workspace workflow to see it here.",
+  "projects.errorTitle": "Unable to load projects",
+  "projects.code": "Code",
+  "projects.department": "Department",
+  "projects.progress": "Progress",
+  "projects.dueDate": "Due date",
+  "projects.notScheduled": "Not scheduled"
 }
