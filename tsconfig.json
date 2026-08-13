@@ -25,5 +25,5 @@
     "noEmit": true
   },
   "include": ["src", "server.ts", "instrumentation.ts", "drizzle.config.ts", "vite.config.ts"],
-  "exclude": ["node_modules", "dist", "apps", "packages", "scripts"]
+  "exclude": ["node_modules", "dist", "apps", "packages", "scripts", "deprecated"]
 }

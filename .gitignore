@@ -26,6 +26,7 @@ secrets/
 credentials/
 *secret*
 *credential*
+!src/lib/security/secretScan.ts
 service-account*.json
 *-credentials.json
 
@@ -52,6 +53,11 @@ backups/
 *.sql.gz
 *.dump
 *.dump.gz
+
+# Deprecated backend generated artifacts
+/deprecated/**/__pycache__/
+/deprecated/**/*.pyc
+/deprecated/**/*.egg-info/
 
 # Temp files
 *.tmp

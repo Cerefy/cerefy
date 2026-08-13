@@ -39,6 +39,9 @@ Thumbs.db
 scripts
 *.sh
 
+# Deprecated backend stacks
+/deprecated
+
 # Docker
 Dockerfile
 docker-compose*.yml
