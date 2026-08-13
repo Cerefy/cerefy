@@ -14,6 +14,8 @@ fi
 echo "✅ DATABASE_URL configured"
 
 # Drizzle-kit is a release-time requirement: never skip or swallow a migration failure.
+# Use the generated SQL journal in ./drizzle. `push` performs live schema
+# introspection and can fail or hang on a constrained hosted database.
 DRIZZLE_KIT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/node_modules/.bin/drizzle-kit"
 if [ ! -x "$DRIZZLE_KIT" ]; then
   echo "❌ ERROR: drizzle-kit is required for release-time migrations"
@@ -21,10 +23,10 @@ if [ ! -x "$DRIZZLE_KIT" ]; then
 fi
 
 echo "🔄 Running Drizzle migrations..."
-"$DRIZZLE_KIT" push --config="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/drizzle.config.ts"
+"$DRIZZLE_KIT" migrate --config="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/drizzle.config.ts"
 echo "✅ Drizzle migrations complete"
 
-# Apply Row Level Security policies. RLS must run AFTER schema push so every
+# Apply Row Level Security policies. RLS must run AFTER generated migrations so every
 # table referenced by src/db/rls.sql exists (audit BLOCKER-1: previously no
 # deploy path ever enabled RLS — production was effectively wide-open).
 echo "🔄 Enabling Row Level Security..."
