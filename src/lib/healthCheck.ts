@@ -15,7 +15,7 @@ interface HealthStatus {
 }
 
 interface ComponentHealth {
-  status: 'up' | 'down' | 'unknown';
+  status: 'up' | 'down' | 'unknown' | 'not_configured';
   latencyMs?: number;
   message?: string;
 }
@@ -43,7 +43,7 @@ async function checkDatabase(): Promise<ComponentHealth> {
 
 async function checkGemini(): Promise<ComponentHealth> {
   if (!process.env.GEMINI_API_KEY) {
-    return { status: 'unknown', message: 'GEMINI_API_KEY not configured' };
+    return { status: 'not_configured', message: 'GEMINI_API_KEY not configured' };
   }
   return { status: 'up', message: 'API key configured' };
 }
@@ -56,7 +56,7 @@ async function checkFirebase(): Promise<ComponentHealth> {
     if (apps && apps.length > 0) {
       return { status: 'up', message: 'Firebase Admin initialized' };
     }
-    return { status: 'unknown', message: 'Firebase Admin not yet initialized' };
+    return { status: 'not_configured', message: 'Firebase Admin not configured for the pilot' };
   } catch {
     return { status: 'down', message: 'Firebase Admin unavailable' };
   }
@@ -64,7 +64,7 @@ async function checkFirebase(): Promise<ComponentHealth> {
 
 async function checkNeo4j(): Promise<ComponentHealth> {
   if (!process.env.NEO4J_URI) {
-    return { status: 'unknown', message: 'NEO4J_URI not configured' };
+    return { status: 'not_configured', message: 'NEO4J_URI not configured for the pilot' };
   }
 
   try {
@@ -107,11 +107,12 @@ export async function readinessCheck(req: Request, res: Response): Promise<void>
   checks.gemini = gemini;
   checks.firebase = firebase;
 
-  if (db.status === 'down' || neo4j.status === 'down') {
-    overallStatus = 'degraded';
-  }
-  if (db.status === 'down' && neo4j.status === 'down') {
-    overallStatus = 'unhealthy';
+  // Pilot readiness requires both the database and Gemini. Neo4j and Firebase
+  // remain informational integrations and never block pilot readiness.
+  const databaseDown = db.status === 'down';
+  const geminiUnavailable = gemini.status === 'down' || gemini.status === 'not_configured';
+  if (databaseDown || geminiUnavailable) {
+    overallStatus = databaseDown && geminiUnavailable ? 'unhealthy' : 'degraded';
   }
 
   const health: HealthStatus = {
