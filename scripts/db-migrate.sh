@@ -2,7 +2,8 @@
 # scripts/db-migrate.sh
 # Run database migrations safely in production
 
-set -e
+set -eu
+set -o pipefail
 
 echo "📦 Running Cerefy Database Migrations..."
 
@@ -23,7 +24,15 @@ if [ ! -x "$DRIZZLE_KIT" ]; then
 fi
 
 echo "🔄 Running Drizzle migrations..."
-CI=1 "$DRIZZLE_KIT" migrate --config="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/drizzle.config.ts"
+MIGRATION_LOG="$(mktemp)"
+if ! CI=1 "$DRIZZLE_KIT" migrate --config="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/drizzle.config.ts" >"$MIGRATION_LOG" 2>&1; then
+  echo "❌ ERROR: Drizzle migrations failed; full diagnostics follow:" >&2
+  cat "$MIGRATION_LOG" >&2
+  rm -f "$MIGRATION_LOG"
+  exit 1
+fi
+cat "$MIGRATION_LOG"
+rm -f "$MIGRATION_LOG"
 echo "✅ Drizzle migrations complete"
 
 # Apply Row Level Security policies. RLS must run AFTER generated migrations so every
