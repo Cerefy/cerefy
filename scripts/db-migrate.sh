@@ -23,7 +23,7 @@ if [ ! -x "$DRIZZLE_KIT" ]; then
 fi
 
 echo "🔄 Running Drizzle migrations..."
-"$DRIZZLE_KIT" migrate --config="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/drizzle.config.ts"
+CI=1 "$DRIZZLE_KIT" migrate --config="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/drizzle.config.ts"
 echo "✅ Drizzle migrations complete"
 
 # Apply Row Level Security policies. RLS must run AFTER generated migrations so every
