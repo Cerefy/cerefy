@@ -3,7 +3,6 @@
 # Run database migrations safely in production
 
 set -eu
-set -o pipefail
 
 echo "📦 Running Cerefy Database Migrations..."
 

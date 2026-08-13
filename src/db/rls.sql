@@ -16,6 +16,24 @@ ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE graph_entities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE graph_entity_links ENABLE ROW LEVEL SECURITY;
 
+-- The application connects as the managed database owner. FORCE is required so
+-- that owner privileges do not bypass tenant policies in the pilot runtime.
+ALTER TABLE projects FORCE ROW LEVEL SECURITY;
+ALTER TABLE documents FORCE ROW LEVEL SECURITY;
+ALTER TABLE document_chunks FORCE ROW LEVEL SECURITY;
+ALTER TABLE decisions FORCE ROW LEVEL SECURITY;
+ALTER TABLE organization_intelligence_profiles FORCE ROW LEVEL SECURITY;
+ALTER TABLE agent_executions FORCE ROW LEVEL SECURITY;
+ALTER TABLE ai_queries FORCE ROW LEVEL SECURITY;
+ALTER TABLE ai_answers FORCE ROW LEVEL SECURITY;
+ALTER TABLE audit_log FORCE ROW LEVEL SECURITY;
+ALTER TABLE organizations FORCE ROW LEVEL SECURITY;
+ALTER TABLE users FORCE ROW LEVEL SECURITY;
+ALTER TABLE organization_members FORCE ROW LEVEL SECURITY;
+ALTER TABLE sessions FORCE ROW LEVEL SECURITY;
+ALTER TABLE graph_entities FORCE ROW LEVEL SECURITY;
+ALTER TABLE graph_entity_links FORCE ROW LEVEL SECURITY;
+
 -- Create policies that enforce tenant_id matches the current session tenant.
 -- Each tenant-scoped table gets BOTH a select USING policy (existing reads)
 -- and a WITH CHECK policy so writes under RLS also carry the tenant boundary;
