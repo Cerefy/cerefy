@@ -4,6 +4,7 @@
 import { Request, Response } from 'express';
 import { getNeo4jDriver } from './neo4j';
 import { pool as dbPool } from '../db';
+import { GeminiProvider } from './llm/gemini';
 
 interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -41,11 +42,42 @@ async function checkDatabase(): Promise<ComponentHealth> {
   }
 }
 
+let geminiProbe: { checkedAt: number; result: ComponentHealth } | null = null;
+const GEMINI_PROBE_CACHE_MS = 30_000;
+const GEMINI_PROBE_TIMEOUT_MS = 8_000;
+
 async function checkGemini(): Promise<ComponentHealth> {
   if (!process.env.GEMINI_API_KEY) {
     return { status: 'not_configured', message: 'GEMINI_API_KEY not configured' };
   }
-  return { status: 'up', message: 'API key configured' };
+  if (geminiProbe && Date.now() - geminiProbe.checkedAt < GEMINI_PROBE_CACHE_MS) {
+    return geminiProbe.result;
+  }
+
+  const startedAt = Date.now();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), GEMINI_PROBE_TIMEOUT_MS);
+  try {
+    const provider = new GeminiProvider(process.env.GEMINI_API_KEY);
+    await Promise.race([
+      provider.complete({
+        modelId: 'gemini-2.5-flash',
+        messages: [{ role: 'user', content: 'Reply with the single word OK.' }],
+        temperature: 0,
+        maxTokens: 1,
+      }),
+      new Promise<never>((_, reject) => controller.signal.addEventListener('abort', () => reject(new Error('Gemini readiness probe timed out')), { once: true })),
+    ]);
+    const result = { status: 'up' as const, latencyMs: Date.now() - startedAt, message: 'Live Gemini API request succeeded' };
+    geminiProbe = { checkedAt: Date.now(), result };
+    return result;
+  } catch (err: any) {
+    const result = { status: 'down' as const, latencyMs: Date.now() - startedAt, message: err?.message || 'Gemini API request failed' };
+    geminiProbe = { checkedAt: Date.now(), result };
+    return result;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function checkFirebase(): Promise<ComponentHealth> {
