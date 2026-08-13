@@ -29,8 +29,13 @@ export class GeminiProvider implements LlmProvider {
 
   async complete(req: LlmCompletionRequest): Promise<LlmCompletionResult> {
     const modelId = req.modelId || this.defaultModelId;
+    const systemMessages = req.messages.filter((m) => m.role === 'system');
+    const contents = req.messages
+      .filter((m) => m.role !== 'system')
+      .map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }));
     const payload = {
-      contents: req.messages.map((m) => ({ role: m.role, parts: [{ text: m.content }] })),
+      ...(systemMessages.length > 0 ? { systemInstruction: { parts: systemMessages.map((m) => ({ text: m.content })) } } : {}),
+      contents,
       generationConfig: {
         temperature: req.temperature ?? 0.7,
         maxOutputTokens: req.maxTokens ?? 4096,

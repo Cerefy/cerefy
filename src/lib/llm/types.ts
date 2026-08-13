@@ -38,12 +38,11 @@ export interface LlmProvider {
 }
 
 export const PRICING = {
-  'gemini-2.5-flash': { inputPerM: 0.3, outputPerM: 1.5 },
-  'gemini-2.0-flash': { inputPerM: 0.1, outputPerM: 0.4 },
+  'gemini-3.6-flash': { inputPerM: 0.3, outputPerM: 1.5 },
   'fallback-rule': { inputPerM: 0, outputPerM: 0 },
 } as const;
 
 export function estimateCompletionCost(modelId: string, input: number, output: number): number {
-  const price = PRICING[modelId as keyof typeof PRICING] ?? PRICING['gemini-2.5-flash'];
+  const price = PRICING[modelId as keyof typeof PRICING] ?? PRICING['gemini-3.6-flash'];
   return (input / 1_000_000) * price.inputPerM + (output / 1_000_000) * price.outputPerM;
 }
