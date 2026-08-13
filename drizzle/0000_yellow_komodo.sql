@@ -1,3 +1,7 @@
+-- Render Postgres supports pgvector, but extensions are not enabled automatically.
+-- This must run before the first table uses vector(1536).
+CREATE EXTENSION IF NOT EXISTS vector;
+--> statement-breakpoint
 CREATE TABLE "decisions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"tenant_id" text NOT NULL,
