@@ -2,7 +2,6 @@ services:
   - type: web
     name: cerefy-web
     env: docker
-    region: ohio
     buildCommand: npm ci && npm run build
     dockerfilePath: ./Dockerfile
     plan: free
