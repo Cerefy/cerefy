@@ -3,7 +3,7 @@ services:
     name: cerefy-web
     env: docker
     buildCommand: npm ci && npm run build
-    startCommand: npm run start:prod
+    startCommand: /app/scripts/release-migrate-and-start.sh
     dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /health/ready
