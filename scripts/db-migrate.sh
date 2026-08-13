@@ -14,6 +14,14 @@ fi
 
 echo "✅ DATABASE_URL configured"
 
+echo "🔎 Checking PostgreSQL connectivity..."
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -Atqc "SELECT current_database() || ' / ' || current_user"
+echo "✅ PostgreSQL connectivity verified"
+
+echo "🔎 Ensuring pgvector extension is enabled..."
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS vector;"
+echo "✅ pgvector extension verified"
+
 # Drizzle-kit is a release-time requirement: never skip or swallow a migration failure.
 # Use the generated SQL journal in ./drizzle. `push` performs live schema
 # introspection and can fail or hang on a constrained hosted database.
