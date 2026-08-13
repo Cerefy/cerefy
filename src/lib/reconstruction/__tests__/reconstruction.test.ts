@@ -11,7 +11,7 @@ const ANSWER: AnswerRecord = {
   id: 'answer_1',
   tenantId: 't1',
   queryId: 'query_1',
-  modelVersion: 'gemini-2.5-flash',
+  modelVersion: 'gemini-3.6-flash',
   promptVersion: 'analysis_v1',
   confidence: 0.85,
   output: { answer: 'Acme runs SAP S/4HANA.' },
@@ -28,7 +28,7 @@ const QUERY: QueryRecord = {
   type: 'analysis',
   tokensInput: 1200,
   tokensOutput: 320,
-  costUsd: estimateCompletionCost('gemini-2.5-flash', 1200, 320),
+  costUsd: estimateCompletionCost('gemini-3.6-flash', 1200, 320),
   createdAt: '2025-01-15T10:00:00Z',
 };
 
@@ -44,7 +44,7 @@ test('reconstruction §12: full provenance reconstructable with no gaps', () => 
   const r = reconstructAnswer({ answer: ANSWER, query: QUERY, followUps: [FOLLOW_UP], inventory: MODEL_INVENTORY });
   assert.equal(r.reconstructable, true);
   assert.deepEqual(r.gaps, []);
-  assert.equal(r.model.modelVersion, 'gemini-2.5-flash');
+  assert.equal(r.model.modelVersion, 'gemini-3.6-flash');
   assert.equal(r.retrievedData[0].id, 'doc-acme-2024');
   assert.equal(r.humanFollowUp.latestReview?.action, 'approved');
   assert.equal(r.humanFollowUp.latestReview?.outcome?.achieved, true);
@@ -77,7 +77,7 @@ test('store: records query/answer/follow-up and reflects edits', async () => {
   const store = createProvenanceStore();
   const q = await store.recordQuery({ tenantId: 't1', userId: 'u1', type: 'analysis', tokensInput: 10, tokensOutput: 5, costUsd: 0.001 });
   const a = await store.recordAnswer({
-    tenantId: 't1', queryId: q.id, modelVersion: 'gemini-2.5-flash', promptVersion: 'analysis_v1',
+    tenantId: 't1', queryId: q.id, modelVersion: 'gemini-3.6-flash', promptVersion: 'analysis_v1',
     confidence: 0.7, output: { answer: 'x' }, sources: [{ id: 's1', content: 'x' }], humanReviewStatus: 'PENDING', humanEdited: false,
   });
   const r = reconstructAnswer({ answer: a, query: q });
@@ -152,7 +152,7 @@ test('chaos §11.6: llm_error fault route throws honest error', async () => {
 });
 
 test('model inventory §11.4: lookup finds active entry, boundaries documented', () => {
-  const entry = lookupInventory('gemini-2.5-flash', 'analysis_v1');
+  const entry = lookupInventory('gemini-3.6-flash', 'analysis_v1');
   assert.ok(entry);
   assert.equal(entry!.status, 'active');
   assert.ok(entry!.knownLimitations.length > 0);
@@ -162,6 +162,6 @@ test('model inventory §11.4: lookup finds active entry, boundaries documented',
 });
 
 test('model inventory §11.4: independent validation recorded', () => {
-  const entry = markValidated('gemini-2.5-flash', 'decision_v1', '2025-03-01T00:00:00Z');
+  const entry = markValidated('gemini-3.6-flash', 'decision_v1', '2025-03-01T00:00:00Z');
   assert.equal(entry?.lastIndependentValidationAt, '2025-03-01T00:00:00Z');
 });

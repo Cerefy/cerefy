@@ -52,7 +52,7 @@ test('chaos + fallback integration §11.6/§3.3: provider outage degrades honest
 
   const router = new FallbackRouter(failingProvider as any, new RuleBasedFallbackProvider());
   const result = await router.complete({
-    modelId: 'gemini-2.5-flash',
+    modelId: 'gemini-3.6-flash',
     messages: [{ role: 'user', content: 'What is the Q3 revenue?' }],
   });
   assert.match(result.text, /AI temporarily limited/);

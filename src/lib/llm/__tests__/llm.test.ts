@@ -31,14 +31,14 @@ test('router: primary failure rolls to fallback', async () => {
 });
 
 test('cost: estimate completion cost from pricing table', () => {
-  const cost = estimateCompletionCost('gemini-2.5-flash', 1_000_000, 1_000_000);
+  const cost = estimateCompletionCost('gemini-3.6-flash', 1_000_000, 1_000_000);
   assert.ok(Math.abs(cost - 1.8) < 1e-6);
 });
 
 test('prompts: versioned registry serves known templates', () => {
   const p = getPrompt('analysis_v1');
   assert.equal(p.version, 'analysis_v1');
-  assert.equal(p.modelId, 'gemini-2.5-flash');
+  assert.equal(p.modelId, 'gemini-3.6-flash');
   assert.ok(p.user({ query: 'q', sources: [] }).includes('q'));
 });
 

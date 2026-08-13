@@ -8,7 +8,7 @@ export interface PromptTemplate {
 const PROMPT_VERSIONS: Record<string, PromptTemplate> = {
   analysis_v1: {
     version: 'analysis_v1',
-    modelId: 'gemini-2.5-flash',
+    modelId: 'gemini-3.6-flash',
     system:
       'You are Cerefy, an enterprise AI decision platform. Answer only from the retrieved documents and context provided. ' +
       'If you do not have a reliable source, say so explicitly. Do not invent metrics, citations, or references. ' +
@@ -21,7 +21,7 @@ const PROMPT_VERSIONS: Record<string, PromptTemplate> = {
   },
   decision_v1: {
     version: 'decision_v1',
-    modelId: 'gemini-2.5-flash',
+    modelId: 'gemini-3.6-flash',
     system:
       'You are a decision-support analyst. Produce a recommendation with explicit confidence and list the sources supporting each key claim. ' +
       'If confidence is low, recommend human review. Cite sources by document id.',

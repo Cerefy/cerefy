@@ -170,12 +170,12 @@ test('RLS §5: ai_answers tenant isolation — the §12 audit-critical table', a
   const seed = tenantSession('ten_a');
   await seed.q(`
     INSERT INTO ai_answers (id, tenant_id, model_version, prompt_version, confidence, output, sources)
-    VALUES ('00000000-0000-0000-0000-000000000011', 'ten_a', 'gemini-2.5-flash', 'analysis_v1', 0.9, '{"answer":"secret A"}', '[]')`);
+    VALUES ('00000000-0000-0000-0000-000000000011', 'ten_a', 'gemini-3.6-flash', 'analysis_v1', 0.9, '{"answer":"secret A"}', '[]')`);
   await seed.end();
   const seedB = tenantSession('ten_b');
   await seedB.q(`
     INSERT INTO ai_answers (id, tenant_id, model_version, prompt_version, confidence, output, sources)
-    VALUES ('00000000-0000-0000-0000-000000000012', 'ten_b', 'gemini-2.5-flash', 'analysis_v1', 0.8, '{"answer":"secret B"}', '[]')`);
+    VALUES ('00000000-0000-0000-0000-000000000012', 'ten_b', 'gemini-3.6-flash', 'analysis_v1', 0.8, '{"answer":"secret B"}', '[]')`);
   await seedB.end();
 
   const b = tenantSession('ten_b');
