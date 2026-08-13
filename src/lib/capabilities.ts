@@ -41,7 +41,7 @@ export const CAPABILITIES = {
   decisions: {
     status: 'partial',
     endpoints: ['/api/v1/decisions', '/api/v1/decisions/:id/approve', '/api/v1/decisions/:id/reject'],
-    note: 'Decision CRUD + approve/reject via Express + Drizzle. SIMULATE returns honest 501 — no real simulation backend exists; UI must not fabricate a simulation result.',
+    note: 'Approve/reject are backed by real Express + Drizzle endpoints; simulation reaches the real endpoint and surfaces backend-unavailable errors without fabrication. Missing backend capability: a real decision-simulation service and persisted simulation result contract.',
   },
   aiPipeline: {
     status: 'partial',
@@ -51,7 +51,7 @@ export const CAPABILITIES = {
   agents: {
     status: 'partial',
     endpoints: ['/api/v1/agents', '/api/v1/agents/:agentId', '/api/v1/agents/execute'],
-    note: 'Registry listing real (agent_registry rows + real execution history success rate via analyticsService). Execution via /ai/run real. Agent marketplace planned.',
+    note: 'Roster reads real agent_registry rows and execution-history metrics. Missing backend/UI contract: the agent execute endpoint requires a task/query payload that this roster does not supply, so execution is not wired; no dedicated marketplace API exists.',
   },
   ingestion: {
     status: 'implemented',
@@ -61,17 +61,17 @@ export const CAPABILITIES = {
   knowledgeGraph: {
     status: 'partial',
     endpoints: ['/api/v1/graph/cypher'],
-    note: 'POST /api/v1/graph/cypher is real: reads tenant-scoped graph_entities + graph_entity_links persisted at ingestion time. Cypher string is honored as a label filter only (no full cypher execution).',
+    note: 'Read-only graph queries return persisted graph_entities and graph_entity_links; the Cypher string is honored only as a label filter. Missing backend capability: no graph create, update, or delete mutation endpoints exist.',
   },
   memory: {
     status: 'partial',
     endpoints: ['/api/v1/ai/memory/query', '/api/v1/memory/documents'],
-    note: 'Query backed by real vector memory context (pgvector chunks) + decision history. Documents list real from documents table. Multi-tier memory UI shows real results; EmptyState when tenant has no docs.',
+    note: 'Knowledge-memory documents and search are backed by real document rows and vector-memory/decision-history queries. Missing backend capability: no memory write/ingest management endpoint is exposed from this surface.',
   },
   analytics: {
     status: 'partial',
     endpoints: ['/api/v1/analytics/executive-kpis', '/api/v1/analytics/agent-performance', '/api/v1/analytics/projects/:projectId'],
-    note: 'Real aggregates over projects/agents/decisions/queries/answers. Some dashboard tiles still render local fallbacks — individual tiles checked against the flag.',
+    note: 'Executive KPIs, agent performance, and decision records are backed by real endpoints. Missing backend capability: no chart/time-series, dedicated ROI breakdown, or export endpoints exist.',
   },
   arabicIntelligence: {
     status: 'not_implemented',
@@ -86,7 +86,7 @@ export const CAPABILITIES = {
   workflows: {
     status: 'not_implemented',
     endpoints: [],
-    note: 'Backend workflow engine scaffolded in src/enterprise/workflow; no production route yet. Drag/drop builder planned.',
+    note: 'Backend workflow engine scaffolded in deprecated/enterprise/workflow; no production route yet. Drag/drop builder planned.',
   },
   billing: {
     status: 'not_implemented',

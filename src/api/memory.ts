@@ -19,6 +19,14 @@ export interface MemoryResult {
   metadata: Record<string, unknown>;
 }
 
+export interface MemoryDocument {
+  id: string;
+  title: string;
+  updatedAt: string;
+  summary: string;
+  source: string;
+}
+
 export interface IngestRequest {
   title: string;
   content: string;
@@ -45,8 +53,8 @@ export const memoryApi = {
     return response.data;
   },
 
-  async getDocuments(): Promise<unknown[]> {
-    const response = await api.get('/api/v1/memory/documents');
+  async getDocuments(): Promise<MemoryDocument[]> {
+    const response = await api.get<{ data: MemoryDocument[] }>('/api/v1/memory/documents');
     return response.data.data;
   },
 

@@ -39,6 +39,8 @@ export interface AgentProfile {
   department: string;
   status: 'idle' | 'busy' | 'reflecting' | 'offline';
   skills: string[];
+  avatarColor?: string;
+  currentTask?: string;
   performanceScore: number;
   monthlyCost: string;
   tools: string[];
