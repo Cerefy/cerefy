@@ -4,6 +4,7 @@ import { decisionsApi, CreateDecisionRequest, Decision } from '../api/decisions'
 import { agentsApi, AgentProfile } from '../api/agents';
 import { analyticsApi, ExecutiveKPIs, AgentPerformance } from '../api/analytics';
 import { memoryApi, MemoryQueryRequest, MemoryResult, IngestRequest, IngestResponse } from '../api/memory';
+import { workflowsApi, CreateWorkflowRequest } from '../api/workflows';
 
 export function useProjects() {
   return useQuery<Project[]>({
@@ -157,5 +158,70 @@ export function useMemoryIngest() {
 export function useKnowledgeGraph() {
   return useMutation({
     mutationFn: (cypher?: string) => memoryApi.getKnowledgeGraph(cypher),
+  });
+}
+
+export function useWorkflows() {
+  return useQuery({
+    queryKey: ['workflows'],
+    queryFn: workflowsApi.list,
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useWorkflow(workflowId: string) {
+  return useQuery({
+    queryKey: ['workflows', workflowId],
+    queryFn: () => workflowsApi.get(workflowId),
+    enabled: !!workflowId,
+    staleTime: 30_000,
+  });
+}
+
+export function useCreateWorkflow() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreateWorkflowRequest) => workflowsApi.create(data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workflows'] }),
+  });
+}
+
+export function usePublishWorkflow() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ workflowId, versionId }: { workflowId: string; versionId: string }) => workflowsApi.publish(workflowId, versionId),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+      queryClient.invalidateQueries({ queryKey: ['workflows', variables.workflowId] });
+    },
+  });
+}
+
+export function useRunWorkflow() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ workflowId, input, idempotencyKey }: { workflowId: string; input: Record<string, unknown>; idempotencyKey: string }) => workflowsApi.run(workflowId, input, idempotencyKey),
+    onSuccess: (data) => queryClient.invalidateQueries({ queryKey: ['workflow-runs', data.run.id] }),
+  });
+}
+
+export function useWorkflowRun(runId: string) {
+  return useQuery({
+    queryKey: ['workflow-runs', runId],
+    queryFn: () => workflowsApi.getRun(runId),
+    enabled: !!runId,
+    refetchInterval: (query) => {
+      const status = query.state.data?.run.status;
+      return status === 'QUEUED' || status === 'RUNNING' || status === 'WAITING_APPROVAL' ? 2_000 : false;
+    },
+  });
+}
+
+export function useResolveWorkflowApproval() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ approvalId, status, note }: { approvalId: string; status: 'APPROVED' | 'REJECTED'; note?: string }) => workflowsApi.resolveApproval(approvalId, status, note),
+    onSuccess: (approval) => queryClient.invalidateQueries({ queryKey: ['workflow-runs', approval.workflowRunId] }),
   });
 }

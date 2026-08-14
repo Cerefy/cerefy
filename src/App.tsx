@@ -115,7 +115,7 @@ function AppRoutes() {
           <Route path="orchestrator" element={<AgentOrchestratorView />} />
           <Route path="bpmn" element={<BPMNWorkspaceView />} />
           <Route path="conversations" element={<PlannedModule capability="memory" title="Conversations" icon="forum" />} />
-          <Route path="workflows" element={<PlannedModule capability="workflows" title="Autonomous Workflows" icon="account_tree" />} />
+          <Route path="workflows" element={<AIStudioWorkflowView />} />
 
           {/* AI Platform */}
           <Route path="ai/models" element={<AIModelsPage />} />

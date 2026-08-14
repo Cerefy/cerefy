@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAgentStore } from '../store/useAgentStore';
+import { WorkflowAutomationView } from './WorkflowAutomationView';
 import { useNavigate } from 'react-router-dom';
 import {
   Workflow,
@@ -21,7 +22,7 @@ import {
 } from 'lucide-react';
 
 export const AIStudioWorkflowView: React.FC = () => {
-  const { agents, workflows, setIsExecuting } = useAgentStore();
+  const { agents } = useAgentStore();
   const navigate = useNavigate();
 
   // Mode switcher: 'AGENT_STUDIO' or 'WORKFLOW_BUILDER'
@@ -402,63 +403,8 @@ export const AIStudioWorkflowView: React.FC = () => {
             </form>
           </div>
         </div>
-      ) : (
-        /* Workflow Automations Visual Node Mode (Image 7) */
-        <div className="bg-dark-panel/50 border border-dark-panel-raised/80 rounded-2xl p-6 shadow-sm space-y-6 backdrop-blur-sm">
-          <div className="flex justify-between items-center border-b border-dark-panel-raised pb-4">
-            <div>
-              <h3 className="text-base font-bold text-dark-text-bright font-sans">
-                Visual Workflow Automations Pipeline
-              </h3>
-              <p className="text-xs text-dark-muted font-sans">
-                Multi-step node graphs connecting triggers, Gemini reasoning, and webhook execution.
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                setIsExecuting(true);
-                setTimeout(() => setIsExecuting(false), 1200);
-              }}
-              className="px-4 py-2 bg-emerald-signal-deep hover:bg-emerald-signal text-dark-text-bright font-semibold text-xs rounded-xl shadow-glow-emerald transition-colors flex items-center gap-2 cursor-pointer"
-            >
-              <Play className="h-4 w-4 fill-white" />
-              <span>Run Pipeline Simulation</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {workflows.map((wf) => (
-              <div
-                key={wf.id}
-                className="p-5 bg-dark-panel-deep border border-dark-panel-raised rounded-2xl space-y-4 hover:border-dark-panel-soft transition-all shadow-sm"
-              >
-                <div className="flex justify-between items-center">
-                  <span className="px-2 py-0.5 bg-indigo-signal/10 text-indigo-signal-strong text-[9px] font-mono font-bold rounded uppercase border border-indigo-signal/20">
-                    {wf.triggerType}
-                  </span>
-                  <span className="text-xs font-mono text-dark-muted">{wf.nodes.length} Nodes</span>
-                </div>
-                <h4 className="text-sm font-bold text-dark-text-bright font-sans">{wf.name}</h4>
-                <div className="space-y-2 pt-2 border-t border-dark-panel-raised">
-                  {wf.nodes.map((n, i) => (
-                    <div
-                      key={n.id}
-                      className="p-2.5 bg-dark-panel border border-dark-panel-raised rounded-xl text-xs font-sans flex items-center justify-between hover:bg-dark-panel-raised transition-colors"
-                    >
-                      <span className="font-semibold text-dark-text">
-                        {i + 1}. {n.label}
-                      </span>
-                      <span className="text-[10px] font-mono text-indigo-signal-strong bg-indigo-signal/10 px-1.5 py-0.5 rounded border border-indigo-signal/20">
-                        {n.type}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      ) : <WorkflowAutomationView />
+      }
     </div>
   );
 };
