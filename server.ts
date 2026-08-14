@@ -38,6 +38,7 @@ import { listAgentDefinitions, getAgentDefinitionById } from './src/ai/registry'
 import { loadVectorMemoryContext } from './src/ai/memory/vectorMemory';
 import * as serializers from './src/lib/serializers';
 import * as workflowService from './src/lib/workflowService';
+import * as workflowRuntime from './src/lib/workflowRuntime';
 
 // ─── Initialize Firebase Admin ───────────────────────────────────────────────
 let firebaseApp: App | null = null;
@@ -613,12 +614,31 @@ app.post('/api/v1/workflows/:workflowId/runs', requireAuth, requireTenant, requi
   try {
     const userId = String((req.user as any)?.uid || (req.user as any)?.id || 'unknown');
     const result = await workflowService.createWorkflowRun(req.tenantId!, req.params.workflowId, userId, req.body?.input && typeof req.body.input === 'object' ? req.body.input : {}, typeof req.headers['idempotency-key'] === 'string' ? req.headers['idempotency-key'] : undefined);
-    if (!result.replayed) await auditLog.log({ action: 'workflow.run.created', actorId: userId, actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId!, resource: 'workflow.run', detail: { workflowId: req.params.workflowId, runId: result.run.id } }).catch(() => {});
+    if (!result.replayed) {
+      await auditLog.log({ action: 'workflow.run.created', actorId: userId, actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId!, resource: 'workflow.run', detail: { workflowId: req.params.workflowId, runId: result.run.id } }).catch(() => {});
+      void workflowRuntime.executeWorkflowRun(req.tenantId!, result.run.id, socketServer).catch((error) => logger.error('Workflow runtime execution failed', { error, runId: result.run.id, tenantId: req.tenantId }));
+    }
     res.status(result.replayed ? 200 : 202).json({ data: result });
   } catch (error: any) {
     const status = Number.isInteger(error?.status) ? error.status : 500;
     logger.error('Failed to create workflow run', { error, tenantId: req.tenantId, workflowId: req.params.workflowId });
     res.status(status).json({ status: 'error', message: status === 500 ? 'Failed to create workflow run' : error.message });
+  }
+});
+
+app.post('/api/v1/workflow-approvals/:approvalId/resolve', requireAuth, requireTenant, requirePermission('approve:decision', 'decision'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const status = req.body?.status;
+    if (status !== 'APPROVED' && status !== 'REJECTED') { res.status(400).json({ status: 'error', message: 'status must be APPROVED or REJECTED' }); return; }
+    const userId = String((req.user as any)?.uid || (req.user as any)?.id || 'unknown');
+    const approval = await workflowRuntime.resolveWorkflowApproval(req.tenantId!, req.params.approvalId, userId, status, typeof req.body?.note === 'string' ? req.body.note : undefined);
+    if (!approval) { res.status(404).json({ status: 'error', message: 'Pending workflow approval not found' }); return; }
+    await auditLog.log({ action: `workflow.approval.${status.toLowerCase()}`, actorId: userId, actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId!, resource: 'workflow.approval', detail: { approvalId: req.params.approvalId, workflowRunId: approval.workflowRunId } }).catch(() => {});
+    if (status === 'APPROVED') void workflowRuntime.executeWorkflowRun(req.tenantId!, approval.workflowRunId, socketServer).catch((error) => logger.error('Approved workflow resume failed', { error, runId: approval.workflowRunId, tenantId: req.tenantId }));
+    res.json({ data: approval });
+  } catch (error) {
+    logger.error('Failed to resolve workflow approval', { error, tenantId: req.tenantId, approvalId: req.params.approvalId });
+    res.status(500).json({ status: 'error', message: 'Failed to resolve workflow approval' });
   }
 });
 
