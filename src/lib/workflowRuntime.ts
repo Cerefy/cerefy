@@ -50,6 +50,10 @@ export async function executeWorkflowRun(tenantId: string, runId: string, io: So
 
   try {
     for (const stepRun of context.steps) {
+      if (stepRun.status === 'COMPLETED') {
+        if (stepRun.output && typeof stepRun.output === 'object') outputs[stepRun.stepKey] = stepRun.output as Record<string, unknown>;
+        continue;
+      }
       const stepDefinition = definition.steps.find((step) => step.key === stepRun.stepKey);
       if (!stepDefinition) throw new Error(`Definition is missing step ${stepRun.stepKey}`);
       await updateStep(tenantId, stepRun.id, { status: 'RUNNING', attempt: (stepRun.attempt ?? 0) + 1, startedAt: new Date(), error: null });
@@ -104,7 +108,7 @@ export async function resolveWorkflowApproval(tenantId: string, approvalId: stri
     const [approval] = await tx.select().from(workflowApprovals).where(and(eq(workflowApprovals.id, approvalId), eq(workflowApprovals.tenantId, tenantId))).limit(1);
     if (!approval || approval.status !== 'PENDING') return null;
     const [updated] = await tx.update(workflowApprovals).set({ status, decisionNote: note ?? null, resolvedBy: userId, resolvedAt: new Date() }).where(and(eq(workflowApprovals.id, approvalId), eq(workflowApprovals.tenantId, tenantId))).returning();
-    await tx.update(workflowStepRuns).set({ status: status === 'APPROVED' ? 'QUEUED' : 'FAILED', error: status === 'REJECTED' ? note ?? 'Approval rejected' : null }).where(and(eq(workflowStepRuns.id, approval.workflowStepRunId), eq(workflowStepRuns.tenantId, tenantId)));
+    await tx.update(workflowStepRuns).set({ status: status === 'APPROVED' ? 'COMPLETED' : 'FAILED', output: status === 'APPROVED' ? { approvalStatus: 'APPROVED', resolvedBy: userId } : null, error: status === 'REJECTED' ? note ?? 'Approval rejected' : null, completedAt: new Date() }).where(and(eq(workflowStepRuns.id, approval.workflowStepRunId), eq(workflowStepRuns.tenantId, tenantId)));
     await tx.update(workflowRuns).set({ status: status === 'APPROVED' ? 'QUEUED' : 'FAILED', error: status === 'REJECTED' ? note ?? 'Approval rejected' : null }).where(and(eq(workflowRuns.id, approval.workflowRunId), eq(workflowRuns.tenantId, tenantId)));
     return updated;
   });
