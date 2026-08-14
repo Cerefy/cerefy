@@ -17,6 +17,7 @@
     "test": "node --test --import tsx src/ai/**/*.test.ts src/intelligence/**/*.test.ts",
     "test:security": "node --test --import tsx src/lib/security/__tests__/security.test.ts",
     "smoke-test": "node scripts/smoke-test.mjs",
+    "smoke-test:workflow": "node scripts/live-workflow-smoke.mjs",
     "db:migrate": "sh scripts/db-migrate.sh",
     "db:backup": "sh scripts/backup-db.sh",
     "health": "curl -s http://localhost:3002/health/ready | node -e \"const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));console.log(JSON.stringify(d,null,2))\""
