@@ -50,13 +50,19 @@ RUN addgroup --system --gid 1001 cerefy \
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Install psql for release-time Drizzle/RLS migrations and production dependencies
+# Install psql for release-time Drizzle/RLS migrations and production dependencies.
+# npm/npx/corepack are only needed to install dependencies in this layer. The release
+# entrypoint starts with node directly, so remove their global toolchains afterward:
+# this prevents build-only package vulnerabilities bundled with npm from remaining in
+# the deployable image.
 RUN apk add --no-cache postgresql-client
 COPY package*.json ./
-RUN npm ci --omit=dev --ignore-scripts --audit=false && npm cache clean --force
+RUN npm ci --omit=dev --ignore-scripts --audit=false \
+  && npm cache clean --force \
+  && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+  && rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 
 # Copy built artifacts and release-time migration assets
-COPY --from=backend-builder /app/dist ./dist
 COPY --chown=cerefy:cerefy --from=backend-builder /app/dist ./dist
 COPY --from=backend-builder /app/drizzle ./drizzle
 COPY --from=backend-builder /app/src/db/schema.ts ./src/db/schema.ts
