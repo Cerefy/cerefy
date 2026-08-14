@@ -202,41 +202,13 @@ type DecisionRecord = {
   updatedAt: string;
 };
 
-const devProjects: ProjectRecord[] = [
-  { id: 'proj_01', title: 'Next-Gen Workflow Automation', name: 'Workflow Engine Modernization', code: 'WF-2026', department: 'Product', status: 'In Progress', progress: 58, budget: '$420,000', budgetUsed: '$243,000', dueDate: '2025-07-30', assignees: ['Amelia', 'Kai', 'Jordan'], agentLead: 'Ava AI', milestonesCount: 12, completedMilestones: 7 },
-  { id: 'proj_02', title: 'Governance Intelligence Suite', name: 'Cerefy Governance Center', code: 'GC-2026', department: 'Operations', status: 'Planning', progress: 22, budget: '$180,000', budgetUsed: '$39,000', dueDate: '2025-10-15', assignees: ['Mia', 'Noah', 'Sofia'], agentLead: 'Atlas Agent', milestonesCount: 8, completedMilestones: 2 },
-];
-
-const devDecisions: DecisionRecord[] = [
-  { id: 'dec_01', title: 'New Platform Pricing Model', question: 'Should we adopt a usage-based pricing model for Cerefy AI workflows?', category: 'Pricing', riskScore: 6, businessImpact: 'High', expectedROI: '20x', confidenceScore: 78, status: 'OPEN', aiRecommendation: 'Implement a hybrid model for enterprise and volume customers.', alternatives: [{ name: 'Flat subscription', score: 58, cost: '$210K' }, { name: 'Usage-based pricing', score: 83, cost: '$170K' }, { name: 'Tiered bundles', score: 71, cost: '$190K' }], createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(), updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString() },
-  { id: 'dec_02', title: 'Agent Expansion Strategy', question: 'Should we extend our agent marketplace to support third-party microservices?', category: 'Product Strategy', riskScore: 4, businessImpact: 'Medium', expectedROI: '12x', confidenceScore: 64, status: 'IN_SIMULATION', aiRecommendation: 'Begin with a pilot partner program for select workflows.', alternatives: [{ name: 'In-house agent expansion', score: 76, cost: '$250K' }, { name: 'Partner integration', score: 85, cost: '$180K' }, { name: 'No change', score: 45, cost: '$0' }], createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 22).toISOString(), updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString() },
-];
-
-const devAgents = [
-  { id: 'agent_01', name: 'Astra', role: 'Strategy Agent', department: 'AI Operations', status: 'idle', skills: ['forecasting', 'decision support', 'workflow orchestration'], performanceScore: 94, monthlyCost: '$14,900', tools: ['Salesforce', 'Jira', 'Data Lake'], permissions: ['read:projects', 'execute:agents', 'manage:workflows'] },
-  { id: 'agent_02', name: 'Nova', role: 'Governance Agent', department: 'Compliance', status: 'busy', skills: ['controls', 'policy analysis', 'audit readiness'], performanceScore: 88, monthlyCost: '$12,400', tools: ['Slack', 'Confluence', 'Zendesk'], permissions: ['read:decisions', 'write:reports', 'notify:stakeholders'] },
-  { id: 'agent_03', name: 'Orion', role: 'Execution Agent', department: 'Engineering', status: 'reflecting', skills: ['automation', 'integration', 'fine-tuning'], performanceScore: 91, monthlyCost: '$13,800', tools: ['GitHub', 'AWS', 'Docker'], permissions: ['execute:pipelines', 'monitor:exec', 'deploy:agents'] },
-];
-
+// Local fallback never fabricates tenant data. Routes return honest empty/unavailable states when DB-backed services are disabled.
+function isLocalDevFallback(): boolean { return process.env.NODE_ENV !== 'production' && process.env.DEV_LOCAL_FALLBACK === 'true'; }
 function generateToken(prefix: string): string { return `${prefix}_${crypto.randomBytes(16).toString('hex')}`; }
 function createAuthTokens(user: DevAuthUser) { const accessToken = generateToken('access'); const refreshToken = generateToken('refresh'); devAccessTokens.set(accessToken, user); devRefreshTokens.set(refreshToken, accessToken); return { accessToken, refreshToken }; }
 function getUserFromAccessToken(token: string): DevAuthUser | null { return devAccessTokens.get(token) ?? null; }
-function getUserFromRefreshToken(refreshToken: string): DevAuthUser | null { const accessToken = devRefreshTokens.get(refreshToken); if (!accessToken) return null; return getUserFromAccessToken(accessToken); }
-function rotateRefreshToken(oldRefreshToken: string) { const currentUser = getUserFromRefreshToken(oldRefreshToken); if (!currentUser) return null; const newTokens = createAuthTokens(currentUser); devRefreshTokens.delete(oldRefreshToken); return newTokens; }
-function safeUserProfile(user: any) { if (!user) return null; const nameParts = typeof user.name === 'string' ? user.name.split(' ') : []; return { id: user.id || user.uid || 'user_unknown', email: user.email || 'unknown@cerefy.local', firstName: user.firstName || nameParts[0] || 'Cerefy', lastName: user.lastName || nameParts.slice(1).join(' ') || 'User', role: user.role || 'member', organizationId: user.organizationId || 'org_cerefy_101', organizationName: user.organizationName || 'Cerefy Enterprise', avatarUrl: user.avatarUrl || 'https://ui-avatars.com/api/?name=Cerefy+User&background=111827&color=00ffff', createdAt: user.createdAt || new Date().toISOString() }; }
-function isLocalDevFallback(): boolean { return process.env.NODE_ENV !== 'production' && process.env.DEV_LOCAL_FALLBACK === 'true'; }
-function getProjectById(projectId: string) { return devProjects.find((project) => project.id === projectId) ?? null; }
-function getDecisionById(decisionId: string) { return devDecisions.find((decision) => decision.id === decisionId) ?? null; }
-function createDecision(payload: any) { const decision: DecisionRecord = { id: `dec_${crypto.randomBytes(6).toString('hex')}`, title: payload.title || 'New Decision Request', question: payload.question || 'What is the recommended choice?', category: payload.category || 'General', riskScore: 5, businessImpact: 'Medium', expectedROI: '8x', confidenceScore: 65, status: 'OPEN', aiRecommendation: 'Evaluate the alternate scenarios carefully.', alternatives: [{ name: 'Option A', score: 68, cost: '$90K' }, { name: 'Option B', score: 74, cost: '$110K' }], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }; devDecisions.unshift(decision); return decision; }
-function createProject(payload: any) { const project: ProjectRecord = { id: `proj_${crypto.randomBytes(6).toString('hex')}`, title: payload.title || 'New Project', name: payload.title || 'New Project', code: payload.code || `NP-${Date.now().toString().slice(-4)}`, department: payload.department || 'Product', status: 'Planning', progress: 8, budget: payload.budget || '$50,000', budgetUsed: '$4,000', dueDate: payload.dueDate || new Date(Date.now() + 1000 * 60 * 60 * 24 * 90).toISOString().slice(0, 10), assignees: ['Dev Team'], agentLead: payload.agentLead || 'Astra', milestonesCount: 6, completedMilestones: 0 }; devProjects.unshift(project); return project; }
-function updateProject(projectId: string, updates: any) { const project = getProjectById(projectId); if (!project) return null; Object.assign(project, updates); return project; }
-function updateDecision(decisionId: string, updates: Partial<DecisionRecord>) { const decision = getDecisionById(decisionId); if (!decision) return null; Object.assign(decision, updates, { updatedAt: new Date().toISOString() }); return decision; }
-function deleteProject(projectId: string) { const index = devProjects.findIndex((project) => project.id === projectId); if (index === -1) return false; devProjects.splice(index, 1); return true; }
-function getAnalyticsForProject(projectId: string) { return { projectId, openTasks: 32, completedTasks: 18, riskLevel: 'Moderate', burnRate: '0.82', stakeholderSentiment: 'Positive', timelineHealth: 'On Track', forecastedRevenue: '$32M', remainingBudget: '$89,000' }; }
-function getExecutiveKPIs() { return { totalProjects: devProjects.length, activeAgents: devAgents.length, decisionsThisMonth: 12, avgConfidenceScore: 78, totalBudgetManaged: '$1.1M', projectCompletionRate: 62, agentUtilization: 81, riskScore: 37, automationRate: 69, costSavings: '$280K', roiMultiple: 4.2, processingTime: '1.8s' }; }
-function getAgentPerformance() { return devAgents.map((agent) => ({ agentId: agent.id, agentName: agent.name, tasksCompleted: 118 + Math.floor(Math.random() * 50), avgLatencyMs: 320 + Math.floor(Math.random() * 180), successRate: 85 + Math.floor(Math.random() * 10), tokensUsed: 14230 + Math.floor(Math.random() * 4200), costIncurred: `$${(Math.random() * 12 + 8).toFixed(1)}K`, lastActive: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24).toISOString() })); }
-function getMemoryResults(query: string) { return [{ id: `mem_${crypto.randomBytes(4).toString('hex')}`, content: `Insight about ${query}: Cerefy learns from historical workflows and recommends next-best actions.`, source: 'Knowledge Graph', score: 0.92, type: 'vector', metadata: { topic: 'workflow', relevance: 'high' } }, { id: `mem_${crypto.randomBytes(4).toString('hex')}`, content: `Document snippet related to ${query}: Use the integrated agent pipeline for real-time decision automation.`, source: 'Document Store', score: 0.84, type: 'relational', metadata: { topic: 'automation', relevance: 'medium' } }]; }
-function getMemoryDocuments() { return [{ id: 'doc_01', title: 'Cerefy Governance Framework', updatedAt: new Date().toISOString(), summary: 'Policy-first AI workflow governance', source: 'Knowledge Base' }, { id: 'doc_02', title: 'Agent Runbooks', updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(), summary: 'Standard operating procedures for agent orchestration', source: 'Documentation Hub' }]; }
+function getUserFromRefreshToken(refreshToken: string): DevAuthUser | null { const accessToken = devRefreshTokens.get(refreshToken); return accessToken ? getUserFromAccessToken(accessToken) : null; }
+function rotateRefreshToken(oldRefreshToken: string) { const user = getUserFromRefreshToken(oldRefreshToken); if (!user) return null; devRefreshTokens.delete(oldRefreshToken); return createAuthTokens(user); }
 
 async function verifyBearerToken(token: string): Promise<DevAuthUser | DecodedIdToken | null> {
   // 1) Cerefy JWTs (durable auth) — access tokens issued by authService.
@@ -458,8 +430,9 @@ app.post('/api/v1/auth/refresh', async (req: Request, res: Response) => {
   const { refreshToken } = req.body ?? {};
   if (!refreshToken || typeof refreshToken !== 'string') { res.status(400).json({ error: 'refreshToken is required' }); return; }
   if (isLocalDevFallback()) {
-    const newAccessToken = crypto.randomBytes(32).toString('hex');
-    res.json({ accessToken: newAccessToken, refreshToken: crypto.randomBytes(32).toString('hex') });
+    const tokens = rotateRefreshToken(refreshToken);
+    if (!tokens) { res.status(401).json({ error: 'Invalid or expired refresh token' }); return; }
+    res.json(tokens);
     return;
   }
   try {
@@ -495,7 +468,7 @@ app.get('/api/v1/auth/me', requireAuth, async (req: AuthenticatedRequest, res: R
 app.get('/api/v1/projects', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = req.tenantId!;
   try {
-    if (isLocalDevFallback()) { res.json({ status: 'success', data: devProjects }); return; }
+    if (isLocalDevFallback()) { res.json({ status: 'success', data: [] }); return; }
     const rows = await projectService.getAllProjects(tenantId);
     res.json({ status: 'success', data: rows.map(serializers.serializeProject) });
   } catch (error) { logger.error('Failed to fetch projects', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to fetch projects' }); }
@@ -504,7 +477,7 @@ app.get('/api/v1/projects', requireAuth, requireTenant, async (req: Authenticate
 app.post('/api/v1/projects', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = req.tenantId!;
   try {
-    if (isLocalDevFallback()) { res.json({ status: 'success', data: createProject(req.body) }); return; }
+    if (isLocalDevFallback()) { res.status(503).json({ status: 'error', message: 'Projects require database-backed mode' }); return; }
     const body = req.body ?? {};
     // Frontend create contract sends { title, department, budget, dueDate }. The
     // table requires a code — derive a stable slug from the title instead of
@@ -525,13 +498,13 @@ app.post('/api/v1/projects', requireAuth, requireTenant, async (req: Authenticat
 
 app.get('/api/v1/decisions', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = req.tenantId!;
-  try { if (isLocalDevFallback()) { res.json({ status: 'success', data: devDecisions }); return; } const rows = await decisionService.getAllDecisions(tenantId); res.json({ status: 'success', data: rows.map(serializers.serializeDecision) }); } catch (error) { logger.error('Failed to fetch decisions', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to fetch decisions' }); }
+  try { if (isLocalDevFallback()) { res.json({ status: 'success', data: [] }); return; } const rows = await decisionService.getAllDecisions(tenantId); res.json({ status: 'success', data: rows.map(serializers.serializeDecision) }); } catch (error) { logger.error('Failed to fetch decisions', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to fetch decisions' }); }
 });
 
 app.post('/api/v1/decisions', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
   const tenantId = req.tenantId!;
   try {
-    if (isLocalDevFallback()) { res.json({ status: 'success', data: createDecision(req.body) }); return; }
+    if (isLocalDevFallback()) { res.status(503).json({ status: 'error', message: 'Decisions require database-backed mode' }); return; }
     const body = req.body ?? {};
     // Frontend create contract sends { title, question, category }. Defaults to
     // real column defaults; no fabricated risk/ROI/confidence values.
@@ -545,16 +518,16 @@ app.post('/api/v1/decisions', requireAuth, requireTenant, async (req: Authentica
   } catch (error) { logger.error('Failed to create decision', { error, tenantId }); res.status(500).json({ status: 'error', message: 'Failed to create decision' }); }
 });
 
-app.get('/api/v1/projects/:projectId', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => { const projectId = req.params.projectId; if (isLocalDevFallback()) { const project = getProjectById(projectId); if (!project) { res.status(404).json({ status: 'error', message: 'Project not found' }); return; } res.json({ status: 'success', data: project }); return; } try { const tenantId = req.tenantId!; const project = await projectService.getProjectById(tenantId, projectId); res.json({ status: 'success', data: serializers.serializeProject(project) }); } catch (error) { logger.error('Failed to fetch project', { error, projectId }); res.status(500).json({ status: 'error', message: 'Failed to fetch project' }); } });
-app.patch('/api/v1/projects/:projectId', requireAuth, requireTenant, requirePermission('edit:project', 'project'), async (req: AuthenticatedRequest, res: Response) => { const projectId = req.params.projectId; if (isLocalDevFallback()) { const project = updateProject(projectId, req.body); if (!project) { res.status(404).json({ status: 'error', message: 'Project not found' }); return; } res.json({ status: 'success', data: project }); return; } try { const tenantId = req.tenantId!; const project = await projectService.updateProject(tenantId, projectId, req.body); await auditLog.log({ action: 'project.update', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'project', detail: { projectId } }).catch(() => {}); res.json({ status: 'success', data: project }); } catch (error) { logger.error('Failed to update project', { error, projectId }); res.status(500).json({ status: 'error', message: 'Failed to update project' }); } });
-app.delete('/api/v1/projects/:projectId', requireAuth, requireTenant, requirePermission('delete:project', 'project'), async (req: AuthenticatedRequest, res: Response) => { const projectId = req.params.projectId; if (isLocalDevFallback()) { if (!deleteProject(projectId)) { res.status(404).json({ status: 'error', message: 'Project not found' }); return; } res.status(204).send(); return; } try { const tenantId = req.tenantId!; await projectService.deleteProject(tenantId, projectId); await auditLog.log({ action: 'project.delete', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'project', detail: { projectId } }).catch(() => {}); res.status(204).send(); } catch (error) { logger.error('Failed to delete project', { error, projectId }); res.status(500).json({ status: 'error', message: 'Failed to delete project' }); } });
+app.get('/api/v1/projects/:projectId', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => { const projectId = req.params.projectId; if (isLocalDevFallback()) { res.status(404).json({ status: 'error', message: 'Project not found in database-backed mode' }); return; } try { const tenantId = req.tenantId!; const project = await projectService.getProjectById(tenantId, projectId); res.json({ status: 'success', data: serializers.serializeProject(project) }); } catch (error) { logger.error('Failed to fetch project', { error, projectId }); res.status(500).json({ status: 'error', message: 'Failed to fetch project' }); } });
+app.patch('/api/v1/projects/:projectId', requireAuth, requireTenant, requirePermission('edit:project', 'project'), async (req: AuthenticatedRequest, res: Response) => { const projectId = req.params.projectId; if (isLocalDevFallback()) { res.status(503).json({ status: 'error', message: 'Project updates require database-backed mode' }); return; } try { const tenantId = req.tenantId!; const project = await projectService.updateProject(tenantId, projectId, req.body); await auditLog.log({ action: 'project.update', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'project', detail: { projectId } }).catch(() => {}); res.json({ status: 'success', data: project }); } catch (error) { logger.error('Failed to update project', { error, projectId }); res.status(500).json({ status: 'error', message: 'Failed to update project' }); } });
+app.delete('/api/v1/projects/:projectId', requireAuth, requireTenant, requirePermission('delete:project', 'project'), async (req: AuthenticatedRequest, res: Response) => { const projectId = req.params.projectId; if (isLocalDevFallback()) { res.status(503).json({ status: 'error', message: 'Project deletion requires database-backed mode' }); return; } try { const tenantId = req.tenantId!; await projectService.deleteProject(tenantId, projectId); await auditLog.log({ action: 'project.delete', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'project', detail: { projectId } }).catch(() => {}); res.status(204).send(); } catch (error) { logger.error('Failed to delete project', { error, projectId }); res.status(500).json({ status: 'error', message: 'Failed to delete project' }); } });
 
-app.post('/api/v1/decisions/:decisionId/approve', requireAuth, requireTenant, requirePermission('approve:decision', 'decision'), async (req: AuthenticatedRequest, res: Response) => { const decisionId = req.params.decisionId; if (isLocalDevFallback()) { const decision = updateDecision(decisionId, { status: 'APPROVED' }); if (!decision) { res.status(404).json({ status: 'error', message: 'Decision not found' }); return; } await auditLog.log({ action: 'decision.approve', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId || '', resource: 'decision', detail: { decisionId } }).catch(() => {}); res.json({ data: decision }); return; } try { const tenantId = req.tenantId!; const decision = await decisionService.approveDecision(tenantId, decisionId); await auditLog.log({ action: 'decision.approve', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'decision', detail: { decisionId } }).catch(() => {}); res.json({ data: decision }); } catch (error) { logger.error('Failed to approve decision', { error, decisionId }); res.status(500).json({ status: 'error', message: 'Failed to approve decision' }); } });
-app.post('/api/v1/decisions/:decisionId/reject', requireAuth, requireTenant, requirePermission('reject:decision', 'decision'), async (req: AuthenticatedRequest, res: Response) => { const decisionId = req.params.decisionId; const reason = req.body.reason || 'No reason provided'; if (isLocalDevFallback()) { const decision = updateDecision(decisionId, { status: 'REJECTED', aiRecommendation: `Rejected: ${reason}` }); if (!decision) { res.status(404).json({ status: 'error', message: 'Decision not found' }); return; } await auditLog.log({ action: 'decision.reject', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId || '', resource: 'decision', detail: { decisionId, reason } }).catch(() => {}); res.json({ data: decision }); return; } try { const tenantId = req.tenantId!; const decision = await decisionService.rejectDecision(tenantId, decisionId, reason); await auditLog.log({ action: 'decision.reject', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'decision', detail: { decisionId, reason } }).catch(() => {}); res.json({ data: decision }); } catch (error) { logger.error('Failed to reject decision', { error, decisionId }); res.status(500).json({ status: 'error', message: 'Failed to reject decision' }); } });
+app.post('/api/v1/decisions/:decisionId/approve', requireAuth, requireTenant, requirePermission('approve:decision', 'decision'), async (req: AuthenticatedRequest, res: Response) => { const decisionId = req.params.decisionId; if (isLocalDevFallback()) { res.status(503).json({ status: 'error', message: 'Decision approval requires database-backed mode' }); return; } try { const tenantId = req.tenantId!; const decision = await decisionService.approveDecision(tenantId, decisionId); await auditLog.log({ action: 'decision.approve', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'decision', detail: { decisionId } }).catch(() => {}); res.json({ data: decision }); } catch (error) { logger.error('Failed to approve decision', { error, decisionId }); res.status(500).json({ status: 'error', message: 'Failed to approve decision' }); } });
+app.post('/api/v1/decisions/:decisionId/reject', requireAuth, requireTenant, requirePermission('reject:decision', 'decision'), async (req: AuthenticatedRequest, res: Response) => { const decisionId = req.params.decisionId; const reason = req.body.reason || 'No reason provided'; if (isLocalDevFallback()) { res.status(503).json({ status: 'error', message: 'Decision rejection requires database-backed mode' }); return; } try { const tenantId = req.tenantId!; const decision = await decisionService.rejectDecision(tenantId, decisionId, reason); await auditLog.log({ action: 'decision.reject', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId, resource: 'decision', detail: { decisionId, reason } }).catch(() => {}); res.json({ data: decision }); } catch (error) { logger.error('Failed to reject decision', { error, decisionId }); res.status(500).json({ status: 'error', message: 'Failed to reject decision' }); } });
 app.post('/api/v1/decisions/:decisionId/simulate', requireAuth, requireTenant, requirePermission('simulate:decision', 'decision'), async (_req: AuthenticatedRequest, res: Response) => { res.status(501).json({ status: 'error', message: 'Decision simulation is not implemented — no real simulation backend exists yet' }); });
 
 app.get('/api/v1/agents', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  if (isLocalDevFallback()) { res.json({ data: devAgents }); return; }
+  if (isLocalDevFallback()) { res.json({ data: [] }); return; }
   try {
     const rows = await listAgentDefinitions();
     const executions = await analyticsService.getTenantExecutions((req as any).tenantId || (req.user as any)?.tenantId || '');
@@ -566,12 +539,7 @@ app.get('/api/v1/agents', requireAuth, async (req: AuthenticatedRequest, res: Re
 });
 app.get('/api/v1/agents/:agentId', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
   const agentId = req.params.agentId;
-  if (isLocalDevFallback()) {
-    const agent = devAgents.find((item) => item.id === agentId);
-    if (!agent) { res.status(404).json({ status: 'error', message: 'Agent not found' }); return; }
-    res.json({ data: agent });
-    return;
-  }
+  if (isLocalDevFallback()) { res.status(404).json({ status: 'error', message: 'Agent not found in database-backed mode' }); return; }
   try {
     const agent: any = await getAgentDefinitionById(agentId);
     if (!agent) { res.status(404).json({ status: 'error', message: 'Agent not found' }); return; }
@@ -609,7 +577,7 @@ app.post('/api/v1/agents/execute', requireAuth, requireTenant, requirePermission
 app.post('/api/v1/ai/memory/query', requireAuth, requireTenant, requirePermission('query:run', 'ai.workspace'), async (req: AuthenticatedRequest, res: Response) => {
   const { query } = req.body;
   if (!query || typeof query !== 'string') { res.status(400).json({ error: 'Query parameter is required' }); return; }
-  if (isLocalDevFallback()) { res.json({ data: getMemoryResults(query) }); return; }
+  if (isLocalDevFallback()) { res.json({ data: [] }); return; }
   try {
     const tenantId = req.tenantId!;
     const context = await loadVectorMemoryContext({ tenantId, limit: 8 });
@@ -624,7 +592,7 @@ app.post('/api/v1/ai/memory/query', requireAuth, requireTenant, requirePermissio
   }
 });
 app.get('/api/v1/memory/documents', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
-  if (isLocalDevFallback()) { res.json({ data: getMemoryDocuments() }); return; }
+  if (isLocalDevFallback()) { res.json({ data: [] }); return; }
   try {
     const data = await analyticsService.getMemoryDocuments(req.tenantId!);
     res.json({ data });
@@ -634,7 +602,7 @@ app.get('/api/v1/memory/documents', requireAuth, requireTenant, async (req: Auth
   }
 });
 app.get('/api/v1/analytics/executive-kpis', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
-  if (isLocalDevFallback()) { res.json(getExecutiveKPIs()); return; }
+  if (isLocalDevFallback()) { res.json({ data: {} }); return; }
   try {
     const kpis = await analyticsService.getExecutiveKPIs(req.tenantId!);
     res.json(kpis);
@@ -644,7 +612,7 @@ app.get('/api/v1/analytics/executive-kpis', requireAuth, requireTenant, async (r
   }
 });
 app.get('/api/v1/analytics/agent-performance', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
-  if (isLocalDevFallback()) { res.json({ data: getAgentPerformance() }); return; }
+  if (isLocalDevFallback()) { res.json({ data: [] }); return; }
   try {
     const data = await analyticsService.getAgentPerformance(req.tenantId!);
     res.json({ data });
@@ -654,7 +622,7 @@ app.get('/api/v1/analytics/agent-performance', requireAuth, requireTenant, async
   }
 });
 app.get('/api/v1/analytics/projects/:projectId', requireAuth, requireTenant, async (req: AuthenticatedRequest, res: Response) => {
-  if (isLocalDevFallback()) { res.json(getAnalyticsForProject(req.params.projectId)); return; }
+  if (isLocalDevFallback()) { res.json({ data: {} }); return; }
   try {
     const data = await analyticsService.getProjectAnalytics(req.tenantId!, req.params.projectId);
     res.json(data);
