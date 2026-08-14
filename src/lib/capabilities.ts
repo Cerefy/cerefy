@@ -31,7 +31,7 @@ export const CAPABILITIES = {
   auth: {
     status: 'implemented',
     endpoints: ['/api/v1/auth/register', '/api/v1/auth/login', '/api/v1/auth/refresh', '/api/v1/auth/me'],
-    note: 'JWT auth + refresh + /me profile. CAVEAT: refresh issues a new token without validating the presented token, and the dev user store is in-memory plaintext — fine for dev, not for pilot.',
+    note: 'Production auth uses signed JWT access tokens, database-backed scrypt password hashes, server-side refresh sessions, validation, rotation, logout revocation, and /me. The plaintext in-memory store exists only behind the local-development fallback and is not used in production.',
   },
   projects: {
     status: 'implemented',
@@ -85,8 +85,8 @@ export const CAPABILITIES = {
   },
   workflows: {
     status: 'partial',
-    endpoints: ['/api/v1/workflows', '/api/v1/workflows/:workflowId', '/api/v1/workflows/:workflowId/publish', '/api/v1/workflows/:workflowId/runs', '/api/v1/workflow-runs/:runId'],
-    note: 'Workflow definitions, versions, publication, tenant-scoped runs, step records, idempotency, and RLS are real. Missing backend capability: queued step executor, approval resolution endpoints, external actions, and background worker.',
+    endpoints: ['/api/v1/workflows', '/api/v1/workflows/:workflowId', '/api/v1/workflows/:workflowId/publish', '/api/v1/workflows/:workflowId/runs', '/api/v1/workflow-runs/:runId', '/api/v1/workflow-approvals/:approvalId/resolve'],
+    note: 'Workflow definitions, versions, publication, tenant-scoped runs, idempotency, RLS, in-process execution, Gemini analysis, human approval resolution, decision creation, and non-fabricated notification state are real. Missing backend capability: a durable worker/queue with retries and scheduling, external action connectors, and an operations API for listing/filtering workflow runs.',
   },
   billing: {
     status: 'not_implemented',
@@ -164,4 +164,5 @@ export const ROUTE_CAPABILITIES: Record<string, CapabilityKey> = {
   '/workspace/mena/markets': 'menaMarkets',
   '/workspace/mena/industries': 'menaMarkets',
   '/workspace/ai': 'aiPipeline',
+  '/workspace/workflows': 'workflows',
 } as const;
