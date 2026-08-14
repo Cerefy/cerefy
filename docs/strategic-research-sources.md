@@ -21,3 +21,19 @@ Research captured 2026-08-14 for the strategic audit. These are external-source 
 - Cerefy cannot credibly compete as a general Arabic AI suite or generic decision-intelligence platform on breadth.
 - Its defensible path is a narrower evidence-to-decision-to-approved-workflow product for Arabic/MENA enterprise operations, with source traceability, human approval, outcome recording, and governance as defaults.
 - Sovereign/VPC/on-premise deployment, formal model governance, data-residency options, and evaluation evidence are enterprise-market requirements to plan for, not capabilities currently present in Cerefy.
+
+## Open-source and automation alternatives
+
+6. **Dify.** Dify markets an agentic-workflow/RAG platform with a visual workflow editor, knowledge pipelines, model/tool connectors, publishing/monitoring, managed cloud, VPC/self-hosted enterprise deployment, and open-source community edition. Source: https://dify.ai/
+
+7. **n8n.** n8n markets workflow automation with self-hosting, credential/secret integrations, granular projects/roles, workflow change control, queue mode/multi-main scaling, evaluations, and workflow insights. Source: https://n8n.io/enterprise/
+
+8. **Flowise.** Flowise markets visual multi-agent flows, human-in-the-loop, execution traces, API/SDK access, and scaling via queues/workers. Its web page also currently states that the product is being sunset, so it should not be treated as a durable strategic dependency without independent due diligence. Source: https://flowiseai.com/
+
+## Build-versus-integrate implication
+
+Cerefy should not compete on a generic drag-and-drop agent builder, a broad connector marketplace, or general-purpose workflow infrastructure. The first defensible product should own the vertical decision contract: evidence model, Arabic/MENA domain policies, human approvals, outcome recording, tenant governance, and evaluation evidence. External workflow tooling may later be integrated for commodity connectors, subject to security and data-residency review.
+
+## Market context (use carefully)
+
+9. **PwC Middle East / Strategy&.** PwC published a 2024 viewpoint estimating that the Middle East could accrue $320B of AI-related economic benefits by 2030, while Strategy& published a 2023 top-down estimate of $23.5B annual GenAI economic impact in GCC by 2030 and stressed narrow use cases, data governance, and regulatory readiness. These are macroeconomic estimates, not Cerefy's addressable revenue or evidence of customer demand. Sources: https://www.pwc.com/m1/en/media-centre/articles/why-the-middle-east-is-betting-big-on-ai.html and https://www.strategyand.pwc.com/m1/en/strategic-foresight/sector-strategies/technology/reshaping.html

@@ -6,8 +6,8 @@ import { EmptyState, ErrorState, LoadingState } from './design-system';
 const DEFAULT_DEFINITION = {
   steps: [
     { key: 'analyze', type: 'AI_ANALYSIS' as const, config: {} },
-    { key: 'create_decision', type: 'CREATE_DECISION' as const, config: {} },
     { key: 'approval', type: 'APPROVAL' as const, config: { requestedRole: 'approver' } },
+    { key: 'create_decision', type: 'CREATE_DECISION' as const, config: {} },
   ],
 };
 
@@ -33,7 +33,7 @@ export const WorkflowAutomationView: React.FC = () => {
   const createDefaultWorkflow = () => {
     createWorkflow.mutate({
       name: 'Document Review and Approval',
-      description: 'Analyze a business request, create a decision, and pause for human approval.',
+      description: 'Analyze a business request, pause for human approval, then create a decision.',
       triggerType: 'MANUAL',
       triggerConfig: {},
       definition: DEFAULT_DEFINITION,
@@ -41,7 +41,7 @@ export const WorkflowAutomationView: React.FC = () => {
   };
 
   if (!workflowsQuery.data?.length) {
-    return <EmptyState icon="account_tree" title="No workflows yet" description="Create the first database-backed workflow. It will analyze a request, create a decision, and require human approval." action={<button onClick={createDefaultWorkflow} disabled={createWorkflow.isPending} className="inline-flex items-center gap-2 rounded-lg bg-on-surface text-surface px-4 py-2 text-sm font-medium disabled:opacity-50"><Plus size={16} />{createWorkflow.isPending ? 'Creating…' : 'Create first workflow'}</button>} />;
+    return <EmptyState icon="account_tree" title="No workflows yet" description="Create the first database-backed workflow. It will analyze a request, require human approval, then create a decision." action={<button onClick={createDefaultWorkflow} disabled={createWorkflow.isPending} className="inline-flex items-center gap-2 rounded-lg bg-on-surface text-surface px-4 py-2 text-sm font-medium disabled:opacity-50"><Plus size={16} />{createWorkflow.isPending ? 'Creating…' : 'Create first workflow'}</button>} />;
   }
 
   const publish = () => {

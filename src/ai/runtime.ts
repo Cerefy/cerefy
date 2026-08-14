@@ -204,7 +204,6 @@ await appendAgentExecutionEvent(input.tenantId, executionId, {
     await recordAgentExecution('memory', {
       executionId,
       status: 'COMPLETED',
-      confidence: 55,
       output: memoryResult.output,
     });
     await recordAgentExecution('discovery', {
