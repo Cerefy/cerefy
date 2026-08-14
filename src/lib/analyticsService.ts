@@ -1,10 +1,9 @@
-import { and, avg, count, desc, eq, gte } from 'drizzle-orm';
-import { db, isDatabaseReachable, withTenantContext } from '../db';
+import { and, desc, eq } from 'drizzle-orm';
+import { isDatabaseReachable, withTenantContext } from '../db';
 import {
   agentExecutions,
   agentRegistry,
   aiAnswers,
-  aiQueries,
   decisions,
   documents,
   projects,
@@ -14,38 +13,38 @@ export interface ExecutiveKPIs {
   totalProjects: number;
   activeAgents: number;
   decisionsThisMonth: number;
-  avgConfidenceScore: number;
-  totalBudgetManaged: string;
-  projectCompletionRate: number;
-  agentUtilization: number;
-  riskScore: number;
-  automationRate: number;
-  costSavings: string;
-  roiMultiple: number;
-  processingTime: string;
+  avgConfidenceScore: number | null;
+  totalBudgetManaged: null;
+  projectCompletionRate: number | null;
+  agentUtilization: null;
+  riskScore: number | null;
+  automationRate: null;
+  costSavings: null;
+  roiMultiple: null;
+  processingTime: null;
 }
 
 export interface AgentPerformance {
   agentId: string;
   agentName: string;
   tasksCompleted: number;
-  avgLatencyMs: number;
-  successRate: number;
-  tokensUsed: number;
-  costIncurred: string;
-  lastActive: string;
+  avgLatencyMs: number | null;
+  successRate: number | null;
+  tokensUsed: number | null;
+  costIncurred: string | null;
+  lastActive: string | null;
 }
 
 export interface ProjectAnalytics {
   projectId: string;
   openTasks: number;
   completedTasks: number;
-  riskLevel: string;
-  burnRate: string;
-  stakeholderSentiment: string;
-  timelineHealth: string;
-  forecastedRevenue: string;
-  remainingBudget: string;
+  riskLevel: null;
+  burnRate: null;
+  stakeholderSentiment: null;
+  timelineHealth: null;
+  forecastedRevenue: null;
+  remainingBudget: string | null;
 }
 
 function monthStart(): Date {
@@ -53,54 +52,49 @@ function monthStart(): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
 }
 
+function roundedPercent(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+function numeric(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
 export async function getExecutiveKPIs(tenantId: string): Promise<ExecutiveKPIs> {
   if (!(await isDatabaseReachable())) {
     throw new Error('Analytics unavailable — database not reachable');
   }
+
   return withTenantContext(tenantId, async (tx) => {
-    // A transaction uses a single pg client, so queries must run sequentially —
-    // Promise.all against the same client triggers pg's "already executing a
-    // query" deprecation and can interleave mid-flight. Sequential reads are
-    // still a single round-trip set and fine at pilot scale.
     const projectRows = await tx.select().from(projects);
     const agentRows = await tx.select().from(agentRegistry);
     const decisionRows = await tx.select().from(decisions);
     const answerRows = await tx.select().from(aiAnswers);
-    const queryRows = await tx.select().from(aiQueries);
-    const documentRows = await tx.select().from(documents);
 
-    const activeAgents = agentRows.filter((a) => a.status === 'ACTIVE').length;
-    const decisionsThisMonth = decisionRows.filter((d) => d.createdAt >= monthStart()).length;
-    const withConfidence = answerRows.filter((a) => a.confidence > 0);
-    const avgConfidence =
-      withConfidence.length > 0
-        ? Math.round((withConfidence.reduce((sum, a) => sum + a.confidence, 0) / withConfidence.length) * 100) / 100
-        : 0;
-    const completedProjects = projectRows.filter((p) => p.status === 'Completed').length;
-    const projectCompletionRate = projectRows.length > 0 ? Math.round((completedProjects / projectRows.length) * 100) : 0;
-    const tasksRunning = queryRows.filter((q) => q.status === 'RUNNING').length;
-    const agentUtilization = queryRows.length > 0 ? Math.round((1 - tasksRunning / queryRows.length) * 100) : 0;
-    const highRisk = decisionRows.filter((d) => (d.riskScore ?? 0) >= 7).length;
-    const riskScore = decisionRows.length > 0 ? Math.round((highRisk / decisionRows.length) * 100) : 0;
-    const automationRate = documentRows.length > 0 ? Math.round((documentRows.filter((d) => d.status === 'processed').length / documentRows.length) * 100) : 0;
-    const totalTokens = queryRows.reduce((sum, q) => sum + (q.tokensInput ?? 0), 0);
-    const tokensSpentUsd = totalTokens * 0.0000025;
-    const totalCostUsd = queryRows.reduce((sum, q) => sum + (q.costUsd ?? 0), 0);
-    const costSavings = `$${Math.round((tokensSpentUsd - totalCostUsd) / 1000)}K`;
+    const confidenceValues = answerRows
+      .map((answer) => numeric(answer.confidence))
+      .filter((value): value is number => value !== null);
+    const completedProjects = projectRows.filter((project) => String(project.status).toLowerCase() === 'completed').length;
+    const riskValues = decisionRows
+      .map((decision) => numeric(decision.riskScore))
+      .filter((value): value is number => value !== null);
+    const highRisk = riskValues.filter((score) => score >= 7).length;
 
     return {
       totalProjects: projectRows.length,
-      activeAgents,
-      decisionsThisMonth,
-      avgConfidenceScore: avgConfidence,
-      totalBudgetManaged: `$${Math.round((projectRows.length * 120) / 1000)}K`,
-      projectCompletionRate,
-      agentUtilization,
-      riskScore,
-      automationRate,
-      costSavings,
-      roiMultiple: answerRows.length > 0 ? Math.round((answerRows.length / (withConfidence.length || 1)) * 10) / 10 : 0,
-      processingTime: '—',
+      activeAgents: agentRows.filter((agent) => agent.status === 'ACTIVE').length,
+      decisionsThisMonth: decisionRows.filter((decision) => decision.createdAt >= monthStart()).length,
+      avgConfidenceScore: confidenceValues.length > 0
+        ? roundedPercent(confidenceValues.reduce((sum, score) => sum + score, 0) / confidenceValues.length)
+        : null,
+      totalBudgetManaged: null,
+      projectCompletionRate: projectRows.length > 0 ? Math.round((completedProjects / projectRows.length) * 100) : null,
+      agentUtilization: null,
+      riskScore: riskValues.length > 0 ? Math.round((highRisk / riskValues.length) * 100) : null,
+      automationRate: null,
+      costSavings: null,
+      roiMultiple: null,
+      processingTime: null,
     };
   });
 }
@@ -109,29 +103,44 @@ export async function getAgentPerformance(tenantId: string): Promise<AgentPerfor
   if (!(await isDatabaseReachable())) {
     throw new Error('Analytics unavailable — database not reachable');
   }
+
   return withTenantContext(tenantId, async (tx) => {
     const agents = await tx.select().from(agentRegistry);
     const executions = await tx.select().from(agentExecutions);
 
     return agents.map((agent) => {
-      const agentRuns = executions.filter((e) => e.currentAgent === agent.name);
-      const successful = agentRuns.filter((e) => e.status === 'COMPLETED' || e.status === 'SUCCESS');
-      const tokensUsed = agentRuns.reduce((sum, e) => {
-        const output = (e.output ?? {}) as { usage?: { totalTokens?: number } };
-        return sum + (output.usage?.totalTokens ?? 0);
-      }, 0);
-      const lastRun = agentRuns.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
-      const perf: AgentPerformance = {
+      const agentRuns = executions.filter((execution) => execution.currentAgent === agent.name);
+      const successful = agentRuns.filter((execution) => execution.status === 'COMPLETED' || execution.status === 'SUCCESS');
+      const latencyValues = agentRuns
+        .filter((execution) => execution.completedAt)
+        .map((execution) => execution.completedAt!.getTime() - execution.createdAt.getTime())
+        .filter((value) => value >= 0);
+      let tokenTotal = 0;
+      let costTotal = 0;
+      let hasUsage = false;
+      for (const execution of agentRuns) {
+        const provenance = (execution.output as { provenance?: { tokensInput?: unknown; tokensOutput?: unknown; costUsd?: unknown } } | null)?.provenance;
+        const tokensInput = numeric(provenance?.tokensInput);
+        const tokensOutput = numeric(provenance?.tokensOutput);
+        const costUsd = numeric(provenance?.costUsd);
+        if (tokensInput !== null || tokensOutput !== null || costUsd !== null) hasUsage = true;
+        tokenTotal += (tokensInput ?? 0) + (tokensOutput ?? 0);
+        costTotal += costUsd ?? 0;
+      }
+      const lastRun = [...agentRuns].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
+
+      return {
         agentId: agent.id,
         agentName: agent.name,
-        tasksCompleted: agentRuns.length,
-        avgLatencyMs: 0,
-        successRate: agentRuns.length > 0 ? Math.round((successful.length / agentRuns.length) * 100) : 0,
-        tokensUsed,
-        costIncurred: `$${(tokensUsed * 0.0000025).toFixed(1)}K`,
-        lastActive: lastRun ? lastRun.updatedAt.toISOString() : new Date().toISOString(),
+        tasksCompleted: successful.length,
+        avgLatencyMs: latencyValues.length > 0
+          ? Math.round(latencyValues.reduce((sum, latency) => sum + latency, 0) / latencyValues.length)
+          : null,
+        successRate: agentRuns.length > 0 ? Math.round((successful.length / agentRuns.length) * 100) : null,
+        tokensUsed: hasUsage ? tokenTotal : null,
+        costIncurred: hasUsage ? `$${costTotal.toFixed(4)}` : null,
+        lastActive: lastRun ? lastRun.updatedAt.toISOString() : null,
       };
-      return perf;
     });
   });
 }
@@ -140,32 +149,29 @@ export async function getProjectAnalytics(tenantId: string, projectId: string): 
   if (!(await isDatabaseReachable())) {
     throw new Error('Analytics unavailable — database not reachable');
   }
+
   return withTenantContext(tenantId, async (tx) => {
     const [project] = await tx.select().from(projects).where(eq(projects.id, projectId as any)).limit(1);
     if (!project) {
-      const err = new Error('Project not found') as Error & { status?: number };
-      err.status = 404;
-      throw err;
+      const error = new Error('Project not found') as Error & { status?: number };
+      error.status = 404;
+      throw error;
     }
     const runs = await tx
       .select()
       .from(agentExecutions)
       .where(and(eq(agentExecutions.tenantId, tenantId), eq(agentExecutions.projectId, projectId)));
 
-    const completed = runs.filter((r) => r.status === 'COMPLETED' || r.status === 'SUCCESS').length;
-    const running = runs.filter((r) => r.status === 'RUNNING').length;
-    const timelineHealth = runs.length === 0 ? 'No executions yet' : running > 0 ? 'In Progress' : completed >= running ? 'On Track' : 'At Risk';
-
     return {
       projectId,
-      openTasks: running,
-      completedTasks: completed,
-      riskLevel: project.status === 'Completed' ? 'Low' : 'Moderate',
-      burnRate: runs.length > 0 ? (completed / runs.length).toFixed(2) : '0.00',
-      stakeholderSentiment: 'Positive',
-      timelineHealth,
-      forecastedRevenue: project.status === 'Completed' ? 'Completed' : 'In Progress',
-      remainingBudget: project.budget ?? '—',
+      openTasks: runs.filter((run) => run.status === 'RUNNING').length,
+      completedTasks: runs.filter((run) => run.status === 'COMPLETED' || run.status === 'SUCCESS').length,
+      riskLevel: null,
+      burnRate: null,
+      stakeholderSentiment: null,
+      timelineHealth: null,
+      forecastedRevenue: null,
+      remainingBudget: project.budget ?? null,
     };
   });
 }

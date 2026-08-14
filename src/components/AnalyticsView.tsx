@@ -3,7 +3,8 @@ import { Activity, BarChart3, Clock, Cpu, ShieldCheck, TrendingUp } from 'lucide
 import { useAgentPerformance, useDecisions, useExecutiveKPIs } from '../hooks/useApi';
 import { EmptyState, ErrorState, LoadingState } from './design-system';
 
-function displayConfidence(score: number): string {
+function displayConfidence(score: number | null): string {
+  if (score === null || !Number.isFinite(score)) return '—';
   const normalized = score <= 1 ? score * 100 : score;
   return `${Math.round(Math.max(0, Math.min(100, normalized)))}%`;
 }
@@ -45,7 +46,7 @@ export const AnalyticsView: React.FC = () => {
     { label: 'Decisions this month', value: String(kpis.decisionsThisMonth), icon: ShieldCheck },
     { label: 'Average confidence', value: displayConfidence(kpis.avgConfidenceScore), icon: TrendingUp },
     { label: 'Automation rate', value: displayConfidence(kpis.automationRate), icon: Activity },
-    { label: 'Processing time', value: kpis.processingTime || '—', icon: Clock },
+    { label: 'Processing time', value: kpis.processingTime ?? '—', icon: Clock },
   ];
 
   return (
@@ -63,11 +64,11 @@ export const AnalyticsView: React.FC = () => {
         <dl className="flex flex-wrap gap-3 font-label text-xs">
           <div className="rounded-lg bg-surface-container px-3 py-2 text-on-surface-variant">
             <dt className="inline">Cost savings: </dt>
-            <dd className="inline font-semibold text-on-surface">{kpis.costSavings || '—'}</dd>
+            <dd className="inline font-semibold text-on-surface">{kpis.costSavings ?? '—'}</dd>
           </div>
           <div className="rounded-lg bg-surface-container px-3 py-2 text-on-surface-variant">
             <dt className="inline">ROI multiple: </dt>
-            <dd className="inline font-semibold text-on-surface">{kpis.roiMultiple || '—'}</dd>
+            <dd className="inline font-semibold text-on-surface">{kpis.roiMultiple ?? '—'}</dd>
           </div>
         </dl>
       </header>
@@ -118,9 +119,9 @@ export const AnalyticsView: React.FC = () => {
                   </div>
                   <dl className="grid grid-cols-2 gap-3 text-sm">
                     <div><dt className="text-on-surface-variant">Tasks completed</dt><dd className="mt-1 font-semibold text-on-surface">{agent.tasksCompleted}</dd></div>
-                    <div><dt className="text-on-surface-variant">Average latency</dt><dd className="mt-1 font-semibold text-on-surface">{agent.avgLatencyMs} ms</dd></div>
-                    <div><dt className="text-on-surface-variant">Tokens used</dt><dd className="mt-1 font-semibold text-on-surface">{agent.tokensUsed}</dd></div>
-                    <div><dt className="text-on-surface-variant">Cost incurred</dt><dd className="mt-1 font-semibold text-on-surface">{agent.costIncurred || '—'}</dd></div>
+                    <div><dt className="text-on-surface-variant">Average latency</dt><dd className="mt-1 font-semibold text-on-surface">{agent.avgLatencyMs === null ? '—' : `${agent.avgLatencyMs} ms`}</dd></div>
+                    <div><dt className="text-on-surface-variant">Tokens used</dt><dd className="mt-1 font-semibold text-on-surface">{agent.tokensUsed ?? '—'}</dd></div>
+                    <div><dt className="text-on-surface-variant">Cost incurred</dt><dd className="mt-1 font-semibold text-on-surface">{agent.costIncurred ?? '—'}</dd></div>
                   </dl>
                 </article>
               ))}
