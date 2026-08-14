@@ -84,9 +84,9 @@ export const CAPABILITIES = {
     note: 'MENA market catalog is a client-side constant only; /api/v1/intelligence/markets does not exist. No deployed API.',
   },
   workflows: {
-    status: 'not_implemented',
-    endpoints: [],
-    note: 'Backend workflow engine scaffolded in deprecated/enterprise/workflow; no production route yet. Drag/drop builder planned.',
+    status: 'partial',
+    endpoints: ['/api/v1/workflows', '/api/v1/workflows/:workflowId', '/api/v1/workflows/:workflowId/publish', '/api/v1/workflows/:workflowId/runs', '/api/v1/workflow-runs/:runId'],
+    note: 'Workflow definitions, versions, publication, tenant-scoped runs, step records, idempotency, and RLS are real. Missing backend capability: queued step executor, approval resolution endpoints, external actions, and background worker.',
   },
   billing: {
     status: 'not_implemented',

@@ -143,3 +143,30 @@ CREATE SCHEMA IF NOT EXISTS app;
 CREATE OR REPLACE FUNCTION app.current_tenant_id() RETURNS text
     LANGUAGE sql STABLE
     AS $$ SELECT current_setting('app.current_tenant', true) $$;
+
+-- Workflow runtime tables: every row is tenant-scoped and forced through RLS.
+ALTER TABLE workflows ENABLE ROW LEVEL SECURITY;
+ALTER TABLE workflows FORCE ROW LEVEL SECURITY;
+ALTER TABLE workflow_versions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE workflow_versions FORCE ROW LEVEL SECURITY;
+ALTER TABLE workflow_runs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE workflow_runs FORCE ROW LEVEL SECURITY;
+ALTER TABLE workflow_step_runs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE workflow_step_runs FORCE ROW LEVEL SECURITY;
+ALTER TABLE workflow_approvals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE workflow_approvals FORCE ROW LEVEL SECURITY;
+ALTER TABLE workflow_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE workflow_events FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS tenant_isolation_workflows ON workflows;
+CREATE POLICY tenant_isolation_workflows ON workflows USING (tenant_id = current_setting('app.current_tenant', true)) WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
+DROP POLICY IF EXISTS tenant_isolation_workflow_versions ON workflow_versions;
+CREATE POLICY tenant_isolation_workflow_versions ON workflow_versions USING (tenant_id = current_setting('app.current_tenant', true)) WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
+DROP POLICY IF EXISTS tenant_isolation_workflow_runs ON workflow_runs;
+CREATE POLICY tenant_isolation_workflow_runs ON workflow_runs USING (tenant_id = current_setting('app.current_tenant', true)) WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
+DROP POLICY IF EXISTS tenant_isolation_workflow_step_runs ON workflow_step_runs;
+CREATE POLICY tenant_isolation_workflow_step_runs ON workflow_step_runs USING (tenant_id = current_setting('app.current_tenant', true)) WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
+DROP POLICY IF EXISTS tenant_isolation_workflow_approvals ON workflow_approvals;
+CREATE POLICY tenant_isolation_workflow_approvals ON workflow_approvals USING (tenant_id = current_setting('app.current_tenant', true)) WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
+DROP POLICY IF EXISTS tenant_isolation_workflow_events ON workflow_events;
+CREATE POLICY tenant_isolation_workflow_events ON workflow_events USING (tenant_id = current_setting('app.current_tenant', true)) WITH CHECK (tenant_id = current_setting('app.current_tenant', true));

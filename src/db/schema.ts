@@ -209,6 +209,86 @@ export const auditLogs = pgTable('audit_log', {
 // Arabic Intelligence: per-organization AI profile. One row per tenant —
 // Country + Industry + Language + Dialect + response style used to compose
 // Arabic-aware context. Tenant-scoped like every other row in this schema.
+export const workflows = pgTable('workflows', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: text('tenant_id').notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  status: text('status').default('DRAFT').notNull(),
+  triggerType: text('trigger_type').notNull(),
+  triggerConfig: jsonb('trigger_config').default({}).notNull(),
+  createdBy: text('created_by').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const workflowVersions = pgTable('workflow_versions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  workflowId: uuid('workflow_id').references(() => workflows.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: text('tenant_id').notNull(),
+  version: integer('version').notNull(),
+  status: text('status').default('DRAFT').notNull(),
+  definition: jsonb('definition').notNull(),
+  createdBy: text('created_by').notNull(),
+  publishedAt: timestamp('published_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const workflowRuns = pgTable('workflow_runs', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  workflowId: uuid('workflow_id').references(() => workflows.id, { onDelete: 'cascade' }).notNull(),
+  workflowVersionId: uuid('workflow_version_id').references(() => workflowVersions.id, { onDelete: 'restrict' }).notNull(),
+  tenantId: text('tenant_id').notNull(),
+  status: text('status').default('QUEUED').notNull(),
+  input: jsonb('input').default({}).notNull(),
+  output: jsonb('output'),
+  error: text('error'),
+  idempotencyKey: text('idempotency_key'),
+  createdBy: text('created_by').notNull(),
+  startedAt: timestamp('started_at'),
+  completedAt: timestamp('completed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const workflowStepRuns = pgTable('workflow_step_runs', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  workflowRunId: uuid('workflow_run_id').references(() => workflowRuns.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: text('tenant_id').notNull(),
+  stepKey: text('step_key').notNull(),
+  stepType: text('step_type').notNull(),
+  status: text('status').default('QUEUED').notNull(),
+  attempt: integer('attempt').default(0).notNull(),
+  input: jsonb('input').default({}).notNull(),
+  output: jsonb('output'),
+  error: text('error'),
+  startedAt: timestamp('started_at'),
+  completedAt: timestamp('completed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const workflowApprovals = pgTable('workflow_approvals', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  workflowRunId: uuid('workflow_run_id').references(() => workflowRuns.id, { onDelete: 'cascade' }).notNull(),
+  workflowStepRunId: uuid('workflow_step_run_id').references(() => workflowStepRuns.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: text('tenant_id').notNull(),
+  status: text('status').default('PENDING').notNull(),
+  requestedRole: text('requested_role'),
+  requestedUserId: text('requested_user_id'),
+  decisionNote: text('decision_note'),
+  requestedAt: timestamp('requested_at').defaultNow().notNull(),
+  resolvedBy: text('resolved_by'),
+  resolvedAt: timestamp('resolved_at'),
+});
+
+export const workflowEvents = pgTable('workflow_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  workflowRunId: uuid('workflow_run_id').references(() => workflowRuns.id, { onDelete: 'cascade' }).notNull(),
+  tenantId: text('tenant_id').notNull(),
+  eventType: text('event_type').notNull(),
+  payload: jsonb('payload').default({}).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const organizationIntelligenceProfiles = pgTable('organization_intelligence_profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
   tenantId: text('tenant_id').notNull().unique(),

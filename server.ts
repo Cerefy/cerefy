@@ -37,6 +37,7 @@ import * as graphService from './src/lib/graphService';
 import { listAgentDefinitions, getAgentDefinitionById } from './src/ai/registry';
 import { loadVectorMemoryContext } from './src/ai/memory/vectorMemory';
 import * as serializers from './src/lib/serializers';
+import * as workflowService from './src/lib/workflowService';
 
 // ─── Initialize Firebase Admin ───────────────────────────────────────────────
 let firebaseApp: App | null = null;
@@ -548,6 +549,87 @@ app.get('/api/v1/agents/:agentId', requireAuth, async (req: AuthenticatedRequest
   } catch (error) {
     logger.error('Failed to fetch agent', { error, agentId });
     res.status(500).json({ status: 'error', message: 'Failed to fetch agent' });
+  }
+});
+
+app.get('/api/v1/workflows', requireAuth, requireTenant, requirePermission('read:projects', 'project'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const data = await workflowService.listWorkflows(req.tenantId!);
+    res.json({ data });
+  } catch (error) {
+    logger.error('Failed to list workflows', { error, tenantId: req.tenantId });
+    res.status(500).json({ status: 'error', message: 'Failed to list workflows' });
+  }
+});
+
+app.post('/api/v1/workflows', requireAuth, requireTenant, requirePermission('manage:workflows', 'workflow'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const body = req.body ?? {};
+    if (typeof body.name !== 'string' || typeof body.triggerType !== 'string') {
+      res.status(400).json({ status: 'error', message: 'name and triggerType are required' });
+      return;
+    }
+    const userId = String((req.user as any)?.uid || (req.user as any)?.id || 'unknown');
+    const result = await workflowService.createWorkflow(req.tenantId!, userId, {
+      name: body.name,
+      description: typeof body.description === 'string' ? body.description : undefined,
+      triggerType: body.triggerType,
+      triggerConfig: body.triggerConfig && typeof body.triggerConfig === 'object' ? body.triggerConfig : {},
+      definition: body.definition,
+    });
+    await auditLog.log({ action: 'workflow.created', actorId: userId, actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId!, resource: 'workflow', detail: { workflowId: result.workflow.id, versionId: result.version.id } }).catch(() => {});
+    res.status(201).json({ data: result });
+  } catch (error: any) {
+    const status = Number.isInteger(error?.status) ? error.status : 500;
+    logger.error('Failed to create workflow', { error, tenantId: req.tenantId });
+    res.status(status).json({ status: 'error', message: status === 500 ? 'Failed to create workflow' : error.message });
+  }
+});
+
+app.get('/api/v1/workflows/:workflowId', requireAuth, requireTenant, requirePermission('read:projects', 'project'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const data = await workflowService.getWorkflow(req.tenantId!, req.params.workflowId);
+    if (!data) { res.status(404).json({ status: 'error', message: 'Workflow not found' }); return; }
+    res.json({ data });
+  } catch (error) {
+    logger.error('Failed to fetch workflow', { error, tenantId: req.tenantId, workflowId: req.params.workflowId });
+    res.status(500).json({ status: 'error', message: 'Failed to fetch workflow' });
+  }
+});
+
+app.post('/api/v1/workflows/:workflowId/publish', requireAuth, requireTenant, requirePermission('manage:workflows', 'workflow'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const data = await workflowService.publishWorkflow(req.tenantId!, req.params.workflowId, String(req.body?.versionId || ''));
+    if (!data) { res.status(404).json({ status: 'error', message: 'Workflow version not found' }); return; }
+    await auditLog.log({ action: 'workflow.published', actorId: (req.user as any)?.uid || 'unknown', actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId!, resource: 'workflow', detail: { workflowId: req.params.workflowId, versionId: req.body?.versionId } }).catch(() => {});
+    res.json({ data });
+  } catch (error) {
+    logger.error('Failed to publish workflow', { error, tenantId: req.tenantId, workflowId: req.params.workflowId });
+    res.status(500).json({ status: 'error', message: 'Failed to publish workflow' });
+  }
+});
+
+app.post('/api/v1/workflows/:workflowId/runs', requireAuth, requireTenant, requirePermission('manage:workflows', 'workflow'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = String((req.user as any)?.uid || (req.user as any)?.id || 'unknown');
+    const result = await workflowService.createWorkflowRun(req.tenantId!, req.params.workflowId, userId, req.body?.input && typeof req.body.input === 'object' ? req.body.input : {}, typeof req.headers['idempotency-key'] === 'string' ? req.headers['idempotency-key'] : undefined);
+    if (!result.replayed) await auditLog.log({ action: 'workflow.run.created', actorId: userId, actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId!, resource: 'workflow.run', detail: { workflowId: req.params.workflowId, runId: result.run.id } }).catch(() => {});
+    res.status(result.replayed ? 200 : 202).json({ data: result });
+  } catch (error: any) {
+    const status = Number.isInteger(error?.status) ? error.status : 500;
+    logger.error('Failed to create workflow run', { error, tenantId: req.tenantId, workflowId: req.params.workflowId });
+    res.status(status).json({ status: 'error', message: status === 500 ? 'Failed to create workflow run' : error.message });
+  }
+});
+
+app.get('/api/v1/workflow-runs/:runId', requireAuth, requireTenant, requirePermission('read:projects', 'project'), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const data = await workflowService.getWorkflowRun(req.tenantId!, req.params.runId);
+    if (!data) { res.status(404).json({ status: 'error', message: 'Workflow run not found' }); return; }
+    res.json({ data });
+  } catch (error) {
+    logger.error('Failed to fetch workflow run', { error, tenantId: req.tenantId, runId: req.params.runId });
+    res.status(500).json({ status: 'error', message: 'Failed to fetch workflow run' });
   }
 });
 
