@@ -64,7 +64,9 @@ async function tryEnablePgvector(admin: pg.Client): Promise<void> {
 function migrationSql(file: string): string {
   const sql = readFileSync(join(root, 'drizzle', file), 'utf8');
   if (vectorFallback) {
-    return sql.replace(/vector\(\s*\d+\s*\)/g, 'real[]');
+    return sql
+      .replace(/CREATE EXTENSION IF NOT EXISTS vector;\s*/gi, '')
+      .replace(/vector\(\s*\d+\s*\)/g, 'real[]');
   }
   return sql;
 }
