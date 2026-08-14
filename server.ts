@@ -2,7 +2,6 @@ import './instrumentation';
 import express from 'express';
 import path from 'path';
 import crypto from 'crypto';
-import { createServer as createViteServer } from 'vite';
 import { Request, Response, NextFunction } from 'express';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
@@ -756,6 +755,9 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => { logger.
 
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
+    // Vite is a development-only dependency. Dynamic loading prevents the
+    // production Node bundle from resolving Vite in the Render runtime.
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({ server: { middlewareMode: true }, appType: 'spa' });
     app.use(vite.middlewares);
   } else {
