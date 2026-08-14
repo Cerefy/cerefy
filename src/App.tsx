@@ -52,7 +52,6 @@ const AICanvasView = lazyPage(() => import('./components/AICanvasView'), 'AICanv
 const BPMNWorkspaceView = lazyPage(() => import('./components/BPMNWorkspaceView'), 'BPMNWorkspaceView');
 const GovernanceDashboardView = lazyPage(() => import('./components/GovernanceDashboardView'), 'GovernanceDashboardView');
 const ActivityFeedView = lazyPage(() => import('./components/ActivityFeedView'), 'ActivityFeedView');
-const ExecutiveMissionControl = lazyPage(() => import('./components/kinetic/ExecutiveMissionControl'), 'ExecutiveMissionControl');
 
 // Command palette actions stay at the shell level so every routed page can
 // trigger a tab switch without conversation breakage.
@@ -103,8 +102,8 @@ function AppRoutes() {
         {/* Protected Workspace Routes — AppShell owns auth guard + chrome */}
         <Route path="/workspace" element={<AppShell />}>
           {/* Overview */}
-          <Route index element={<ExecutiveMissionControl />} />
-          <Route path="command-center" element={<ExecutiveMissionControl />} />
+          <Route index element={<DashboardPage />} />
+          <Route path="command-center" element={<DashboardPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
 
           {/* AI Workspace + Agents */}
