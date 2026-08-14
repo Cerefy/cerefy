@@ -15,8 +15,11 @@ if ! command -v psql >/dev/null 2>&1; then
   exit 1
 fi
 
-if [ ! -x "$APP_DIR/node_modules/.bin/drizzle-kit" ]; then
-  echo "ERROR: drizzle-kit is required for release-time migrations" >&2
+# Release migrations use Drizzle ORM directly (scripts/run-drizzle-migrations.cjs),
+# not the development-only drizzle-kit CLI. Keep this check fail-closed while
+# allowing the production image to omit CLI/build tooling.
+if ! node -e "require.resolve('drizzle-orm/node-postgres/migrator')" >/dev/null 2>&1; then
+  echo "ERROR: drizzle-orm direct migrator is required for release-time migrations" >&2
   exit 1
 fi
 
