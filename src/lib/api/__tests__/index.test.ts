@@ -4,6 +4,7 @@ import { ok, fail } from '../envelope';
 import { encodeCursor, decodeCursor, paginate, paginateOrdered, uint64Cursor, decodeUint64Cursor } from '../pagination';
 import { extractIdempotencyKey, IdempotencyService, MemoryIdempotencyStore } from '../idempotency';
 import { defineContract, assertValid, validateContract } from '../validate';
+import { apiContracts } from '../contracts';
 
 test('envelope: ok() populates meta defaults', () => {
   const response = ok({ id: 1 });
@@ -93,4 +94,36 @@ test('contract: required error message', () => {
   const result = validateContract(contract, {});
   assert.equal(result.ok, false);
   assert.ok(result.errors.some((e) => e.field === 'title'));
+});
+
+
+test('contract: array and object types are distinct', () => {
+  const contract = defineContract({
+    fields: {
+      sources: { type: 'array', required: true },
+      metadata: { type: 'object', required: true },
+    },
+  });
+  assert.equal(validateContract(contract, { sources: [], metadata: {} }).ok, true);
+  assert.equal(validateContract(contract, { sources: {}, metadata: {} }).ok, false);
+  assert.equal(validateContract(contract, { sources: [], metadata: [] }).ok, false);
+});
+
+test('production AI run contract rejects unknown and malformed fields', () => {
+  const accepted = validateContract(apiContracts.aiRun, {
+    type: 'risk_review',
+    documents: [],
+    requirements: [],
+    decisions: [],
+    metadata: {},
+  });
+  assert.equal(accepted.ok, true);
+  assert.equal(validateContract(apiContracts.aiRun, { type: 'risk_review', metadata: [] }).ok, false);
+  assert.equal(validateContract(apiContracts.aiRun, { type: 'risk_review', untrusted: true }).ok, false);
+});
+
+test('production workflow approval contract is allow-listed and enumerated', () => {
+  assert.equal(validateContract(apiContracts.resolveApproval, { status: 'APPROVED', note: 'Reviewed' }).ok, true);
+  assert.equal(validateContract(apiContracts.resolveApproval, { status: 'PENDING' }).ok, false);
+  assert.equal(validateContract(apiContracts.resolveApproval, { status: 'APPROVED', actorId: 'spoofed' }).ok, false);
 });

@@ -113,14 +113,6 @@ class SocketService {
     this.socket?.emit(event, data);
   }
 
-  joinRoom(room: string): void {
-    this.socket?.emit('join', { room });
-  }
-
-  leaveRoom(room: string): void {
-    this.socket?.emit('leave', { room });
-  }
-
   get isConnected(): boolean {
     return this.socket?.connected ?? false;
   }

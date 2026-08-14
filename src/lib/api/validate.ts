@@ -8,7 +8,7 @@ export interface ValidationResult {
 }
 
 export interface FieldSpec {
-  type: 'string' | 'number' | 'boolean' | 'object';
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
   required?: boolean;
   enum?: readonly string[];
   min?: number;
@@ -70,7 +70,11 @@ export function validateContract<T extends Record<string, unknown>>(
     const validType =
       spec.type === 'number'
         ? typeof value === 'number' && Number.isFinite(value)
-        : typeof value === spec.type;
+        : spec.type === 'array'
+          ? Array.isArray(value)
+          : spec.type === 'object'
+            ? typeof value === 'object' && !Array.isArray(value)
+            : typeof value === spec.type;
     if (!validType) {
       errors.push({ field: name, message: typeMessage(value, spec) });
       continue;
