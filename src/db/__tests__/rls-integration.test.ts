@@ -104,7 +104,7 @@ after(async () => {
   if (!url) return;
   const admin = new pg.Client({ connectionString: url });
   await admin.connect();
-  await admin.query('DROP TABLE IF EXISTS graph_entity_links, graph_entities, sessions, organization_members, users, organizations, ai_answers, ai_queries, agent_registry, agent_executions, decisions, document_chunks, documents, projects, organization_intelligence_profiles CASCADE');
+  await admin.query('DROP TABLE IF EXISTS workflow_events, workflow_approvals, workflow_step_runs, workflow_runs, workflow_versions, workflows, graph_entity_links, graph_entities, sessions, organization_members, users, organizations, ai_answers, ai_queries, agent_registry, agent_executions, decisions, document_chunks, documents, projects, organization_intelligence_profiles CASCADE');
   await admin.query('DROP FUNCTION IF EXISTS app.current_tenant_id()');
   await admin.query(`REVOKE ALL ON ALL TABLES IN SCHEMA public FROM "${APP_ROLE}"`).catch(() => {});
   await admin.query(`REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM "${APP_ROLE}"`).catch(() => {});
@@ -294,6 +294,50 @@ test('RLS §5: agent_executions tenant isolation + write-reject', async (t) => {
     b.q("INSERT INTO agent_executions (id, tenant_id, type, status, current_agent, confidence, input, event_log, errors) VALUES ('00000000-0000-0000-0000-000000000062', 'ten_a', 'analysis', 'RUNNING', 'supervisor', 0, '{}', '[]', '[]')"),
     /row-level security/,
     'cross-tenant execution insert must be rejected',
+  );
+  await b.end();
+});
+
+test('RLS §5: workflow runtime tables are tenant-isolated end to end', async (t) => {
+  if (!url) return t.skip('no DATABASE_URL_TEST');
+  if (!ready) return t.skip('non-superuser role not provisioned');
+
+  const seedA = tenantSession('ten_a');
+  await seedA.q(`
+    INSERT INTO workflows (id, tenant_id, name, trigger_type, created_by)
+    VALUES ('00000000-0000-0000-0000-000000000101', 'ten_a', 'A workflow', 'MANUAL', 'u1')
+  `);
+  await seedA.q(`
+    INSERT INTO workflow_versions (id, workflow_id, tenant_id, version, definition, created_by)
+    VALUES ('00000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000101', 'ten_a', 1, '{"steps":[]}', 'u1')
+  `);
+  await seedA.q(`
+    INSERT INTO workflow_runs (id, workflow_id, workflow_version_id, tenant_id, input, created_by)
+    VALUES ('00000000-0000-0000-0000-000000000103', '00000000-0000-0000-0000-000000000101', '00000000-0000-0000-0000-000000000102', 'ten_a', '{}', 'u1')
+  `);
+  await seedA.q(`
+    INSERT INTO workflow_step_runs (id, workflow_run_id, tenant_id, step_key, step_type, input)
+    VALUES ('00000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000000103', 'ten_a', 'approval', 'APPROVAL', '{}')
+  `);
+  await seedA.q(`
+    INSERT INTO workflow_approvals (id, workflow_run_id, workflow_step_run_id, tenant_id)
+    VALUES ('00000000-0000-0000-0000-000000000105', '00000000-0000-0000-0000-000000000103', '00000000-0000-0000-0000-000000000104', 'ten_a')
+  `);
+  await seedA.q(`
+    INSERT INTO workflow_events (id, workflow_run_id, tenant_id, event_type, payload)
+    VALUES ('00000000-0000-0000-0000-000000000106', '00000000-0000-0000-0000-000000000103', 'ten_a', 'workflow.started', '{}')
+  `);
+  await seedA.end();
+
+  const b = tenantSession('ten_b');
+  for (const table of ['workflows', 'workflow_versions', 'workflow_runs', 'workflow_step_runs', 'workflow_approvals', 'workflow_events']) {
+    const rows = await b.q(`SELECT id FROM ${table}`);
+    assert.equal(rows.rowCount, 0, `ten_b must not read ten_a rows in ${table}`);
+  }
+  await assert.rejects(
+    b.q("INSERT INTO workflows (id, tenant_id, name, trigger_type, created_by) VALUES ('00000000-0000-0000-0000-000000000107', 'ten_a', 'sneak', 'MANUAL', 'u2')"),
+    /row-level security/,
+    'cross-tenant workflow insert must be rejected',
   );
   await b.end();
 });
