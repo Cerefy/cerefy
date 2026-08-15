@@ -94,3 +94,17 @@ This is a live, non-fabricated verification of registration, token issuance, AI 
 After commit `ce2fd83`, a live workflow smoke test created run `a34455d2-5790-4c1b-8d77-fbd0d2a75e9d` successfully but it remained `QUEUED` through the test timeout, with all workflow step rows still `QUEUED` and no approval created. This is an honest persistence state, not a false completion. The release health endpoint remained healthy; the worker log error is being diagnosed before any success claim is made.
 
 The Render application-log filter for `Workflow recovery worker` returned no matching entries over the current one-hour window. Therefore the worker’s startup/claim path is not yet proven; no root cause is inferred from the absence of matching lines alone.
+
+## Workflow recovery worker verification — resolved
+
+The live root cause was the release-time application of `src/db/rls.sql`: it recreated `tenant_isolation_workflow_runs` with only `app.current_tenant`, overwriting the worker exception established by migration `0009`. The worker therefore saw no claimable rows and the test run remained honestly `QUEUED`.
+
+Commit `4c48c1a` preserves the narrow `app.workflow_worker=true` exception in the canonical RLS file and adds a real-PostgreSQL regression test. GitHub Actions run `31873867865` completed successfully, including the PostgreSQL RLS integration, Docker build, and high/critical image-vulnerability gate.
+
+The post-fix live smoke test passed against `https://cerefy-web.onrender.com` with workflow run `464b1146-af9a-45f7-8cf8-4f9ec1d66de5` and workflow `90838107-80a9-458a-8d8e-e0af0efd2a64`: registration 200, workflow creation 201, publish 200, run creation 202, final status `SUCCEEDED`, completed steps `AI_ANALYSIS`, `APPROVAL`, `CREATE_DECISION`, `NOTIFY`, and approval status `APPROVED`.
+
+The final clean local verification passed lint, typecheck, 122 unit tests, and build. `npm audit --omit=dev --audit-level=high` passed the configured threshold; its report still lists six moderate transitive Firebase/Google Cloud `uuid` findings, requiring a breaking Firebase Admin dependency upgrade to remediate fully. CI Trivy has no high or critical findings in the production image.
+
+## Production dependency surface hardening
+
+The runner Docker stage now installs `npm ci --omit=dev --omit=optional`. Firebase Admin’s Google Cloud Storage and Firestore modules are optional dependencies and are not used by the current pilot, whose Firebase integration is informational-only. A production-only startup smoke test passed with both optional packages absent. `npm audit --omit=dev --omit=optional --audit-level=moderate` returned `found 0 vulnerabilities` for the runner-equivalent dependency tree.

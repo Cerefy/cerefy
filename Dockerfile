@@ -57,7 +57,7 @@ ENV PORT=3000
 # the deployable image.
 RUN apk add --no-cache postgresql-client
 COPY package*.json ./
-RUN npm ci --omit=dev --ignore-scripts --audit=false \
+RUN npm ci --omit=dev --omit=optional --ignore-scripts --audit=false \
   && npm cache clean --force \
   && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
   && rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
