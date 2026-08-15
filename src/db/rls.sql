@@ -163,7 +163,18 @@ CREATE POLICY tenant_isolation_workflows ON workflows USING (tenant_id = current
 DROP POLICY IF EXISTS tenant_isolation_workflow_versions ON workflow_versions;
 CREATE POLICY tenant_isolation_workflow_versions ON workflow_versions USING (tenant_id = current_setting('app.current_tenant', true)) WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
 DROP POLICY IF EXISTS tenant_isolation_workflow_runs ON workflow_runs;
-CREATE POLICY tenant_isolation_workflow_runs ON workflow_runs USING (tenant_id = current_setting('app.current_tenant', true)) WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
+-- The database-backed recovery worker sets app.workflow_worker=true only inside
+-- its short lease-claim transaction. All request and execution paths continue
+-- to require the ordinary tenant context below.
+CREATE POLICY tenant_isolation_workflow_runs ON workflow_runs
+  USING (
+    tenant_id = current_setting('app.current_tenant', true)
+    OR current_setting('app.workflow_worker', true) = 'true'
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant', true)
+    OR current_setting('app.workflow_worker', true) = 'true'
+  );
 DROP POLICY IF EXISTS tenant_isolation_workflow_step_runs ON workflow_step_runs;
 CREATE POLICY tenant_isolation_workflow_step_runs ON workflow_step_runs USING (tenant_id = current_setting('app.current_tenant', true)) WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
 DROP POLICY IF EXISTS tenant_isolation_workflow_approvals ON workflow_approvals;

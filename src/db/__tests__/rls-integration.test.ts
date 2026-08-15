@@ -124,6 +124,22 @@ after(async () => {
  * layer sets per request (server.ts requireTenant path). RLS evaluates this
  * real role, so invisibility of other tenants is genuine.
  */
+function workerSession() {
+  const client = new pg.Client({ connectionString: appRoleUrl() });
+  const connected = client.connect().then(async () => {
+    await client.query("SELECT set_config('app.workflow_worker', 'true', false)");
+  });
+  return {
+    async q(text: string, params?: any[]) {
+      await connected;
+      return client.query(text, params);
+    },
+    async end() {
+      await client.end();
+    },
+  };
+}
+
 function tenantSession(tenant: string) {
   const client = new pg.Client({ connectionString: appRoleUrl() });
   const conn = client.connect();
@@ -342,6 +358,28 @@ test('RLS §5: workflow runtime tables are tenant-isolated end to end', async (t
     'cross-tenant workflow insert must be rejected',
   );
   await b.end();
+});
+
+test('RLS §5: workflow worker claims cross-tenant runs only with its explicit internal context', async (t) => {
+  if (!url) return t.skip('no DATABASE_URL_TEST');
+  if (!ready) return t.skip('non-superuser role not provisioned');
+  const worker = workerSession();
+  const claimed = await worker.q(`
+    UPDATE workflow_runs
+    SET status = 'RUNNING', lease_owner = 'test-worker'
+    WHERE id = '00000000-0000-0000-0000-000000000103'
+    RETURNING tenant_id, status, lease_owner
+  `);
+  assert.equal(claimed.rowCount, 1);
+  assert.equal(claimed.rows[0].tenant_id, 'ten_a');
+  assert.equal(claimed.rows[0].lease_owner, 'test-worker');
+  await worker.end();
+
+  const a = tenantSession('ten_a');
+  const restored = await a.q("SELECT status, lease_owner FROM workflow_runs WHERE id = '00000000-0000-0000-0000-000000000103'");
+  assert.equal(restored.rowCount, 1);
+  assert.equal(restored.rows[0].status, 'RUNNING');
+  await a.end();
 });
 
 test('RLS §5: users are invisible across tenants without an auth_email lookup context', async (t) => {

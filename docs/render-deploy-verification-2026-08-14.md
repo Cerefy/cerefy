@@ -88,3 +88,9 @@ LIVE_WORKFLOW_SMOKE_PASS {"registrationStatus":200,"workflowCreateStatus":201,"w
 ```
 
 This is a live, non-fabricated verification of registration, token issuance, AI analysis through Gemini, approval before decision creation, notification, and persistence in the Render PostgreSQL database.
+
+## Workflow recovery worker verification — pending diagnosis
+
+After commit `ce2fd83`, a live workflow smoke test created run `a34455d2-5790-4c1b-8d77-fbd0d2a75e9d` successfully but it remained `QUEUED` through the test timeout, with all workflow step rows still `QUEUED` and no approval created. This is an honest persistence state, not a false completion. The release health endpoint remained healthy; the worker log error is being diagnosed before any success claim is made.
+
+The Render application-log filter for `Workflow recovery worker` returned no matching entries over the current one-hour window. Therefore the worker’s startup/claim path is not yet proven; no root cause is inferred from the absence of matching lines alone.
