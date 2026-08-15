@@ -30,7 +30,14 @@ async function updateStep(tenantId: string, stepId: string, values: Record<strin
   });
 }
 
-export async function executeWorkflowRun(tenantId: string, runId: string, io: SocketIOServer | null = null) {
+const MAX_WORKFLOW_ATTEMPTS = 3;
+
+export async function executeWorkflowRun(
+  tenantId: string,
+  runId: string,
+  io: SocketIOServer | null = null,
+  options: { leaseOwner?: string } = {},
+) {
   const context = await withTenantContext(tenantId, async (tx) => {
     const [run] = await tx.select().from(workflowRuns).where(and(eq(workflowRuns.id, runId), eq(workflowRuns.tenantId, tenantId))).limit(1);
     if (!run) return null;
@@ -39,11 +46,14 @@ export async function executeWorkflowRun(tenantId: string, runId: string, io: So
     return { run, version, steps };
   });
   if (!context) return null;
-  if (context.run.status !== 'QUEUED') return context.run;
+  const leasedToCaller = context.run.status === 'RUNNING' && !!options.leaseOwner && context.run.leaseOwner === options.leaseOwner;
+  if (context.run.status !== 'QUEUED' && !leasedToCaller) return context.run;
   if (!context.version) throw new Error('Workflow version not found');
 
-  await updateRun(tenantId, runId, { status: 'RUNNING', startedAt: new Date(), error: null });
-  await recordEvent(tenantId, runId, 'workflow.run.started', { runId });
+  if (context.run.status === 'QUEUED') {
+    await updateRun(tenantId, runId, { status: 'RUNNING', startedAt: new Date(), error: null });
+  }
+  await recordEvent(tenantId, runId, 'workflow.run.execution_started', { runId, attempt: context.run.attemptCount ?? 0 });
   const definition = context.version.definition as WorkflowDefinition;
   const input = (context.run.input ?? {}) as Record<string, unknown>;
   const outputs: Record<string, unknown> = {};
@@ -74,17 +84,17 @@ export async function executeWorkflowRun(tenantId: string, runId: string, io: So
         const title = String(input.title ?? stepDefinition.config?.title ?? '');
         const question = String(input.question ?? stepDefinition.config?.question ?? '');
         if (!title || !question) throw new Error('CREATE_DECISION requires input.title and input.question');
-        const decision = await decisionService.createDecision(tenantId, { title, question, status: 'OPEN', aiRecommendation: typeof aiOutput?.answer === 'string' ? aiOutput.answer : null });
+        const decision = await decisionService.createWorkflowDecision(tenantId, stepRun.id, { title, question, status: 'OPEN', aiRecommendation: typeof aiOutput?.answer === 'string' ? aiOutput.answer : null });
         outputs[stepRun.stepKey] = { decisionId: decision.id };
         await updateStep(tenantId, stepRun.id, { status: 'COMPLETED', output: { decisionId: decision.id }, completedAt: new Date() });
       } else if (stepDefinition.type === 'APPROVAL') {
         await withTenantContext(tenantId, async (tx) => {
-          await tx.insert(workflowApprovals).values({ workflowRunId: runId, workflowStepRunId: stepRun.id, tenantId, status: 'PENDING', requestedRole: typeof stepDefinition.config?.requestedRole === 'string' ? stepDefinition.config.requestedRole : 'approver' });
+          await tx.insert(workflowApprovals).values({ workflowRunId: runId, workflowStepRunId: stepRun.id, tenantId, status: 'PENDING', requestedRole: typeof stepDefinition.config?.requestedRole === 'string' ? stepDefinition.config.requestedRole : 'approver' }).onConflictDoNothing();
         });
         await updateStep(tenantId, stepRun.id, { status: 'WAITING_APPROVAL', completedAt: null });
-        await updateRun(tenantId, runId, { status: 'WAITING_APPROVAL', output: outputs });
+        await updateRun(tenantId, runId, { status: 'WAITING_APPROVAL', output: outputs, leaseOwner: null, leaseExpiresAt: null, lastHeartbeatAt: null });
         await recordEvent(tenantId, runId, 'workflow.approval.requested', { stepKey: stepRun.stepKey });
-        return await updateRun(tenantId, runId, { status: 'WAITING_APPROVAL', output: outputs });
+        return await updateRun(tenantId, runId, { status: 'WAITING_APPROVAL', output: outputs, leaseOwner: null, leaseExpiresAt: null, lastHeartbeatAt: null });
       } else if (stepDefinition.type === 'NOTIFY') {
         const result = { status: 'NOT_CONFIGURED', reason: 'No notification connector is configured for this tenant' };
         outputs[stepRun.stepKey] = result;
@@ -92,13 +102,24 @@ export async function executeWorkflowRun(tenantId: string, runId: string, io: So
       }
       await recordEvent(tenantId, runId, 'workflow.step.completed', { stepKey: stepRun.stepKey, stepType: stepRun.stepType });
     }
-    const completed = await updateRun(tenantId, runId, { status: 'SUCCEEDED', output: outputs, completedAt: new Date() });
+    const completed = await updateRun(tenantId, runId, { status: 'SUCCEEDED', output: outputs, completedAt: new Date(), leaseOwner: null, leaseExpiresAt: null, lastHeartbeatAt: null });
     await recordEvent(tenantId, runId, 'workflow.run.completed', { runId });
     return completed;
   } catch (error) {
     const message = errorMessage(error);
-    await updateRun(tenantId, runId, { status: 'FAILED', error: message, output: outputs, completedAt: new Date() });
-    await recordEvent(tenantId, runId, 'workflow.run.failed', { runId, error: message });
+    const currentAttempt = context.run.attemptCount ?? 0;
+    if (currentAttempt < MAX_WORKFLOW_ATTEMPTS) {
+      const retryDelayMs = 5_000 * (2 ** Math.max(0, currentAttempt - 1));
+      const retryAt = new Date(Date.now() + retryDelayMs);
+      await updateRun(tenantId, runId, {
+        status: 'QUEUED', error: message, output: outputs, nextAttemptAt: retryAt,
+        leaseOwner: null, leaseExpiresAt: null, lastHeartbeatAt: null,
+      });
+      await recordEvent(tenantId, runId, 'workflow.run.retry_scheduled', { runId, error: message, attempt: currentAttempt, retryAt: retryAt.toISOString() });
+      return updateRun(tenantId, runId, { status: 'QUEUED', error: message, output: outputs, nextAttemptAt: retryAt });
+    }
+    await updateRun(tenantId, runId, { status: 'FAILED', error: message, output: outputs, completedAt: new Date(), leaseOwner: null, leaseExpiresAt: null, lastHeartbeatAt: null });
+    await recordEvent(tenantId, runId, 'workflow.run.failed', { runId, error: message, attempt: currentAttempt });
     return updateRun(tenantId, runId, { status: 'FAILED', error: message, output: outputs });
   }
 }
@@ -109,7 +130,14 @@ export async function resolveWorkflowApproval(tenantId: string, approvalId: stri
     if (!approval || approval.status !== 'PENDING') return null;
     const [updated] = await tx.update(workflowApprovals).set({ status, decisionNote: note ?? null, resolvedBy: userId, resolvedAt: new Date() }).where(and(eq(workflowApprovals.id, approvalId), eq(workflowApprovals.tenantId, tenantId))).returning();
     await tx.update(workflowStepRuns).set({ status: status === 'APPROVED' ? 'COMPLETED' : 'FAILED', output: status === 'APPROVED' ? { approvalStatus: 'APPROVED', resolvedBy: userId } : null, error: status === 'REJECTED' ? note ?? 'Approval rejected' : null, completedAt: new Date() }).where(and(eq(workflowStepRuns.id, approval.workflowStepRunId), eq(workflowStepRuns.tenantId, tenantId)));
-    await tx.update(workflowRuns).set({ status: status === 'APPROVED' ? 'QUEUED' : 'FAILED', error: status === 'REJECTED' ? note ?? 'Approval rejected' : null }).where(and(eq(workflowRuns.id, approval.workflowRunId), eq(workflowRuns.tenantId, tenantId)));
+    await tx.update(workflowRuns).set({
+      status: status === 'APPROVED' ? 'QUEUED' : 'FAILED',
+      error: status === 'REJECTED' ? note ?? 'Approval rejected' : null,
+      nextAttemptAt: new Date(),
+      leaseOwner: null,
+      leaseExpiresAt: null,
+      lastHeartbeatAt: null,
+    }).where(and(eq(workflowRuns.id, approval.workflowRunId), eq(workflowRuns.tenantId, tenantId)));
     return updated;
   });
 }

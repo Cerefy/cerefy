@@ -38,6 +38,7 @@ import { loadVectorMemoryContext } from './src/ai/memory/vectorMemory';
 import * as serializers from './src/lib/serializers';
 import * as workflowService from './src/lib/workflowService';
 import * as workflowRuntime from './src/lib/workflowRuntime';
+import { WorkflowRecoveryWorker } from './src/lib/workflowRecoveryWorker';
 import { contractBody } from './src/lib/api/express';
 import { apiContracts } from './src/lib/api/contracts';
 
@@ -134,6 +135,7 @@ function getGeminiClient(): GoogleGenAI | null {
 }
 
 let socketServer: SocketIOServer | null = null;
+const workflowRecoveryWorker = new WorkflowRecoveryWorker(() => socketServer);
 
 interface DevAuthUser {
   id: string;
@@ -617,7 +619,7 @@ app.post('/api/v1/workflows/:workflowId/runs', requireAuth, requireTenant, requi
     const result = await workflowService.createWorkflowRun(req.tenantId!, req.params.workflowId, userId, req.body?.input && typeof req.body.input === 'object' ? req.body.input : {}, typeof req.headers['idempotency-key'] === 'string' ? req.headers['idempotency-key'] : undefined);
     if (!result.replayed) {
       await auditLog.log({ action: 'workflow.run.created', actorId: userId, actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId!, resource: 'workflow.run', detail: { workflowId: req.params.workflowId, runId: result.run.id } }).catch(() => {});
-      void workflowRuntime.executeWorkflowRun(req.tenantId!, result.run.id, socketServer).catch((error) => logger.error('Workflow runtime execution failed', { error, runId: result.run.id, tenantId: req.tenantId }));
+      workflowRecoveryWorker.kick();
     }
     res.status(result.replayed ? 200 : 202).json({ data: result });
   } catch (error: any) {
@@ -635,7 +637,7 @@ app.post('/api/v1/workflow-approvals/:approvalId/resolve', requireAuth, requireT
     const approval = await workflowRuntime.resolveWorkflowApproval(req.tenantId!, req.params.approvalId, userId, status, typeof req.body?.note === 'string' ? req.body.note : undefined);
     if (!approval) { res.status(404).json({ status: 'error', message: 'Pending workflow approval not found' }); return; }
     await auditLog.log({ action: `workflow.approval.${status.toLowerCase()}`, actorId: userId, actorRole: (req.user as any)?.role || 'member', tenantId: req.tenantId!, resource: 'workflow.approval', detail: { approvalId: req.params.approvalId, workflowRunId: approval.workflowRunId } }).catch(() => {});
-    if (status === 'APPROVED') void workflowRuntime.executeWorkflowRun(req.tenantId!, approval.workflowRunId, socketServer).catch((error) => logger.error('Approved workflow resume failed', { error, runId: approval.workflowRunId, tenantId: req.tenantId }));
+    if (status === 'APPROVED') workflowRecoveryWorker.kick();
     res.json({ data: approval });
   } catch (error) {
     logger.error('Failed to resolve workflow approval', { error, tenantId: req.tenantId, approvalId: req.params.approvalId });
@@ -773,6 +775,7 @@ async function startServer() {
     cors: { origin: process.env.FRONTEND_URL || '*', methods: ['GET', 'POST'], credentials: true },
   });
   socketServer = io;
+  workflowRecoveryWorker.start();
 
   io.use(async (socket, next) => {
     const token = String(socket.handshake.auth?.token || socket.handshake.headers.authorization || '');

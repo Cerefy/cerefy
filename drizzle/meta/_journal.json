@@ -64,6 +64,13 @@
       "when": 1795694400008,
       "tag": "0008_workflow_runtime",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795694400009,
+      "tag": "0009_workflow_recovery_worker",
+      "breakpoints": true
     }
   ]
 }

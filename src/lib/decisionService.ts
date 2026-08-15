@@ -1,6 +1,6 @@
 import { db, withTenantContext } from '../db';
 import { decisions } from '../db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { and, eq, desc } from 'drizzle-orm';
 
 export const getAllDecisions = async (tenantId: string) => {
   return await withTenantContext(tenantId, async (tx) => {
@@ -15,6 +15,26 @@ export const createDecision = async (tenantId: string, decisionData: any) => {
       tenantId,
     }).returning();
     return newDecision;
+  });
+};
+
+/**
+ * Workflow recovery can re-enter CREATE_DECISION after a process crash. The
+ * unique workflow step reference makes the effect idempotent per tenant.
+ */
+export const createWorkflowDecision = async (tenantId: string, workflowStepRunId: string, decisionData: any) => {
+  return await withTenantContext(tenantId, async (tx) => {
+    const [existing] = await tx.select().from(decisions).where(and(
+      eq(decisions.tenantId, tenantId),
+      eq(decisions.workflowStepRunId, workflowStepRunId),
+    )).limit(1);
+    if (existing) return existing;
+    const [created] = await tx.insert(decisions).values({
+      ...decisionData,
+      tenantId,
+      workflowStepRunId,
+    }).returning();
+    return created;
   });
 };
 

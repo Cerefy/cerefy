@@ -90,7 +90,7 @@ test('E2E §2: login → authenticated AI query submission', { timeout: 90_000 }
   const reg = await json('/api/v1/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password: 'S3cure!pass', firstName: 'E2E', lastName: 'Tester', organizationName: 'E2E Org' }),
+    body: JSON.stringify({ email, password: 'S3cure!pass2026', firstName: 'E2E', lastName: 'Tester', organizationName: 'E2E Org' }),
   });
   assert.equal(reg.status, 200, 'register');
   const token = reg.body?.tokens?.accessToken;

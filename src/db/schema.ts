@@ -57,6 +57,7 @@ export const decisions = pgTable('decisions', {
   confidenceScore: real('confidence_score').default(0),
   status: text('status').default('OPEN'),
   aiRecommendation: text('ai_recommendation'),
+  workflowStepRunId: uuid('workflow_step_run_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -247,6 +248,11 @@ export const workflowRuns = pgTable('workflow_runs', {
   createdBy: text('created_by').notNull(),
   startedAt: timestamp('started_at'),
   completedAt: timestamp('completed_at'),
+  attemptCount: integer('attempt_count').default(0).notNull(),
+  leaseOwner: text('lease_owner'),
+  leaseExpiresAt: timestamp('lease_expires_at'),
+  lastHeartbeatAt: timestamp('last_heartbeat_at'),
+  nextAttemptAt: timestamp('next_attempt_at').defaultNow().notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
