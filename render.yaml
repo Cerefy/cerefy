@@ -1,15 +1,50 @@
 services:
   - type: web
-    name: cerefy-web
+    name: sopranova-api
     env: docker
     dockerfilePath: ./Dockerfile
-    plan: free
+    plan: starter
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: GEMINI_API_KEY
-        sync: false
+      - key: PORT
+        value: 3000
       - key: DATABASE_URL
         sync: false
-      - key: NEO4J_URI
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: SESSION_DAYS
+        value: "14"
+      - key: AI_PROVIDER
+        value: openai-compatible
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_MODEL
+        value: openai/gpt-4o
+      - key: AI_BASE_URL
+        value: https://openrouter.ai/api/v1
+      - key: EMAIL_PROVIDER
+        value: resend
+      - key: EMAIL_FROM
+        value: "SOPRANOVA <noreply@sopranova.com>"
+      - key: EMAIL_API_KEY
+        sync: false
+      - key: S3_BUCKET
+        value: sopranova-documents
+      - key: S3_REGION
+        value: eu-central-1
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_FORCE_PATH_STYLE
+        value: "true"
+      - key: DATA_ENCRYPTION_KEY
+        generateValue: true
+      - key: APP_URL
+        sync: false
+      - key: APP_ORIGIN
         sync: false

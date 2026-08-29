@@ -1,0 +1,49 @@
+# Application
+NODE_ENV=development
+PORT=3000
+HOST=0.0.0.0
+APP_URL=http://localhost:3000
+APP_ORIGIN=http://localhost:3000
+
+# Database: independently managed MySQL or MariaDB
+DATABASE_URL=mysql://sopranova:change-me@localhost:3306/sopranova
+
+# Authentication and encryption
+SESSION_SECRET=replace-with-a-32-byte-or-longer-random-secret
+SESSION_DAYS=14
+DATA_ENCRYPTION_KEY=replace-with-a-32-byte-base64-or-hex-key
+OAUTH_GOOGLE_CLIENT_ID=
+OAUTH_GOOGLE_CLIENT_SECRET=
+
+# AI gateway (OpenRouter — works with any OpenAI-compatible endpoint)
+AI_PROVIDER=openai-compatible
+AI_BASE_URL=https://openrouter.ai/api/v1
+AI_API_KEY=replace-with-openrouter-key
+AI_MODEL=openai/gpt-4o
+
+# S3-compatible object storage (AWS S3, Cloudflare R2, MinIO, etc.)
+S3_BUCKET=sopranova-documents
+S3_REGION=us-east-1
+S3_ENDPOINT=
+S3_ACCESS_KEY_ID=replace-with-storage-access-key
+S3_SECRET_ACCESS_KEY=replace-with-storage-secret
+S3_FORCE_PATH_STYLE=false
+
+# Email: console for local development, resend in production
+EMAIL_PROVIDER=console
+EMAIL_FROM=SOPRANOVA <noreply@example.com>
+EMAIL_API_KEY=
+
+# Optional payments (not enabled until billing is implemented)
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# Worker and monitoring
+WORKER_ID=sopranova-worker-1
+WORKER_POLL_MS=1500
+OTEL_EXPORTER_OTLP_ENDPOINT=
+SENTRY_DSN=
+
+# Optional local-development seed identity (never use in production)
+DEV_SEED_EMAIL=developer@example.test
+DEV_SEED_PASSWORD=ChangeThisDevelopmentPassword!2026

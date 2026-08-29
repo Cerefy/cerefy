@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-sn-white: #FAFAF8;
+  --color-sn-ivory: #F8F6F2;
+  --color-sn-50: #F4F3F0;
+  --color-sn-100: #E8E6E2;
+  --color-sn-200: #D4D1CB;
+  --color-sn-300: #B8B4AC;
+  --color-sn-400: #8C887F;
+  --color-sn-500: #6B6660;
+  --color-sn-navy: #1A1F3C;
+  --color-sn-navy-light: #252B4A;
+  --color-sn-charcoal: #2C2C35;
+  --color-sn-blue: #4A7FA5;
+  --color-sn-indigo: #5B6FA8;
+  --color-sn-lavender: #8B8FC4;
+  --color-sn-teal: #4A8B8C;
+  --color-sn-accent: #6B7FBF;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FAFAF8;
+  color: #1A1F3C;
+  font-family: 'Inter', system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes sn-reveal {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sn-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes sn-slide-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sn-slide-right {
+  from { opacity: 0; transform: translateX(-18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes sn-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes sn-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes sn-pulse-soft {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 0.7; }
+}
+
+@keyframes sn-shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+
+@keyframes sn-chart-bar {
+  from { transform: scaleY(0); transform-origin: bottom; }
+  to   { transform: scaleY(1); transform-origin: bottom; }
+}
+
+@keyframes sn-line-draw {
+  from { stroke-dashoffset: 1000; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes sn-orbit {
+  from { transform: rotate(0deg) translateX(60px) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
+}
+@keyframes sn-writing {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+@keyframes sn-node-pop {
+  0%   { opacity: 0; transform: scale(0.8); }
+  60%  { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes sn-data-flow {
+  0%   { opacity: 0; transform: translateY(0); }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(40px); }
+}
+
+@keyframes sn-spin-slow {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.sn-page-enter { animation: sn-reveal 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.sn-fade-in    { animation: sn-fade 0.4s ease both; }
+.sn-slide-up   { animation: sn-slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.sn-scale-in   { animation: sn-scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+.sn-display {
+  font-family: 'Instrument Serif', Georgia, serif;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.sn-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8C887F;
+}
+
+.sn-shimmer {
+  background: linear-gradient(90deg, #E8E6E2 25%, #F4F3F0 50%, #E8E6E2 75%);
+  background-size: 200% 100%;
+  animation: sn-shimmer 1.8s infinite;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D4D1CB; border-radius: 2px; }

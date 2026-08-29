@@ -1,0 +1,16 @@
+FROM node:22-slim
+
+RUN npm i -g pnpm@10.4.1
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+
+RUN pnpm run build
+
+EXPOSE 3000
+
+CMD ["sh", "-c", "npx drizzle-kit push && node dist/index.js"]

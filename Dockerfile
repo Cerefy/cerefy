@@ -1,12 +1,11 @@
 # ─── Stage 1: Dependency Install ─────────────────────────────────────────
 FROM node:22-alpine AS deps
 
-WORKDIR /app
+WORKDIR /app/sporanova-functional
 
-# Install build tools for native modules
 RUN apk add --no-cache python3 make g++
 
-COPY package*.json ./
+COPY sporanova-functional/package*.json ./
 RUN npm ci --ignore-scripts
 
 # ─── Stage 2: Frontend Build (Vite) ─────────────────────────────────────
@@ -14,10 +13,10 @@ FROM node:22-alpine AS frontend-builder
 
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY --from=deps /app/sporanova-functional/node_modules ./sporanova-functional/node_modules
+COPY sporanova-functional/ ./sporanova-functional/
 
-# Build Vite frontend
+WORKDIR /app/sporanova-functional
 RUN npx vite build
 
 # ─── Stage 3: Backend Bundle (esbuild) ───────────────────────────────────
@@ -25,49 +24,41 @@ FROM node:22-alpine AS backend-builder
 
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-COPY --from=frontend-builder /app/dist ./dist
+COPY --from=deps /app/sporanova-functional/node_modules ./sporanova-functional/node_modules
+COPY sporanova-functional/ ./sporanova-functional/
+COPY --from=frontend-builder /app/sporanova-functional/dist ./sporanova-functional/dist
 
-# Bundle server.ts into a single CJS file
-RUN npx esbuild server.ts \
+WORKDIR /app/sporanova-functional
+RUN npx esbuild server/_core/index.ts \
   --bundle \
   --platform=node \
-  --format=cjs \
+  --format=esm \
   --packages=external \
-  --sourcemap \
-  --outfile=dist/server.cjs
+  --outfile=dist/index.js
 
 # ─── Stage 4: Production Runner ───────────────────────────────────────────
 FROM node:22-alpine AS runner
 
 WORKDIR /app
 
-# Security: run as non-root user
-RUN addgroup --system --gid 1001 cerefy \
-  && adduser --system --uid 1001 --ingroup cerefy cerefy
+RUN addgroup --system --gid 1001 sopranova \
+  && adduser --system --uid 1001 --ingroup sopranova sopranova
 
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Install only production dependencies
-COPY package*.json ./
+COPY sporanova-functional/package*.json ./sporanova-functional/
+WORKDIR /app/sporanova-functional
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
-# Copy built artifacts
-COPY --from=backend-builder /app/dist ./dist
-COPY --chown=cerefy:cerefy --from=backend-builder /app/dist ./dist
+COPY --from=backend-builder /app/sporanova-functional/dist ./dist
+COPY --chown=sopranova:sopranova --from=backend-builder /app/sporanova-functional/dist ./dist
 
-# Create logs directory
-RUN mkdir -p logs && chown cerefy:cerefy logs
-
-# Switch to non-root user
-USER cerefy
+USER sopranova
 
 EXPOSE 3000
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health/live', (r) => process.exit(r.statusCode === 200 ? 0 : 1))" || exit 1
+  CMD node -e "require('http').get('http://localhost:3000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))" || exit 1
 
-CMD ["node", "dist/server.cjs"]
+CMD ["node", "dist/index.js"]
