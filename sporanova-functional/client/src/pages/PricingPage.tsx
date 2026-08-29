@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import Logo from "../components/Logo";
+import { useAuth } from "../_core/hooks/useAuth";
 import { trpc } from "../lib/trpc";
 
 const plans = [
@@ -40,12 +41,17 @@ const logos = ["ORION", "Miele", "Opal", "Dolby", "SOPRANOVA", "nationalgrid", "
 export default function PricingPage() {
   const [yearly, setYearly] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const bootstrap = trpc.workspaces.bootstrap.useMutation({
     onSuccess: () => navigate("/app/dashboard", { replace: true }),
   });
 
   function handleContinueFree() {
-    bootstrap.mutate();
+    if (isAuthenticated) {
+      bootstrap.mutate();
+    } else {
+      navigate("/signup");
+    }
   }
 
   return (
