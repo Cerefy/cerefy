@@ -23,6 +23,8 @@ import { sendEmail } from "./email";
 import { storageGet } from "./storage";
 import { invokeLLM } from "./_core/llm";
 import { ENV } from "./_core/env";
+import { storeEmbedding } from "./_core/rag";
+import { executeWorkflow as runWorkflowEngine } from "./_core/workflowEngine";
 
 const workerId = process.env.WORKER_ID ?? `worker-${randomUUID().slice(0, 8)}`;
 const pollMs = Number(process.env.WORKER_POLL_MS ?? 1500);
@@ -153,9 +155,14 @@ export async function processDocument(payload: Record<string, unknown>) {
     const chunks = chunkText(text);
     if (!chunks.length) throw new Error("No extractable text was found in this document.");
     await db.delete(documentChunks).where(eq(documentChunks.documentId, documentId));
-    await db.insert(documentChunks).values(chunks.map((content, chunkIndex) => ({ workspaceId, documentId, chunkIndex, content, metadata: { extractor: "sopranova-worker", mimeType: document.mimeType } })));
+    const insertedChunks = await db.insert(documentChunks).values(chunks.map((content, chunkIndex) => ({ workspaceId, documentId, chunkIndex, content, metadata: { extractor: "sopranova-worker", mimeType: document.mimeType } }))).returning({ id: documentChunks.id, content: documentChunks.content });
     await db.update(documents).set({ status: "ready", processingError: null }).where(eq(documents.id, documentId));
     await writeAuditLog({ workspaceId, actorUserId: document.uploadedById, action: "document.processed", resourceType: "document", resourceId: documentId, metadata: { chunks: chunks.length } });
+
+    // Fire-and-forget: store embeddings for semantic search. Failures are swallowed inside storeEmbedding.
+    for (const chunk of insertedChunks) {
+      void storeEmbedding(workspaceId, "document_chunk", chunk.id, chunk.content).catch(() => undefined);
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message.slice(0, 2000) : "Document processing failed";
     await db.update(documents).set({ status: "failed", processingError: message }).where(eq(documents.id, documentId));
@@ -171,25 +178,19 @@ export async function processWorkflowRun(payload: Record<string, unknown>) {
   if (!run || run.status === "completed") return;
   const workflow = (await db.select().from(workflows).where(and(eq(workflows.id, run.workflowId), eq(workflows.workspaceId, workspaceId), isNull(workflows.deletedAt))).limit(1))[0];
   if (!workflow || workflow.status === "archived") throw new Error("Workflow is no longer executable");
-  await db.update(workflowRuns).set({ status: "running", startedAt: new Date() }).where(eq(workflowRuns.id, runId));
-  try {
-    const actionNodes = await db.select().from(workflowNodes).where(and(eq(workflowNodes.workflowId, workflow.id), eq(workflowNodes.nodeType, "action"))).orderBy(asc(workflowNodes.sortOrder));
-    const plan = workflowExecutionPlan(actionNodes);
-    for (const node of actionNodes) {
-      const config = (node.configuration ?? {}) as Record<string, unknown>;
-      if (!plan.executed.includes(node.id)) continue;
-      await db.insert(notifications).values({ workspaceId, recipientUserId: config.recipientUserId as number, type: "workflow", title: (config.title as string).slice(0, 255), content: config.content as string });
-      const recipient = (await db.select().from(users).where(eq(users.id, config.recipientUserId as number)).limit(1))[0];
-      if (recipient?.email) await sendEmail({ to: recipient.email, subject: (config.title as string).slice(0, 255), text: config.content as string });
-    }
-    if (!plan.executed.length) throw new Error("This workflow has no configured executable notification action.");
-    const output = { executedNotificationNodes: plan.executed, unsupportedNodes: plan.unsupported };
-    await db.update(workflowRuns).set({ status: plan.unsupported.length ? "failed" : "completed", output, errorMessage: plan.unsupported.length ? "Some workflow nodes are not configured with a supported action." : null, completedAt: new Date() }).where(eq(workflowRuns.id, runId));
-    await writeAuditLog({ workspaceId, actorUserId: run.createdById ?? null, action: plan.unsupported.length ? "workflow.run_partially_failed" : "workflow.run_completed", resourceType: "workflowRun", resourceId: runId, metadata: { workflowId: workflow.id, ...output } });
-  } catch (error) {
-    const message = error instanceof Error ? error.message.slice(0, 2000) : "Workflow execution failed";
-    await db.update(workflowRuns).set({ status: "failed", errorMessage: message, completedAt: new Date() }).where(eq(workflowRuns.id, runId));
-    throw error;
+  const triggerType = (["manual", "event", "schedule"] as const).includes(run.triggerType as "manual" | "event" | "schedule")
+    ? (run.triggerType as "manual" | "event" | "schedule")
+    : "manual";
+  const result = await runWorkflowEngine(
+    workflow.id,
+    {},
+    triggerType,
+    run.createdById ?? 0,
+    workspaceId,
+    { runId: run.id },
+  );
+  if (result.status === "failed") {
+    throw new Error(result.errorMessage ?? "Workflow execution failed");
   }
 }
 

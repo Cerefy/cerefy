@@ -1,6 +1,10 @@
+import { and, eq } from "drizzle-orm";
+import { integrations } from "../../drizzle/schema";
+import { requireDb, writeAuditLog } from "../db";
 import { type Tool, invokeLLM } from "./llm";
 import { chat, type ChatRequest, type ChatResponse } from "./conversationEngine";
 import { executeAgentTools, getToolSchemas } from "./toolSystem";
+import { sendIntegrationMessage } from "./integrations";
 
 // ─── Channel Types ──────────────────────────────────────────────────────────
 export type ChannelType = "web" | "whatsapp" | "slack" | "email" | "teams" | "voice" | "api" | "instagram" | "telegram";
@@ -162,6 +166,92 @@ export class MultichannelRouter {
       return handler.processMessage(message, workspaceId, userId);
     }
     return this.defaultProcess(message, workspaceId, userId);
+  }
+
+  /**
+   * Deliver an assistant reply back through the channel that originated the
+   * incoming request. Looks up a connected `integrations` row for this workspace
+   * and provider, then delegates to `sendIntegrationMessage`.
+   */
+  async deliverResponse(
+    workspaceId: number,
+    channel: ChannelType,
+    recipient: string,
+    content: string,
+    metadata?: Record<string, unknown>
+  ): Promise<{ delivered: boolean; integrationId?: number; error?: string }> {
+    if (channel === "web" || channel === "api") {
+      return { delivered: true, error: "No external channel for web/api responses" };
+    }
+
+    const providerMap: Partial<Record<ChannelType, string>> = {
+      whatsapp: "whatsapp",
+      slack: "slack",
+      teams: "teams",
+      email: "rest_api",
+      voice: "rest_api",
+      instagram: "rest_api",
+      telegram: "rest_api",
+    };
+    const provider = providerMap[channel];
+    if (!provider) return { delivered: false, error: `No provider mapping for channel ${channel}` };
+
+    try {
+      const db = await requireDb();
+      const rows = await db
+        .select()
+        .from(integrations)
+        .where(and(
+          eq(integrations.workspaceId, workspaceId),
+          eq(integrations.provider, provider),
+          eq(integrations.status, "connected"),
+        ))
+        .limit(1);
+      const integration = rows[0];
+      if (!integration) {
+        await writeAuditLog({
+          workspaceId,
+          actorUserId: null,
+          action: "multichannel.delivery_skipped",
+          resourceType: "integration",
+          metadata: { channel, provider, reason: "no_connected_integration" },
+        });
+        return { delivered: false, error: `No connected ${provider} integration for this workspace` };
+      }
+
+      const cfg = (integration.configuration || {}) as Record<string, unknown>;
+      const mergedMetadata: Record<string, unknown> = {
+        ...cfg,
+        ...(metadata || {}),
+        ...(recipient ? { to: recipient, recipient } : {}),
+      };
+
+      const result = await sendIntegrationMessage(workspaceId, integration.id, content, mergedMetadata);
+      if (!result.success) {
+        await writeAuditLog({
+          workspaceId,
+          actorUserId: null,
+          action: "multichannel.delivery_failed",
+          resourceType: "integration",
+          resourceId: String(integration.id),
+          metadata: { channel, provider, error: result.error, configured: result.configured ?? false },
+        });
+        return { delivered: false, integrationId: integration.id, error: result.error };
+      }
+
+      await writeAuditLog({
+        workspaceId,
+        actorUserId: null,
+        action: "multichannel.delivered",
+        resourceType: "integration",
+        resourceId: String(integration.id),
+        metadata: { channel, provider, recipient },
+      });
+
+      return { delivered: true, integrationId: integration.id };
+    } catch (err) {
+      return { delivered: false, error: `Delivery error: ${(err as Error).message}` };
+    }
   }
 
   private async defaultProcess(message: ChannelMessage, workspaceId: number, userId: number): Promise<ChannelResponse> {

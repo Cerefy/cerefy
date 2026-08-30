@@ -1,6 +1,13 @@
 import { and, eq, isNull, sql, desc } from "drizzle-orm";
 import { documents, documentChunks, dataSources, dataRecords } from "../../drizzle/schema";
 import { requireDb } from "../db";
+import { ENV } from "./env";
+
+// ─── Embedding Configuration ────────────────────────────────────────────────
+const AI_BASE_URL = ENV.ai.baseUrl ?? "https://api.openai.com/v1";
+const AI_API_KEY = ENV.ai.apiKey ?? "";
+const EMBEDDING_MODEL = "text-embedding-3-small"; // 1536 dims
+const EMBEDDING_DIMENSIONS = 1536;
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 export interface RetrievalResult {
@@ -19,6 +26,52 @@ export interface SearchOptions {
   language?: string;
   documentIds?: number[];
   data_source_ids?: number[];
+}
+
+// ─── Embedding Generation & Storage ─────────────────────────────────────────
+export async function generateEmbedding(text: string): Promise<number[]> {
+  const response = await fetch(`${AI_BASE_URL}/embeddings`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${AI_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ model: EMBEDDING_MODEL, input: text.slice(0, 8000) }),
+  });
+  if (!response.ok) throw new Error(`Embedding API error: ${response.status}`);
+  const data = await response.json();
+  if (!data?.data?.[0]?.embedding || !Array.isArray(data.data[0].embedding)) {
+    throw new Error("Embedding API returned invalid payload");
+  }
+  if (data.data[0].embedding.length !== EMBEDDING_DIMENSIONS) {
+    throw new Error(`Embedding dimension mismatch: expected ${EMBEDDING_DIMENSIONS}, got ${data.data[0].embedding.length}`);
+  }
+  return data.data[0].embedding as number[];
+}
+
+export async function storeEmbedding(
+  workspaceId: number,
+  sourceType: "document_chunk" | "data_record" | "faq",
+  sourceId: number,
+  content: string,
+  knowledgeBaseId?: number
+): Promise<void> {
+  if (!AI_API_KEY) return; // graceful no-op when embeddings are disabled
+  if (!content || !content.trim()) return;
+  try {
+    const db = await requireDb();
+    const embedding = await generateEmbedding(content);
+    // Format embedding as PostgreSQL array string for vector type
+    const embeddingStr = `[${embedding.join(",")}]`;
+    await db.execute(sql`
+      INSERT INTO embeddings (workspace_id, knowledge_base_id, source_type, source_id, content, embedding, metadata, created_at)
+      VALUES (${workspaceId}, ${knowledgeBaseId ?? null}, ${sourceType}, ${sourceId}, ${content}, ${embeddingStr}::vector, '{}'::jsonb, NOW())
+      ON CONFLICT DO NOTHING
+    `);
+  } catch (error) {
+    console.error("[storeEmbedding] failed:", error);
+    // graceful fallback - never crash ingestion pipeline
+  }
 }
 
 // ─── Arabic Intelligence Layer ──────────────────────────────────────────────
@@ -98,33 +151,39 @@ export async function retrieveRelevantChunks(
   options: SearchOptions = {}
 ): Promise<RetrievalResult[]> {
   const db = await requireDb();
-  const results: RetrievalResult[] = [];
 
   // 1. Keyword search (BM25-like)
   const keywordResults = await keywordSearch(workspaceId, query, limit * 2);
-  results.push(...keywordResults);
 
   // 2. Semantic search (embedding-based if available)
   const semanticResults = await semanticSearch(workspaceId, query, limit * 2);
-  results.push(...semanticResults);
 
   // 3. Data source search
   const dsResults = await searchDataSourceRecords(workspaceId, query, limit);
-  results.push(...dsResults);
 
-  // 4. Deduplicate and rank
-  const seen = new Set<number>();
-  const unique: RetrievalResult[] = [];
-  for (const r of results) {
-    if (!seen.has(r.chunkId)) {
-      seen.add(r.chunkId);
-      unique.push(r);
+  // 4. Hybrid weighting: 60% semantic + 40% keyword.
+  //    Normalize each channel into [0,1] so they combine fairly, then merge by chunkId.
+  const normalize = (arr: RetrievalResult[]): RetrievalResult[] => {
+    if (arr.length === 0) return arr;
+    const max = arr.reduce((m, r) => Math.max(m, r.score), 0);
+    if (max <= 0) return arr;
+    return arr.map(r => ({ ...r, score: r.score / max }));
+  };
+
+  const keywordWeighted = normalize(keywordResults).map(r => ({ ...r, score: r.score * 0.4 }));
+  const semanticWeighted = normalize(semanticResults).map(r => ({ ...r, score: r.score * 0.6 }));
+
+  // Data source results are kept as-is with their fixed score (they don't participate in the hybrid blend).
+  const merged = new Map<number, RetrievalResult>();
+  for (const r of [...keywordWeighted, ...semanticWeighted, ...dsResults]) {
+    const existing = merged.get(r.chunkId);
+    if (!existing || r.score > existing.score) {
+      merged.set(r.chunkId, r);
     }
   }
 
   // 5. Sort by score and return top results
-  unique.sort((a, b) => b.score - a.score);
-  return unique.slice(0, limit);
+  return Array.from(merged.values()).sort((a, b) => b.score - a.score).slice(0, limit);
 }
 
 async function keywordSearch(workspaceId: number, query: string, limit: number): Promise<RetrievalResult[]> {
@@ -176,45 +235,41 @@ async function keywordSearch(workspaceId: number, query: string, limit: number):
 }
 
 async function semanticSearch(workspaceId: number, query: string, limit: number): Promise<RetrievalResult[]> {
-  // Placeholder for vector search - would integrate with pgvector or external vector DB
-  // For now, fall back to keyword search with boost
-  const db = await requireDb();
-
-  const candidates = await db
-    .select({
-      id: documentChunks.id,
-      documentId: documentChunks.documentId,
-      content: documentChunks.content,
-      metadata: documentChunks.metadata,
-    })
-    .from(documentChunks)
-    .where(eq(documentChunks.workspaceId, workspaceId))
-    .limit(200);
-
-  // Simple text matching as placeholder for vector similarity
-  const queryLower = query.toLowerCase();
-  const matched = candidates
-    .filter(c => c.content.toLowerCase().includes(queryLower))
-    .map(c => ({
-      chunkId: c.id,
-      documentId: c.documentId,
-      documentName: "",
-      content: c.content,
-      score: 0.5 + Math.random() * 0.3,
-      metadata: c.metadata as Record<string, unknown>,
-    }));
-
-  const docIds = Array.from(new Set(matched.map(m => m.documentId)));
-  if (docIds.length > 0) {
-    const docRows = await db
-      .select({ id: documents.id, name: documents.originalName })
-      .from(documents)
-      .where(sql`${documents.id} = ANY(${docIds})`);
-    const docMap = new Map(docRows.map(d => [d.id, d.name]));
-    matched.forEach(m => { m.documentName = docMap.get(m.documentId) || "Unknown"; });
+  if (!AI_API_KEY) {
+    // graceful fallback when no embedding API is configured
+    return [];
   }
+  try {
+    const queryEmbedding = await generateEmbedding(query);
+    const embeddingStr = `[${queryEmbedding.join(",")}]`;
+    const db = await requireDb();
+    const rows = await db.execute(sql`
+      SELECT
+        e.id,
+        e.content,
+        e.source_type,
+        e.source_id,
+        e.metadata,
+        1 - (e.embedding <=> ${embeddingStr}::vector) AS similarity
+      FROM embeddings e
+      WHERE e.workspace_id = ${workspaceId}
+      ORDER BY e.embedding <=> ${embeddingStr}::vector
+      LIMIT ${limit}
+    `);
 
-  return matched.slice(0, limit);
+    const rawRows = (rows as unknown as { rows?: unknown[] }).rows ?? (rows as unknown as unknown[]);
+    return (rawRows as any[]).map((row: any) => ({
+      chunkId: Number(row.id),
+      documentId: Number(row.source_id),
+      documentName: String(row.source_type ?? ""),
+      content: String(row.content ?? ""),
+      score: Number(row.similarity) || 0,
+      metadata: (row.metadata as Record<string, unknown>) || {},
+    }));
+  } catch (error) {
+    console.error("[semanticSearch] failed:", error);
+    return []; // graceful fallback
+  }
 }
 
 async function searchDataSourceRecords(workspaceId: number, query: string, limit: number): Promise<RetrievalResult[]> {

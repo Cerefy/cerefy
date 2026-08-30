@@ -23,6 +23,7 @@ import {
   integrationsRouter,
   securityRouter,
   developerApiRouter,
+  rulesRouter,
 } from "./routers/enhanced";
 
 const credentialsInput = z.object({
@@ -96,6 +97,7 @@ export const appRouter = router({
   security: securityRouter,
   developerApi: developerApiRouter,
   agentEnhanced: agentEnhancedRouter,
+  rules: rulesRouter,
 });
 
 export type AppRouter = typeof appRouter;

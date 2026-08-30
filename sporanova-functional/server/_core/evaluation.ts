@@ -1,5 +1,7 @@
 import { and, eq, sql, desc } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
 import { requireDb, writeAuditLog } from "../db";
+import { traces, traceSpans } from "../../drizzle/schema";
 import { invokeLLM } from "./llm";
 
 // ─── Observability Types ────────────────────────────────────────────────────
@@ -48,73 +50,152 @@ export interface TraceMetrics {
   errorsCount: number;
 }
 
-// ─── Trace Store (in-memory, would be database in production) ────────────────
-const traces = new Map<string, Trace>();
-const MAX_TRACES = 10000;
-
-export function createTrace(input: {
+// ─── Trace Store (DB-backed) ─────────────────────────────────────────────────
+export async function createTrace(input: {
   workspaceId: number;
   userId?: number;
   agentId?: number;
   conversationId?: number;
   metadata?: Record<string, unknown>;
-}): Trace {
-  const id = `trace_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-  const trace: Trace = {
+}): Promise<Trace> {
+  const db = await requireDb();
+  const id = `trc_${randomUUID()}`;
+  const startTime = new Date();
+  await db.insert(traces).values({
+    id,
+    workspaceId: input.workspaceId,
+    userId: input.userId ?? null,
+    agentId: input.agentId ?? null,
+    conversationId: input.conversationId ?? null,
+    status: "running",
+    startTime,
+    metadata: input.metadata ?? {},
+  });
+  return {
     id,
     workspaceId: input.workspaceId,
     userId: input.userId,
     agentId: input.agentId,
     conversationId: input.conversationId,
     spans: [],
-    startTime: Date.now(),
+    startTime: startTime.getTime(),
     status: "ok",
-    metadata: input.metadata || {},
+    metadata: input.metadata ?? {},
   };
-  traces.set(id, trace);
-  if (traces.size > MAX_TRACES) {
-    const oldest = traces.keys().next().value;
-    if (oldest) traces.delete(oldest);
-  }
-  return trace;
 }
 
-export function addSpan(traceId: string, span: Omit<TraceSpan, "id" | "events" | "traceId">): TraceSpan | null {
-  const trace = traces.get(traceId);
-  if (!trace) return null;
-  const spanId = `span_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-  const fullSpan: TraceSpan = { ...span, traceId, id: spanId, events: [] };
-  trace.spans.push(fullSpan);
-  return fullSpan;
+export async function addSpan(traceId: string, span: Omit<TraceSpan, "id" | "events" | "traceId">): Promise<TraceSpan | null> {
+  const db = await requireDb();
+  const existing = await db.select({ id: traces.id }).from(traces).where(eq(traces.id, traceId)).limit(1);
+  if (!existing[0]) return null;
+  const id = `spn_${randomUUID()}`;
+  const startTime = new Date();
+  await db.insert(traceSpans).values({
+    id,
+    traceId,
+    parentSpanId: span.parentSpanId ?? null,
+    name: span.name,
+    startTime,
+    status: span.status ?? "running",
+    attributes: span.attributes ?? {},
+    events: [],
+  });
+  return {
+    ...span,
+    traceId,
+    id,
+    startTime: startTime.getTime(),
+    events: [],
+  };
 }
 
-export function finishSpan(traceId: string, spanId: string, status: "ok" | "error" | "cancelled" = "ok"): void {
-  const trace = traces.get(traceId);
-  if (!trace) return;
-  const span = trace.spans.find(s => s.id === spanId);
-  if (!span) return;
-  span.endTime = Date.now();
-  span.durationMs = span.endTime - span.startTime;
-  span.status = status;
+export async function finishSpan(traceId: string, spanId: string, status: "ok" | "error" | "cancelled" = "ok"): Promise<void> {
+  const db = await requireDb();
+  const endTime = new Date();
+  await db
+    .update(traceSpans)
+    .set({
+      endTime,
+      status,
+    })
+    .where(eq(traceSpans.id, spanId));
+  await db.execute(
+    sql`UPDATE trace_spans SET duration_ms = EXTRACT(MILLISECOND FROM (end_time - start_time)) WHERE id = ${spanId}`,
+  );
 }
 
-export function finishTrace(traceId: string, status: "ok" | "error" | "cancelled" = "ok"): void {
-  const trace = traces.get(traceId);
-  if (!trace) return;
-  trace.endTime = Date.now();
-  trace.totalDurationMs = trace.endTime - trace.startTime;
-  trace.status = status;
+export async function finishTrace(traceId: string, status: "ok" | "error" | "cancelled" = "ok"): Promise<void> {
+  const db = await requireDb();
+  const endTime = new Date();
+  const existing = await db.select({ startTime: traces.startTime }).from(traces).where(eq(traces.id, traceId)).limit(1);
+  const totalDurationMs = existing[0] ? endTime.getTime() - existing[0].startTime.getTime() : null;
+  await db
+    .update(traces)
+    .set({
+      endTime,
+      status,
+      totalDurationMs,
+    })
+    .where(eq(traces.id, traceId));
 }
 
-export function getTrace(traceId: string): Trace | undefined {
-  return traces.get(traceId);
+export async function getTrace(traceId: string): Promise<Trace | null> {
+  const db = await requireDb();
+  const traceRows = await db.select().from(traces).where(eq(traces.id, traceId)).limit(1);
+  if (!traceRows[0]) return null;
+  const spanRows = await db
+    .select()
+    .from(traceSpans)
+    .where(eq(traceSpans.traceId, traceId))
+    .orderBy(traceSpans.startTime);
+  const trace = traceRows[0];
+  return {
+    id: trace.id,
+    workspaceId: trace.workspaceId,
+    userId: trace.userId ?? undefined,
+    agentId: trace.agentId ?? undefined,
+    conversationId: trace.conversationId ?? undefined,
+    startTime: trace.startTime.getTime(),
+    endTime: trace.endTime?.getTime(),
+    totalDurationMs: trace.totalDurationMs ?? undefined,
+    status: (trace.status as Trace["status"]) ?? "ok",
+    metadata: trace.metadata ?? {},
+    spans: spanRows.map(s => ({
+      id: s.id,
+      traceId: s.traceId,
+      parentSpanId: s.parentSpanId ?? undefined,
+      name: s.name,
+      startTime: s.startTime.getTime(),
+      endTime: s.endTime?.getTime(),
+      durationMs: s.durationMs ?? undefined,
+      status: (s.status as TraceSpan["status"]) ?? "ok",
+      attributes: s.attributes ?? {},
+      events: (s.events as TraceEvent[]) ?? [],
+    })),
+  };
 }
 
-export function getTracesForWorkspace(workspaceId: number, limit = 50): Trace[] {
-  return Array.from(traces.values())
-    .filter(t => t.workspaceId === workspaceId)
-    .sort((a, b) => b.startTime - a.startTime)
-    .slice(0, limit);
+export async function getTracesForWorkspace(workspaceId: number, limit = 50): Promise<Trace[]> {
+  const db = await requireDb();
+  const rows = await db
+    .select()
+    .from(traces)
+    .where(eq(traces.workspaceId, workspaceId))
+    .orderBy(desc(traces.startTime))
+    .limit(limit);
+  return rows.map(t => ({
+    id: t.id,
+    workspaceId: t.workspaceId,
+    userId: t.userId ?? undefined,
+    agentId: t.agentId ?? undefined,
+    conversationId: t.conversationId ?? undefined,
+    startTime: t.startTime.getTime(),
+    endTime: t.endTime?.getTime(),
+    totalDurationMs: t.totalDurationMs ?? undefined,
+    status: (t.status as Trace["status"]) ?? "ok",
+    metadata: t.metadata ?? {},
+    spans: [],
+  }));
 }
 
 // ─── Metrics Calculation ────────────────────────────────────────────────────
@@ -343,10 +424,10 @@ export interface PlaygroundResponse {
 }
 
 export async function playgroundChat(request: PlaygroundRequest): Promise<PlaygroundResponse> {
-  const trace = createTrace({ workspaceId: request.workspaceId });
+  const trace = await createTrace({ workspaceId: request.workspaceId });
   const startTime = Date.now();
 
-  const span = addSpan(trace.id, { name: "llm.call", startTime, status: "ok", attributes: {} });
+  const span = await addSpan(trace.id, { name: "llm.call", startTime, status: "ok", attributes: {} });
 
   const response = await invokeLLM({
     messages: [
@@ -358,20 +439,13 @@ export async function playgroundChat(request: PlaygroundRequest): Promise<Playgr
     maxTokens: 1000,
   });
 
-  if (span) finishSpan(trace.id, span.id, "ok");
+  if (span) await finishSpan(trace.id, span.id, "ok");
 
   const rawContent = response.choices[0]?.message?.content;
   const content = typeof rawContent === "string" ? rawContent : JSON.stringify(rawContent);
   const latencyMs = Date.now() - startTime;
 
-  if (span) {
-    span.attributes = {
-      model: response.model,
-      tokens: response.usage,
-    };
-  }
-
-  finishTrace(trace.id, "ok");
+  await finishTrace(trace.id, "ok");
 
   return {
     response: content,

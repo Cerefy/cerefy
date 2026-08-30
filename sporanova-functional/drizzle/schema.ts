@@ -12,6 +12,7 @@ import {
   timestamp,
   uniqueIndex,
   varchar,
+  vector,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -675,6 +676,233 @@ export const widgetTemplates = pgTable(
     template: jsonb("template").$type<Record<string, unknown>>().notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
+);
+
+export const knowledgeBases = pgTable(
+  "knowledge_bases",
+  {
+    id: serial("id").primaryKey(),
+    workspaceId: integer("workspaceId").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 200 }).notNull(),
+    description: text("description"),
+    type: varchar("type", { length: 50 }).default("general").notNull(),
+    language: varchar("language", { length: 10 }).default("en").notNull(),
+    configuration: jsonb("configuration").$type<Record<string, unknown>>().default({}),
+    isPublic: boolean("isPublic").default(false).notNull(),
+    createdById: integer("createdById").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+    deletedAt: timestamp("deletedAt"),
+  },
+  table => [
+    index("knowledge_bases_workspace_idx").on(table.workspaceId),
+    index("knowledge_bases_workspace_type_idx").on(table.workspaceId, table.type),
+    index("knowledge_bases_workspace_language_idx").on(table.workspaceId, table.language),
+  ],
+);
+
+export const embeddings = pgTable(
+  "embeddings",
+  {
+    id: serial("id").primaryKey(),
+    workspaceId: integer("workspaceId").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+    knowledgeBaseId: integer("knowledgeBaseId").references(() => knowledgeBases.id, { onDelete: "cascade" }),
+    sourceType: varchar("sourceType", { length: 32 }).notNull(),
+    sourceId: integer("sourceId").notNull(),
+    content: text("content").notNull(),
+    embedding: vector("embedding", { dimensions: 1536 }),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().default({}),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [
+    index("embeddings_workspace_idx").on(table.workspaceId),
+    index("embeddings_knowledge_base_idx").on(table.knowledgeBaseId),
+    index("embeddings_source_idx").on(table.sourceType, table.sourceId),
+    index("embeddings_workspace_kb_idx").on(table.workspaceId, table.knowledgeBaseId),
+  ],
+);
+
+export const agentConfigurations = pgTable(
+  "agent_configurations",
+  {
+    id: serial("id").primaryKey(),
+    agentId: integer("agentId").notNull().unique().references(() => agents.id, { onDelete: "cascade" }),
+    workspaceId: integer("workspaceId").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+    model: varchar("model", { length: 100 }).default("openai/gpt-4o").notNull(),
+    temperature: numeric("temperature", { precision: 3, scale: 2 }).default("0.7").notNull(),
+    maxTokens: integer("maxTokens").default(4096).notNull(),
+    topP: numeric("topP", { precision: 3, scale: 2 }).default("1.0").notNull(),
+    systemInstructions: text("systemInstructions"),
+    personality: varchar("personality", { length: 200 }),
+    tone: varchar("tone", { length: 50 }).default("professional").notNull(),
+    primaryLanguage: varchar("primaryLanguage", { length: 10 }).default("en").notNull(),
+    supportedLanguages: jsonb("supportedLanguages").$type<string[]>().default([]),
+    dialects: jsonb("dialects").$type<string[]>().default([]),
+    enabledChannels: jsonb("enabledChannels").$type<string[]>().default([]),
+    enabledModalities: jsonb("enabledModalities").$type<string[]>().default([]),
+    toolIds: jsonb("toolIds").$type<string[]>().default([]),
+    knowledgeBaseIds: jsonb("knowledgeBaseIds").$type<number[]>().default([]),
+    guardrails: jsonb("guardrails").$type<Record<string, unknown>>().default({}),
+    workflowId: integer("workflowId").references(() => workflows.id, { onDelete: "set null" }),
+    ruleIds: jsonb("ruleIds").$type<number[]>().default([]),
+    enableShortTermMemory: boolean("enableShortTermMemory").default(true).notNull(),
+    enableLongTermMemory: boolean("enableLongTermMemory").default(true).notNull(),
+    enableUserMemory: boolean("enableUserMemory").default(true).notNull(),
+    memoryWindow: integer("memoryWindow").default(10).notNull(),
+    maxConcurrentConversations: integer("maxConcurrentConversations").default(100).notNull(),
+    contextWindowTokens: integer("contextWindowTokens").default(8000).notNull(),
+    rateLimitPerMinute: integer("rateLimitPerMinute").default(60).notNull(),
+    voiceConfig: jsonb("voiceConfig").$type<Record<string, unknown>>().default({}),
+    countryCode: varchar("countryCode", { length: 2 }),
+    region: varchar("region", { length: 50 }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+  },
+  table => [
+    index("agent_configurations_workspace_idx").on(table.workspaceId),
+    index("agent_configurations_workflow_idx").on(table.workflowId),
+    index("agent_configurations_country_idx").on(table.countryCode),
+  ],
+);
+
+export const businessRules = pgTable(
+  "business_rules",
+  {
+    id: serial("id").primaryKey(),
+    workspaceId: integer("workspaceId").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+    agentId: integer("agentId").references(() => agents.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 200 }).notNull(),
+    description: text("description"),
+    priority: integer("priority").default(100).notNull(),
+    enabled: boolean("enabled").default(true).notNull(),
+    condition: jsonb("condition").$type<Record<string, unknown>>().notNull(),
+    actions: jsonb("actions").$type<Record<string, unknown>>().notNull(),
+    createdById: integer("createdById").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+    deletedAt: timestamp("deletedAt"),
+  },
+  table => [
+    index("business_rules_workspace_idx").on(table.workspaceId),
+    index("business_rules_agent_idx").on(table.agentId),
+    index("business_rules_workspace_priority_idx").on(table.workspaceId, table.priority),
+    index("business_rules_workspace_enabled_idx").on(table.workspaceId, table.enabled),
+  ],
+);
+
+export const workflowEdges = pgTable(
+  "workflow_edges",
+  {
+    id: serial("id").primaryKey(),
+    workflowId: integer("workflowId").notNull().references(() => workflows.id, { onDelete: "cascade" }),
+    fromNodeId: integer("fromNodeId").notNull().references(() => workflowNodes.id, { onDelete: "cascade" }),
+    toNodeId: integer("toNodeId").notNull().references(() => workflowNodes.id, { onDelete: "cascade" }),
+    condition: text("condition"),
+    priority: integer("priority").default(0).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [
+    index("workflow_edges_workflow_idx").on(table.workflowId),
+    index("workflow_edges_from_idx").on(table.fromNodeId),
+    index("workflow_edges_to_idx").on(table.toNodeId),
+    index("workflow_edges_workflow_from_idx").on(table.workflowId, table.fromNodeId),
+  ],
+);
+
+export const toolDefinitions = pgTable(
+  "tool_definitions",
+  {
+    id: varchar("id", { length: 100 }).primaryKey(),
+    name: varchar("name", { length: 200 }).notNull(),
+    description: text("description"),
+    category: varchar("category", { length: 50 }),
+    version: varchar("version", { length: 20 }).default("1.0.0").notNull(),
+    inputSchema: jsonb("inputSchema").$type<Record<string, unknown>>(),
+    outputSchema: jsonb("outputSchema").$type<Record<string, unknown>>(),
+    authType: varchar("authType", { length: 20 }).default("none").notNull(),
+    requiredScopes: jsonb("requiredScopes").$type<string[]>().default([]),
+    rateLimitPerMinute: integer("rateLimitPerMinute").default(60).notNull(),
+    enabled: boolean("enabled").default(true).notNull(),
+    implementation: varchar("implementation", { length: 50 }).default("builtin").notNull(),
+    configuration: jsonb("configuration").$type<Record<string, unknown>>().default({}),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+  },
+  table => [
+    index("tool_definitions_category_idx").on(table.category),
+    index("tool_definitions_enabled_idx").on(table.enabled),
+    index("tool_definitions_implementation_idx").on(table.implementation),
+  ],
+);
+
+export const agentToolAssignments = pgTable(
+  "agent_tool_assignments",
+  {
+    id: serial("id").primaryKey(),
+    agentId: integer("agentId").notNull().references(() => agents.id, { onDelete: "cascade" }),
+    workspaceId: integer("workspaceId").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+    toolId: varchar("toolId", { length: 100 }).notNull().references(() => toolDefinitions.id, { onDelete: "cascade" }),
+    enabled: boolean("enabled").default(true).notNull(),
+    configuration: jsonb("configuration").$type<Record<string, unknown>>().default({}),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [
+    uniqueIndex("agent_tool_assignments_agent_tool_unique").on(table.agentId, table.toolId),
+    index("agent_tool_assignments_workspace_idx").on(table.workspaceId),
+    index("agent_tool_assignments_tool_idx").on(table.toolId),
+  ],
+);
+
+export const countryConfigs = pgTable(
+  "country_configs",
+  {
+    id: serial("id").primaryKey(),
+    workspaceId: integer("workspaceId").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+    agentId: integer("agentId").references(() => agents.id, { onDelete: "cascade" }),
+    countryCode: varchar("countryCode", { length: 2 }).notNull(),
+    language: varchar("language", { length: 10 }).notNull(),
+    currency: varchar("currency", { length: 3 }),
+    timezone: varchar("timezone", { length: 50 }),
+    warrantyPeriod: varchar("warrantyPeriod", { length: 50 }),
+    dataResidency: varchar("dataResidency", { length: 50 }),
+    regulations: jsonb("regulations").$type<string[]>().default([]),
+    preferredChannels: jsonb("preferredChannels").$type<string[]>().default([]),
+    phoneNumbers: jsonb("phoneNumbers").$type<string[]>().default([]),
+    knowledgeBaseIds: jsonb("knowledgeBaseIds").$type<number[]>().default([]),
+    serviceRules: jsonb("serviceRules").$type<Record<string, unknown>>().default({}),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+  },
+  table => [
+    uniqueIndex("country_configs_workspace_agent_country_unique").on(table.workspaceId, table.agentId, table.countryCode),
+    index("country_configs_workspace_idx").on(table.workspaceId),
+    index("country_configs_agent_idx").on(table.agentId),
+    index("country_configs_country_idx").on(table.countryCode),
+  ],
+);
+
+export const channelConfigs = pgTable(
+  "channel_configs",
+  {
+    id: serial("id").primaryKey(),
+    workspaceId: integer("workspaceId").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+    agentId: integer("agentId").references(() => agents.id, { onDelete: "cascade" }),
+    channelType: varchar("channelType", { length: 30 }).notNull(),
+    enabled: boolean("enabled").default(true).notNull(),
+    configuration: jsonb("configuration").$type<Record<string, unknown>>().notNull().default({}),
+    businessHours: jsonb("businessHours").$type<Record<string, unknown>>().default({}),
+    greetingMessage: text("greetingMessage"),
+    outsideHoursMessage: text("outsideHoursMessage"),
+    maxConcurrent: integer("maxConcurrent").default(10).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+  },
+  table => [
+    uniqueIndex("channel_configs_workspace_agent_channel_unique").on(table.workspaceId, table.agentId, table.channelType),
+    index("channel_configs_workspace_idx").on(table.workspaceId),
+    index("channel_configs_agent_idx").on(table.agentId),
+    index("channel_configs_channel_type_idx").on(table.channelType),
+  ],
 );
 
 export type User = typeof users.$inferSelect;

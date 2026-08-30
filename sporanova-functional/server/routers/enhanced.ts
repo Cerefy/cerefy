@@ -3,7 +3,15 @@ import { and, desc, eq, isNull } from "drizzle-orm";
 import { router, protectedProcedure } from "../_core/trpc";
 import { workspaceProcedure, workspaceMemberProcedure, workspaceManagerProcedure } from "../authz";
 import { requireDb, writeAuditLog } from "../db";
-import { agents, agentRuns, conversations, messages, messageSources, documents } from "../../drizzle/schema";
+import { agents, agentRuns, businessRules, conversations, messages, messageSources, documents } from "../../drizzle/schema";
+import {
+  evaluateRules,
+  loadRules,
+  executeActions,
+  writeRulesAuditLog,
+  type Condition,
+  type Action,
+} from "../_core/rulesEngine";
 import { chat, getConversationHistory, buildSystemPrompt } from "../_core/conversationEngine";
 import { invokeLLM, listLLMModels, routeModel, getModelMetadata } from "../_core/llm";
 import { retrieveRelevantChunks } from "../_core/rag";
@@ -16,6 +24,12 @@ import { createAPIKey, validateAPIKey, createAgentAPI, chatAPI, listAgentsAPI, g
 import { connectIntegration, disconnectIntegration, sendIntegrationMessage } from "../_core/integrations";
 import { checkRateLimit, generateAPIKey, getAuditTrail, exportUserData } from "../_core/security";
 import { playgroundChat, runEvaluation, type TestCase } from "../_core/evaluation";
+import {
+  executeWorkflow,
+  loadWorkflow,
+  validateWorkflowDefinition,
+  type WorkflowRunResult,
+} from "../_core/workflowEngine";
 
 const workspaceInput = z.object({ workspaceId: z.number().int().positive() });
 
@@ -193,14 +207,14 @@ export const observabilityRouter = router({
 
   trace: workspaceProcedure
     .input(workspaceInput.extend({ traceId: z.string() }))
-    .query(({ input }) => {
-      return getTrace(input.traceId) || null;
+    .query(async ({ input }) => {
+      return (await getTrace(input.traceId)) || null;
     }),
 
   metrics: workspaceProcedure
     .input(workspaceInput.extend({ traceId: z.string() }))
-    .query(({ input }) => {
-      const trace = getTrace(input.traceId);
+    .query(async ({ input }) => {
+      const trace = await getTrace(input.traceId);
       if (!trace) return null;
       return calculateTraceMetrics(trace);
     }),
@@ -237,19 +251,19 @@ export const analyticsEnhancedRouter = router({
 export const memoryRouter = router({
   search: workspaceProcedure
     .input(workspaceInput.extend({ query: z.string().trim().min(1), type: z.enum(["short_term", "conversation", "user", "company", "agent", "long_term"]).optional(), limit: z.number().int().min(1).max(50).default(10) }))
-    .query(({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       return searchMemory(ctx.workspaceId, input.query, { type: input.type, limit: input.limit });
     }),
 
   getProfile: workspaceProcedure
     .input(workspaceInput.extend({ userId: z.number().int().positive() }))
-    .query(({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       return getUserProfile(ctx.workspaceId, input.userId);
     }),
 
   getCompanyKnowledge: workspaceProcedure
     .input(workspaceInput)
-    .query(({ ctx }) => {
+    .query(async ({ ctx }) => {
       return getCompanyKnowledge(ctx.workspaceId);
     }),
 
@@ -445,4 +459,194 @@ export const developerApiRouter = router({
   mcpTool: workspaceProcedure.input(z.object({ name: z.string() })).query(({ input }) => {
     return getMCPToolDetails(input.name) || null;
   }),
+});
+
+// ─── Business Rules Router ──────────────────────────────────────────────────
+const rulesConditionSchema: z.ZodType<Condition> = z.lazy(() =>
+  z.union([
+    z.object({
+      type: z.literal("comparison"),
+      field: z.string(),
+      operator: z.enum(["eq", "neq", "gt", "gte", "lt", "lte", "contains", "in", "exists"]),
+      value: z.unknown().optional(),
+    }),
+    z.object({ type: z.literal("and"), conditions: z.array(rulesConditionSchema) }),
+    z.object({ type: z.literal("or"), conditions: z.array(rulesConditionSchema) }),
+    z.object({ type: z.literal("not"), condition: rulesConditionSchema }),
+  ]),
+);
+
+const rulesActionSchema: z.ZodType<Action> = z.lazy(() =>
+  z.union([
+    z.object({ type: z.literal("set_field"), field: z.string(), value: z.unknown() }),
+    z.object({
+      type: z.literal("escalate"),
+      reason: z.string(),
+      priority: z.enum(["low", "medium", "high", "critical"]),
+    }),
+    z.object({
+      type: z.literal("notify"),
+      channel: z.enum(["email", "in_app", "webhook"]),
+      template: z.string(),
+      recipients: z.array(z.string()).optional(),
+    }),
+    z.object({
+      type: z.literal("create_case"),
+      system: z.string(),
+      template: z.record(z.string(), z.unknown()),
+    }),
+    z.object({ type: z.literal("route"), destination: z.string(), agentId: z.number().int().positive().optional() }),
+    z.object({ type: z.literal("delay"), duration: z.string() }),
+    z.object({
+      type: z.literal("end_conversation"),
+      status: z.enum(["resolved", "abandoned", "escalated"]),
+    }),
+    z.object({
+      type: z.literal("log"),
+      message: z.string(),
+      level: z.enum(["info", "warn", "error"]),
+    }),
+  ]),
+);
+
+export const rulesRouter = router({
+  list: workspaceProcedure
+    .input(workspaceInput.extend({ agentId: z.number().int().positive().optional() }))
+    .query(async ({ ctx, input }) => {
+      return loadRules(ctx.workspaceId, input.agentId);
+    }),
+
+  create: workspaceManagerProcedure
+    .input(workspaceInput.extend({
+      name: z.string().trim().min(2).max(200),
+      description: z.string().trim().max(4000).optional(),
+      agentId: z.number().int().positive().optional(),
+      priority: z.number().int().min(0).max(10000).default(100),
+      enabled: z.boolean().default(true),
+      condition: rulesConditionSchema,
+      actions: z.array(rulesActionSchema).min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await requireDb();
+      const [created] = await db.insert(businessRules).values({
+        workspaceId: ctx.workspaceId,
+        agentId: input.agentId ?? null,
+        name: input.name,
+        description: input.description ?? null,
+        priority: input.priority,
+        enabled: input.enabled,
+        condition: input.condition as unknown as Record<string, unknown>,
+        actions: input.actions as unknown as Record<string, unknown>,
+        createdById: ctx.user.id,
+      }).returning({ id: businessRules.id });
+
+      await writeRulesAuditLog({
+        workspaceId: ctx.workspaceId,
+        actorUserId: ctx.user.id,
+        action: "business_rule.created",
+        resourceId: created.id,
+        metadata: { name: input.name, priority: input.priority },
+      });
+      return { id: created.id, name: input.name };
+    }),
+
+  update: workspaceManagerProcedure
+    .input(workspaceInput.extend({
+      ruleId: z.number().int().positive(),
+      name: z.string().trim().min(2).max(200).optional(),
+      description: z.string().trim().max(4000).optional(),
+      priority: z.number().int().min(0).max(10000).optional(),
+      enabled: z.boolean().optional(),
+      condition: rulesConditionSchema.optional(),
+      actions: z.array(rulesActionSchema).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await requireDb();
+      const updateData: Record<string, unknown> = { updatedAt: new Date() };
+      if (input.name !== undefined) updateData.name = input.name;
+      if (input.description !== undefined) updateData.description = input.description;
+      if (input.priority !== undefined) updateData.priority = input.priority;
+      if (input.enabled !== undefined) updateData.enabled = input.enabled;
+      if (input.condition !== undefined) updateData.condition = input.condition as unknown as Record<string, unknown>;
+      if (input.actions !== undefined) updateData.actions = input.actions as unknown as Record<string, unknown>;
+
+      const updated = await db.update(businessRules)
+        .set(updateData)
+        .where(and(eq(businessRules.id, input.ruleId), eq(businessRules.workspaceId, ctx.workspaceId), isNull(businessRules.deletedAt)))
+        .returning({ id: businessRules.id });
+      if (updated.length === 0) throw new Error("Rule not found");
+      await writeRulesAuditLog({
+        workspaceId: ctx.workspaceId,
+        actorUserId: ctx.user.id,
+        action: "business_rule.updated",
+        resourceId: input.ruleId,
+      });
+      return { success: true };
+    }),
+
+  delete: workspaceManagerProcedure
+    .input(workspaceInput.extend({ ruleId: z.number().int().positive() }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await requireDb();
+      const updated = await db.update(businessRules)
+        .set({ deletedAt: new Date() })
+        .where(and(eq(businessRules.id, input.ruleId), eq(businessRules.workspaceId, ctx.workspaceId), isNull(businessRules.deletedAt)))
+        .returning({ id: businessRules.id });
+      if (updated.length === 0) throw new Error("Rule not found");
+      await writeRulesAuditLog({
+        workspaceId: ctx.workspaceId,
+        actorUserId: ctx.user.id,
+        action: "business_rule.deleted",
+        resourceId: input.ruleId,
+      });
+      return { success: true };
+    }),
+
+  test: workspaceManagerProcedure
+    .input(workspaceInput.extend({
+      context: z.record(z.string(), z.unknown()),
+      agentId: z.number().int().positive().optional(),
+    }))
+    .query(async ({ input }) => {
+      return evaluateRules(input.workspaceId, input.context, input.agentId);
+    }),
+
+  executeActions: workspaceManagerProcedure
+    .input(workspaceInput.extend({
+      actions: z.array(rulesActionSchema).min(1),
+      context: z.record(z.string(), z.unknown()).default({}),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return executeActions(input.actions, input.context, ctx.workspaceId);
+    }),
+});
+
+// ─── Workflow Engine Router ──────────────────────────────────────────────────
+export const workflowEngineRouter = router({
+  run: workspaceMemberProcedure
+    .input(workspaceInput.extend({
+      workflowId: z.number().int().positive(),
+      context: z.record(z.string(), z.unknown()).default({}),
+      triggerType: z.enum(["manual", "agent_request", "event", "schedule"]).default("manual"),
+    }))
+    .mutation(async ({ ctx, input }): Promise<WorkflowRunResult> => {
+      return executeWorkflow(
+        input.workflowId,
+        input.context,
+        input.triggerType,
+        ctx.user.id,
+        ctx.workspaceId,
+      );
+    }),
+  validate: workspaceProcedure
+    .input(workspaceInput.extend({ workflowId: z.number().int().positive() }))
+    .query(async ({ input }) => {
+      const { nodes, edges } = await loadWorkflow(input.workflowId);
+      return validateWorkflowDefinition(nodes, edges);
+    }),
+  load: workspaceProcedure
+    .input(workspaceInput.extend({ workflowId: z.number().int().positive() }))
+    .query(async ({ input }) => {
+      return loadWorkflow(input.workflowId);
+    }),
 });
