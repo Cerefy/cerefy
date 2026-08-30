@@ -47,15 +47,7 @@ async function main() {
   }
 
   try {
-    await sql`
-      INSERT INTO agent_configurations ("agentId", "workspaceId", model, temperature, "maxTokens", "systemInstructions", tone, "primaryLanguage", "supportedLanguages", "createdAt", "updatedAt")
-      VALUES (
-        ${agentId},
-        ${WORKSPACE_ID},
-        'gpt-4o',
-        '0.30',
-        2048,
-        ${`You are an AI assistant for Haier Europe after-sales support. You help customers with:
+    const sysPrompt = `You are an AI assistant for Haier Europe after-sales support. You help customers with:
 - Product troubleshooting and technical support
 - Warranty verification and claims
 - Spare parts ordering
@@ -63,23 +55,17 @@ async function main() {
 - Product registration and documentation
 
 Always be professional, empathetic, and solution-oriented. When you cannot resolve an issue remotely, create a case for human technicians.
-Respond in the customer's language when possible.`},
-        'technical',
-        'it',
-        ${JSON.stringify(["it", "en", "ar"])},
-        NOW(),
-        NOW()
-      )
-      ON CONFLICT ("agentId") DO UPDATE SET
-        model = EXCLUDED.model,
-        temperature = EXCLUDED.temperature,
-        "maxTokens" = EXCLUDED."maxTokens",
-        "systemInstructions" = EXCLUDED."systemInstructions",
-        tone = EXCLUDED.tone,
-        "primaryLanguage" = EXCLUDED."primaryLanguage",
-        "supportedLanguages" = EXCLUDED."supportedLanguages",
-        "updatedAt" = NOW()
-    `;
+Respond in the customer's language when possible.`;
+    await sql.unsafe(
+      `INSERT INTO agent_configurations ("agentId", "workspaceId", model, temperature, "maxTokens", "systemInstructions", tone, "primaryLanguage", "supportedLanguages", "createdAt", "updatedAt")
+       VALUES ($1, $2, 'gpt-4o', 0.3, 2048, $3, 'technical', 'it', ARRAY['it','en','ar']::text[], NOW(), NOW())
+       ON CONFLICT ("agentId") DO UPDATE SET
+         model = EXCLUDED.model, temperature = EXCLUDED.temperature, "maxTokens" = EXCLUDED."maxTokens",
+         "systemInstructions" = EXCLUDED."systemInstructions", tone = EXCLUDED.tone,
+         "primaryLanguage" = EXCLUDED."primaryLanguage", "supportedLanguages" = EXCLUDED."supportedLanguages",
+         "updatedAt" = NOW()`,
+      [agentId, WORKSPACE_ID, sysPrompt]
+    );
     console.log("Agent configuration upserted");
   } catch (e) {
     console.error("Failed to seed agent configuration:", e);
@@ -227,39 +213,23 @@ Respond in the customer's language when possible.`},
 
   try {
     const countries = [
-      { code: "IT", lang: "it", currency: "EUR", tz: "Europe/Rome", warranty: "2 years", residency: "EU", regs: ["GDPR"], channels: ["chat", "voice"] },
-      { code: "SA", lang: "ar", currency: "SAR", tz: "Asia/Riyadh", warranty: "2 years", residency: "GCC", regs: ["PDPL"], channels: ["whatsapp", "chat"] },
-      { code: "EG", lang: "ar", currency: "EGP", tz: "Africa/Cairo", warranty: "2 years", residency: "LOCAL", regs: ["PDPL"], channels: ["whatsapp", "chat"] },
-      { code: "DE", lang: "de", currency: "EUR", tz: "Europe/Berlin", warranty: "2 years", residency: "EU", regs: ["GDPR"], channels: ["chat", "email"] },
+      { code: "IT", lang: "it", currency: "EUR", tz: "Europe/Rome", warranty: "2 years", residency: "EU", regs: "{GDPR}", channels: "{chat,voice}" },
+      { code: "SA", lang: "ar", currency: "SAR", tz: "Asia/Riyadh", warranty: "2 years", residency: "GCC", regs: "{PDPL}", channels: "{whatsapp,chat}" },
+      { code: "EG", lang: "ar", currency: "EGP", tz: "Africa/Cairo", warranty: "2 years", residency: "LOCAL", regs: "{PDPL}", channels: "{whatsapp,chat}" },
+      { code: "DE", lang: "de", currency: "EUR", tz: "Europe/Berlin", warranty: "2 years", residency: "EU", regs: "{GDPR}", channels: "{chat,email}" },
     ];
 
     for (const c of countries) {
-      await sql`
-        INSERT INTO country_configs ("workspaceId", "agentId", "countryCode", language, currency, timezone, "warrantyPeriod", "dataResidency", regulations, "preferredChannels", "createdAt", "updatedAt")
-        VALUES (
-          ${WORKSPACE_ID},
-          ${agentId},
-          ${c.code},
-          ${c.lang},
-          ${c.currency},
-          ${c.tz},
-          ${c.warranty},
-          ${c.residency},
-          ${JSON.stringify(c.regs)},
-          ${JSON.stringify(c.channels)},
-          NOW(),
-          NOW()
-        )
-        ON CONFLICT ("workspaceId", "agentId", "countryCode") DO UPDATE SET
-          language = EXCLUDED.language,
-          currency = EXCLUDED.currency,
-          timezone = EXCLUDED.timezone,
-          "warrantyPeriod" = EXCLUDED."warrantyPeriod",
-          "dataResidency" = EXCLUDED."dataResidency",
-          regulations = EXCLUDED.regulations,
-          "preferredChannels" = EXCLUDED."preferredChannels",
-          "updatedAt" = NOW()
-      `;
+      await sql.unsafe(
+        `INSERT INTO country_configs ("workspaceId", "agentId", "countryCode", language, currency, timezone, "warrantyPeriod", "dataResidency", regulations, "preferredChannels", "createdAt", "updatedAt")
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::text[], $10::text[], NOW(), NOW())
+         ON CONFLICT ("workspaceId", "agentId", "countryCode") DO UPDATE SET
+           language = EXCLUDED.language, currency = EXCLUDED.currency, timezone = EXCLUDED.timezone,
+           "warrantyPeriod" = EXCLUDED."warrantyPeriod", "dataResidency" = EXCLUDED."dataResidency",
+           regulations = EXCLUDED.regulations, "preferredChannels" = EXCLUDED."preferredChannels",
+           "updatedAt" = NOW()`,
+        [WORKSPACE_ID, agentId, c.code, c.lang, c.currency, c.tz, c.warranty, c.residency, c.regs, c.channels]
+      );
     }
     console.log("Country configs seeded");
   } catch (e) {
@@ -292,29 +262,15 @@ Respond in the customer's language when possible.`},
     ];
 
     for (const ch of channels) {
-      await sql`
-        INSERT INTO channel_configs ("workspaceId", "agentId", "channelType", enabled, configuration, "businessHours", "greetingMessage", "outsideHoursMessage", "maxConcurrent", "createdAt", "updatedAt")
-        VALUES (
-          ${WORKSPACE_ID},
-          ${agentId},
-          ${ch.type},
-          true,
-          ${JSON.stringify({})},
-          ${JSON.stringify(ch.hours)},
-          ${ch.greeting},
-          ${ch.outside},
-          ${ch.maxConcurrent},
-          NOW(),
-          NOW()
-        )
-        ON CONFLICT ("workspaceId", "agentId", "channelType") DO UPDATE SET
-          enabled = true,
-          "businessHours" = EXCLUDED."businessHours",
-          "greetingMessage" = EXCLUDED."greetingMessage",
-          "outsideHoursMessage" = EXCLUDED."outsideHoursMessage",
-          "maxConcurrent" = EXCLUDED."maxConcurrent",
-          "updatedAt" = NOW()
-      `;
+      await sql.unsafe(
+        `INSERT INTO channel_configs ("workspaceId", "agentId", "channelType", enabled, configuration, "businessHours", "greetingMessage", "outsideHoursMessage", "maxConcurrent", "createdAt", "updatedAt")
+         VALUES ($1, $2, $3, true, '{}'::jsonb, $4::jsonb, $5, $6, $7, NOW(), NOW())
+         ON CONFLICT ("workspaceId", "agentId", "channelType") DO UPDATE SET
+           enabled = true, "businessHours" = EXCLUDED."businessHours",
+           "greetingMessage" = EXCLUDED."greetingMessage", "outsideHoursMessage" = EXCLUDED."outsideHoursMessage",
+           "maxConcurrent" = EXCLUDED."maxConcurrent", "updatedAt" = NOW()`,
+        [WORKSPACE_ID, agentId, ch.type, JSON.stringify(ch.hours), ch.greeting, ch.outside, ch.maxConcurrent]
+      );
     }
     console.log("Channel configs seeded");
   } catch (e) {
@@ -327,23 +283,12 @@ Respond in the customer's language when possible.`},
     const keyPrefix = apiKeyRaw.substring(0, 12);
     const keyId = `ak_haier_demo_${Date.now()}`;
 
-    await sql`
-      INSERT INTO api_keys (id, "workspaceId", "userId", name, "keyPrefix", "keyHash", scopes, "rateLimit", "expiresAt", "isActive", "createdAt")
-      VALUES (
-        ${keyId},
-        ${WORKSPACE_ID},
-        ${USER_ID},
-        'Haier Demo Key',
-        ${keyPrefix},
-        ${keyHash},
-        ${JSON.stringify(["*"])},
-        100,
-        '2099-12-31T23:59:59Z',
-        true,
-        NOW()
-      )
-      ON CONFLICT (id) DO NOTHING
-    `;
+    await sql.unsafe(
+      `INSERT INTO api_keys (id, "workspaceId", "userId", name, "keyPrefix", "keyHash", scopes, "rateLimit", "expiresAt", "isActive", "createdAt")
+       VALUES ($1, $2, $3, 'Haier Demo Key', $4, $5, '["*"]'::jsonb, 100, '2099-12-31T23:59:59Z', true, NOW())
+       ON CONFLICT ("keyHash") DO NOTHING`,
+      [keyId, WORKSPACE_ID, USER_ID, keyPrefix, keyHash]
+    );
     console.log(`API key seeded (raw: ${apiKeyRaw})`);
   } catch (e) {
     console.error("Failed to seed API key:", e);
