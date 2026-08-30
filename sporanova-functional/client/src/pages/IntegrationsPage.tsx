@@ -24,15 +24,19 @@ export default function IntegrationsPage() {
   const [credentials, setCredentials] = useState({ apiKey: "", settings: "" });
   const [integrationName, setIntegrationName] = useState("");
 
-  const [connectedIds, setConnectedIds] = useState<Set<string>>(new Set());
-  const [integrationIdMap, setIntegrationIdMap] = useState<Record<string, number>>({});
+  const { data: integrationsList, refetch: refetchIntegrations } = trpc.integrations.list.useQuery(
+    { workspaceId: workspaceId! },
+    { enabled: Boolean(workspaceId) }
+  );
+  const connectedIds = new Set((integrationsList || []).map((i: any) => i.provider));
+  const integrationIdMap: Record<string, number> = {};
+  for (const i of (integrationsList || []) as any[]) {
+    integrationIdMap[i.provider] = i.id;
+  }
 
   const connect = trpc.integrations.connect.useMutation({
-    onSuccess: (result: any) => {
-      if (connecting && result?.id) {
-        setIntegrationIdMap(prev => ({ ...prev, [connecting]: result.id }));
-      }
-      setConnectedIds(prev => new Set(Array.from(prev).concat(connecting!)));
+    onSuccess: () => {
+      refetchIntegrations();
       setConnecting(null);
       setCredentials({ apiKey: "", settings: "" });
       setIntegrationName("");
@@ -41,11 +45,7 @@ export default function IntegrationsPage() {
 
   const disconnect = trpc.integrations.disconnect.useMutation({
     onSuccess: () => {
-      setConnectedIds(prev => {
-        const next = new Set(prev);
-        next.delete(disconnecting!);
-        return next;
-      });
+      refetchIntegrations();
       setDisconnecting(null);
     },
   });

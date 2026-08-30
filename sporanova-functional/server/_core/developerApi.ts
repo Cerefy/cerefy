@@ -1,9 +1,15 @@
-import { createHash, randomBytes } from "node:crypto";
 import { requireDb, writeAuditLog } from "../db";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { agents, conversations, messages } from "../../drizzle/schema";
+import {
+  createAPIKey as dbCreateAPIKey,
+  validateAPIKey as dbValidateAPIKey,
+  listAPIKeys as dbListAPIKeys,
+  revokeAPIKey as dbRevokeAPIKey,
+  getApiKeyById as dbGetApiKeyById,
+} from "./apiKeys";
 
-// ─── API Key Management ─────────────────────────────────────────────────────
+// ─── API Key Management (DB-backed) ─────────────────────────────────────────
 export interface APIKeyRecord {
   id: string;
   name: string;
@@ -19,52 +25,71 @@ export interface APIKeyRecord {
   isActive: boolean;
 }
 
-const apiKeys = new Map<string, APIKeyRecord>();
-
-export function createAPIKey(input: {
+export async function createAPIKey(input: {
   name: string;
   workspaceId: number;
   userId: number;
   scopes?: string[];
   rateLimit?: number;
   expiresInDays?: number;
-}): { key: string; record: APIKeyRecord } {
-  const rawKey = `sk_live_${randomBytes(32).toString("hex")}`;
-  const keyHash = createHash("sha256").update(rawKey).digest("hex");
-  const keyPrefix = rawKey.slice(0, 12);
+}): Promise<{ key: string; record: APIKeyRecord }> {
+  const result = await dbCreateAPIKey(
+    input.workspaceId,
+    input.userId,
+    input.name,
+    input.scopes || ["*"],
+    input.expiresInDays,
+    input.rateLimit
+  );
 
   const record: APIKeyRecord = {
-    id: `ak_${Date.now()}`,
-    name: input.name,
-    keyPrefix,
-    keyHash,
-    scopes: input.scopes || ["*"],
+    id: result.id,
+    name: result.name,
+    keyPrefix: result.key.substring(0, 12),
+    keyHash: "",
+    scopes: result.scopes,
     workspaceId: input.workspaceId,
     userId: input.userId,
     rateLimit: input.rateLimit || 100,
-    expiresAt: input.expiresInDays ? new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000) : undefined,
+    expiresAt: result.expiresAt,
     createdAt: new Date(),
     isActive: true,
   };
 
-  apiKeys.set(keyHash, record);
-  return { key: rawKey, record };
+  return { key: result.key, record };
 }
 
-export function validateAPIKey(rawKey: string): APIKeyRecord | null {
-  const keyHash = createHash("sha256").update(rawKey).digest("hex");
-  const record = apiKeys.get(keyHash);
-  if (!record || !record.isActive) return null;
-  if (record.expiresAt && record.expiresAt < new Date()) return null;
-  record.lastUsedAt = new Date();
-  return record;
+export async function validateAPIKey(rawKey: string): Promise<APIKeyRecord | null> {
+  const result = await dbValidateAPIKey(rawKey);
+  if (!result) return null;
+  const full = await dbGetApiKeyById(result.id);
+  if (!full) return null;
+  return {
+    id: full.id,
+    name: full.name,
+    keyPrefix: full.keyPrefix,
+    keyHash: "",
+    scopes: full.scopes,
+    workspaceId: full.workspaceId,
+    userId: full.userId,
+    rateLimit: full.rateLimit,
+    expiresAt: full.expiresAt ?? undefined,
+    lastUsedAt: full.lastUsedAt ?? undefined,
+    createdAt: full.createdAt,
+    isActive: full.isActive,
+  };
 }
 
-export function revokeAPIKey(keyHash: string): boolean {
-  const record = apiKeys.get(keyHash);
-  if (!record) return false;
-  record.isActive = false;
-  return true;
+export async function revokeAPIKey(keyId: string, workspaceId: number): Promise<boolean> {
+  return dbRevokeAPIKey(keyId, workspaceId);
+}
+
+export async function listApiKeys(workspaceId: number) {
+  return dbListAPIKeys(workspaceId);
+}
+
+export async function getApiKeyById(keyId: string) {
+  return dbGetApiKeyById(keyId);
 }
 
 // ─── Public API Endpoints ───────────────────────────────────────────────────

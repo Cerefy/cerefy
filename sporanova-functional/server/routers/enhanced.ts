@@ -3,7 +3,7 @@ import { and, desc, eq, isNull } from "drizzle-orm";
 import { router, protectedProcedure } from "../_core/trpc";
 import { workspaceProcedure, workspaceMemberProcedure, workspaceManagerProcedure } from "../authz";
 import { requireDb, writeAuditLog } from "../db";
-import { agents, agentRuns, businessRules, conversations, messages, messageSources, documents } from "../../drizzle/schema";
+import { agents, agentRuns, businessRules, conversations, messages, messageSources, documents, integrations, apiKeys } from "../../drizzle/schema";
 import {
   evaluateRules,
   loadRules,
@@ -20,9 +20,23 @@ import { createTrace, addSpan, finishSpan, finishTrace, getTrace, getTracesForWo
 import { getDashboardMetrics, generateAIInsights, getCostBreakdown, mineConversationPatterns } from "../_core/analytics";
 import { storeMemory, recallMemory, searchMemory, storeUserProfile, getUserProfile, storeCompanyKnowledge, getCompanyKnowledge, storeAgentMemory, getAgentMemory, garbageCollectMemories } from "../_core/memory";
 import { channelRouter } from "../_core/multichannel";
-import { createAPIKey, validateAPIKey, createAgentAPI, chatAPI, listAgentsAPI, generateSDKCode, searchMCPMarketplace, getMCPToolDetails } from "../_core/developerApi";
+import {
+  createAPIKey,
+  validateAPIKey,
+  createAgentAPI,
+  chatAPI,
+  listAgentsAPI,
+  generateSDKCode,
+  searchMCPMarketplace,
+  getMCPToolDetails,
+} from "../_core/developerApi";
 import { connectIntegration, disconnectIntegration, sendIntegrationMessage } from "../_core/integrations";
-import { checkRateLimit, generateAPIKey, getAuditTrail, exportUserData } from "../_core/security";
+import { checkRateLimit, getAuditTrail, exportUserData } from "../_core/security";
+import {
+  createAPIKey as createDbApiKey,
+  listAPIKeys as listDbApiKeys,
+  revokeAPIKey as revokeDbApiKey,
+} from "../_core/apiKeys";
 import { playgroundChat, runEvaluation, type TestCase } from "../_core/evaluation";
 import {
   executeWorkflow,
@@ -368,6 +382,13 @@ export const integrationsRouter = router({
     .mutation(async ({ ctx, input }) => {
       return sendIntegrationMessage(ctx.workspaceId, input.integrationId, input.message, input.metadata);
     }),
+
+  list: workspaceProcedure.input(workspaceInput).query(async ({ ctx }) => {
+    const db = await requireDb();
+    return db.select().from(integrations)
+      .where(eq(integrations.workspaceId, ctx.workspaceId))
+      .orderBy(desc(integrations.createdAt));
+  }),
 });
 
 // ─── Security Router ────────────────────────────────────────────────────────
@@ -379,9 +400,31 @@ export const securityRouter = router({
       expiresInDays: z.number().int().min(1).max(365).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const { key, apiKey } = generateAPIKey(input.name, ctx.workspaceId, ctx.user.id, (input.scopes || []) as any);
+      const result = await createDbApiKey(
+        ctx.workspaceId,
+        ctx.user.id,
+        input.name,
+        (input.scopes || ["*"]) as string[],
+        input.expiresInDays,
+      );
       await writeAuditLog({ workspaceId: ctx.workspaceId, actorUserId: ctx.user.id, action: "api_key.created", resourceType: "api_key", metadata: { name: input.name } });
-      return { key, keyId: apiKey.id, keyPrefix: apiKey.keyPrefix };
+      return { key: result.key, keyId: result.id, keyPrefix: result.key.substring(0, 12) };
+    }),
+
+  listApiKeys: workspaceProcedure
+    .input(workspaceInput)
+    .query(async ({ ctx }) => {
+      return listDbApiKeys(ctx.workspaceId);
+    }),
+
+  revokeApiKey: workspaceManagerProcedure
+    .input(workspaceInput.extend({ keyId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const success = await revokeDbApiKey(input.keyId, ctx.workspaceId);
+      if (success) {
+        await writeAuditLog({ workspaceId: ctx.workspaceId, actorUserId: ctx.user.id, action: "api_key.revoked", resourceType: "api_key", resourceId: input.keyId });
+      }
+      return { success };
     }),
 
   auditTrail: workspaceProcedure
@@ -446,6 +489,29 @@ export const developerApiRouter = router({
   listAgents: workspaceProcedure.input(workspaceInput).query(async ({ ctx }) => {
     return listAgentsAPI(ctx.workspaceId);
   }),
+
+  listKeys: workspaceProcedure.input(workspaceInput).query(async ({ ctx }) => {
+    const db = await requireDb();
+    const results = await db.select({
+      id: apiKeys.id,
+      name: apiKeys.name,
+      keyPrefix: apiKeys.keyPrefix,
+      scopes: apiKeys.scopes,
+      expiresAt: apiKeys.expiresAt,
+      isActive: apiKeys.isActive,
+      lastUsedAt: apiKeys.lastUsedAt,
+      createdAt: apiKeys.createdAt,
+    }).from(apiKeys).where(eq(apiKeys.workspaceId, ctx.workspaceId));
+    return results;
+  }),
+
+  deleteKey: workspaceManagerProcedure
+    .input(workspaceInput.extend({ keyId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await requireDb();
+      await db.delete(apiKeys).where(and(eq(apiKeys.id, input.keyId), eq(apiKeys.workspaceId, ctx.workspaceId)));
+      return { success: true };
+    }),
 
   sdk: workspaceProcedure.query(({ ctx }) => {
     const baseUrl = process.env.APP_URL || "http://localhost:3000";

@@ -1,6 +1,6 @@
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { z } from "zod";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomBytes, createCipheriv, createDecipheriv } from "node:crypto";
 import {
   users,
   memberships,
@@ -9,6 +9,12 @@ import {
   auditLogs,
 } from "../../drizzle/schema";
 import { requireDb, writeAuditLog } from "../db";
+import {
+  createAPIKey as dbCreateAPIKey,
+  validateAPIKey as dbValidateAPIKey,
+  listAPIKeys as dbListAPIKeys,
+  revokeAPIKey as dbRevokeAPIKey,
+} from "./apiKeys";
 
 // ─── RBAC Enhanced ──────────────────────────────────────────────────────────
 export type Permission =
@@ -77,13 +83,13 @@ export function requirePermission(role: string, permission: Permission): void {
   }
 }
 
-// ─── API Key Management ─────────────────────────────────────────────────────
+// ─── API Key Management (DB-backed) ─────────────────────────────────────────
 export interface APIKey {
   id: string;
   name: string;
   keyPrefix: string;
   keyHash: string;
-  permissions: Permission[];
+  permissions: string[];
   workspaceId: number;
   userId: number;
   expiresAt?: Date;
@@ -91,36 +97,21 @@ export interface APIKey {
   createdAt: Date;
 }
 
-const apiKeys = new Map<string, APIKey>();
-
-export function generateAPIKey(name: string, workspaceId: number, userId: number, permissions: Permission[]): { key: string; apiKey: APIKey } {
-  const rawKey = `sk_live_${randomBytes(32).toString("hex")}`;
-  const keyHash = createHash("sha256").update(rawKey).digest("hex");
-  const keyPrefix = rawKey.slice(0, 12);
-
-  const apiKey: APIKey = {
-    id: `ak_${Date.now()}`,
-    name,
-    keyPrefix,
-    keyHash,
-    permissions,
-    workspaceId,
-    userId,
-    createdAt: new Date(),
-  };
-
-  apiKeys.set(keyHash, apiKey);
-  return { key: rawKey, apiKey };
+export async function generateAPIKey(
+  name: string,
+  workspaceId: number,
+  userId: number,
+  permissions: string[]
+): Promise<{ key: string; apiKey: { id: string; name: string; keyPrefix: string } }> {
+  const result = await dbCreateAPIKey(workspaceId, userId, name, permissions);
+  return { key: result.key, apiKey: { id: result.id, name: result.name, keyPrefix: result.key.substring(0, 12) } };
 }
 
-export function validateAPIKey(rawKey: string): APIKey | null {
-  const keyHash = createHash("sha256").update(rawKey).digest("hex");
-  const apiKey = apiKeys.get(keyHash);
-  if (!apiKey) return null;
-  if (apiKey.expiresAt && apiKey.expiresAt < new Date()) return null;
-  apiKey.lastUsedAt = new Date();
-  return apiKey;
+export async function validateAPIKey(rawKey: string) {
+  return dbValidateAPIKey(rawKey);
 }
+
+export { listAPIKeys as listApiKeys, revokeAPIKey as deleteApiKey } from "./apiKeys";
 
 // ─── SSO / OAuth ────────────────────────────────────────────────────────────
 export interface SSOConfig {
@@ -230,17 +221,46 @@ export async function deleteUserData(workspaceId: number, userId: number): Promi
   return { success: true };
 }
 
-// ─── Encryption ─────────────────────────────────────────────────────────────
-export function encryptSensitiveData(data: string, secret: string): string {
-  // In production, use AES-256-GCM
-  const iv = randomBytes(16).toString("hex");
-  const encrypted = createHash("sha256").update(data + secret).digest("hex");
-  return `${iv}:${encrypted}`;
+// ─── Encryption (AES-256-GCM) ──────────────────────────────────────────────
+const ENCRYPTION_KEY = process.env.DATA_ENCRYPTION_KEY || "";
+
+export function encryptSensitiveData(plaintext: string, secret?: string): string {
+  const keyHex = secret || ENCRYPTION_KEY;
+  if (!keyHex) {
+    console.warn("[Security] DATA_ENCRYPTION_KEY not set, using fallback encryption");
+    return `plain:${plaintext}`;
+  }
+  const key = Buffer.from(keyHex, "hex");
+  if (key.length !== 32) {
+    console.warn("[Security] DATA_ENCRYPTION_KEY must be 64 hex chars (32 bytes), using fallback");
+    return `plain:${plaintext}`;
+  }
+  const iv = randomBytes(16);
+  const cipher = createCipheriv("aes-256-gcm", key, iv);
+  let encrypted = cipher.update(plaintext, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  const authTag = cipher.getAuthTag();
+  return `enc:${iv.toString("hex")}:${authTag.toString("hex")}:${encrypted}`;
 }
 
-export function decryptSensitiveData(encrypted: string, secret: string): string {
-  // In production, use AES-256-GCM decryption
-  return encrypted;
+export function decryptSensitiveData(ciphertext: string, secret?: string): string {
+  if (ciphertext.startsWith("plain:")) return ciphertext.substring(6);
+  const keyHex = secret || ENCRYPTION_KEY;
+  if (!keyHex) {
+    console.warn("[Security] DATA_ENCRYPTION_KEY not set, cannot decrypt");
+    return ciphertext;
+  }
+  const parts = ciphertext.split(":");
+  if (parts.length !== 4 || parts[0] !== "enc") return ciphertext;
+  const [, ivHex, authTagHex, encrypted] = parts;
+  const key = Buffer.from(keyHex, "hex");
+  const iv = Buffer.from(ivHex, "hex");
+  const authTag = Buffer.from(authTagHex, "hex");
+  const decipher = createDecipheriv("aes-256-gcm", key, iv);
+  decipher.setAuthTag(authTag);
+  let decrypted = decipher.update(encrypted, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
 }
 
 // ─── Rate Limiting ──────────────────────────────────────────────────────────

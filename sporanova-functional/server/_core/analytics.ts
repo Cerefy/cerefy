@@ -8,6 +8,7 @@ import {
   dataSources,
   auditLogs,
   businessMetrics,
+  traces,
 } from "../../drizzle/schema";
 import { requireDb } from "../db";
 import { invokeLLM } from "./llm";
@@ -105,6 +106,70 @@ export async function getDashboardMetrics(workspaceId: number, period: "day" | "
   const userMsgCount = userMessages?.count || 0;
   const assistantMsgCount = assistantMessages?.count || 0;
 
+  // Resolution rate from traces
+  const [completedTraces] = await db.select({ count: sql<number>`count(*)::int` })
+    .from(traces).where(and(eq(traces.workspaceId, workspaceId), eq(traces.status, "completed"), gte(traces.createdAt, periodStart)));
+  const [totalTraces] = await db.select({ count: sql<number>`count(*)::int` })
+    .from(traces).where(and(eq(traces.workspaceId, workspaceId), gte(traces.createdAt, periodStart)));
+  const resolutionRate = (totalTraces?.count || 0) > 0 ? ((completedTraces?.count || 0) / (totalTraces?.count || 1)) * 100 : 0;
+
+  // CSAT from messages metadata
+  const [csatResult] = await db.select({ avg: sql<number>`AVG(CAST(${messages.metadata}->>'satisfaction' AS NUMERIC))`, cnt: sql<number>`count(*)::int` })
+    .from(messages).where(and(eq(messages.workspaceId, workspaceId), sql`${messages.metadata}->>'satisfaction' IS NOT NULL`, gte(messages.createdAt, periodStart)));
+
+  // Cost from business_metrics
+  const [costResult] = await db.select({ total: sql<number>`COALESCE(SUM(CAST(${businessMetrics.metricValue} AS NUMERIC)), 0)` })
+    .from(businessMetrics).where(and(eq(businessMetrics.workspaceId, workspaceId), eq(businessMetrics.metricKey, "aiCost"), gte(businessMetrics.metricDate, periodStart)));
+  const totalCostUsd = costResult?.total || 0;
+
+  // Latency from traces
+  const [latencyResult] = await db.select({
+    avgMs: sql<number>`COALESCE(AVG(${traces.totalDurationMs}), 0)`,
+    p95Ms: sql<number>`COALESCE(percentile_cont(0.95) WITHIN GROUP (ORDER BY ${traces.totalDurationMs})::float, 0)`,
+    p99Ms: sql<number>`COALESCE(percentile_cont(0.99) WITHIN GROUP (ORDER BY ${traces.totalDurationMs})::float, 0)`,
+  }).from(traces).where(and(eq(traces.workspaceId, workspaceId), gte(traces.createdAt, periodStart)));
+
+  // Top topics from business_metrics
+  const topicResults = await db.select({
+    topic: businessMetrics.metricValue,
+    count: sql<number>`count(*)::int`,
+  }).from(businessMetrics).where(and(
+    eq(businessMetrics.workspaceId, workspaceId),
+    eq(businessMetrics.metricKey, "topic"),
+    gte(businessMetrics.metricDate, periodStart)
+  )).groupBy(businessMetrics.metricValue).orderBy(sql`count(*) DESC`).limit(5);
+  const totalTopicCount = topicResults.reduce((s, r) => s + r.count, 0) || 1;
+  const topTopics = topicResults.map(r => ({ topic: r.topic || "Unknown", count: r.count, percent: Math.round((r.count / totalTopicCount) * 100) }));
+
+  // Sentiment from messages metadata
+  const sentimentResults = await db.select({
+    sentiment: sql<string>`COALESCE(${messages.metadata}->>'sentiment', 'neutral')`,
+    count: sql<number>`count(*)::int`,
+  }).from(messages).where(and(
+    eq(messages.workspaceId, workspaceId),
+    sql`${messages.metadata}->>'sentiment' IS NOT NULL`,
+    gte(messages.createdAt, periodStart)
+  )).groupBy(sql`${messages.metadata}->>'sentiment'`);
+  const totalSentiment = sentimentResults.reduce((s, r) => s + r.count, 0) || 1;
+  const sentiment = { positive: 0, neutral: 0, negative: 0 };
+  for (const r of sentimentResults) {
+    if (r.sentiment === 'positive') sentiment.positive = Math.round((r.count / totalSentiment) * 100);
+    else if (r.sentiment === 'negative') sentiment.negative = Math.round((r.count / totalSentiment) * 100);
+    else sentiment.neutral = Math.round((r.count / totalSentiment) * 100);
+  }
+
+  // Unanswered questions
+  const unansweredResults = await db.select({
+    question: messages.content,
+    count: sql<number>`count(*)::int`,
+    lastSeen: sql<string>`MAX(${messages.createdAt}::text)`,
+  }).from(messages).where(and(
+    eq(messages.workspaceId, workspaceId),
+    eq(messages.role, "user"),
+    gte(messages.createdAt, periodStart)
+  )).groupBy(messages.content).orderBy(sql`count(*) DESC`).limit(5);
+  const unansweredQuestions = unansweredResults.map(r => ({ question: r.question?.substring(0, 100) || '', count: r.count, lastSeen: r.lastSeen?.substring(0, 10) || '' }));
+
   return {
     conversations: {
       total: totalConvCount,
@@ -119,35 +184,25 @@ export async function getDashboardMetrics(workspaceId: number, period: "day" | "
       assistantMessages: assistantMsgCount,
     },
     resolution: {
-      rate: 87.5,
-      escalated: Math.floor(totalConvCount * 0.125),
-      autoResolved: Math.floor(totalConvCount * 0.875),
+      rate: resolutionRate,
+      escalated: (totalTraces?.count || 0) - (completedTraces?.count || 0),
+      autoResolved: completedTraces?.count || 0,
     },
-    csat: { score: 4.2, responses: Math.floor(totalConvCount * 0.3) },
+    csat: { score: csatResult?.avg || 0, responses: csatResult?.cnt || 0 },
     cost: {
-      totalUsd: totalMsgCount * 0.002,
-      perConversation: totalConvCount > 0 ? (totalMsgCount * 0.002) / totalConvCount : 0,
-      thisMonth: periodMsgCount(totalMsgCount, period) * 0.002,
+      totalUsd: totalCostUsd,
+      perConversation: totalConvCount > 0 ? totalCostUsd / totalConvCount : 0,
+      thisMonth: totalCostUsd,
     },
-    latency: { avgMs: 1400, p95Ms: 3200, p99Ms: 5800 },
+    latency: { avgMs: latencyResult?.avgMs || 0, p95Ms: latencyResult?.p95Ms || 0, p99Ms: latencyResult?.p99Ms || 0 },
     agents: {
       total: agentList.length,
       active: activeAgents,
       avgSuccessRate,
     },
-    topTopics: [
-      { topic: "Product Inquiry", count: 423, percent: 32 },
-      { topic: "Order Status", count: 312, percent: 24 },
-      { topic: "Technical Support", count: 198, percent: 15 },
-      { topic: "Billing", count: 156, percent: 12 },
-      { topic: "Returns", count: 124, percent: 9 },
-      { topic: "Other", count: 105, percent: 8 },
-    ],
-    sentiment: { positive: 68, neutral: 24, negative: 8 },
-    unansweredQuestions: [
-      { question: "How do I reset my password?", count: 45, lastSeen: "2026-08-29" },
-      { question: "What is the return policy?", count: 32, lastSeen: "2026-08-28" },
-    ],
+    topTopics,
+    sentiment,
+    unansweredQuestions,
   };
 }
 

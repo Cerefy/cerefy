@@ -24,7 +24,9 @@ import {
   securityRouter,
   developerApiRouter,
   rulesRouter,
+  workflowEngineRouter,
 } from "./routers/enhanced";
+import { decisionsRouter } from "./routers/decisions";
 
 const credentialsInput = z.object({
   email: z.string().trim().email().max(320),
@@ -98,6 +100,8 @@ export const appRouter = router({
   developerApi: developerApiRouter,
   agentEnhanced: agentEnhancedRouter,
   rules: rulesRouter,
+  workflowEngine: workflowEngineRouter,
+  decisions: decisionsRouter,
 });
 
 export type AppRouter = typeof appRouter;
