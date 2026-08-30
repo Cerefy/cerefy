@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     region: frankfurt
-    buildCommand: npm install && npm run build
+    buildCommand: npm install && npm run build:full
     startCommand: node dist/index.js
     preDeployCommand: npx drizzle-kit push
     healthCheckPath: /api/trpc/system.health
@@ -17,7 +17,7 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: APP_ORIGIN
-        value: https://public-hkdyhg20b-eyex.vercel.app
+        value: https://sopranova-api.onrender.com
       - key: DATABASE_URL
         sync: false
       - key: SESSION_SECRET
